@@ -145,6 +145,15 @@ table.g .tm{display:block;font-family:var(--mono);font-size:.82em;color:var(--mu
 .stu2{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}
 .stu2 .search{position:static}
 @media print{.hd,.gt{display:none}.gs{overflow:visible;border:0}}
+
+#zm{position:fixed;right:18px;bottom:18px;z-index:20;display:flex;align-items:center;gap:4px;background:var(--navy);color:#fff;border-radius:16px;padding:6px;box-shadow:0 6px 24px rgba(10,20,40,.28)}
+#zm button{display:flex;align-items:center;gap:6px;border:0;background:rgba(255,255,255,.08);color:#fff;border-radius:11px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;min-height:44px}
+#zm button:hover{background:rgba(255,255,255,.2)}
+#zm button[aria-pressed="true"]{background:#F4B860;color:#2a1d00}
+#zm svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+#zm b{font-family:var(--mono);min-width:54px;text-align:center;font-size:15px}
+body.wide main{padding-bottom:90px}
+@media print{#zm{display:none}}
 </style>
 </head>
 <body>
@@ -163,7 +172,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 /* 넓은 화면(PC 브라우저)이면 프로그램처럼 지점 시간표 격자 */
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
-let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:+ls.get('m_gz','12.5')||12.5,nm:ls.get('m_nm','1')==='1'},lastOk=0;
+let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:+ls.get('m_gz','12.5')||12.5,fit:ls.get('m_fit','1')==='1',nm:ls.get('m_nm','1')==='1'},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
 const ME=()=>{try{return JSON.parse(ls.get('m_me','null'))}catch(e){return null}};
 async function load(pin){
@@ -200,7 +209,7 @@ function render(){if(!D)return;const b=B();ST.br=b.id;
   $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('');
   meta(false);sizeHd();
   const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid}[ST.tab]||vToday;
-  $('main').innerHTML=v(b);
+  $('main').innerHTML=v(b);zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}}}
 /* 1분마다: 오늘 화면의 '지금·다음' 표시만 새로 */
 function tick(){if(ST.tab==='today'&&!document.querySelector('#main input:focus'))render()}
@@ -301,7 +310,7 @@ function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||
   return `<div class="gc" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>{const x=S(b,id);return x&&!x.away});const bg=s.color||'#9aa3b5';
   return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
-function gzHTML(){return `<span class="zm"><button data-gz="-1" aria-label="작게">－</button><b>${Math.round(ST.gz/12.5*100)}%</b><button data-gz="1" aria-label="크게">＋</button></span><label><input type="checkbox" id="nmChk" ${ST.nm?'checked':''}> 학생 이름</label>`}
+function gzHTML(){return `<label><input type="checkbox" id="nmChk" ${ST.nm?'checked':''}> 학생 이름 보기</label>`}
 function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days.find(d=>/[토일]/.test(d)&&d!==days[0]);const w=we&&((b.days||{})[we]||[])[p];
   if(!a)return w?`<b>${esc(pshort(w.name))}</b><span>${we} ${esc(w.time)}</span>`:'';
   return `<b>${esc(pshort(a.name))}</b><span>${esc(a.time)}</span>${w&&!/[토일]/.test(days[0])?`<span class="we">${we} ${esc(w.time)}</span>`:''}`}
@@ -343,7 +352,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest('button');i
   if(ds.stu){ST.stu=ds.stu;render();return}
   if(ds.me){ls.set('m_me',JSON.stringify({br:B().id,t:ds.me}));ST.t=ds.me;ls.set('m_t',ds.me);render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
-  if(ds.gz){ST.gz=Math.max(9,Math.min(18,ST.gz+(+ds.gz)*1.25));ls.set('m_gz',String(ST.gz));render();return}
+  if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set('m_fit','1');fitNow()}else zoomBy(+ds.gz);return}
   if(ds.act==='noMe'){ls.set('m_noMe','1');render();return}
   if(ds.act==='reMe'){ls.set('m_me','');ls.set('m_noMe','');ST.tab='today';render();window.scrollTo(0,0);return}
   if(ds.act==='noinst'){ls.set('m_noinst','1');render();return}
@@ -351,6 +360,24 @@ document.addEventListener('click',async e=>{const t=e.target.closest('button');i
   if(ds.act==='print'){window.print();return}
   if(ds.act==='logout'){if(confirm('이 기기에 저장된 번호와 시간표를 지울까요? 다음에 열 때 번호를 다시 넣어야 해요.')){['m_pin','m_cache'].forEach(k=>ls.set(k,''));D=null;lastCt=null;showPin('')}return}
   if(ds.k){ST.open.has(ds.k)?ST.open.delete(ds.k):ST.open.add(ds.k);t.closest('.card').classList.toggle('open');t.setAttribute('aria-expanded',ST.open.has(ds.k))}});
+/* ===== 확대·축소: 오른쪽 아래 떠 있는 버튼 + Ctrl+휠 + 처음엔 화면 폭에 자동 맞춤 ===== */
+const GZMIN=8,GZMAX=22;
+function setGz(g,save){ST.gz=Math.max(GZMIN,Math.min(GZMAX,Math.round(g*4)/4));document.querySelectorAll('table.g').forEach(t=>t.style.setProperty('--gz',ST.gz+'px'));
+  const l=$('zmPct');if(l)l.textContent=Math.round(ST.gz/12.5*100)+'%';const f=$('zmFit');if(f)f.setAttribute('aria-pressed',ST.fit);if(save)ls.set('m_gz',String(ST.gz))}
+function zoomBy(dir){ST.fit=false;ls.set('m_fit','0');setGz(ST.gz*(dir>0?1.12:1/1.12),true)}
+function fitNow(){const ts=[...document.querySelectorAll('table.g')];if(!ts.length)return;
+  for(let i=0;i<3;i++){const cw=ts[0].parentElement.clientWidth-2;const sw=Math.max(...ts.map(t=>t.scrollWidth));if(!sw)return;
+    const g=ST.gz*cw/sw;if(Math.abs(g-ST.gz)<.15)break;setGz(g,false)}
+  setGz(ST.gz,true)}
+function zmBar(){let z=$('zm');const has=wide&&document.querySelector('table.g');
+  if(!has){if(z)z.remove();return}
+  if(!z){z=document.createElement('div');z.id='zm';z.setAttribute('role','group');z.setAttribute('aria-label','시간표 크기');document.body.appendChild(z)}
+  z.innerHTML=`<button data-gz="-1" title="작게 (Ctrl + 마우스 휠 아래)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6"/></svg><span>작게</span></button><b id="zmPct">${Math.round(ST.gz/12.5*100)}%</b><button data-gz="1" title="크게 (Ctrl + 마우스 휠 위)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6M10.5 7.5v6"/></svg><span>크게</span></button><button id="zmFit" data-gz="fit" aria-pressed="${ST.fit}" title="표 전체가 화면 폭에 딱 맞게"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>화면에 맞춤</span></button>`;
+  if(ST.fit)requestAnimationFrame(fitNow)}
+window.addEventListener('wheel',e=>{if(e.ctrlKey&&wide&&document.querySelector('table.g')){e.preventDefault();zoomBy(e.deltaY<0?1:-1)}},{passive:false});
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!document.querySelector('table.g'))return;
+  if(e.key==='='||e.key==='+'){e.preventDefault();zoomBy(1)}else if(e.key==='-'){e.preventDefault();zoomBy(-1)}else if(e.key==='0'){e.preventDefault();ST.fit=true;ls.set('m_fit','1');fitNow()}});
+let rzT=0;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(ST.fit&&wide)fitNow()},150)});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
 $('br').addEventListener('change',e=>{ST.br=e.target.value;ls.set('m_br',ST.br);ST.open.clear();render()});
