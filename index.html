@@ -407,8 +407,8 @@ function vTch(b){const ts=tchList(b);if(!ts.find(t=>t.id===ST.t)){const me=ME();
   DAYS.forEach(d=>{const x=os.filter(o=>o.d===d).sort((a,c)=>a.p-c.p);if(!x.length)return;n+=x.length;
     h+=`<div class="day">${d}요일 <small>${x.length}타임</small></div><div class="list">${x.map(o=>{const pp=per(b,d,o.p);return card(b,o,`${esc(pshort(pp.name))} · ${esc(pp.time)}`)}).join('')}</div>`});
   if(!n)h+='<div class="empty">수업이 없어요</div>';return h+foot()}
-function vStu(b){const q=ST.q.trim();let h=`<div class="search"><input id="q" type="search" placeholder="학생 이름" autocomplete="off" enterkeyhint="search" aria-label="학생 이름 찾기"></div>`;
-  const wrap=(l,r)=>wide?`<div class="stu2"><div>${l}</div><div>${r}</div></div>`+foot():l+r+foot();
+function vStu(b,parts){const q=ST.q.trim();const sb=`<div class="search"><input id="q" type="search" placeholder="학생 이름" autocomplete="off" enterkeyhint="search" aria-label="학생 이름 찾기"></div>`;let h='';
+  const wrap=(l,r)=>parts?{l,r}:wide?`<div class="stu2"><div>${sb}<div id="sL">${l}</div></div><div id="sR">${r}</div></div>`+foot():sb+`<div id="sL">${l}</div><div id="sR">${r}</div>`+foot();
   if(!q)return wrap(h,'<div class="empty">이름 일부를 넣으면 그 학생의 주간 시간표가 나와요</div>');
   const hits=b.students.filter(s=>s.name.includes(q)).slice(0,30);
   if(!hits.length)return wrap(h,'<div class="empty">찾는 학생이 없어요</div>');
@@ -478,7 +478,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.26.2</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.26.3</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV()){pzMeasure();pzApply()}return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
@@ -486,7 +486,7 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.tab){ST.tab=ds.tab;render();window.scrollTo(0,0);return}
   if(ds.day){ST.day=ds.day;render();return}
   if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
-  if(ds.stu){ST.stu=ds.stu;render();return}
+  if(ds.stu){ST.stu=ds.stu;stuUpd();return}
   if(ds.fz&&pzV()){const v=pzV();if(ds.fz==='0'){pzAnimTo(PZ.fit,0,0);fzToast('원래 크기')}else pzAnimTo(PZ.s*(+ds.fz>0?1.3:1/1.3),v.clientWidth/2,v.clientHeight/2);return}
   if(ds.fz==='0'){if(document.querySelector('table.g')){ST.fit=true;fitNow();fzToast('원래 크기')}else{MZ=1;ls.set('m_mz','1');applyMz();sizeHd();fzToast()}return}
   if(ds.fz&&document.querySelector('table.g')){zoomBy(+ds.fz);fzToast('표 '+Math.round(ST.gz/12.5*100)+'%');return}
@@ -568,7 +568,10 @@ function applyLand(){rotIcon();document.body.classList.toggle('land',LQ.matches&
 LQ.addEventListener('change',()=>{applyLand();if(D&&ST.tab==='grid')render()});applyLand();
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}}if(D&&ST.tab==='grid')setTimeout(render,80)});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
-document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
+function stuUpd(){const P=vStu(B(),true);const l=$('sL'),r=$('sR');if(l)l.innerHTML=P.l;if(r)r.innerHTML=P.r}
+/* 한글 입력 중에는 입력 칸을 다시 그리지 않음(자모가 끊어지지 않게) — 결과만 바꿈 */
+document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;stuUpd()}});
+document.addEventListener('compositionend',e=>{if(e.target.id==='q'){ST.q=e.target.value;stuUpd()}});
 $('br').addEventListener('change',e=>{ST.br=e.target.value;ST.brPicked=true;ls.set('m_br',ST.br);ST.open.clear();render()});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();bip=e;if(D&&ST.tab==='today')render()});
 WQ.addEventListener('change',()=>{wide=WQ.matches;applyMz();loadGz();document.body.classList.toggle('wide',wide);ST.tab=wide?'grid':'today';if(D)render()});
