@@ -49,6 +49,8 @@ main{padding:12px 12px calc(28px + env(safe-area-inset-bottom));max-width:760px;
 .card .t1{display:flex;align-items:baseline;gap:8px}
 .card .t1 b{font-size:15.5px}
 .card .t1 .n{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.card .t1 .tag{font-size:10.5px;padding:1px 6px;border-radius:999px;background:#F4B860;color:#3a2a00;font-weight:600}
+.card.spc{border-style:dashed}
 .card .t2{font-size:12.5px;color:var(--muted);margin-top:1px}
 .card .nm{display:none;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px 6px;padding:0 12px 11px 19px;font-size:14px}
 .card.open .nm{display:grid}
@@ -89,7 +91,7 @@ const DAYS=['월','화','수','목','금','토','일'];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-let D=null,ST={br:ls.get('m_br',''),tab:ls.get('m_tab','day'),day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set()},lastOk=0;
+let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:ls.get('m_tab','day'),day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set()},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
 async function load(pin){
   const p=pin??ls.get('m_pin','');
@@ -97,12 +99,14 @@ async function load(pin){
     if(r.status===401){showPin(pin!==undefined?'번호가 맞지 않아요':'');return}
     if(r.status===429){showPin('여러 번 틀려서 30초 뒤에 다시 해 주세요');return}
     if(!r.ok)throw new Error(r.status);
-    let j=await r.json();
+    const raw=await r.text();let j=JSON.parse(raw);
     if(j.enc){if(!p){showPin('');return}
       if(!(window.crypto&&crypto.subtle)){$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
-      try{j=await dec(j,p)}catch(e){ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
-    D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();render()}
-  catch(e){if(!D){$('main').innerHTML='<div class="off"><b>시간표 PC에 연결하지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
+      if(D&&lastCt===j.ct){lastOk=Date.now();meta(false);return}
+      try{j=await dec(j,p);lastCt=JSON.parse(raw).ct}catch(e){ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
+    D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();ls.set('m_cache',raw);render()}
+  catch(e){if(!D){const c=ls.get('m_cache','');if(c&&p){try{let j=JSON.parse(c);if(j.enc)j=await dec(j,p);D=j;render();meta(true);return}catch(err){}}
+      $('main').innerHTML='<div class="off"><b>시간표를 받지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function dec(j,pass){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
   const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(j.salt),iterations:j.it,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
@@ -124,6 +128,16 @@ const T=(b,id)=>(b.teachers.find(t=>t.id===id)||{name:'?'}).name;
 const S=(b,id)=>b.students.find(s=>s.id===id);
 const per=(b,d,p)=>((b.days||{})[d]||[])[p]||{name:'',time:''};
 const pshort=n=>String(n||'').replace(/^(저녁|주말)\s*/,'');
+const tdStr=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const spOn=s=>{const t=tdStr();return (!s.from||s.from<=t)&&(!s.to||s.to>=t)};
+const sps=b=>(b.specials||[]).filter(spOn);
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:0};
+const fromMin=x=>`${String(Math.floor(x/60)%24).padStart(2,'0')}:${String(x%60).padStart(2,'0')}`;
+const spTime=s=>`${fromMin(toMin(s.start))}–${fromMin(toMin(s.start)+(+s.dur||120))}`;
+const md=x=>x?String(x).slice(5).replace('-','/'):'';const spDate=s=>s.from||s.to?`${md(s.from)}~${md(s.to)}`:'';
+function spCard(b,s,sub){const mem=(s.members||[]).map(id=>S(b,id)).filter(Boolean);const act=mem.filter(x=>!x.away);const k='sp'+s.id;const open=ST.open.has(k);
+  return `<div class="card spc${open?' open':''}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(s.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(s.name)}</b><span class="tag">특강</span><span class="n">${act.length}명</span></span><span class="t2">${sub}</span></span></button>
+    <div class="nm">${mem.map(x=>`<span>${x.away?`<s>${esc(x.name)}</s>`:esc(x.name)}</span>`).join('')||'<span>명단 없음</span>'}</div></div>`}
 function card(b,o,sub,hit){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});
   const k=o.d+o.p+o.t+o.cls;const open=ST.open.has(k)||hit;
   return `<div class="card${open?' open':''}${hit?' hit':''}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(c.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(c.name)}</b><span class="n">${act.length}명</span></span><span class="t2">${sub}</span></span></button>
@@ -131,12 +145,15 @@ function card(b,o,sub,hit){const c=C(b,o.cls);if(!c)return'';const mem=(c.member
 function vDay(b){const d=ST.day||(DAYS.includes(todayD())?todayD():'월');ST.day=d;const td=todayD();
   let h=`<div class="chips" role="group" aria-label="요일">${DAYS.map(x=>`<button data-day="${x}" aria-pressed="${x===d}">${x}${x===td?'<span class="today">오늘</span>':''}</button>`).join('')}</div>`;
   const ps=(b.days||{})[d]||[];const tord={};b.teachers.forEach((t,i)=>tord[t.id]=i);let any=false;
+  const sd=sps(b).filter(s=>(s.days||[]).includes(d)).sort((x,y)=>toMin(x.start)-toMin(y.start)||tord[x.t]-tord[y.t]);
+  if(sd.length){any=true;h+=`<div class="per"><b>특강</b><span>방학</span></div><div class="list">${sd.map(s=>spCard(b,s,`${spTime(s)} · ${esc(T(b,s.t))}T · ${esc(spDate(s))}`)).join('')}</div>`}
   ps.forEach((pp,p)=>{const os=b.sessions.filter(o=>o.d===d&&o.p===p).sort((x,y)=>tord[x.t]-tord[y.t]);if(!os.length)return;any=true;
     h+=`<div class="per"><b>${esc(pshort(pp.name))}</b><span>${esc(pp.time)}</span></div><div class="list">${os.map(o=>card(b,o,`${esc(T(b,o.t))}T`)).join('')}</div>`});
   if(!any)h+='<div class="empty">이 요일에는 수업이 없어요</div>';return h+foot()}
-function vTch(b){const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id));if(!ts.find(t=>t.id===ST.t))ST.t=(ts[0]||{}).id;
+function vTch(b){const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id)||sps(b).some(s=>s.t===t.id));if(!ts.find(t=>t.id===ST.t))ST.t=(ts[0]||{}).id;
   let h=`<div class="chips" role="group" aria-label="강사">${ts.map(t=>`<button data-t="${t.id}" aria-pressed="${t.id===ST.t}">${esc(t.name)}</button>`).join('')}</div>`;
   const os=b.sessions.filter(o=>o.t===ST.t);let n=0;
+  const st=sps(b).filter(s=>s.t===ST.t);if(st.length){n+=st.length;h+=`<div class="day">특강 <small>${st.length}개</small></div><div class="list">${st.map(s=>spCard(b,s,`${(s.days||[]).join('')} ${spTime(s)} · ${esc(spDate(s))}`)).join('')}</div>`}
   DAYS.forEach(d=>{const x=os.filter(o=>o.d===d).sort((a,c)=>a.p-c.p);if(!x.length)return;n+=x.length;
     h+=`<div class="day">${d}요일 <small>${x.length}타임</small></div><div class="list">${x.map(o=>{const pp=per(b,d,o.p);return card(b,o,`${esc(pshort(pp.name))} · ${esc(pp.time)}`)}).join('')}</div>`});
   if(!n)h+='<div class="empty">수업이 없어요</div>';return h+foot()}
@@ -147,7 +164,9 @@ function vStu(b){const q=ST.q.trim();let h=`<div class="search"><input id="q" ty
   if(!hits.find(s=>s.id===ST.stu))ST.stu=hits.length===1?hits[0].id:null;
   h+=`<div class="res">${hits.map(s=>`<button data-stu="${s.id}" aria-pressed="${s.id===ST.stu}"><b>${esc(s.name)}</b><small>${esc(s.grade)}${s.away?' · 휴원':''}</small></button>`).join('')}</div>`;
   if(ST.stu){const mine=b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(ST.stu)});
-    if(!mine.length)h+='<div class="empty">배정된 수업이 없어요</div>';
+    const st=sps(b).filter(s=>(s.members||[]).includes(ST.stu));
+    if(!mine.length&&!st.length)h+='<div class="empty">배정된 수업이 없어요</div>';
+    if(st.length)h+=`<div class="day">특강</div><div class="list">${st.map(s=>spCard(b,s,`${(s.days||[]).join('')} ${spTime(s)} · ${esc(spDate(s))} · ${esc(T(b,s.t))}T`)).join('')}</div>`;
     DAYS.forEach(d=>{const x=mine.filter(o=>o.d===d).sort((a,c)=>a.p-c.p);if(!x.length)return;
       h+=`<div class="day">${d}요일</div><div class="list">${x.map(o=>{const pp=per(b,d,o.p);return card(b,o,`${esc(pshort(pp.name))} · ${esc(pp.time)} · ${esc(T(b,o.t))}T`)}).join('')}</div>`})}
   return h+foot()}
