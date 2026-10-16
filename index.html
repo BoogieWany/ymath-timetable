@@ -377,7 +377,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}</span><span class="seg" role="group" aria-label="하루만">${DAYS.map(d=>gmB([d,d])).join('')}</span>${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
-    :`<div class="gt">${brSeg}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}<i class="sg"></i>${DAYS.map(d=>gmB([d,d])).join('')}</span><span class="pr">${gzHTML()}<button class="btn sm fitb" data-gz="fit" aria-pressed="${ST.fit}">한 화면에 다 보기</button></span></div>`;
+    :`<div class="gt">${brSeg}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}<i class="sg"></i>${DAYS.map(d=>gmB([d,d])).join('')}</span><span class="pr">${gzHTML()}</span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   blocks.forEach(days=>{
     const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1,first:i===0}))});
@@ -438,13 +438,13 @@ const GZMIN=8,GZMAX=22;const gzMin=()=>wide?GZMIN:2.5;
 function setGz(g,save){ST.gz=Math.max(gzMin(),Math.min(GZMAX,Math.round(g*4)/4));document.querySelectorAll('table.g').forEach(t=>t.style.setProperty('--gz',ST.gz+'px'));
   const l=$('zmPct');if(l)l.textContent=Math.round(ST.gz/12.5*100)+'%';const f=$('zmFit');if(f)f.setAttribute('aria-pressed',ST.fit);document.querySelectorAll('.fitb').forEach(x=>x.setAttribute('aria-pressed',ST.fit));if(save)ls.set(GK(),String(ST.gz))}
 function zoomBy(dir){ST.fit=false;ls.set(FK(),'0');setGz(ST.gz*(dir>0?1.12:1/1.12),true)}
-function fitNow(){const ts=[...document.querySelectorAll('table.g')];if(!ts.length)return;
+function fitNow(){const ts=[...document.querySelectorAll('table.g')];if(!ts.length)return;setGz(wide?16:13,false);
   for(let i=0;i<6;i++){const cw=ts[0].parentElement.clientWidth-2;const sw=Math.max(...ts.map(t=>t.scrollWidth));if(!sw)return;
     const g=ST.gz*cw/sw;if(Math.abs(g-ST.gz)<.1)break;setGz(g,false)}
   const over=()=>Math.max(...ts.map(t=>t.scrollWidth))>ts[0].parentElement.clientWidth;for(let k=0;k<12&&over()&&ST.gz>gzMin();k++)setGz(ST.gz-.25,false);
   setGz(ST.gz,true)}
 function zmBar(){let z=$('zm');const has=wide&&document.querySelector('table.g');
-  if(!has){if(z)z.remove();if(!wide&&ST.fit&&document.querySelector('table.g'))requestAnimationFrame(fitNow);return}
+  if(!has){if(z)z.remove();if(!wide&&ST.tab==='grid'&&document.querySelector('table.g')){ST.fit=true;requestAnimationFrame(fitNow)}return}
   if(!z){z=document.createElement('div');z.id='zm';z.setAttribute('role','group');z.setAttribute('aria-label','시간표 크기');document.body.appendChild(z)}
   z.innerHTML=`<button data-gz="-1" title="작게 (Ctrl + 마우스 휠 아래)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6"/></svg><span>작게</span></button><b id="zmPct">${Math.round(ST.gz/12.5*100)}%</b><button data-gz="1" title="크게 (Ctrl + 마우스 휠 위)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6M10.5 7.5v6"/></svg><span>크게</span></button><button id="zmFit" data-gz="fit" aria-pressed="${ST.fit}" title="표 전체가 화면 폭에 딱 맞게"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>화면에 맞춤</span></button>`;
   if(ST.fit)requestAnimationFrame(fitNow)}
