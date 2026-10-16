@@ -161,7 +161,7 @@ main{font-size:calc(15px*var(--mz,1))}
 .fz{display:inline-flex;margin-left:auto;border:1px solid rgba(255,255,255,.18);border-radius:9px;overflow:hidden}
 .fz button{border:0;background:rgba(255,255,255,.08);color:#fff;min-width:40px;min-height:36px;padding:0 8px;font-weight:700;line-height:1}
 .fz button+button{border-left:1px solid rgba(255,255,255,.18)}
-.fz button:first-child{font-size:12px}.fz button:last-child{font-size:18px}
+.fz button{font-size:20px;font-weight:600}
 .fz+select{margin-left:0!important}
 body.wide .fz{display:none}body.wide .fz+select{margin-left:auto!important}
 #fzt{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(15,22,38,.88);color:#fff;padding:9px 18px;border-radius:999px;font-weight:700;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:30}
@@ -172,7 +172,7 @@ body.wide .fz{display:none}body.wide .fz+select{margin-left:auto!important}
 </head>
 <body>
 <header class="hd" id="hd">
-  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="글씨 크기"><button data-fz="-1" aria-label="글씨 작게" title="글씨 작게">가</button><button data-fz="1" aria-label="글씨 크게" title="글씨 크게">가</button></span><select id="br" aria-label="지점"></select></div>
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="글씨 크기"><button data-fz="-1" aria-label="글씨 작게" title="글씨 작게">−</button><button data-fz="1" aria-label="글씨 크게" title="글씨 크게">+</button></span><select id="br" aria-label="지점"></select></div>
   <div class="meta" id="meta"></div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
