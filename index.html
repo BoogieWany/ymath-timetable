@@ -264,11 +264,15 @@ body.land .hd-r select{font-size:11px;min-height:24px}
 body.land .hdx{min-height:24px;min-width:28px;font-size:9px}
 body.land .gt .seg button{font-size:10.5px;min-height:24px;padding:2px 8px}
 body.land .tg{font-size:10.5px;min-height:24px}
+.fz button.pm{font-size:20px;font-weight:600}
+@media (max-width:480px){.hd-r b{display:none}}
+.fz{flex:none}.fz button{flex:none}
+body.land .fz button.pm{font-size:15px}
 </style>
 </head>
 <body>
 <header class="hd" id="hd">
-  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="화면"><button data-fz="0" class="rs" aria-label="처음 화면으로" title="폭에 맞춰 처음 크기로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button></span><select id="br" aria-label="지점"></select><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="화면"><button data-fz="-1" class="pm" aria-label="글씨 작게" title="글씨 작게 (전체 표에선 표 축소)">−</button><button data-fz="1" class="pm" aria-label="글씨 크게" title="글씨 크게 (전체 표에선 표 확대)">+</button><button data-fz="0" class="rs" aria-label="처음 화면으로" title="폭에 맞춰 처음 크기로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button></span><select id="br" aria-label="지점"></select><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
   <div class="meta" id="meta"></div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
@@ -285,7 +289,7 @@ const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
 let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1',gt:''},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
-let MZ=1;
+let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
 function loadGz(){ST.gz=wide?(+ls.get(GK(),'12.5')||12.5):11;ST.fit=wide?ls.get(FK(),'1')==='1':true}loadGz();
 function applyMz(){document.documentElement.style.setProperty('--mz',wide?1:MZ)}applyMz();
@@ -474,7 +478,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.26.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.26.2</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV()){pzMeasure();pzApply()}return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
