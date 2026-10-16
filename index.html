@@ -126,7 +126,7 @@ table.g thead th{background:var(--bg);font-weight:700;text-align:center;padding:
 table.g thead th.dy{font-size:1.1em}
 table.g thead th.td{background:var(--acc);color:var(--panel)}
 table.g thead th.tc{font-weight:600;color:var(--muted);min-width:7.6em}
-table.g thead th.tc.off{text-decoration:line-through;opacity:.6}
+table.g thead th.tc.off{opacity:.55}table.g thead th.tc.off small{display:block;font-size:.8em;font-weight:500}
 table.g th.pl{position:sticky;left:0;z-index:2;background:var(--bg);text-align:left;white-space:nowrap;padding:.45em .6em;min-width:5.6em}
 table.g th.pl b{display:block}table.g th.pl span{display:block;font-family:var(--mono);font-size:.88em;color:var(--muted);font-weight:500}
 table.g th.pl span.we{font-size:.8em}
@@ -211,6 +211,7 @@ table.g tbody th.tl b{display:block;color:var(--fg)}table.g tbody th.tl span{dis
 .seg.tch button.mine{font-weight:800}
 .seg.tch button.mine:not([aria-pressed="true"]){color:var(--acc)}
 body.wide .gt .seg.tch{max-width:none}
+.meta .ver{margin-left:auto;font-family:var(--mono);font-size:11px;opacity:.75}
 </style>
 </head>
 <body>
@@ -261,7 +262,7 @@ function showPin(msg){$('tabs').innerHTML='';$('main').innerHTML=`<form class="p
   $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
 const B=()=>D.branches.find(b=>b.id===ST.br)||D.branches[0];
 function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
-  $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
+  $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}<span class="ver">v3.24.7</span>`}
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
 const TABS=()=>wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']];
 function render(){if(!D)return;const b=B();ST.br=b.id;
@@ -394,7 +395,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
     const wkT=d=>/[토일]/.test(d)&&!/[토일]/.test(days[0]);const tl=c=>c.first&&wkT(c.d);
     h+=`<div class="gs"><table class="g${ST.nm?' allnm':''}" style="--gz:${ST.gz}px"><thead><tr><th class="pl" rowspan="2">교시</th>`;
     days.forEach(d=>{if(wkT(d))h+=`<th class="tl" rowspan="2">${d}<br>시간</th>`;h+=`<th class="dy end${d===td?' td':''}" colspan="${cols.filter(c=>c.d===d).length}">${d}${d===td?' · 오늘':''}</th>`});
-    h+='</tr><tr>'+cols.map(c=>`<th class="tc${c.end?' end':''}${(c.t.off||[]).includes(c.d)?' off':''}">${esc(c.t.name)}</th>`).join('')+'</tr></thead><tbody>';
+    h+='</tr><tr>'+cols.map(c=>`<th class="tc${c.end?' end':''}${(c.t.off||[]).includes(c.d)?' off':''}">${esc(c.t.name)}${(c.t.off||[]).includes(c.d)?'<small>휴일</small>':''}</th>`).join('')+'</tr></thead><tbody>';
     const spd=SP.filter(s=>(s.days||[]).some(d=>days.includes(d)));
     if(spd.length){h+='<tr class="spr"><th class="pl"><b>특강</b><span>방학</span></th>'+cols.map(c=>`${tl(c)?'<th class="tl"></th>':''}<td class="${c.end?'end':''}"><div class="cw">${spd.filter(s=>s.t===c.t.id&&(s.days||[]).includes(c.d)).sort((x,y)=>toMin(x.start)-toMin(y.start)).map(s=>gSp(b,s,'')).join('')}</div></td>`).join('')+'</tr>'}
     const hasTl=days.some(wkT);
