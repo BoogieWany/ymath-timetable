@@ -198,6 +198,13 @@ body:not(.wide) .gt .pr{flex-wrap:wrap;row-gap:2px}
 body:not(.wide) .gt .pr .tg{white-space:nowrap}
 body:not(.wide) .gt .pr .fitb{white-space:nowrap}
 body:not(.wide) .gt .pr .tgh{order:3;flex-basis:100%}
+
+table.g td{height:1px}
+table.g .cw{display:flex;flex-direction:column;gap:.25em;height:100%;min-height:100%}
+table.g .cw .gc{flex:1 1 auto;margin:0}
+table.g th.tl{background:var(--bg);text-align:left;white-space:nowrap;padding:.45em .5em;border-left:2px solid var(--line);font-weight:600;font-size:.9em;vertical-align:top;color:var(--muted)}
+table.g thead th.tl{text-align:center;color:var(--fg);vertical-align:middle;line-height:1.2}
+table.g tbody th.tl b{display:block;color:var(--fg)}table.g tbody th.tl span{display:block;font-family:var(--mono);font-size:.92em;font-weight:500}
 </style>
 </head>
 <body>
@@ -373,16 +380,21 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
     :`<div class="gt">${brSeg}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}<i class="sg"></i>${DAYS.map(d=>gmB([d,d])).join('')}</span><span class="pr">${gzHTML()}<button class="btn sm fitb" data-gz="fit" aria-pressed="${ST.fit}">한 화면에 다 보기</button></span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   blocks.forEach(days=>{
-    const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1}))});
+    const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1,first:i===0}))});
     const mp=Math.max(0,...days.map(d=>((b.days||{})[d]||[]).length));
+    /* 평일 블록 안의 토·일은 교시 시간이 달라서 그 요일 앞에 따로 시간 줄 */
+    const wkT=d=>/[토일]/.test(d)&&!/[토일]/.test(days[0]);const tl=c=>c.first&&wkT(c.d);
     h+=`<div class="gs"><table class="g${ST.nm?' allnm':''}" style="--gz:${ST.gz}px"><thead><tr><th class="pl" rowspan="2">교시</th>`;
-    days.forEach(d=>{h+=`<th class="dy end${d===td?' td':''}" colspan="${cols.filter(c=>c.d===d).length}">${d}${d===td?' · 오늘':''}</th>`});
+    days.forEach(d=>{if(wkT(d))h+=`<th class="tl" rowspan="2">${d}<br>시간</th>`;h+=`<th class="dy end${d===td?' td':''}" colspan="${cols.filter(c=>c.d===d).length}">${d}${d===td?' · 오늘':''}</th>`});
     h+='</tr><tr>'+cols.map(c=>`<th class="tc${c.end?' end':''}${(c.t.off||[]).includes(c.d)?' off':''}">${esc(c.t.name)}</th>`).join('')+'</tr></thead><tbody>';
     const spd=SP.filter(s=>(s.days||[]).some(d=>days.includes(d)));
-    if(spd.length){h+='<tr class="spr"><th class="pl"><b>특강</b><span>방학</span></th>'+cols.map(c=>`<td class="${c.end?'end':''}">${spd.filter(s=>s.t===c.t.id&&(s.days||[]).includes(c.d)).sort((x,y)=>toMin(x.start)-toMin(y.start)).map(s=>gSp(b,s,'')).join('')}</td>`).join('')+'</tr>'}
-    for(let p=0;p<mp;p++){h+=`<tr><th class="pl">${perLabel(b,days,p)}</th>`;
-      cols.forEach(c=>{const e=c.end?' end':'';if(p>=((b.days||{})[c.d]||[]).length){h+=`<td class="none${e}"></td>`;return}
-        const os=b.sessions.filter(o=>o.d===c.d&&o.p===p&&o.t===c.t.id);h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}">${os.map(o=>gChip(b,o,'')).join('')}</td>`});
+    if(spd.length){h+='<tr class="spr"><th class="pl"><b>특강</b><span>방학</span></th>'+cols.map(c=>`${tl(c)?'<th class="tl"></th>':''}<td class="${c.end?'end':''}"><div class="cw">${spd.filter(s=>s.t===c.t.id&&(s.days||[]).includes(c.d)).sort((x,y)=>toMin(x.start)-toMin(y.start)).map(s=>gSp(b,s,'')).join('')}</div></td>`).join('')+'</tr>'}
+    const hasTl=days.some(wkT);
+    for(let p=0;p<mp;p++){h+=`<tr><th class="pl">${hasTl?perLabel(b,[days[0]],p):perLabel(b,days,p)}</th>`;
+      cols.forEach(c=>{const e=c.end?' end':'';
+        if(tl(c)){const pp=((b.days||{})[c.d]||[])[p];h+=`<th class="tl">${pp?`<b>${esc(pshort(pp.name))}</b><span>${esc(pp.time)}</span>`:''}</th>`}
+        if(p>=((b.days||{})[c.d]||[]).length){h+=`<td class="none${e}"></td>`;return}
+        const os=b.sessions.filter(o=>o.d===c.d&&o.p===p&&o.t===c.t.id);h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}"><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}</div></td>`});
       h+='</tr>'}
     h+='</tbody></table></div>'});
   return h+foot()}
@@ -394,7 +406,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
   for(let p=0;p<mp;p++){h+=`<tr><th class="pl">${perLabel(b,['월'],p)||perLabel(b,['토'],p)}</th>`;
     DAYS.forEach(d=>{if(p>=((b.days||{})[d]||[]).length){h+='<td class="w none end"></td>';return}
       const os=b.sessions.filter(o=>o.d===d&&o.p===p&&fo(o));const off=ST.tab==='tch'&&((TT(b,ST.t)||{}).off||[]).includes(d);
-      h+=`<td class="w end${off?' offd':''}"><span class="tm">${esc(per(b,d,p).time)}</span>${os.map(o=>gChip(b,o,sub(o))).join('')}</td>`});
+      h+=`<td class="w end${off?' offd':''}"><div class="cw"><span class="tm">${esc(per(b,d,p).time)}</span>${os.map(o=>gChip(b,o,sub(o))).join('')}</div></td>`});
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
