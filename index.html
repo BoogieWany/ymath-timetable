@@ -182,6 +182,22 @@ body:not(.wide) .gt .seg i.sg{flex:none;width:2px;background:var(--line)}
 body:not(.wide) .gt .seg button{flex:1 0 auto;font-size:13px;min-height:36px}
 body:not(.wide) .gt .pr{display:flex;width:100%;align-items:center;gap:10px}
 body:not(.wide) .gt .pr .fitb{margin-left:auto}
+
+.gc{cursor:pointer}
+.gc .gn{display:none!important}
+table.g.allnm .gc .gn,.gc.op .gn{display:grid!important}
+.gc.op{box-shadow:0 0 0 2px var(--acc)}
+table.g.allnm .gc{cursor:default}
+.tg{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;font-size:13.5px;font-weight:600;cursor:pointer;padding:4px 2px;min-height:36px}
+.tg i{width:38px;height:22px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.tg i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .2s}
+.tg[aria-checked="true"] i{background:var(--acc)}.tg[aria-checked="true"] i::after{left:19px}
+.tgh{color:var(--muted);font-size:12px}
+
+body:not(.wide) .gt .pr{flex-wrap:wrap;row-gap:2px}
+body:not(.wide) .gt .pr .tg{white-space:nowrap}
+body:not(.wide) .gt .pr .fitb{white-space:nowrap}
+body:not(.wide) .gt .pr .tgh{order:3;flex-basis:100%}
 </style>
 </head>
 <body>
@@ -200,7 +216,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 /* 넓은 화면(PC 브라우저)이면 프로그램처럼 지점 시간표 격자 */
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
-let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm','1')==='1'},lastOk=0;
+let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1'},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
 let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
@@ -340,12 +356,12 @@ function vStu(b){const q=ST.q.trim();let h=`<div class="search"><input id="q" ty
 
 /* ===== PC: 지점 시간표 격자 (프로그램 보기 화면과 같은 배치) ===== */
 function txtColor(hex){const h=(hex||'#999999').replace('#','');if(h.length<6)return'#151a26';const [r,g,bb]=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(c=>c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4));return (0.2126*r+0.7152*g+0.0722*bb)>0.36?'#151a26':'#ffffff'}
-function names(b,ids,hl){return ST.nm?`<div class="gn">${ids.map(id=>{const s=S(b,id);if(!s)return'';const n=esc(s.name);return `<span${id===hl?' style="font-weight:700;text-decoration:underline"':''}>${s.away?`<s>${n}</s>`:n}</span>`}).join('')}</div>`:''}
+function names(b,ids,hl){return true?`<div class="gn">${ids.map(id=>{const s=S(b,id);if(!s)return'';const n=esc(s.name);return `<span${id===hl?' style="font-weight:700;text-decoration:underline"':''}>${s.away?`<s>${n}</s>`:n}</span>`}).join('')}</div>`:''}
 function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});const bg=c.color||'#9aa3b5';
   return `<div class="gc" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>{const x=S(b,id);return x&&!x.away});const bg=s.color||'#9aa3b5';
   return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
-function gzHTML(){return `<label><input type="checkbox" id="nmChk" ${ST.nm?'checked':''}> 학생 이름 보기</label>`}
+function gzHTML(){return `<button class="tg" id="nmTg" role="switch" aria-checked="${ST.nm}"><i></i>학생 이름 모두 보기</button>${ST.nm?'':'<small class="tgh">반 카드를 누르면 그 반 이름이 보여요</small>'}`}
 function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days.find(d=>/[토일]/.test(d)&&d!==days[0]);const w=we&&((b.days||{})[we]||[])[p];
   if(!a)return w?`<b>${esc(pshort(w.name))}</b><span>${we} ${esc(w.time)}</span>`:'';
   return `<b>${esc(pshort(a.name))}</b><span>${esc(a.time)}</span>${w&&!/[토일]/.test(days[0])?`<span class="we">${we} ${esc(w.time)}</span>`:''}`}
@@ -359,7 +375,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   blocks.forEach(days=>{
     const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1}))});
     const mp=Math.max(0,...days.map(d=>((b.days||{})[d]||[]).length));
-    h+=`<div class="gs"><table class="g" style="--gz:${ST.gz}px"><thead><tr><th class="pl" rowspan="2">교시</th>`;
+    h+=`<div class="gs"><table class="g${ST.nm?' allnm':''}" style="--gz:${ST.gz}px"><thead><tr><th class="pl" rowspan="2">교시</th>`;
     days.forEach(d=>{h+=`<th class="dy end${d===td?' td':''}" colspan="${cols.filter(c=>c.d===d).length}">${d}${d===td?' · 오늘':''}</th>`});
     h+='</tr><tr>'+cols.map(c=>`<th class="tc${c.end?' end':''}${(c.t.off||[]).includes(c.d)?' off':''}">${esc(c.t.name)}</th>`).join('')+'</tr></thead><tbody>';
     const spd=SP.filter(s=>(s.days||[]).some(d=>days.includes(d)));
@@ -373,7 +389,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
 /* 강사별·학생별 주간 격자: 줄 = 교시, 칸 = 요일 */
 function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{})[d]||[]).length));const td=todayD();
   const SP=sps(b).filter(fs);
-  let h=`<div class="gs"><table class="g" style="--gz:${ST.gz}px"><thead><tr><th class="pl">교시</th>${DAYS.map(d=>`<th class="dy end${d===td?' td':''}">${d}</th>`).join('')}</tr></thead><tbody>`;
+  let h=`<div class="gs"><table class="g${ST.nm?' allnm':''}" style="--gz:${ST.gz}px"><thead><tr><th class="pl">교시</th>${DAYS.map(d=>`<th class="dy end${d===td?' td':''}">${d}</th>`).join('')}</tr></thead><tbody>`;
   if(SP.length)h+='<tr class="spr"><th class="pl"><b>특강</b><span>방학</span></th>'+DAYS.map(d=>`<td class="w end">${SP.filter(s=>(s.days||[]).includes(d)).map(s=>gSp(b,s,tsub?esc(T(b,s.t))+'T':'')).join('')}</td>`).join('')+'</tr>';
   for(let p=0;p<mp;p++){h+=`<tr><th class="pl">${perLabel(b,['월'],p)||perLabel(b,['토'],p)}</th>`;
     DAYS.forEach(d=>{if(p>=((b.days||{})[d]||[]).length){h+='<td class="w none end"></td>';return}
@@ -383,7 +399,9 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
   return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button></div>`};
-document.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t)return;const ds=t.dataset;
+document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');return}
+  const t=e.target.closest('button');if(!t)return;
+  if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
   if(ds.tab){ST.tab=ds.tab;render();window.scrollTo(0,0);return}
   if(ds.day){ST.day=ds.day;render();return}
   if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
