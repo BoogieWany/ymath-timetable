@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17243F">
+<meta name="robots" content="noindex">
+<title>Y-MATH 시간표</title>
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+@font-face{font-family:"IBM Plex Sans KR";font-weight:400;src:url(fonts/IBMPlexSansKR-Regular.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans KR";font-weight:600;src:url(fonts/IBMPlexSansKR-SemiBold.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans KR";font-weight:700;src:url(fonts/IBMPlexSansKR-Bold.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;src:url(fonts/IBMPlexMono-Medium.woff2) format("woff2")}
+:root{--bg:#f3f4f7;--panel:#fff;--fg:#1b2233;--muted:#667089;--line:#dde1ea;--line2:#eceff5;--navy:#17243F;--acc:#1f2f5c;--chip:#e6eaf5;
+  --f:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#10141c;--panel:#1a1f2b;--fg:#e7eaf2;--muted:#98a1b8;--line:#2c3344;--line2:#232938;--navy:#0E1420;--acc:#9fb4ff;--chip:#263049;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+.hd{position:sticky;top:0;z-index:5;background:var(--navy);color:#E6EAF3;padding:calc(10px + env(safe-area-inset-top)) 16px 0}
+.hd-r{display:flex;align-items:center;gap:10px}
+.hd-r img{width:22px;height:22px;border-radius:5px}
+.hd-r b{font-size:16px;color:#fff;letter-spacing:-.2px}
+.hd-r select{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:6px 28px 6px 10px;color:#fff;max-width:46vw;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,#C9D2E4 50%),linear-gradient(135deg,#C9D2E4 50%,transparent 50%);background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.hd-r select option{color:#111}
+.meta{font-size:12px;color:#8F9BB5;margin:6px 0 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.meta .dot{width:7px;height:7px;border-radius:50%;background:#6BA84B;box-shadow:0 0 0 3px rgba(107,168,75,.2)}
+.meta .dot.old{background:#F4B860;box-shadow:0 0 0 3px rgba(244,184,96,.2)}
+.tabs{display:flex;gap:4px;margin-top:10px}
+.tabs button{flex:1;border:0;background:transparent;color:#8F9BB5;padding:10px 0 11px;font-weight:600;border-bottom:2.5px solid transparent;min-height:44px}
+.tabs button[aria-selected="true"]{color:#fff;border-bottom-color:#F4B860}
+main{padding:12px 12px calc(28px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;position:sticky;top:var(--hdh,104px);z-index:4;background:var(--bg);margin:0 -12px;padding-left:12px;padding-right:12px;padding-top:8px}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 14px;min-height:38px;font-weight:600;white-space:nowrap}
+.chips button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--panel)}
+.chips button .today{font-size:10px;margin-left:4px;opacity:.75}
+.per{margin:14px 2px 6px;display:flex;align-items:baseline;gap:8px}
+.per b{font-size:14px}.per span{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.per:first-child{margin-top:4px}
+.list{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card>button{display:flex;width:100%;text-align:left;border:0;background:transparent;padding:0;align-items:stretch;min-height:56px;cursor:pointer}
+.card .bar{width:7px;flex:none}
+.card .in{flex:1;padding:9px 12px;min-width:0}
+.card .t1{display:flex;align-items:baseline;gap:8px}
+.card .t1 b{font-size:15.5px}
+.card .t1 .n{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.card .t2{font-size:12.5px;color:var(--muted);margin-top:1px}
+.card .nm{display:none;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px 6px;padding:0 12px 11px 19px;font-size:14px}
+.card.open .nm{display:grid}
+.card .nm span{background:var(--chip);border-radius:7px;padding:3px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .nm s{opacity:.5}
+.card.hit{outline:2px solid #F4B860;outline-offset:-2px}
+.day{margin:16px 2px 6px;font-weight:700;font-size:15px;display:flex;gap:6px;align-items:center}
+.day small{font-weight:400;color:var(--muted);font-size:12px}
+.empty{padding:28px 12px;text-align:center;color:var(--muted)}
+.search{position:sticky;top:var(--hdh,104px);z-index:4;background:var(--bg);padding:8px 0 10px;margin:0}
+.search input{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;font-size:16px}
+.res{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.res button{display:flex;gap:8px;align-items:baseline;border:1px solid var(--line2);background:var(--panel);border-radius:12px;padding:11px 14px;text-align:left;min-height:46px}
+.res button small{color:var(--muted)}
+.res button[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.pin{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
+.pin h1{font-size:19px;margin:0}
+.pin p{margin:0;color:var(--muted);font-size:13.5px}
+.pin input{width:240px;text-align:center;font-size:22px;letter-spacing:4px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);font-family:var(--mono)}
+.pin button,.btn{border:0;background:var(--navy);color:#fff;border-radius:12px;padding:12px 26px;font-weight:600;min-height:46px}
+.err{color:#c7372f;font-size:13px;min-height:18px}
+.off{padding:40px 16px;text-align:center;color:var(--muted)}
+.off b{display:block;color:var(--fg);font-size:16px;margin-bottom:6px}
+.foot{margin-top:24px;text-align:center;font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="hd" id="hd">
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><select id="br" aria-label="지점"></select></div>
+  <div class="meta" id="meta"></div>
+  <nav class="tabs" role="tablist"><button role="tab" data-tab="day">요일별</button><button role="tab" data-tab="tch">강사별</button><button role="tab" data-tab="stu">학생 찾기</button></nav>
+</header>
+<main id="main"><div class="empty">불러오는 중…</div></main>
+<script>
+/* 데이터 주소: PC 프로그램에서는 같은 주소의 view.json. 나중에 인터넷 서버로 옮겨도 이 파일과 view.json만 있으면 됨 */
+const SRC='view.json';
+const DAYS=['월','화','수','목','금','토','일'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let D=null,ST={br:ls.get('m_br',''),tab:ls.get('m_tab','day'),day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set()},lastOk=0;
+const todayD=()=>DAYS[(new Date().getDay()+6)%7];
+async function load(pin){
+  const p=pin??ls.get('m_pin','');
+  try{const r=await fetch(SRC+'?t='+Date.now(),{headers:{'x-pin':p},cache:'no-store'});
+    if(r.status===401){showPin(pin!==undefined?'번호가 맞지 않아요':'');return}
+    if(r.status===429){showPin('여러 번 틀려서 30초 뒤에 다시 해 주세요');return}
+    if(!r.ok)throw new Error(r.status);
+    let j=await r.json();
+    if(j.enc){if(!p){showPin('');return}
+      if(!(window.crypto&&crypto.subtle)){$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
+      try{j=await dec(j,p)}catch(e){ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
+    D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();render()}
+  catch(e){if(!D){$('main').innerHTML='<div class="off"><b>시간표 PC에 연결하지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function dec(j,pass){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(j.salt),iterations:j.it,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},key,b64(j.ct));return JSON.parse(new TextDecoder().decode(pt))}
+function showPin(msg){$('main').innerHTML=`<form class="pin" id="pf"><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요</p><input id="pi" type="password" autocomplete="current-password" autocapitalize="off" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button>열기</button></form>`;
+  $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
+const B=()=>D.branches.find(b=>b.id===ST.br)||D.branches[0];
+function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
+  $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
+function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
+function render(){if(!D)return;const b=B();ST.br=b.id;
+  $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
+  document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===ST.tab));
+  meta(false);sizeHd();
+  $('main').innerHTML=ST.tab==='day'?vDay(b):ST.tab==='tch'?vTch(b):vStu(b);
+  if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}}}
+const C=(b,id)=>b.classes.find(c=>c.id===id);
+const T=(b,id)=>(b.teachers.find(t=>t.id===id)||{name:'?'}).name;
+const S=(b,id)=>b.students.find(s=>s.id===id);
+const per=(b,d,p)=>((b.days||{})[d]||[])[p]||{name:'',time:''};
+const pshort=n=>String(n||'').replace(/^(저녁|주말)\s*/,'');
+function card(b,o,sub,hit){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});
+  const k=o.d+o.p+o.t+o.cls;const open=ST.open.has(k)||hit;
+  return `<div class="card${open?' open':''}${hit?' hit':''}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(c.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(c.name)}</b><span class="n">${act.length}명</span></span><span class="t2">${sub}</span></span></button>
+    <div class="nm">${mem.map(id=>{const s=S(b,id);if(!s)return'';return `<span>${s.away?`<s>${esc(s.name)}</s>`:esc(s.name)}</span>`}).join('')||'<span>명단 없음</span>'}</div></div>`}
+function vDay(b){const d=ST.day||(DAYS.includes(todayD())?todayD():'월');ST.day=d;const td=todayD();
+  let h=`<div class="chips" role="group" aria-label="요일">${DAYS.map(x=>`<button data-day="${x}" aria-pressed="${x===d}">${x}${x===td?'<span class="today">오늘</span>':''}</button>`).join('')}</div>`;
+  const ps=(b.days||{})[d]||[];const tord={};b.teachers.forEach((t,i)=>tord[t.id]=i);let any=false;
+  ps.forEach((pp,p)=>{const os=b.sessions.filter(o=>o.d===d&&o.p===p).sort((x,y)=>tord[x.t]-tord[y.t]);if(!os.length)return;any=true;
+    h+=`<div class="per"><b>${esc(pshort(pp.name))}</b><span>${esc(pp.time)}</span></div><div class="list">${os.map(o=>card(b,o,`${esc(T(b,o.t))}T`)).join('')}</div>`});
+  if(!any)h+='<div class="empty">이 요일에는 수업이 없어요</div>';return h+foot()}
+function vTch(b){const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id));if(!ts.find(t=>t.id===ST.t))ST.t=(ts[0]||{}).id;
+  let h=`<div class="chips" role="group" aria-label="강사">${ts.map(t=>`<button data-t="${t.id}" aria-pressed="${t.id===ST.t}">${esc(t.name)}</button>`).join('')}</div>`;
+  const os=b.sessions.filter(o=>o.t===ST.t);let n=0;
+  DAYS.forEach(d=>{const x=os.filter(o=>o.d===d).sort((a,c)=>a.p-c.p);if(!x.length)return;n+=x.length;
+    h+=`<div class="day">${d}요일 <small>${x.length}타임</small></div><div class="list">${x.map(o=>{const pp=per(b,d,o.p);return card(b,o,`${esc(pshort(pp.name))} · ${esc(pp.time)}`)}).join('')}</div>`});
+  if(!n)h+='<div class="empty">수업이 없어요</div>';return h+foot()}
+function vStu(b){const q=ST.q.trim();let h=`<div class="search"><input id="q" type="search" placeholder="학생 이름" autocomplete="off" enterkeyhint="search" aria-label="학생 이름 찾기"></div>`;
+  if(!q){return h+'<div class="empty">이름 일부를 넣으면 그 학생의 주간 시간표가 나와요</div>'+foot()}
+  const hits=b.students.filter(s=>s.name.includes(q)).slice(0,30);
+  if(!hits.length)return h+'<div class="empty">찾는 학생이 없어요</div>'+foot();
+  if(!hits.find(s=>s.id===ST.stu))ST.stu=hits.length===1?hits[0].id:null;
+  h+=`<div class="res">${hits.map(s=>`<button data-stu="${s.id}" aria-pressed="${s.id===ST.stu}"><b>${esc(s.name)}</b><small>${esc(s.grade)}${s.away?' · 휴원':''}</small></button>`).join('')}</div>`;
+  if(ST.stu){const mine=b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(ST.stu)});
+    if(!mine.length)h+='<div class="empty">배정된 수업이 없어요</div>';
+    DAYS.forEach(d=>{const x=mine.filter(o=>o.d===d).sort((a,c)=>a.p-c.p);if(!x.length)return;
+      h+=`<div class="day">${d}요일</div><div class="list">${x.map(o=>{const pp=per(b,d,o.p);return card(b,o,`${esc(pshort(pp.name))} · ${esc(pp.time)} · ${esc(T(b,o.t))}T`)}).join('')}</div>`})}
+  return h+foot()}
+const foot=()=>'<div class="foot">보기 전용 · 원장님이 [적용]한 시간표예요</div>';
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const ds=t.dataset;
+  if(ds.tab){ST.tab=ds.tab;ls.set('m_tab',ds.tab);render();window.scrollTo(0,0);return}
+  if(ds.day){ST.day=ds.day;render();return}
+  if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
+  if(ds.stu){ST.stu=ds.stu;render();return}
+  if(ds.k){ST.open.has(ds.k)?ST.open.delete(ds.k):ST.open.add(ds.k);t.closest('.card').classList.toggle('open');t.setAttribute('aria-expanded',ST.open.has(ds.k))}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
+$('br').addEventListener('change',e=>{ST.br=e.target.value;ls.set('m_br',ST.br);ST.open.clear();render()});
+window.addEventListener('resize',sizeHd);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
+setInterval(()=>{if(!document.hidden&&D)load()},60000);
+load();
+</script>
+</body>
+</html>
