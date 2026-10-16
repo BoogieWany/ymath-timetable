@@ -212,14 +212,37 @@ table.g tbody th.tl b{display:block;color:var(--fg)}table.g tbody th.tl span{dis
 .seg.tch button.mine:not([aria-pressed="true"]){color:var(--acc)}
 body.wide .gt .seg.tch{max-width:none}
 .meta .ver{margin-left:auto;font-family:var(--mono);font-size:11px;opacity:.75}
+
+html{touch-action:pan-x pan-y}
+body.wide,html:has(body.wide){touch-action:auto}
+.fz button.rs{font-size:17px}
+.hdx,#hdShow{display:none}
+.foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
+/* 가로 모드 */
+body.land .hd{display:flex;align-items:center;gap:10px;padding:calc(4px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))}
+body.land .hd-r{order:2;flex:none;gap:6px}
+body.land .hd-r img,body.land .hd-r b{display:none}
+body.land .meta{display:none}
+body.land .tabs{order:1;flex:1;margin-top:0;gap:0}
+body.land .tabs button{min-height:36px;padding:6px 0 7px;font-size:13.5px}
+body.land .fz button{min-height:30px}
+body.land .hd-r select{padding-top:4px;padding-bottom:4px}
+body.land .hdx{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:9px;min-width:36px;min-height:30px;font-size:12px}
+body.land.hdoff .hd{display:none}
+body.land.hdoff #hdShow{display:block;position:fixed;top:calc(6px + env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));z-index:40;border:0;background:rgba(23,36,63,.85);color:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+body.land main{padding-top:8px;max-width:none}
+body.land .gt .seg{width:auto}body.land .gt .seg button{flex:none;font-size:12.5px;min-height:32px;padding:4px 10px}
+body.land .gt .pr{width:auto}body.land .gt .tgh{display:none}
+body.land .gs{margin:0 0 12px;border-radius:10px;border:1px solid var(--line)}
 </style>
 </head>
 <body>
 <header class="hd" id="hd">
-  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="글씨 크기"><button data-fz="-1" aria-label="글씨 작게" title="글씨 작게">−</button><button data-fz="1" aria-label="글씨 크게" title="글씨 크게">+</button></span><select id="br" aria-label="지점"></select></div>
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="글씨 크기"><button data-fz="-1" aria-label="글씨 작게" title="글씨 작게">−</button><button data-fz="1" aria-label="글씨 크게" title="글씨 크게">+</button><button data-fz="0" class="rs" aria-label="원래 크기로" title="원래 크기로">↺</button></span><select id="br" aria-label="지점"></select><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
   <div class="meta" id="meta"></div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
+<button id="hdShow" data-act="hdShow" aria-label="위쪽 바 보이기">▼ 메뉴</button>
 <main id="main"><div class="empty">불러오는 중…</div></main>
 <script>
 /* 데이터 주소: PC 프로그램에서는 같은 주소의 view.json. 나중에 인터넷 서버로 옮겨도 이 파일과 view.json만 있으면 됨 */
@@ -234,7 +257,7 @@ let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
 let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
-function loadGz(){ST.gz=+ls.get(GK(),wide?'12.5':'11')||(wide?12.5:11);ST.fit=ls.get(FK(),wide?'1':'0')==='1'}loadGz();
+function loadGz(){ST.gz=+ls.get(GK(),wide?'12.5':'11')||(wide?12.5:11);ST.fit=wide?ls.get(FK(),'1')==='1':true}loadGz();
 function applyMz(){document.documentElement.style.setProperty('--mz',wide?1:MZ)}applyMz();
 const ME=()=>{try{return JSON.parse(ls.get('m_me','null'))}catch(e){return null}};
 async function load(pin){
@@ -262,7 +285,7 @@ function showPin(msg){$('tabs').innerHTML='';$('main').innerHTML=`<form class="p
   $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
 const B=()=>D.branches.find(b=>b.id===ST.br)||D.branches[0];
 function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
-  $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}<span class="ver">v3.24.7</span>`}
+  $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
 const TABS=()=>wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']];
 function render(){if(!D)return;const b=B();ST.br=b.id;
@@ -419,15 +442,17 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.25.0</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
+  if(ds.tab||ds.gm||ds.br||ds.gt!==undefined){if(!wide)ST.fit=true}
   if(ds.tab){ST.tab=ds.tab;render();window.scrollTo(0,0);return}
   if(ds.day){ST.day=ds.day;render();return}
   if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
   if(ds.stu){ST.stu=ds.stu;render();return}
-  if(ds.fz&&ST.tab==='grid'&&document.querySelector('table.g')){zoomBy(+ds.fz);fzToast('표 '+Math.round(ST.gz/12.5*100)+'%');return}
+  if(ds.fz==='0'){if(document.querySelector('table.g')){ST.fit=true;fitNow();fzToast('원래 크기')}else{MZ=1;ls.set('m_mz','1');applyMz();sizeHd();fzToast()}return}
+  if(ds.fz&&document.querySelector('table.g')){zoomBy(+ds.fz);fzToast('표 '+Math.round(ST.gz/12.5*100)+'%');return}
   if(ds.fz){MZ=Math.round(Math.max(.85,Math.min(1.45,MZ+(+ds.fz)*.1))*100)/100;ls.set('m_mz',String(MZ));applyMz();sizeHd();fzToast();return}
   if(ds.pbr){ST.br=ds.pbr;ls.set('m_br',ds.pbr);ST.brPicked=true;ST.open.clear();render();return}
   if(ds.br){ST.gt='';ST.br=ds.br;ls.set('m_br',ds.br);ST.open.clear();render();return}
@@ -436,6 +461,8 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.gt!==undefined){ST.gt=ds.gt;render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set(FK(),'1');fitNow()}else zoomBy(+ds.gz);return}
+  if(ds.act==='hdHide'){document.body.classList.add('hdoff');sizeHd();return}
+  if(ds.act==='hdShow'){document.body.classList.remove('hdoff');sizeHd();return}
   if(ds.act==='noMe'){ls.set('m_noMe','1');render();return}
   if(ds.act==='reMe'){ls.set('m_me','');ls.set('m_noMe','');ST.tab='today';render();window.scrollTo(0,0);return}
   if(ds.act==='noinst'){ls.set('m_noinst','1');render();return}
@@ -445,7 +472,7 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.k){ST.open.has(ds.k)?ST.open.delete(ds.k):ST.open.add(ds.k);t.closest('.card').classList.toggle('open');t.setAttribute('aria-expanded',ST.open.has(ds.k))}});
 /* ===== 확대·축소: 오른쪽 아래 떠 있는 버튼 + Ctrl+휠 + 처음엔 화면 폭에 자동 맞춤 ===== */
 const GZMIN=8,GZMAX=22;const gzMin=()=>wide?GZMIN:2.5;
-function setGz(g,save){ST.gz=Math.max(gzMin(),Math.min(GZMAX,Math.round(g*4)/4));document.querySelectorAll('table.g').forEach(t=>t.style.setProperty('--gz',ST.gz+'px'));
+function setGz(g,save){ST.gz=Math.max(gzMin(),Math.min(wide?GZMAX:30,Math.round(g*20)/20));document.querySelectorAll('table.g').forEach(t=>t.style.setProperty('--gz',ST.gz+'px'));
   const l=$('zmPct');if(l)l.textContent=Math.round(ST.gz/12.5*100)+'%';const f=$('zmFit');if(f)f.setAttribute('aria-pressed',ST.fit);document.querySelectorAll('.fitb').forEach(x=>x.setAttribute('aria-pressed',ST.fit));if(save)ls.set(GK(),String(ST.gz))}
 function zoomBy(dir){ST.fit=false;ls.set(FK(),'0');setGz(ST.gz*(dir>0?1.12:1/1.12),true)}
 function fitNow(){const ts=[...document.querySelectorAll('table.g')];if(!ts.length)return;setGz(wide?16:13,false);
@@ -454,7 +481,7 @@ function fitNow(){const ts=[...document.querySelectorAll('table.g')];if(!ts.leng
   const over=()=>Math.max(...ts.map(t=>t.scrollWidth))>ts[0].parentElement.clientWidth;for(let k=0;k<12&&over()&&ST.gz>gzMin();k++)setGz(ST.gz-.25,false);
   setGz(ST.gz,true)}
 function zmBar(){let z=$('zm');const has=wide&&document.querySelector('table.g');
-  if(!has){if(z)z.remove();if(!wide&&ST.tab==='grid'&&document.querySelector('table.g')){ST.fit=true;requestAnimationFrame(fitNow)}return}
+  if(!has){if(z)z.remove();if(!wide&&ST.fit&&document.querySelector('table.g'))requestAnimationFrame(fitNow);return}
   if(!z){z=document.createElement('div');z.id='zm';z.setAttribute('role','group');z.setAttribute('aria-label','시간표 크기');document.body.appendChild(z)}
   z.innerHTML=`<button data-gz="-1" title="작게 (Ctrl + 마우스 휠 아래)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6"/></svg><span>작게</span></button><b id="zmPct">${Math.round(ST.gz/12.5*100)}%</b><button data-gz="1" title="크게 (Ctrl + 마우스 휠 위)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6M10.5 7.5v6"/></svg><span>크게</span></button><button id="zmFit" data-gz="fit" aria-pressed="${ST.fit}" title="표 전체가 화면 폭에 딱 맞게"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>화면에 맞춤</span></button>`;
   if(ST.fit)requestAnimationFrame(fitNow)}
@@ -462,6 +489,21 @@ window.addEventListener('wheel',e=>{if(e.ctrlKey&&wide&&document.querySelector('
 document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!document.querySelector('table.g'))return;
   if(e.key==='='||e.key==='+'){e.preventDefault();zoomBy(1)}else if(e.key==='-'){e.preventDefault();zoomBy(-1)}else if(e.key==='0'){e.preventDefault();ST.fit=true;ls.set(FK(),'1');fitNow()}});
 let rzT=0;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(ST.fit&&wide)fitNow()},150)});
+/* ===== 폰: 페이지 확대 대신 표만 손가락으로 확대 (위쪽 바는 항상 보임) ===== */
+let pz=null,pzRaf=0;
+document.addEventListener('gesturestart',e=>{if(!wide)e.preventDefault()});
+document.addEventListener('touchstart',e=>{if(wide||e.touches.length!==2){return}const t=e.target.closest('table.g');if(!t){pz=null;return}
+  const [a,b]=e.touches;pz={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1,g:ST.gz,gs:t.closest('.gs'),cx:(a.clientX+b.clientX)/2,cy:(a.clientY+b.clientY)/2}},{passive:true});
+document.addEventListener('touchmove',e=>{if(!pz||e.touches.length!==2)return;e.preventDefault();const [a,b]=e.touches;
+  const ng=pz.g*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/pz.d;pz.cx=(a.clientX+b.clientX)/2;pz.cy=(a.clientY+b.clientY)/2;
+  if(pzRaf)return;pzRaf=requestAnimationFrame(()=>{pzRaf=0;if(!pz)return;const old=ST.gz;ST.fit=false;setGz(ng,false);const r=ST.gz/old;if(r===1)return;
+    const gs=pz.gs,rc=gs.getBoundingClientRect(),cx=pz.cx-rc.left;gs.scrollLeft=(gs.scrollLeft+cx)*r-cx;
+    const top=rc.top+window.scrollY,y=window.scrollY+pz.cy;window.scrollTo(window.scrollX,Math.max(0,top+(y-top)*r-pz.cy))})},{passive:false});
+document.addEventListener('touchend',e=>{if(pz&&e.touches.length<2){pz=null;ls.set(GK(),String(ST.gz))}},{passive:true});
+/* ===== 가로 모드: 얇은 바 + 숨기기/보이기 ===== */
+const LQ=matchMedia('(orientation: landscape) and (max-height: 560px)');
+function applyLand(){document.body.classList.toggle('land',LQ.matches&&!wide);if(!LQ.matches)document.body.classList.remove('hdoff');setTimeout(()=>{sizeHd();if(ST.fit&&document.querySelector('table.g'))fitNow()},60)}
+LQ.addEventListener('change',applyLand);applyLand();
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
 $('br').addEventListener('change',e=>{ST.br=e.target.value;ST.brPicked=true;ls.set('m_br',ST.br);ST.open.clear();render()});
