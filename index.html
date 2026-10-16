@@ -242,11 +242,23 @@ body.land .gs{margin:0 0 12px;border-radius:10px;border:1px solid var(--line)}
 body.land .pv{margin:0}
 body.land .pv .gs{border:1px solid var(--line);border-radius:8px}
 .btn.lsb{background:var(--panel);color:var(--fg);border:1px solid var(--line);white-space:nowrap;margin-left:auto}
+
+.fz button{font-size:18px;line-height:1;min-width:42px}
+.fz .rot i{display:inline-block;font-style:normal;transform:rotate(90deg);transition:transform .2s}
+.fz .rot.up i{transform:none}
+body.land .hd{gap:8px;padding-top:calc(2px + env(safe-area-inset-top))}
+body.land .tabs button{min-height:30px;padding:4px 0 5px;font-size:12px;border-bottom-width:2px}
+body.land .fz button{min-height:26px;min-width:32px;font-size:14px}
+body.land .hd-r select{font-size:12px;padding:2px 22px 2px 8px;min-height:26px}
+body.land .hdx{min-height:26px;min-width:30px;font-size:10px}
+body.land .gt{gap:6px;margin:0 0 6px}
+body.land .gt .seg button{font-size:11.5px;min-height:28px;padding:3px 9px}
+body.land .tg{font-size:11.5px;min-height:28px}body.land .tg i{width:30px;height:18px}body.land .tg i::after{width:12px;height:12px}body.land .tg[aria-checked="true"] i::after{left:15px}
 </style>
 </head>
 <body>
 <header class="hd" id="hd">
-  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="글씨 크기"><button data-fz="-1" aria-label="글씨 작게" title="글씨 작게">−</button><button data-fz="1" aria-label="글씨 크게" title="글씨 크게">+</button><button data-fz="0" class="rs" aria-label="원래 크기로" title="원래 크기로">↺</button></span><select id="br" aria-label="지점"></select><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="화면"><button data-fz="0" class="rs" aria-label="처음 화면으로" title="처음 화면으로 (원래 크기)">🏠</button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><i>📱</i></button></span><select id="br" aria-label="지점"></select><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
   <div class="meta" id="meta"></div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
@@ -263,7 +275,7 @@ const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
 let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1',gt:''},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
-let MZ=+ls.get('m_mz','1')||1;
+let MZ=1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
 function loadGz(){ST.gz=wide?(+ls.get(GK(),'12.5')||12.5):11;ST.fit=wide?ls.get(FK(),'1')==='1':true}loadGz();
 function applyMz(){document.documentElement.style.setProperty('--mz',wide?1:MZ)}applyMz();
@@ -417,7 +429,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
-    :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}${LQ.matches?(document.fullscreenElement?'<button class="btn sm lsb" data-act="port">세로로 돌아가기</button>':''):'<button class="btn sm lsb" data-act="land">⟲ 가로로 보기</button>'}</span></div>`;
+    :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}</span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   if(!wide)h+='<div id="pv" class="pv"><div id="pc" class="pc">';
   blocks.forEach(days=>{
@@ -452,7 +464,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.25.5</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.25.6</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV()){pzMeasure();pzApply()}return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
@@ -472,6 +484,8 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.gt!==undefined){ST.gt=ds.gt;render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set(FK(),'1');fitNow()}else zoomBy(+ds.gz);return}
+  if(ds.act==='rot'){if(LQ.matches||document.fullscreenElement){try{screen.orientation.unlock()}catch(err){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(err){}setTimeout(()=>{if(LQ.matches)fzToast('폰을 세로로 돌려 주세요')},400);return}
+    try{const el=document.documentElement;if(el.requestFullscreen&&!document.fullscreenElement)await el.requestFullscreen({navigationUI:'hide'});await screen.orientation.lock('landscape')}catch(err){try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e2){}fzToast('폰을 가로로 돌려 주세요 (화면 회전 잠금은 풀어 주세요)')}return}
   if(ds.act==='land'){try{const el=document.documentElement;if(el.requestFullscreen&&!document.fullscreenElement)await el.requestFullscreen({navigationUI:'hide'});await screen.orientation.lock('landscape')}catch(err){try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e2){}fzToast('폰을 가로로 돌려 주세요 (화면 회전 잠금은 풀어 주세요)')}return}
   if(ds.act==='port'){try{screen.orientation.unlock()}catch(err){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(err){}return}
   if(ds.act==='hdHide'){document.body.classList.add('hdoff');sizeHd();if(pzV())setTimeout(()=>pzSetup(true),50);return}
@@ -535,7 +549,8 @@ document.addEventListener('touchend',e=>{const g=PZ.g;if(!g)return;const c=pzC()
 window.addEventListener('resize',()=>{if(pzV())setTimeout(()=>pzSetup(true),120)});
 /* ===== 가로 모드: 얇은 바 + 숨기기/보이기 ===== */
 const LQ=matchMedia('(orientation: landscape) and (max-height: 560px)');
-function applyLand(){document.body.classList.toggle('land',LQ.matches&&!wide);if(!LQ.matches)document.body.classList.remove('hdoff');setTimeout(()=>{sizeHd();if(pzV())pzSetup(true);else if(wide&&ST.fit&&document.querySelector('table.g'))fitNow()},60)}
+function rotIcon(){const b=$('rotB');if(!b)return;const l=LQ.matches;b.classList.toggle('up',l);b.title=l?'세로로 보기':'가로로 보기';b.setAttribute('aria-label',b.title)}
+function applyLand(){rotIcon();document.body.classList.toggle('land',LQ.matches&&!wide);if(!LQ.matches)document.body.classList.remove('hdoff');setTimeout(()=>{sizeHd();if(pzV())pzSetup(true);else if(wide&&ST.fit&&document.querySelector('table.g'))fitNow()},60)}
 LQ.addEventListener('change',()=>{applyLand();if(D&&ST.tab==='grid')render()});applyLand();
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}}if(D&&ST.tab==='grid')setTimeout(render,80)});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
