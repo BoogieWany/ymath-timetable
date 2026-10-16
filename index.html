@@ -284,6 +284,15 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .card{position:relative}
 .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--c,#9aa3b5);border-radius:14px 0 0 14px}
 .card .bar{background:transparent!important}
+
+.tabs{position:relative}
+.tabs button{border-bottom-color:transparent!important;transition:color .25s ease}
+.tind{position:absolute;left:0;bottom:0;height:2.5px;width:0;background:#F4B860;border-radius:2px;opacity:0;transition:transform .34s cubic-bezier(.22,.61,.36,1),width .34s cubic-bezier(.22,.61,.36,1);pointer-events:none}
+main.tin-r{animation:tinR .32s cubic-bezier(.22,.61,.36,1)}
+main.tin-l{animation:tinL .32s cubic-bezier(.22,.61,.36,1)}
+@keyframes tinR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes tinL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){main.tin-r,main.tin-l{animation:none}.tind{transition:none}}
 </style>
 </head>
 <body>
@@ -341,7 +350,7 @@ const TABS=()=>wide?[['grid','전체 시간표'],['today','오늘'],['tch','강�
 function render(){if(!D)return;const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
-  $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('');
+  $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
   meta(false);sizeHd();
   const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid}[ST.tab]||vToday;
   $('main').innerHTML=v(b);zmBar();
@@ -494,12 +503,12 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.28.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.28.1</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
   if(ds.tab||ds.gm||ds.br||ds.gt!==undefined){if(!wide)ST.fit=true}
-  if(ds.tab){ST.tab=ds.tab;render();window.scrollTo(0,0);return}
+  if(ds.tab){goTab(ds.tab);return}
   if(ds.day){ST.day=ds.day;render();return}
   if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
   if(ds.stu){ST.stu=ds.stu;stuUpd();return}
@@ -583,6 +592,19 @@ function rotIcon(){const b=$('rotB');if(!b)return;const l=LQ.matches;b.classList
 function applyLand(){rotIcon();document.body.classList.toggle('land',LQ.matches&&!wide);if(!LQ.matches)document.body.classList.remove('hdoff');setTimeout(()=>{sizeHd();if(pzV())pzSetup(true);else if(wide&&ST.fit&&document.querySelector('table.g'))fitNow()},60)}
 LQ.addEventListener('change',()=>{applyLand();if(D&&ST.tab==='grid')render()});applyLand();
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}}if(D&&ST.tab==='grid')setTimeout(render,80)});
+/* ===== 탭: 노란 밑줄이 미끄러지듯 이동 + 내용은 방향에 맞춰 부드럽게 + 위쪽 바를 옆으로 밀어 탭 이동 ===== */
+let tindLast=null;
+function tabInd(instant){const n=$('tabs'),i=$('tind');if(!n||!i)return;const b=n.querySelector('[aria-selected="true"]');if(!b){i.style.opacity=0;return}
+  const x=b.offsetLeft,w=b.offsetWidth;if(instant&&tindLast){i.style.transition='none';i.style.transform=`translateX(${tindLast.x}px)`;i.style.width=tindLast.w+'px';void i.offsetWidth;i.style.transition=''}
+  else if(instant){i.style.transition='none'}
+  requestAnimationFrame(()=>{i.style.transform=`translateX(${x}px)`;i.style.width=w+'px';i.style.opacity=1;if(instant&&!tindLast)requestAnimationFrame(()=>i.style.transition='');tindLast={x,w}})}
+function goTab(k){if(!D||k===ST.tab)return;const ks=TABS().map(t=>t[0]);const dir=ks.indexOf(k)>ks.indexOf(ST.tab)?1:-1;ST.tab=k;if(!wide)ST.fit=true;
+  render();window.scrollTo(0,0);const m=$('main');m.classList.remove('tin-l','tin-r');void m.offsetWidth;m.classList.add(dir>0?'tin-r':'tin-l')}
+(()=>{let sx=0,sy=0,on=false;const hd=$('hd');
+  hd.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;on=true},{passive:true});
+  hd.addEventListener('touchend',e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4){const ks=TABS().map(x=>x[0]);const i=ks.indexOf(ST.tab)+(dx<0?1:-1);if(i>=0&&i<ks.length)goTab(ks[i])}},{passive:true});
+  window.addEventListener('resize',()=>tabInd(true))})();
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 function stuUpd(){const P=vStu(B(),true);const l=$('sL'),r=$('sR');if(l)l.innerHTML=P.l;if(r)r.innerHTML=P.r}
 /* 한글 입력 중에는 입력 칸을 다시 그리지 않음(자모가 끊어지지 않게) — 결과만 바꿈 */
