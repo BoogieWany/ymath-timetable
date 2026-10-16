@@ -205,6 +205,12 @@ table.g .cw .gc{flex:1 1 auto;margin:0}
 table.g th.tl{background:var(--bg);text-align:left;white-space:nowrap;padding:.45em .5em;border-left:2px solid var(--line);font-weight:600;font-size:.9em;vertical-align:top;color:var(--muted)}
 table.g thead th.tl{text-align:center;color:var(--fg);vertical-align:middle;line-height:1.2}
 table.g tbody th.tl b{display:block;color:var(--fg)}table.g tbody th.tl span{display:block;font-family:var(--mono);font-size:.92em;font-weight:500}
+
+.seg.tch{max-width:100%;overflow-x:auto;scrollbar-width:none}.seg.tch::-webkit-scrollbar{display:none}
+.seg.tch button{white-space:nowrap}
+.seg.tch button.mine{font-weight:800}
+.seg.tch button.mine:not([aria-pressed="true"]){color:var(--acc)}
+body.wide .gt .seg.tch{max-width:none}
 </style>
 </head>
 <body>
@@ -223,7 +229,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 /* 넓은 화면(PC 브라우저)이면 프로그램처럼 지점 시간표 격자 */
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
-let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1'},lastOk=0;
+let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1',gt:''},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
 let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
@@ -374,13 +380,15 @@ function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days
   return `<b>${esc(pshort(a.name))}</b><span>${esc(a.time)}</span>${w&&!/[토일]/.test(days[0])?`<span class="we">${we} ${esc(w.time)}</span>`:''}`}
 function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','토']],mwf:[['월','수','금']],tts:[['화','목','토']]};
   const blocks=groups[ST.gm]||(DAYS.includes(ST.gm)?[[ST.gm]]:groups.week);const td=todayD();const SP=sps(b);
+  const gT=ST.gt&&TT(b,ST.gt)||null;if(!gT)ST.gt='';const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:'';
+  const tRow=`<span class="seg tch" role="group" aria-label="강사">${[['','모든 강사']].concat(myT?[[myT,'내 시간표']]:[]).concat(tchList(b).filter(t=>t.id!==myT).map(t=>[t.id,t.name])).map(([id,l])=>`<button data-gt="${id}" aria-pressed="${(ST.gt||'')===id}"${id===myT&&id?' class="mine"':''}>${esc(l)}</button>`).join('')}</span>`;
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
-  let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}</span><span class="seg" role="group" aria-label="하루만">${DAYS.map(d=>gmB([d,d])).join('')}</span>${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
-    :`<div class="gt">${brSeg}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}<i class="sg"></i>${DAYS.map(d=>gmB([d,d])).join('')}</span><span class="pr">${gzHTML()}</span></div>`;
+  let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}</span><span class="seg" role="group" aria-label="하루만">${DAYS.map(d=>gmB([d,d])).join('')}</span>${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
+    :`<div class="gt">${brSeg}<span class="seg" role="group" aria-label="요일 보기">${MODES.map(gmB).join('')}<i class="sg"></i>${DAYS.map(d=>gmB([d,d])).join('')}</span>${tRow}<span class="pr">${gzHTML()}</span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   blocks.forEach(days=>{
-    const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1,first:i===0}))});
+    const cols=[];days.forEach(d=>{const ts=gT?[gT]:b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1,first:i===0}))});
     const mp=Math.max(0,...days.map(d=>((b.days||{})[d]||[]).length));
     /* 평일 블록 안의 토·일은 교시 시간이 달라서 그 요일 앞에 따로 시간 줄 */
     const wkT=d=>/[토일]/.test(d)&&!/[토일]/.test(days[0]);const tl=c=>c.first&&wkT(c.d);
@@ -421,9 +429,10 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.fz&&ST.tab==='grid'&&document.querySelector('table.g')){zoomBy(+ds.fz);fzToast('표 '+Math.round(ST.gz/12.5*100)+'%');return}
   if(ds.fz){MZ=Math.round(Math.max(.85,Math.min(1.45,MZ+(+ds.fz)*.1))*100)/100;ls.set('m_mz',String(MZ));applyMz();sizeHd();fzToast();return}
   if(ds.pbr){ST.br=ds.pbr;ls.set('m_br',ds.pbr);ST.brPicked=true;ST.open.clear();render();return}
-  if(ds.br){ST.br=ds.br;ls.set('m_br',ds.br);ST.open.clear();render();return}
+  if(ds.br){ST.gt='';ST.br=ds.br;ls.set('m_br',ds.br);ST.open.clear();render();return}
   if(ds.act==='pbrBack'){ST.brPicked=false;render();return}
   if(ds.me){ls.set('m_me',JSON.stringify({br:B().id,t:ds.me}));ST.t=ds.me;ls.set('m_t',ds.me);render();return}
+  if(ds.gt!==undefined){ST.gt=ds.gt;render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set(FK(),'1');fitNow()}else zoomBy(+ds.gz);return}
   if(ds.act==='noMe'){ls.set('m_noMe','1');render();return}
