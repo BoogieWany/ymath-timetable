@@ -93,6 +93,8 @@ main{padding:12px 12px calc(28px + env(safe-area-inset-bottom));max-width:760px;
 .note p{margin:0 0 10px;font-size:14px}.note p small{color:var(--muted)}
 .me{display:flex;flex-wrap:wrap;gap:6px}
 .me button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 14px;min-height:38px;font-weight:600}
+.me.big button{padding:12px 20px;font-size:16px;min-height:48px}
+.seg.brs button{font-size:14.5px;padding:7px 16px}
 .me button.skip{border-style:dashed;color:var(--muted);font-weight:400}
 .tip{display:flex;align-items:center;gap:10px;background:#FFF6E3;color:#4a3500;border:1px solid #F4D79A;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13.5px}
 @media (prefers-color-scheme:dark){.tip{background:#2f2817;color:#f3dfb1;border-color:#5a4720}}
@@ -244,9 +246,11 @@ function todayItems(b,d){const it=[];
   sps(b).filter(x=>(x.days||[]).includes(d)).forEach(x=>{const s=toMin(x.start);it.push({sp:x,s,e:s+(+x.dur||120),t:x.t})});
   return it.sort((x,y)=>x.s-y.s)}
 function marks(items){const nm=nowMin();let nx=false;return items.map(x=>{let st='';if(x.e<=nm)st='done';else if(x.s<=nm)st='now';else if(!nx){st='next';nx=true}return st})}
-function meHTML(b){const me=ME();if(me&&me.br===b.id&&TT(b,me.t))return'';if(me&&me.br!==b.id)return'';if(ls.get('m_noMe',''))return'';
-  const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id)||sps(b).some(s=>s.t===t.id));if(!ts.length)return'';
-  return `<div class="note"><p><b>어느 선생님이세요?</b><br><small>한 번만 고르면 다음부터 내 수업이 맨 위에 나와요</small></p><div class="me">${ts.map(t=>`<button data-me="${t.id}">${esc(t.name)}</button>`).join('')}<button class="skip" data-act="noMe">고르지 않기</button></div></div>`}
+function meHTML(b){const me=ME();if(me&&D.branches.some(x=>x.id===me.br&&TT(x,me.t)))return'';if(ls.get('m_noMe',''))return'';
+  const multi=D.branches.length>1;const skip='<button class="skip" data-act="noMe">고르지 않기</button>';
+  if(multi&&!ST.brPicked)return `<div class="note"><p><b>① 어느 지점 선생님이세요?</b><br><small>지점 → 이름 순서로 한 번만 고르면 다음부터 내 지점·내 수업이 바로 나와요</small></p><div class="me big">${D.branches.map(x=>`<button data-pbr="${x.id}">${esc(x.name)}</button>`).join('')}${skip}</div></div>`;
+  const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id)||sps(b).some(s=>s.t===t.id));
+  return `<div class="note"><p><b>${multi?'② ':''}${multi?esc(b.name)+' · ':''}이름을 고르세요</b><br><small>한 번만 고르면 다음부터 내 수업이 맨 위에 나와요</small></p><div class="me">${ts.map(t=>`<button data-me="${t.id}">${esc(t.name)}</button>`).join('')||'<small style="color:var(--muted)">이 지점엔 아직 수업이 없어요</small>'}${multi?'<button class="skip" data-act="pbrBack">← 지점 다시 고르기</button>':''}${skip}</div></div>`}
 let bip=null;
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 function instHTML(){if(wide||standalone()||ls.get('m_noinst',''))return'';const ua=navigator.userAgent;
@@ -316,7 +320,7 @@ function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days
   return `<b>${esc(pshort(a.name))}</b><span>${esc(a.time)}</span>${w&&!/[토일]/.test(days[0])?`<span class="we">${we} ${esc(w.time)}</span>`:''}`}
 function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','토']],mwf:[['월','수','금']],tts:[['화','목','토']]};
   const blocks=groups[ST.gm]||(DAYS.includes(ST.gm)?[[ST.gm]]:groups.week);const td=todayD();const SP=sps(b);
-  let h=`<div class="gt"><h2>${esc(b.name)} · ${esc(b.version)}</h2><span class="seg" role="group" aria-label="요일 보기">${[['week','전체'],['mwf','월수금'],['tts','화목토']].map(([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`).join('')}</span><span class="seg" role="group" aria-label="하루만">${DAYS.map(d=>`<button data-gm="${d}" aria-pressed="${ST.gm===d}">${d}</button>`).join('')}</span>${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`;
+  let h=`<div class="gt">${D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span><h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}<span class="seg" role="group" aria-label="요일 보기">${[['week','전체'],['mwf','월수금'],['tts','화목토']].map(([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`).join('')}</span><span class="seg" role="group" aria-label="하루만">${DAYS.map(d=>`<button data-gm="${d}" aria-pressed="${ST.gm===d}">${d}</button>`).join('')}</span>${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   blocks.forEach(days=>{
     const cols=[];days.forEach(d=>{const ts=b.teachers.filter(t=>!(t.off||[]).includes(d)||b.sessions.some(o=>o.d===d&&o.t===t.id)||SP.some(s=>s.t===t.id&&(s.days||[]).includes(d)));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1}))});
@@ -350,6 +354,9 @@ document.addEventListener('click',async e=>{const t=e.target.closest('button');i
   if(ds.day){ST.day=ds.day;render();return}
   if(ds.t){ST.t=ds.t;ls.set('m_t',ds.t);render();return}
   if(ds.stu){ST.stu=ds.stu;render();return}
+  if(ds.pbr){ST.br=ds.pbr;ls.set('m_br',ds.pbr);ST.brPicked=true;ST.open.clear();render();return}
+  if(ds.br){ST.br=ds.br;ls.set('m_br',ds.br);ST.open.clear();render();return}
+  if(ds.act==='pbrBack'){ST.brPicked=false;render();return}
   if(ds.me){ls.set('m_me',JSON.stringify({br:B().id,t:ds.me}));ST.t=ds.me;ls.set('m_t',ds.me);render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set('m_fit','1');fitNow()}else zoomBy(+ds.gz);return}
@@ -380,7 +387,7 @@ document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!docu
 let rzT=0;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(ST.fit&&wide)fitNow()},150)});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
-$('br').addEventListener('change',e=>{ST.br=e.target.value;ls.set('m_br',ST.br);ST.open.clear();render()});
+$('br').addEventListener('change',e=>{ST.br=e.target.value;ST.brPicked=true;ls.set('m_br',ST.br);ST.open.clear();render()});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();bip=e;if(D&&ST.tab==='today')render()});
 WQ.addEventListener('change',()=>{wide=WQ.matches;document.body.classList.toggle('wide',wide);ST.tab=wide?'grid':'today';if(D)render()});
 window.addEventListener('resize',sizeHd);
