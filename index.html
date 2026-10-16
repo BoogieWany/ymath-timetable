@@ -238,9 +238,10 @@ body.land .gs{margin:0 0 12px;border-radius:10px;border:1px solid var(--line)}
 .pv{position:relative;overflow:hidden;touch-action:none;margin:0 -12px;background:var(--bg);border-top:1px solid var(--line)}
 .pc{position:absolute;left:0;top:0;transform-origin:0 0;width:max-content}
 .pv table.g th.pl{position:static}
-.pv .gs{overflow:visible;margin:0 0 10px;border-radius:0;border-left:0;border-right:0}
+.pv .gs{overflow:visible;margin:0 0 10px!important;border-radius:0;border-left:0;border-right:0}
 body.land .pv{margin:0}
 body.land .pv .gs{border:1px solid var(--line);border-radius:8px}
+.btn.lsb{background:var(--panel);color:var(--fg);border:1px solid var(--line);white-space:nowrap;margin-left:auto}
 </style>
 </head>
 <body>
@@ -416,7 +417,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
-    :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}</span></div>`;
+    :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}${LQ.matches?(document.fullscreenElement?'<button class="btn sm lsb" data-act="port">세로로 돌아가기</button>':''):'<button class="btn sm lsb" data-act="land">⟲ 가로로 보기</button>'}</span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
   if(!wide)h+='<div id="pv" class="pv"><div id="pc" class="pc">';
   blocks.forEach(days=>{
@@ -451,7 +452,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.25.4</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:''}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.25.5</div></div>`};
 document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV()){pzMeasure();pzApply()}return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
@@ -471,6 +472,8 @@ document.addEventListener('click',async e=>{const gc=e.target.closest('.gc');if(
   if(ds.gt!==undefined){ST.gt=ds.gt;render();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set(FK(),'1');fitNow()}else zoomBy(+ds.gz);return}
+  if(ds.act==='land'){try{const el=document.documentElement;if(el.requestFullscreen&&!document.fullscreenElement)await el.requestFullscreen({navigationUI:'hide'});await screen.orientation.lock('landscape')}catch(err){try{if(document.fullscreenElement)await document.exitFullscreen()}catch(e2){}fzToast('폰을 가로로 돌려 주세요 (화면 회전 잠금은 풀어 주세요)')}return}
+  if(ds.act==='port'){try{screen.orientation.unlock()}catch(err){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(err){}return}
   if(ds.act==='hdHide'){document.body.classList.add('hdoff');sizeHd();if(pzV())setTimeout(()=>pzSetup(true),50);return}
   if(ds.act==='hdShow'){document.body.classList.remove('hdoff');sizeHd();if(pzV())setTimeout(()=>pzSetup(true),50);return}
   if(ds.act==='noMe'){ls.set('m_noMe','1');render();return}
@@ -533,7 +536,8 @@ window.addEventListener('resize',()=>{if(pzV())setTimeout(()=>pzSetup(true),120)
 /* ===== 가로 모드: 얇은 바 + 숨기기/보이기 ===== */
 const LQ=matchMedia('(orientation: landscape) and (max-height: 560px)');
 function applyLand(){document.body.classList.toggle('land',LQ.matches&&!wide);if(!LQ.matches)document.body.classList.remove('hdoff');setTimeout(()=>{sizeHd();if(pzV())pzSetup(true);else if(wide&&ST.fit&&document.querySelector('table.g'))fitNow()},60)}
-LQ.addEventListener('change',applyLand);applyLand();
+LQ.addEventListener('change',()=>{applyLand();if(D&&ST.tab==='grid')render()});applyLand();
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement){try{screen.orientation.unlock()}catch(e){}}if(D&&ST.tab==='grid')setTimeout(render,80)});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;const pos=e.target.selectionStart;$('main').innerHTML=vStu(B());const i=$('q');i.value=ST.q;i.focus();try{i.setSelectionRange(pos,pos)}catch(err){}}});
 $('br').addEventListener('change',e=>{ST.br=e.target.value;ST.brPicked=true;ls.set('m_br',ST.br);ST.open.clear();render()});
