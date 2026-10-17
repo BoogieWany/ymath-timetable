@@ -29,6 +29,8 @@ contextBridge.exposeInMainWorld('api',{
   syncJoin:(c,n)=>ipcRenderer.invoke('syncJoin',c,n),
   syncOff:()=>ipcRenderer.invoke('syncOff'),
   syncName:n=>ipcRenderer.invoke('syncName',n),
+  admCheck:p=>ipcRenderer.invoke('admCheck',p),
+  admSet:o=>ipcRenderer.invoke('admSet',o),
   ghSet:o=>ipcRenderer.invoke('ghSet',o),
   ghNow:()=>ipcRenderer.invoke('ghNow'),
   rqInfo:()=>ipcRenderer.invoke('rqInfo'),
