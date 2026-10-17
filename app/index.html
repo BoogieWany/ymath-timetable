@@ -594,6 +594,8 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .syncb.adm{background:var(--admbg);color:var(--admfg)}
 :root[data-theme="dark"] .rqw{color:#F0A27E}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rqw{color:#F0A27E}}
+.helpx{margin-left:6px;display:inline-flex;align-items:center;gap:6px}
+.helpx kbd{font-family:var(--f-mono);font-size:10.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;color:var(--muted);background:var(--bg)}
 </style>
 </head>
 <body>
@@ -2949,7 +2951,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.34.1', APPDATE='2026-10-17';
+const APPVER='3.34.3', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3710,7 +3712,7 @@ document.addEventListener('click',async e=>{
   const np=e.target.closest&&e.target.closest('[data-ntpick]');if(np){ntPick(np.dataset.ntpick);return}
   const nl=e.target.closest&&e.target.closest('[data-nlabel]');if(nl){const l=nl.dataset.nlabel;commit(()=>{B().noteLabel=l},`빈 칸 메모 이름을 '${l}'(으)로 바꿨어요`);return}
   const el=e.target.closest('button,li[data-x],td.slot');if(!el)return;const ds=el.dataset;
-  if(el.classList.contains('tab')){UI.view=ds.v;UI.picked=null;UI._keepScroll=false;render();return}
+  if(el.classList.contains('tab')){if(ds.v==='help'&&UI.view!=='help')UI.helpFrom=UI.view;UI.view=ds.v;UI.picked=null;UI._keepScroll=false;render();return}
   if(el.matches('li[data-x]')){const i=ISS[+ds.x];UI.hl=new Set(i.ids);UI.sel=i.sp?{type:'sp',id:i.sp}:i.stu?{type:'stu',id:i.stu}:i.cls?{type:'cls',id:i.cls}:(i.ids[0]?{type:'ses',id:i.ids[0]}:null);
     if(i.ids[0]&&UI.view==='grid'){const o=V().sessions.find(x=>x.id===i.ids[0]);if(o&&UI.mode!=='week'&&UI.mode!==o.d&&!({mwf:'월수금',tts:'화목토',sun:'일'}[UI.mode]||'').includes(o.d))UI.mode='week'}
     render();const f=document.querySelector('.chip.hl');if(f)f.scrollIntoView({block:'nearest',inline:'center'});return}
@@ -3800,6 +3802,7 @@ document.addEventListener('click',async e=>{
     case 'closeModal':$('modal').hidden=true;UI.spd=null;UI.spListOpen=false;break;
     case 'spList':spListDlg();break;
     case 'keyHow':keyHowDlg();break;
+    case 'helpClose':helpClose();break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
     case 'admGo':admGo();break;
     case 'admJoin':admJoin();break;
@@ -3885,7 +3888,7 @@ function addMember(t){const inp=$('add_'+t);const val=(inp.value||'').trim();if(
   const id=cand[0].id,c=UI.cls;if((C(c).members[t]||[]).includes(id)){toast('이미 들어 있어요');return}
   commit(()=>{const m=C(c).members;(m[t]=m[t]||[]).push(id)},`${sname(id)} 추가`);setTimeout(()=>{const i=$('add_'+t);if(i)i.focus()},30)}
 document.addEventListener('keydown',e=>{
-  if(e.key==='F1'){e.preventDefault();UI.view='help';UI.helpQ='';render();return}
+  if(e.key==='F1'){e.preventDefault();if(UI.view==='help')helpClose();else{UI.helpFrom=UI.view;UI.view='help';UI.helpQ='';render()}return}
   if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('add_')){addMember(e.target.id.slice(4));return}
   if((e.key==='Delete')&&UI.edit&&UI.picked&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)){if(e.shiftKey)trashCard(UI.picked);else{trashClass(UI.picked.cls);UI.picked=null;UI.sel=null;render()}return}
   if(e.key==='Escape'&&UI.pop){closePop();return}
@@ -3896,6 +3899,8 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&UI.nc){closeNewClass();return}
   if(e.key==='Escape'&&(UI.spd||UI.spListOpen)){UI.spd=null;UI.spListOpen=false;$('modal').hidden=true;return}
   if(e.key==='Enter'&&e.target.id==='ncStu'){ncAddStu();return}
+  if(e.key==='Escape'&&!$('modal').hidden){const cb=$('modal').querySelector('[data-act="closeModal"],[data-act="rqClose"]');if(cb){e.preventDefault();cb.click();return}}
+  if(e.key==='Escape'&&UI.view==='help'){e.preventDefault();if(e.target.id==='helpQ'&&e.target.value){e.target.value='';UI.helpQ='';const hb=$('helpBody');render();const q=$('helpQ');if(q)q.focus();return}helpClose();return}
   if(e.key==='Escape'&&UI.picked){UI.picked=null;render();return}
   const inField=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);
   if((e.ctrlKey||e.metaKey)&&!inField&&e.key.toLowerCase()==='z'&&!e.shiftKey){e.preventDefault();if(UI.edit)undo()}
@@ -4823,19 +4828,21 @@ const HELP=[
   <li>적어 둔 메모를 누르면 고치거나 <b>[지우기]</b>. 지울 때까지 그대로 남아요.</li>
   <li>시간표 위 <b>[보강 보기]</b> 체크로 보이기/가리기. 폰·브라우저 전체 시간표에도 같은 스위치가 있어요.</li>
   <li>이름표(보강 / 추가수업 / 조교시간)는 [설정 → 지점]에서 지점마다 골라요.</li></ul>`},
- {id:'noterq',t:'선생님 보강 요청 (브라우저 → 승인)',b:`<ul><li>선생님이 브라우저 시간표 <b>전체 → 내 시간표</b>에서 빈 칸(공강)을 누르면 학생 이름을 적어 요청할 수 있어요. 그 칸에는 '승인 대기'로 보여요.</li><li>요청이 오면 프로그램 위쪽에 <b>선생님 보강 요청 ○건</b>이 떠요. [확인하기] → [승인]하면 그 칸의 빈 칸 메모로 들어가고, [거절]하면 사라져요. 수정 모드 중에는 끝낸 뒤 승인해요.</li><li>지점 관리자는 자기 지점 요청을, 프로그램 관리자는 모든 지점 요청을 승인할 수 있어요.</li><li>처음 한 번 프로그램 관리자 PC의 [설정 → 선생님 보강 요청]에 <b>요청 키</b>(Issues 권한만 있는 GitHub 키)를 넣고 켜요. 이 키로는 요청만 남길 수 있고 시간표는 못 바꿔요.</li></ul>`},
- {id:'admlock',t:'관리자 잠금 (평소엔 내 지점 모드)',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
+ {id:'noterq',t:'선생님 보강 요청',b:`<ul><li>선생님이 브라우저 시간표 <b>전체 → 내 시간표</b>에서 빈 칸(공강)을 누르면 학생 이름을 적어 요청할 수 있어요. 그 칸에는 '승인 대기'로 보여요.</li><li>요청이 오면 프로그램 위쪽에 <b>선생님 보강 요청 ○건</b>이 떠요. [확인하기] → [승인]하면 그 칸의 빈 칸 메모로 들어가고, [거절]하면 사라져요. 수정 모드 중에는 끝낸 뒤 승인해요.</li><li>지점 관리자는 자기 지점 요청을, 프로그램 관리자는 모든 지점 요청을 승인할 수 있어요.</li><li>처음 한 번 프로그램 관리자 PC의 [설정 → 선생님 보강 요청]에 <b>요청 키</b>(Issues 권한만 있는 GitHub 키)를 넣고 켜요. 이 키로는 요청만 남길 수 있고 시간표는 못 바꿔요.</li></ul>`},
+ {id:'admlock',t:'관리자 모드 · 잠금',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
  {id:'ver',t:'버전 · 적용 기록 · 백업',b:`
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요. [설정 → 데이터]에서 백업 파일로 저장·불러오기.</li></ul>`},
  {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사별·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
- {id:'phone',t:'폰으로 보기',owner:1,b:`
-  <ul><li>[설정 → 폰으로 보기]에서 <b>선생님용 번호</b>(영문+숫자 8자 이상)를 정해요.</li>
+ {id:'phone',t:'폰으로 보기 (브라우저 시간표)',b:`
+  <ul><li><b>지점 관리자</b>는 [설정 → 폰으로 보기]에서 QR·<b>[주소 복사]</b>·<b>[안내문 복사]</b>로 선생님들께 알려 주면 돼요. 아래 설정은 프로그램 관리자가 해요.</li>
+  <li>[설정 → 폰으로 보기]에서 <b>선생님용 번호</b>(영문+숫자 8자 이상)를 정해요. 번호를 바꾸면 지점 PC에도 자동으로 전달돼요.</li>
   <li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]할 때마다 올라가서 어디서나 폰으로 봐요. 나온 <b>QR/주소</b>를 선생님들께 주세요. 시간표는 번호로 암호화돼요.</li>
   <li>폰 화면 (위쪽 바를 손가락으로 옆으로 밀면 옆 탭으로): <b>전체</b>(프로그램 첫 화면처럼 지점 시간표 전체 표 · 표 위 강사 버튼으로 <b>모든 강사 / 내 시간표 / 특정 강사</b>만 · 반 카드엔 인원수만, <b>카드를 누르면 학생 이름</b> · [학생 이름 모두 보기] 스위치 · 폰에선 처음에 표 전체가 한 화면에 들어오고 표 칸 안에서 지도처럼 두 손가락으로 확대·한 손가락으로 끌기·두 번 톡 확대(위쪽 바는 그대로), 맨 위 <b>[−][+]</b>로 글씨(전체 표에선 표) 크기, <b>↔</b>로 폭에 맞춰 처음 크기, <b>↻</b>로 가로·세로 보기 · 가로로 돌리면 위쪽 바가 한 줄로 얇아지고 <b>▲</b>로 숨기기, <b>▼ 메뉴</b>로 다시 보이기, 맨 위 [−][+]로 표 크기) · <b>오늘</b>(처음 한 번 <b>지점 → 이름</b> 순서로 고르면 <b>내 수업</b>이 맨 위, 지금·다음 표시) · 요일별 · 강사별 · 학생 찾기. 1분마다 새로 받아요.</li>
   <li>번호는 기기마다 <b>한 번만</b> 넣으면 돼요. 폰에 뜨는 안내대로 <b>홈 화면에 추가</b>하면 앱처럼 열려요. (카톡으로 받은 주소는 다른 브라우저로 연 뒤 추가)</li>
   <li><b>PC 브라우저</b>로 같은 주소를 열면 위쪽 <b>지점 버튼</b>으로 지점을 바꿔 가며 설치 없이 프로그램처럼 <b>지점 시간표 전체 격자</b>로 보여요. 강사별·학생 찾기도 주간 격자, [인쇄]도 돼요. 크기는 오른쪽 아래 <b>[작게]·[크게]·[화면에 맞춤]</b> 버튼(또는 Ctrl+마우스 휠)으로 바꿔요. 처음엔 화면 폭에 자동으로 맞춰져요.</li>
+  <li>선생님이 <b>전체 → 내 시간표</b>에서 빈 칸을 누르면 보강 명단을 요청할 수 있어요. <a data-help="noterq">선생님 보강 요청</a> 참고.</li>
   <li>GitHub 연결 키는 만료 14일 전부터 위쪽 노란 띠로 알려 줘요. 새 키를 넣으면 지점 PC들은 자동으로 따라와요.</li></ul>`},
  {id:'sync',t:'지점 연동 (여러 PC)',b:`
   <ul><li><b>프로그램 관리자</b>: [설정 → 지점 연동 → 프로그램 관리자 모드 켜기] → 지점마다 <b>[코드 만들기]</b> → 지점 관리자에게 설치파일 + 코드를 1:1로.</li>
@@ -4844,23 +4851,28 @@ const HELP=[
   <li>다른 PC는 2분마다, 창으로 돌아올 때, 수정 모드를 켤 때 새로 받아요.</li>
   <li>겹쳐서 고친 경우 [적용] 때 [상대 것 받기 / 내 수정으로 덮어쓰기]를 물어봐요. 버리는 쪽은 백업에 남아요.</li>
   <li>인터넷이 끊겨도 고치고 적용할 수 있어요. 연결되면 자동으로 올라가요("⏳ 올리기 대기").</li>
-  <li>프로그램 관리자는 [지점 연동] 표에서 오래된 잠금을 <b>[잠금 풀기]</b> 할 수 있어요.</li></ul>`},
- {id:'update',t:'업데이트',b:`<ul><li>프로그램 관리자 PC에 새 버전이 들어가면, 연동된 지점 PC들이 2분 안에 자동으로 받아요. 본체가 바뀐 업데이트는 위쪽 [지금 다시 시작]을 눌러요.</li><li>업데이트는 프로그램 관리자 PC의 서명이 맞을 때만 받아요.</li></ul>`},
+  <li>프로그램 관리자는 관리자 모드에서 [지점 연동] 표의 <b>[잠금 풀기]</b>로 퇴근하며 남겨 둔 잠금을 풀 수 있어요. 그 PC에서 고치던 초안은 올라가지 못해요.</li>
+  <li><b>연결된 PC</b> 목록에서 PC마다 <b>[연결 끊기]</b>를 할 수 있어요(PC 교체·퇴사·코드를 잘못 넣은 경우). 지점 PC에는 스스로 끊는 버튼이 없어요.</li>
+  <li>관리자 PC를 하나 더 두거나 인수인계할 때는 <b>[프로그램 관리자 다른 PC용 코드]</b>로 연결해요. 번호·요청 키·업데이트 권한까지 그대로 넘어가요. 이 코드는 절대 다른 사람에게 주지 마세요.</li></ul>`},
+ {id:'update',t:'업데이트',b:`<ul><li>프로그램 관리자 PC에 새 버전이 들어가면, 연동된 지점 PC들이 2분 안에 자동으로 받아요. 본체가 바뀐 업데이트는 위쪽 [지금 다시 시작]을 눌러요.</li><li>업데이트는 프로그램 관리자 PC의 서명이 맞을 때만 받아요.</li><li>관리자 PC가 내 지점 모드로 잠겨 있어도 업데이트는 그대로 보내요. 관리자 PC가 켜져 있어야 보내져요.</li></ul>`},
  {id:'keys',t:'단축키',b:`<table class="tbl" style="max-width:520px"><tbody>
   <tr><td><b>Ctrl + 휠 / Ctrl ± / Ctrl 0</b></td><td>시간표 카드 크기</td></tr><tr><td><b>Ctrl + Z / Ctrl + Y</b></td><td>되돌리기 / 다시하기 (수정 모드)</td></tr>
-  <tr><td><b>Delete / Shift + Delete</b></td><td>선택한 카드: 반 전체 / 이 수업만 휴지통</td></tr><tr><td><b>Esc</b></td><td>창 닫기 · 선택 해제</td></tr>
-  <tr><td><b>F1</b></td><td>이 도움말</td></tr><tr><td><b>F11</b></td><td>전체 화면</td></tr><tr><td><b>제목 줄 더블클릭</b></td><td>최대화 / 원래 크기</td></tr></tbody></table>`},
+  <tr><td><b>Delete / Shift + Delete</b></td><td>선택한 카드: 반 전체 / 이 수업만 휴지통</td></tr><tr><td><b>Esc</b></td><td>창 닫기 · 도움말 닫기 · 선택 해제</td></tr>
+  <tr><td><b>F1</b></td><td>도움말 열기 / 닫기</td></tr><tr><td><b>F11</b></td><td>전체 화면</td></tr><tr><td><b>제목 줄 더블클릭</b></td><td>최대화 / 원래 크기</td></tr></tbody></table>`},
  {id:'faq',t:'자주 묻는 것 · 문제 해결',b:`
   <ul><li><b>고쳐지지 않아요</b> → 보기 모드예요. 위쪽 스위치를 켜세요. 연동 중이면 다른 사람이 수정 중인지(🔒) 확인.</li>
-  <li><b>다른 지점은 왜 못 고치나요</b> → 지점 관리자는 자기 지점만 고칠 수 있어요.</li>
+  <li><b>다른 지점은 왜 못 고치나요</b> → 지점 관리자는 자기 지점만 고칠 수 있어요. 관리자 PC라면 지점 모드로 잠겨 있는 거예요 → [설정] 맨 위 <b>[관리자 모드]</b>.</li>
+  <li><b>선생님 요청이 안 와요</b> → [설정 → 선생님 보강 요청]이 켜져 있는지, 선생님이 <b>내 이름</b>을 골라 '내 시간표'에서 빈 칸을 눌렀는지 확인.</li>
+  <li><b>'이 PC의 연결이 끊겼어요'가 떠요</b> → 프로그램 관리자가 끊은 거예요. 새 지점 코드를 받아 다시 연결하세요.</li>
   <li><b>폰에서 번호가 틀리다고 나와요</b> → 프로그램 관리자가 번호를 바꿨을 수 있어요. 새 번호를 받아 넣으세요.</li>
   <li><b>연동 오류</b>가 떠요 → 인터넷 연결 확인. 계속되면 [설정 → 지점 연동 → 지금 받기]를 눌러 오류 문구를 프로그램 관리자에게 보내 주세요.</li>
   <li><b>잘못 적용했어요</b> → [버전 관리 → 적용 기록]에서 그 전 시간표로 되돌리기.</li></ul>`}
 ];
 const helpVisible=()=>HELP.filter(s=>!(s.owner&&!isOwner()));
+function helpClose(){UI.view=UI.helpFrom&&UI.helpFrom!=='help'?UI.helpFrom:'grid';UI.helpQ='';render()}
 function viewHelp(){const list=helpVisible();const q=(UI.helpQ||'').trim();
   const shown=q?list.filter(s=>(s.t+s.b.replace(/<[^>]+>/g,'')).includes(q)):list;
-  return `<div class="card-h"><h2>도움말</h2><span class="hint">Y-MATH 시간표 ${APPVER} · F1로 언제든 열 수 있어요</span><span class="sp"></span><input id="helpQ" placeholder="찾기 (예: 특강, 휴지통)" value="${esc(UI.helpQ||'')}" style="width:220px" autocomplete="off"></div>
+  return `<div class="card-h"><h2>도움말</h2><span class="hint">Y-MATH 시간표 ${APPVER} · F1로 열고 닫아요</span><span class="sp"></span><input id="helpQ" placeholder="찾기 (예: 특강, 휴지통)" value="${esc(UI.helpQ||'')}" style="width:220px" autocomplete="off"><button class="btn helpx" data-act="helpClose" title="도움말 닫기 (Esc · F1)">닫기 <kbd>Esc</kbd></button></div>
   <div class="helpw"><nav class="helptoc">${list.map(s=>`<button data-help="${s.id}">${esc(s.t)}</button>`).join('')}</nav>
   <div class="helpbody" id="helpBody">${shown.length?shown.map(s=>`<section id="help-${s.id}"><h3>${esc(s.t)}</h3>${s.b}</section>`).join(''):'<div class="empty">찾는 내용이 없어요</div>'}</div></div>`}
 function helpGo(id){if(UI.view!=='help'){UI.view='help';UI.helpQ='';render()}const el=document.getElementById('help-'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
