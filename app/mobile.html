@@ -346,7 +346,8 @@ body.wide td.free:hover .fadd{opacity:.9}
 .gnote.pend{border-color:color-mix(in srgb,#F4B860 75%,transparent);background:color-mix(in srgb,#F4B860 9%,var(--panel))}
 .gnote.pend i{color:#a86a12}.gnote.pend.my{cursor:pointer}
 @media (prefers-color-scheme:dark){.gnote.pend i{color:#f0c27a}}
-body.shlock{position:fixed;left:0;right:0;overflow:hidden}
+html.shl,html.shl body{overflow:hidden}
+#sh{touch-action:none;overscroll-behavior:contain}#sh textarea,#sh input,#sh select,#sh .rqsug{touch-action:auto}
 #sh .shp{margin-bottom:var(--kb,0px);transition:transform .34s cubic-bezier(.22,.61,.36,1),margin-bottom .2s ease}
 #sh{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,16,30,0);transition:background .28s ease;pointer-events:none}
 #sh.on{background:rgba(10,16,30,.38);pointer-events:auto}
@@ -385,7 +386,7 @@ body.wide #sh.on .shp{transform:none;opacity:1}
 .memoh b{font-size:calc(14px*var(--mz,1))}.memoh small{font-size:11px;color:var(--muted)}
 .memoadd{margin-left:auto;border:0;background:none;color:var(--acc);font:inherit;font-size:13px;font-weight:600;padding:4px 2px}
 .memo ul{list-style:none;margin:0;padding:0}
-.memo li{display:flex;align-items:flex-start;gap:4px;border-top:1px solid var(--line2)}
+.memo li{display:flex;align-items:flex-start;gap:4px;border-top:1px solid var(--line2);overflow:hidden}
 .memo li:first-child{border-top:0}
 .mck{flex:none;border:0;background:none;padding:10px 8px 10px 0;line-height:0}
 .mck i{display:inline-block;width:18px;height:18px;border-radius:50%;border:1.6px solid var(--muted);position:relative;transition:background .22s,border-color .22s}
@@ -394,8 +395,9 @@ body.wide #sh.on .shp{transform:none;opacity:1}
 @media (prefers-color-scheme:dark){.dn .mck i::after{border-color:#10141c}}
 .mtx{flex:1;text-align:left;border:0;background:none;color:var(--fg);font:inherit;font-size:calc(14px*var(--mz,1));line-height:1.45;padding:9px 0;white-space:pre-wrap;word-break:break-word;transition:color .22s,opacity .22s}
 .dn .mtx{color:var(--muted);text-decoration:line-through;opacity:.75}
-.mempty{display:block;width:100%;margin:4px 0 6px;border:1px dashed var(--line);border-radius:10px;background:none;color:var(--muted);font:inherit;font-size:13px;padding:11px}
-.mclr{display:block;margin:2px 0 2px auto;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;padding:6px 2px}
+.mempty[hidden],.mclr[hidden]{display:none}
+.mempty{display:block;overflow:hidden;width:100%;margin:4px 0 6px;border:1px dashed var(--line);border-radius:10px;background:none;color:var(--muted);font:inherit;font-size:13px;padding:11px}
+.mclr{overflow:hidden;display:block;margin:2px 0 2px auto;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;padding:6px 2px}
 #memoIn{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);font:inherit;font-size:16px;line-height:1.5;padding:10px 12px;resize:none;margin:4px 0 12px}
 /* 꾹 눌러 자세히 */
 body:not(.wide){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -452,12 +454,12 @@ async function load(pin){
     if(!r.ok)throw new Error(r.status);
     const raw=await r.text();let j=JSON.parse(raw);
     if(j.enc){if(!p){showPin('');return}
-      if(!(window.crypto&&crypto.subtle)){$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
+      if(!(window.crypto&&crypto.subtle)){ST.mh='';$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
       if(D&&lastCt===j.ct){lastOk=Date.now();meta(false);tick();rqFetch();return}
       try{j=await dec(j,p);lastCt=JSON.parse(raw).ct}catch(e){KC.k=null;ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
     const first=!D;D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();ls.set('m_cache',raw);if(first)initBr();render();rqFetch(true)}
   catch(e){if(!D){const c=ls.get('m_cache','');if(c&&p){try{let j=JSON.parse(c);if(j.enc)j=await dec(j,p);D=j;initBr();render();meta(true);return}catch(err){}}
-      $('main').innerHTML='<div class="off"><b>시간표를 받지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
+      ST.mh='';$('main').innerHTML='<div class="off"><b>시간표를 받지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
 /* 처음 열 때: 내 이름을 골라 둔 지점으로 */
 function initBr(){const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
   if(me&&me.br===ST.br&&!ls.get('m_t',''))ST.t=me.t}
@@ -470,7 +472,7 @@ async function viewKey(j,pass){if(KC.k&&KC.salt===j.salt&&KC.it===j.it&&KC.pass=
   KC.k=key;KC.salt=j.salt;KC.it=j.it;KC.pass=pass;return key}
 async function dec(j,pass){const key=await viewKey(j,pass);
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},key,b64(j.ct));return JSON.parse(new TextDecoder().decode(pt))}
-function showPin(msg){$('tabs').innerHTML='';$('main').innerHTML=`<form class="pin" id="pf"><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" autocomplete="current-password" autocapitalize="off" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button>열기</button></form>`;
+function showPin(msg){$('tabs').innerHTML='';ST.mh='';$('main').innerHTML=`<form class="pin" id="pf"><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" autocomplete="current-password" autocapitalize="off" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button>열기</button></form>`;
   $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
 /* 예정 시간표: 날짜가 되면 그 시간표가 지금 시간표 (PC가 꺼져 있어도) · 공개된 예정은 [미리 보기]로 */
 function nextApply(){if(!D)return;const t=tdStr();D.branches.forEach(b=>{if(b.next&&b.next.from<=t){b.classes=b.next.classes;b.sessions=b.next.sessions;b.version=b.next.version;b.notes=[];delete b.next}})}
@@ -490,7 +492,7 @@ function render(){if(!D)return;nextApply();const b=B();ST.br=b.id;
   $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
   meta(false);sizeHd();
   const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid}[ST.tab]||vToday;
-  $('main').innerHTML=nxBar()+v(b);zmBar();
+  const mh=nxBar()+v(b);if(mh!==ST.mh||!$('main').firstChild){ST.mh=mh;$('main').innerHTML=mh}zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}}}
 /* 1분마다: 오늘 화면의 '지금·다음' 표시만 새로 */
 function tick(){if(ST.tab==='today'&&!document.querySelector('#main input:focus'))render()}
@@ -689,7 +691,9 @@ function rqOkAt(b,d,p,t){const ns=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t=
   const cs=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===t).map(n=>n.cls||'');
   return RQ.ok.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t&&(String(x.names||'').split(/,\s*/).some(n=>n&&!ns.includes(n))||(x.cls&&!cs.includes(x.cls))))}
 /* 요청 창이 열린 동안 뒤 페이지를 고정(키보드가 올라와도 뒤 화면이 위아래로 튀지 않게) + 키보드 높이만큼 창을 올림 */
-let shY=0;function pageLock(on){const b=document.body;if(on){if(b.classList.contains('shlock'))return;shY=window.scrollY;b.style.top=-shY+'px';b.classList.add('shlock')}else{if(!b.classList.contains('shlock'))return;b.classList.remove('shlock');b.style.top='';window.scrollTo(0,shY)}}
+let shY=0;function pageLock(on){const h=document.documentElement;if(on){if(h.classList.contains('shl'))return;shY=window.scrollY;h.classList.add('shl')}else{if(!h.classList.contains('shl'))return;h.classList.remove('shl');if(Math.abs(window.scrollY-shY)>1)window.scrollTo(0,shY)}}
+/* 창이 열린 동안 브라우저가 뒤 페이지를 몰래 굴리면 바로 제자리로 */
+window.addEventListener('scroll',()=>{if(document.documentElement.classList.contains('shl')&&Math.abs(window.scrollY-shY)>1)window.scrollTo(0,shY)},{passive:true});
 function kbFit(){const w=$('sh'),vv=window.visualViewport;if(!w||!vv)return;const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);w.style.setProperty('--kb',kb+'px')}
 if(window.visualViewport){visualViewport.addEventListener('resize',kbFit);visualViewport.addEventListener('scroll',kbFit)}
 function shOpen(html){shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
@@ -748,7 +752,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.1</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.2</div></div>`};
 document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -884,8 +888,19 @@ const annL=b=>(b.ann||[]).filter(a=>!a.until||a.until>=tdStr());
 function dockIn(b){const A=b&&!b._nx?annL(b):[];const M=memoL();
   return `${A.map(a=>`<div class="ann"><span class="annk">공지</span><p>${esc(a.tx)}</p>${a.until?`<small>${mdd(a.until)}까지</small>`:''}</div>`).join('')}
   <div class="memo"><div class="memoh"><b>내 메모</b><small>이 폰에만 저장돼요</small><button class="memoadd" data-memo="add">+ 추가</button></div>
-  ${M.length?`<ul>${M.map(m=>`<li class="${m.done?'dn':''}"><button class="mck" data-memock="${esc(m.id)}" aria-label="${m.done?'안 한 걸로':'다 했어요'}" aria-pressed="${!!m.done}"><i></i></button><button class="mtx" data-memoed="${esc(m.id)}">${esc(m.tx)}</button></li>`).join('')}</ul>`:'<button class="mempty" data-memo="add">할 일이나 메모를 적어 두세요</button>'}
-  ${M.some(m=>m.done)?'<button class="mclr" data-memo="clr">다 한 것 지우기</button>':''}</div>`}
+  <ul>${M.map(memoLi).join('')}</ul><button class="mempty" data-memo="add"${M.length?' hidden':''}>할 일이나 메모를 적어 두세요</button>
+  <button class="mclr" data-memo="clr"${M.some(m=>m.done)?'':' hidden'}>다 한 것 지우기</button></div>`}
+const memoLi=m=>`<li class="${m.done?'dn':''}" data-mli="${esc(m.id)}"><button class="mck" data-memock="${esc(m.id)}" aria-label="${m.done?'안 한 걸로':'다 했어요'}" aria-pressed="${!!m.done}"><i></i></button><button class="mtx" data-memoed="${esc(m.id)}">${esc(m.tx)}</button></li>`;
+const EASE='cubic-bezier(.22,.61,.36,1)';
+/* 줄이 생기고 사라질 때 높이까지 부드럽게 · 빈 칸 안내·[다 한 것 지우기]도 살며시 */
+function memoFix(){const d=$('dock');if(!d)return;const M=memoL();const em=d.querySelector('.mempty'),cl=d.querySelector('.mclr');
+  const show=(el,on)=>{if(!el||el.hidden===!on)return;if(on){el.hidden=false;el.animate([{opacity:0,height:'0px',marginTop:'0px',marginBottom:'0px',paddingTop:'0px',paddingBottom:'0px'},{opacity:1,height:el.offsetHeight+'px'}],{duration:260,easing:EASE})}
+    else{const a=el.animate([{opacity:1,height:el.offsetHeight+'px'},{opacity:0,height:'0px',marginTop:'0px',marginBottom:'0px',paddingTop:'0px',paddingBottom:'0px'}],{duration:220,easing:EASE});a.onfinish=()=>{el.hidden=true}}};
+  show(em,!M.length);show(cl,M.some(m=>m.done));if(d.classList.contains('ind'))setTimeout(pzDock,280)}
+function memoIn(m){const ul=$('dock')&&$('dock').querySelector('.memo ul');if(!ul)return;ul.insertAdjacentHTML('beforeend',memoLi(m));const li=ul.lastElementChild;const h=li.offsetHeight;
+  li.animate([{opacity:0,height:'0px',transform:'translateY(-4px)'},{opacity:1,height:h+'px',transform:'none'}],{duration:300,easing:EASE});memoFix()}
+function memoOut(ids){const d=$('dock');if(!d)return;ids.forEach(id=>{const li=d.querySelector(`li[data-mli="${CSS.escape(id)}"]`);if(!li)return;
+  const a=li.animate([{opacity:1,height:li.offsetHeight+'px'},{opacity:0,height:'0px'}],{duration:240,easing:EASE});a.onfinish=()=>li.remove()});setTimeout(memoFix,ids.length?120:0)}
 function dockHTML(b,inGrid){return `<div id="dock" class="dock${inGrid?' ind':''}">${dockIn(b)}</div>`}
 function dockRefresh(){const d=$('dock');if(d){d.innerHTML=dockIn(B());if(d.classList.contains('ind'))requestAnimationFrame(pzDock)}}
 function memoSheet(id){const m=id?memoL().find(x=>x.id===id):null;
@@ -894,13 +909,15 @@ function memoSheet(id){const m=id?memoL().find(x=>x.id===id):null;
     <div class="sbtn">${m?`<button class="dan" data-memo="del" data-mid="${esc(m.id)}">지우기</button>`:'<button data-act="shClose">취소</button>'}<button class="pri" data-memo="save" data-mid="${m?esc(m.id):''}">저장</button></div>`);
   if(wide)setTimeout(()=>{const i=$('memoIn');if(i)i.focus()},60)}
 function memoClick(e){const t=e.target.closest&&e.target.closest('[data-memo],[data-memock],[data-memoed]');if(!t)return false;const ds=t.dataset;let M=memoL();
-  if(ds.memock){const m=M.find(x=>x.id===ds.memock);if(m){m.done=!m.done;memoW(M);const li=t.closest('li');if(li){li.classList.toggle('dn',m.done);t.setAttribute('aria-pressed',String(m.done))}setTimeout(dockRefresh,260)}return true}
+  if(ds.memock){const m=M.find(x=>x.id===ds.memock);if(m){m.done=!m.done;memoW(M);const li=t.closest('li');if(li){li.classList.toggle('dn',m.done);t.setAttribute('aria-pressed',String(m.done))}memoFix()}return true}
   if(ds.memoed){memoSheet(ds.memoed);return true}
   if(ds.memo==='add'){memoSheet('');return true}
-  if(ds.memo==='clr'){memoW(M.filter(x=>!x.done));dockRefresh();fzToast('다 한 메모를 지웠어요',1600);return true}
+  if(ds.memo==='clr'){memoW(M.filter(x=>!x.done));memoOut(M.filter(x=>x.done).map(x=>x.id));return true}
   if(ds.memo==='save'){const tx=(($('memoIn')||{}).value||'').trim();if(!tx){const i=$('memoIn');if(i)i.focus();return true}
-    if(ds.mid){const m=M.find(x=>x.id===ds.mid);if(m)m.tx=tx}else M.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tx,done:false});memoW(M);shClose();dockRefresh();return true}
-  if(ds.memo==='del'){memoW(M.filter(x=>x.id!==ds.mid));shClose();dockRefresh();fzToast('메모를 지웠어요',1600);return true}
+    let nm=null;if(ds.mid){const m=M.find(x=>x.id===ds.mid);if(m)m.tx=tx}else{nm={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),tx,done:false};M.push(nm)}memoW(M);shClose();
+    /* 창이 내려가는 동안(0.34초) 바꾸면 겹쳐 보여서, 다 내려간 뒤에 살며시 */
+    setTimeout(()=>{if(nm)memoIn(nm);else{const el=document.querySelector(`#dock li[data-mli="${CSS.escape(ds.mid)}"] .mtx`);if(el){el.textContent=tx;el.animate([{opacity:.25},{opacity:1}],{duration:280,easing:EASE})}}},300);return true}
+  if(ds.memo==='del'){memoW(M.filter(x=>x.id!==ds.mid));shClose();setTimeout(()=>memoOut([ds.mid]),300);return true}
   return false}
 
 /* ===== 카드를 꾹 누르면(0.4초) 자세히 · 누르고 있는 동안만 보이고 손을 떼면 사라짐 =====
