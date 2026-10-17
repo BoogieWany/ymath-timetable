@@ -697,7 +697,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.40.3</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.40.4</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -758,9 +758,17 @@ function pzSize(){const v=pzV();if(!v)return;const top=v.getBoundingClientRect()
   const vh=(window.visualViewport?visualViewport.height:innerHeight);v.style.height=Math.max(220,vh-Math.max(0,top-window.scrollY)-6)+'px'}
 function pzMeasure(){const c=pzC(),v=pzV();if(!c||!v)return;const t=c.style.transform;c.style.transform='none';PZ.W=c.scrollWidth;PZ.H=c.scrollHeight;c.style.transform=t;PZ.vw=v.clientWidth;PZ.vh=v.clientHeight;PZ.fit=Math.min(1.6,PZ.vw/Math.max(1,PZ.W))}
 function pzSetup(reset){if(!pzV())return;window.scrollTo(0,0);pzSize();pzMeasure();if(reset||!PZ.inited){PZ.s=PZ.fit;PZ.x=0;PZ.y=0;PZ.inited=true}pzApply()}
-function pzClamp(){const sw=PZ.W*PZ.s,sh=PZ.H*PZ.s;
-  PZ.x=sw<=PZ.vw?(PZ.vw-sw)/2:Math.min(0,Math.max(PZ.vw-sw,PZ.x));PZ.y=sh<=PZ.vh?0:Math.min(0,Math.max(PZ.vh-sh,PZ.y))}
-function pzApply(){const c=pzC();if(!c)return;pzClamp();c.style.transform=`translate(${PZ.x}px,${PZ.y}px) scale(${PZ.s})`}
+function pzB(){const sw=PZ.W*PZ.s,sh=PZ.H*PZ.s,cx=(PZ.vw-sw)/2;return{x0:sw<=PZ.vw?cx:PZ.vw-sw,x1:sw<=PZ.vw?cx:0,y0:sh<=PZ.vh?0:PZ.vh-sh,y1:0}}
+function pzClamp(){const b=pzB();PZ.x=Math.min(b.x1,Math.max(b.x0,PZ.x));PZ.y=Math.min(b.y1,Math.max(b.y0,PZ.y))}
+function pzDraw(){const c=pzC();if(c)c.style.transform=`translate3d(${PZ.x}px,${PZ.y}px,0) scale(${PZ.s})`}
+function pzApply(){pzClamp();pzDraw()}
+/* 끝에 닿으면 고무줄처럼 살짝 늘어났다가 돌아오게 */
+const pzRub=(o,d)=>(1-1/(o*.55/Math.max(1,d)+1))*d;
+function pzRb(v,lo,hi,d){return v>hi?hi+pzRub(v-hi,d):v<lo?lo-pzRub(lo-v,d):v}
+function pzUnRb(v,lo,hi,d){const inv=r=>{r=Math.min(r,d*.98);return (1/(1-r/d)-1)*d/.55};return v>hi?hi+inv(v-hi):v<lo?lo-inv(lo-v):v}
+function pzBack(){const b=pzB(),x0=PZ.x,y0=PZ.y,tx=Math.min(b.x1,Math.max(b.x0,x0)),ty=Math.min(b.y1,Math.max(b.y0,y0)),c=pzC();
+  if(Math.abs(tx-x0)<.5&&Math.abs(ty-y0)<.5){PZ.x=tx;PZ.y=ty;pzDraw();if(c)c.style.willChange='';return}const t0=performance.now();
+  const step=t=>{const k=Math.min(1,(t-t0)/360),e=1-Math.pow(1-k,3);PZ.x=x0+(tx-x0)*e;PZ.y=y0+(ty-y0)*e;pzDraw();if(k<1)PZ.raf=requestAnimationFrame(step);else if(c)c.style.willChange=''};PZ.raf=requestAnimationFrame(step)}
 function pzZoomAt(ns,lx,ly){ns=Math.max(PZ.fit*.9,Math.min(5,ns));const cx=(lx-PZ.x)/PZ.s,cy=(ly-PZ.y)/PZ.s;PZ.s=ns;PZ.x=lx-cx*ns;PZ.y=ly-cy*ns;pzApply()}
 function pzAnimTo(ns,lx,ly){const s0=PZ.s,t0=performance.now();const c=pzC();if(c)c.style.willChange='transform';
   const step=t=>{const k=Math.min(1,(t-t0)/220),e=1-Math.pow(1-k,3);pzZoomAt(s0+(ns-s0)*e,lx,ly);if(k<1)requestAnimationFrame(step);else if(c)c.style.willChange=''};requestAnimationFrame(step)}
@@ -768,18 +776,28 @@ function pzLocal(t){const r=pzV().getBoundingClientRect();return [t.clientX-r.le
 document.addEventListener('gesturestart',e=>{if(!wide)e.preventDefault()});
 document.addEventListener('touchstart',e=>{const v=pzV();if(wide||!v||!v.contains(e.target))return;cancelAnimationFrame(PZ.raf);const c=pzC();c.style.willChange='transform';
   if(e.touches.length>=2){const [a,b]=e.touches;const [ax,ay]=pzLocal(a),[bx,by]=pzLocal(b);PZ.g={k:'pinch',d:Math.hypot(ax-bx,ay-by)||1,s0:PZ.s,cx:((ax+bx)/2-PZ.x)/PZ.s,cy:((ay+by)/2-PZ.y)/PZ.s}}
-  else{const [x,y]=pzLocal(e.touches[0]);PZ.g={k:'pan',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:false,t0:performance.now()};PZ.vx=PZ.vy=0}},{passive:true});
+  else{const [x,y]=pzLocal(e.touches[0]);const b=pzB();PZ.x=pzUnRb(PZ.x,b.x0,b.x1,PZ.vw);PZ.y=pzUnRb(PZ.y,b.y0,b.y1,PZ.vh);PZ.g={k:'pan',ax:'',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:false,t0:performance.now()};PZ.vx=PZ.vy=0}},{passive:true});
 document.addEventListener('touchmove',e=>{const g=PZ.g;if(!g)return;e.preventDefault();
   if(e.touches.length>=2){const [a,b]=e.touches;const [ax,ay]=pzLocal(a),[bx,by]=pzLocal(b);if(g.k!=='pinch'){PZ.g={k:'pinch',d:Math.hypot(ax-bx,ay-by)||1,s0:PZ.s,cx:((ax+bx)/2-PZ.x)/PZ.s,cy:((ay+by)/2-PZ.y)/PZ.s};return}
     const ns=Math.max(PZ.fit*.9,Math.min(5,g.s0*Math.hypot(ax-bx,ay-by)/g.d));const mx=(ax+bx)/2,my=(ay+by)/2;PZ.s=ns;PZ.x=mx-g.cx*ns;PZ.y=my-g.cy*ns;pzApply();g.moved=true}
-  else if(g.k==='pan'){const [x,y]=pzLocal(e.touches[0]);if(Math.hypot(x-g.sx,y-g.sy)>6)g.moved=true;const now=performance.now(),dt=Math.max(1,now-g.lt);
-    PZ.vx=(x-g.lx)/dt;PZ.vy=(y-g.ly)/dt;g.lx=x;g.ly=y;g.lt=now;PZ.x=g.x0+(x-g.sx);PZ.y=g.y0+(y-g.sy);pzApply()}},{passive:false});
+  else if(g.k==='pan'){const [x,y]=pzLocal(e.touches[0]);const now=performance.now();
+    if(!g.moved&&Math.hypot(x-g.sx,y-g.sy)>6){g.moved=true;const ax=Math.abs(x-g.sx),ay=Math.abs(y-g.sy);g.ax=ay>ax*2?'y':ax>ay*2?'x':''}
+    const dt=Math.max(1,now-g.lt),ivx=(x-g.lx)/dt,ivy=(y-g.ly)/dt;PZ.vx=PZ.vx*.35+ivx*.65;PZ.vy=PZ.vy*.35+ivy*.65;g.lx=x;g.ly=y;g.lt=now;
+    g.tx=g.x0+(g.ax==='y'?0:x-g.sx);g.ty=g.y0+(g.ax==='x'?0:y-g.sy);
+    if(!PZ.fr)PZ.fr=requestAnimationFrame(()=>{PZ.fr=0;const g=PZ.g;if(!g||g.k!=='pan')return;const b=pzB();
+      PZ.x=b.x0===b.x1?b.x0:pzRb(g.tx,b.x0,b.x1,PZ.vw);PZ.y=b.y0===b.y1?b.y0:pzRb(g.ty,b.y0,b.y1,PZ.vh);pzDraw()})}},{passive:true});
 document.addEventListener('touchend',e=>{const g=PZ.g;if(!g)return;const c=pzC();
-  if(e.touches.length===1){const [x,y]=pzLocal(e.touches[0]);PZ.g={k:'pan',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:true};return}
-  PZ.g=null;
+  if(e.touches.length===1){const [x,y]=pzLocal(e.touches[0]);PZ.g={k:'pan',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:true,ax:''};return}
+  PZ.g=null;cancelAnimationFrame(PZ.fr);PZ.fr=0;
   if(g.k==='pan'&&!g.moved){const now=performance.now(),t=e.changedTouches[0];const [x,y]=pzLocal(t);
-    if(now-PZ.lastTap<300){PZ.lastTap=0;e.preventDefault();pzAnimTo(PZ.s>PZ.fit*1.3?PZ.fit:Math.max(PZ.fit*2.5,1.2),x,y);return}PZ.lastTap=now;if(c)c.style.willChange='';return}
-  if(g.k==='pan'&&g.moved&&performance.now()-g.lt<80){let vx=PZ.vx*16,vy=PZ.vy*16;const step=()=>{vx*=.93;vy*=.93;PZ.x+=vx;PZ.y+=vy;pzApply();if(Math.abs(vx)+Math.abs(vy)>.4)PZ.raf=requestAnimationFrame(step);else if(c)c.style.willChange=''};PZ.raf=requestAnimationFrame(step)}
+    if(now-PZ.lastTap<300){PZ.lastTap=0;e.preventDefault();pzAnimTo(PZ.s>PZ.fit*1.3?PZ.fit:Math.max(PZ.fit*2.5,1.2),x,y);return}PZ.lastTap=now;{const b=pzB();if(b.x0!==b.x1)PZ.x=pzRb(PZ.x,b.x0,b.x1,PZ.vw);if(b.y0!==b.y1)PZ.y=pzRb(PZ.y,b.y0,b.y1,PZ.vh)}pzBack();return}
+  if(g.k==='pan'&&g.moved){if(g.tx!=null){const b=pzB();PZ.x=b.x0===b.x1?b.x0:pzRb(g.tx,b.x0,b.x1,PZ.vw);PZ.y=b.y0===b.y1?b.y0:pzRb(g.ty,b.y0,b.y1,PZ.vh)}
+    let vx=g.ax==='y'?0:PZ.vx,vy=g.ax==='x'?0:PZ.vy;if(performance.now()-g.lt>90)vx=vy=0;const cap=4.5;vx=Math.max(-cap,Math.min(cap,vx));vy=Math.max(-cap,Math.min(cap,vy));
+    if(Math.hypot(vx,vy)<.08){pzBack();return}let lt=performance.now();
+    /* 손을 떼면 관성으로 미끄러지다가 천천히 멈춤(시간 기준이라 120Hz 폰에서도 같은 느낌) */
+    const step=t=>{const dt=Math.min(40,Math.max(1,t-lt));lt=t;const b=pzB();const out=PZ.x<b.x0-.5||PZ.x>b.x1+.5||PZ.y<b.y0-.5||PZ.y>b.y1+.5;
+      const f=Math.pow(out?.86:.9965,dt);vx*=f;vy*=f;PZ.x+=vx*dt;PZ.y+=vy*dt;if(b.x0===b.x1)PZ.x=b.x0;if(b.y0===b.y1)PZ.y=b.y0;pzDraw();
+      if(Math.hypot(vx,vy)>(out?.15:.02))PZ.raf=requestAnimationFrame(step);else pzBack()};PZ.raf=requestAnimationFrame(step);return}
   else if(c)c.style.willChange=''},{passive:false});
 let pzW=window.innerWidth;window.addEventListener('resize',()=>{if(!pzV())return;const wch=window.innerWidth!==pzW;pzW=window.innerWidth;if(kbOpen())return;setTimeout(()=>{if(kbOpen()||!pzV())return;if(wch)pzSetup(true);else{pzSize();pzMeasure();pzApply()}},120)});
 /* ===== 가로 모드: 얇은 바 + 숨기기/보이기 ===== */
