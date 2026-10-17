@@ -586,6 +586,8 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .card-h .admset-b i{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .25s}
 .card-h .admset-b.on{background:color-mix(in srgb,#F4B860 16%,var(--panel));border-color:color-mix(in srgb,#F4B860 60%,var(--line))}.card-h .admset-b.on i{background:#E0952B}
 .syncb.adm{background:color-mix(in srgb,#F4B860 20%,var(--panel));color:#9a5b08}
+.sydevs{display:flex;flex-direction:column;gap:6px;margin:14px 0 6px;max-width:820px}.sydevs>b{font-size:13.5px}
+.sydevs .mono{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2941,7 +2943,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.33.2', APPDATE='2026-10-17';
+const APPVER='3.34.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3685,12 +3687,13 @@ async function makePdf(kind){
 }
 
 /* ================= 두 번 눌러 확인 ================= */
-function armed(btn,key){if(btn.dataset.armed===key)return true;document.querySelectorAll('[data-armed]').forEach(x=>{x.classList.remove('armed');x.textContent=x.dataset.label;delete x.dataset.armed});
-  btn.dataset.armed=key;btn.dataset.label=btn.textContent;btn.classList.add('armed');btn.textContent='한 번 더 누르면 삭제';setTimeout(()=>{if(btn.dataset.armed===key){btn.classList.remove('armed');btn.textContent=btn.dataset.label;delete btn.dataset.armed}},3000);return false}
+function armed(btn,key,txt){if(btn.dataset.armed===key)return true;document.querySelectorAll('[data-armed]').forEach(x=>{x.classList.remove('armed');x.textContent=x.dataset.label;delete x.dataset.armed});
+  btn.dataset.armed=key;btn.dataset.label=btn.textContent;btn.classList.add('armed');btn.textContent=txt||'한 번 더 누르면 삭제';setTimeout(()=>{if(btn.dataset.armed===key){btn.classList.remove('armed');btn.textContent=btn.dataset.label;delete btn.dataset.armed}},3000);return false}
 
 /* ================= 이벤트 ================= */
 document.addEventListener('click',async e=>{
   const so=e.target.closest&&e.target.closest('[data-stuout]');if(so){const [cid,tid]=so.dataset.stuout.split('|');const sid=UI.student;commit(()=>{const c=C(cid);c.members[tid]=(c.members[tid]||[]).filter(x=>x!==sid)},`${sname(sid)}을(를) ${C(cid).name}(${tn(tid)}T)에서 뺐어요 · 되돌리기 가능`);return}
+  const syr=e.target.closest&&e.target.closest('[data-syrevoke]');if(syr){syRevokeGo(syr);return}
   const syc=e.target.closest&&e.target.closest('[data-sycode]');if(syc){const id=syc.dataset.sycode;const code=await bridge.syncCode(id);if(!code){toast('코드를 만들 수 없어요');return}syCodeDlg(code,id==='*'?'프로그램 관리자 다른 PC용':syBName(id));return}
   const syu=e.target.closest&&e.target.closest('[data-syunlock]');if(syu){if(!armed(syu,'su'+syu.dataset.syunlock))return;const r=await bridge.syncUnlock([syu.dataset.syunlock],true);toast(r[syu.dataset.syunlock]?'잠금을 풀었어요':'풀지 못했어요');await syncPull({silent:true});syncRender();return}
   const sx=e.target.closest&&e.target.closest('[data-sx]');if(sx){e.stopPropagation();const [id,sid]=sx.dataset.sx.split('|');removeStudent(id,sid,e.shiftKey);return}
@@ -4350,8 +4353,8 @@ function syMerge(target,r,known){const present=new Set(r.present.map(x=>x.id));c
   return names}
 async function syncPull(opt={}){if(!syOn()||SYNC.busy||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev))return false;SYNC.busy=true;let r;
   try{r=await bridge.syncPull(opt.full?{}:(DB.syncKnown||{}))}catch(e){r={ok:false,err:e.message}}SYNC.busy=false;
-  if(!r.ok){SYNC.err=r.err||'';renderSyncState();return false}
-  SYNC.err='';SYNC.locks=r.locks||{};SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
+  if(!r.ok){if(r.revoked){syRevokedNow();return false}SYNC.err=r.err||'';renderSyncState();return false}
+  SYNC.err='';try{if(bridge.syncBeat)bridge.syncBeat(APPVER)}catch(e){}SYNC.locks=r.locks||{};SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
   const known=DB.syncKnown=DB.syncKnown||{};
   let o=null;if(UI.edit&&ORIG){try{o=JSON.parse(ORIG)}catch(e){}}
   const changed=syMerge(DB,r,known);if(o){syMerge(o,r,known);o.syncKnown=known}
@@ -4433,12 +4436,13 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
     <span class="hint">${i.last?'마지막 동기화 '+fmtT(i.last):''}</span><button class="btn" data-act="syPull">지금 받기</button></div>
   ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}`;
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
+    <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
     <div class="hint">코드에는 저장소 연결 키와 시간표 암호 키가 들어 있어요. 카톡 1:1로 해당 관리자에게만 보내고, 받은 쪽에서 연결한 뒤 메시지를 지우게 해 주세요.<br>지점 관리자는 그 지점의 시간표·반·학생·강사·교시·지점 이름을 프로그램 관리자와 같은 권한으로 고칠 수 있고, 다른 지점은 보기만 돼요. 프로그램 설정(지점 추가·삭제, 폰으로 보기, 연동)은 프로그램 관리자만 바꿀 수 있어요.</div>`}
   else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span></div>`;
-  else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정은 프로그램 관리자가 관리해요</span><span class="sp"></span><button class="btn danger" data-act="syOff">연결 끊기</button></div>`;
+  else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정과 PC 연결은 프로그램 관리자가 관리해요</span></div>`;
   if(owner)h+=admSetHTML(i);
-  el.innerHTML=h}
+  el.innerHTML=h;if(owner)syDevsLoad()}
 function syCodeDlg(code,label){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="scT" style="width:min(640px,100%)"><h2 id="scT">${esc(label)} 코드</h2>
   <div class="hint">받는 사람이 프로그램을 설치한 뒤 <b>[설정 → 지점 연동 → 지점 코드로 연결]</b>에 붙여넣으면 돼요.</div>
   <textarea id="scCode" readonly rows="5" style="width:100%;font-family:var(--f-mono);font-size:11px">${esc(code)}</textarea>
@@ -4605,6 +4609,20 @@ async function admJoin(){const code=($('anCode').value||'').trim(),pw=$('anPw').
   const s=await bridge.admSet({home,pw});SYNC.info=s.ok?s.info:r.info;ADM.open=false;
   await syncPull({full:true,silent:true});$('modal').hidden=true;DB.currentBranch=myBr();render();rqTick(true);
   toast(`관리자 PC가 됐어요 · 평소엔 ${syBName(myBr())} 모드, 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 열려요`,6000)}
+
+/* ---- 연결된 PC · 원격 끊기 (관리자 모드) ---- */
+async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if(el)el.remove();return}let r;try{r=await bridge.syncDevices()}catch(e){return}const box=$('syDevs');if(!box)return;
+  const L=(r.list||[]).sort((a,b)=>(b.me?1:0)-(a.me?1:0)||(a.role==='owner'?0:1)-(b.role==='owner'?0:1)||String(a.name).localeCompare(String(b.name),'ko'));
+  const md=d=>{if(!d.day)return '';const [y,m,dd]=d.day.split('-');return `${+m}/${+dd}`};
+  box.innerHTML=`<b>연결된 PC</b><span class="hint">각 PC가 켜질 때 여기에 나와요 · [연결 끊기]하면 그 PC는 다음 동기화(2분 안) 때 연동이 꺼지고 키가 지워져요. 시간표 파일은 그 PC에 남아요</span>
+    ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+' 관리자'}</td><td class="mono">${esc(d.ver||'')}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
+async function syRevokeGo(btn){if(!armed(btn,'rv'+btn.dataset.syrevoke,'한 번 더 누르면 끊어요'))return;btn.disabled=true;const r=await bridge.syncRevoke(btn.dataset.syrevoke);
+  if(!r.ok){btn.disabled=false;toast('끊지 못했어요 · '+(r.err||''),4000);return}toast(`${btn.dataset.n||'그 PC'}의 연결을 끊었어요 · 그 PC가 켜져 있으면 2분 안에 연동이 꺼져요`,5000);syDevsLoad()}
+function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYNC.info,{on:false});SYNC.mine.clear();SYNC.offline.clear();ADM.open=false;
+  if(UI.edit){try{bridge.backupNamed(JSON.stringify(DB),'연결끊김_수정중')}catch(e){}}
+  renderSyncState();render();$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rvT" style="width:min(520px,100%)"><h2 id="rvT">이 PC의 연결이 끊겼어요</h2>
+  <div class="hint">프로그램 관리자가 이 PC의 지점 연동을 끊었어요. 지금까지의 시간표는 이 PC에 남아 있지만, 더 이상 다른 PC와 주고받지 않아요.<br>다시 쓰려면 프로그램 관리자에게 새 지점 코드를 받아 [설정 → 지점 연동 → 지점 코드로 연결]에 넣어 주세요.</div>
+  <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pri" data-act="closeModal">확인</button></div></div>`}
 </script>
 <script>/* ================= 방학 특강 =================
    특강 = 정규 교시표와 별개로 요일·시작 시간·길이·기간(시작~끝 날짜)을 갖는 수업. 지점(b.specials)에 저장.
@@ -4800,7 +4818,7 @@ const HELP=[
   <li>시간표 위 <b>[보강 보기]</b> 체크로 보이기/가리기. 폰·브라우저 전체 시간표에도 같은 스위치가 있어요.</li>
   <li>이름표(보강 / 추가수업 / 조교시간)는 [설정 → 지점]에서 지점마다 골라요.</li></ul>`},
  {id:'noterq',t:'선생님 보강 요청 (브라우저 → 승인)',b:`<ul><li>선생님이 브라우저 시간표 <b>전체 → 내 시간표</b>에서 빈 칸(공강)을 누르면 학생 이름을 적어 요청할 수 있어요. 그 칸에는 '승인 대기'로 보여요.</li><li>요청이 오면 프로그램 위쪽에 <b>선생님 보강 요청 ○건</b>이 떠요. [확인하기] → [승인]하면 그 칸의 빈 칸 메모로 들어가고, [거절]하면 사라져요. 수정 모드 중에는 끝낸 뒤 승인해요.</li><li>지점 관리자는 자기 지점 요청을, 프로그램 관리자는 모든 지점 요청을 승인할 수 있어요.</li><li>처음 한 번 프로그램 관리자 PC의 [설정 → 선생님 보강 요청]에 <b>요청 키</b>(Issues 권한만 있는 GitHub 키)를 넣고 켜요. 이 키로는 요청만 남길 수 있고 시간표는 못 바꿔요.</li></ul>`},
- {id:'admlock',t:'관리자 잠금 (평소엔 내 지점 모드)',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li></ul>`},
+ {id:'admlock',t:'관리자 잠금 (평소엔 내 지점 모드)',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
  {id:'ver',t:'버전 · 적용 기록 · 백업',b:`
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
