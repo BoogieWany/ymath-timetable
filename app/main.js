@@ -1,0 +1,279 @@
+const {app,BrowserWindow,ipcMain,dialog,Menu,shell,nativeTheme,safeStorage}=require('electron');
+const path=require('path'),fs=require('fs');
+// 데이터 위치: exe 옆에 data 폴더가 있으면(바탕화면 폴더판) 그대로, 설치판은 [문서\Y-MATH시간표 데이터]
+const EXEDIR=app.isPackaged?path.dirname(process.execPath):path.join(__dirname,'..');
+const ROOT=process.env.YMT_ROOT||(fs.existsSync(path.join(EXEDIR,'data'))||fs.existsSync(path.join(EXEDIR,'portable.txt'))?EXEDIR:path.join(app.getPath('documents'),'Y-MATH시간표 데이터'));
+const DATA=path.join(ROOT,'data'),BAK=path.join(DATA,'backup'),OUT=path.join(ROOT,'PDF');
+const FILE=path.join(DATA,'timetable.json');
+for(const d of [DATA,BAK,OUT])fs.mkdirSync(d,{recursive:true});
+app.setName('Y-MATH 시간표');
+// 창은 하나만: 이미 켜져 있으면 새로 켜지 않고 기존 창을 앞으로
+if(!process.env.YMT_MULTI&&!app.requestSingleInstanceLock()){app.quit();process.exit(0)}
+app.on('second-instance',()=>{if(win){if(win.isMinimized())win.restore();win.show();win.focus()}});
+let win,zoom=0,lastBak=0;
+function stamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`}
+function backup(){
+  if(!fs.existsSync(FILE)||Date.now()-lastBak<30*60*1000)return;
+  lastBak=Date.now();fs.copyFileSync(FILE,path.join(BAK,`timetable_${stamp()}.json`));
+  const list=fs.readdirSync(BAK).filter(f=>f.startsWith('timetable_')).sort();
+  while(list.length>60)fs.unlinkSync(path.join(BAK,list.shift()));
+}
+ipcMain.handle('load',()=>fs.existsSync(FILE)?fs.readFileSync(FILE,'utf8'):null);
+ipcMain.handle('save',(e,txt,o)=>{backup();if(!(o&&o.quiet))setTimeout(()=>{try{nasLater()}catch(err){}},0);const tmp=FILE+'.tmp';fs.writeFileSync(tmp,txt,'utf8');fs.renameSync(tmp,FILE);return true});
+ipcMain.handle('pdf',async(e,o)=>{
+  const buf=await win.webContents.printToPDF({landscape:!!o.landscape,pageSize:o.pageSize||'A4',printBackground:true,margins:{marginType:'custom',top:0.25,bottom:0.25,left:0.25,right:0.25}});
+  const r=await dialog.showSaveDialog(win,{title:'PDF 저장',defaultPath:path.join(OUT,(o.name||'시간표')+'.pdf'),filters:[{name:'PDF',extensions:['pdf']}]});
+  if(r.canceled||!r.filePath)return {saved:false};
+  fs.writeFileSync(r.filePath,buf);shell.openPath(r.filePath);return {saved:true,path:r.filePath};
+});
+ipcMain.handle('exportFile',async(e,o)=>{
+  const r=await dialog.showSaveDialog(win,{title:'백업 저장',defaultPath:path.join(ROOT,o.name),filters:[{name:'JSON',extensions:['json']}]});
+  if(r.canceled||!r.filePath)return {saved:false};fs.writeFileSync(r.filePath,o.text,'utf8');return {saved:true,path:r.filePath};
+});
+const DRAFT=path.join(DATA,'draft.json');
+ipcMain.handle('saveDraft',(e,txt)=>{const tmp=DRAFT+'.tmp';fs.writeFileSync(tmp,txt,'utf8');fs.renameSync(tmp,DRAFT);return true});
+ipcMain.handle('loadDraft',()=>fs.existsSync(DRAFT)?fs.readFileSync(DRAFT,'utf8'):null);
+ipcMain.handle('clearDraft',()=>{if(fs.existsSync(DRAFT))fs.unlinkSync(DRAFT);return true});
+ipcMain.handle('backupNamed',(e,txt,label)=>{fs.writeFileSync(path.join(BAK,`timetable_${label||'백업'}_${stamp()}.json`),txt,'utf8');return true});
+// 창 닫기·새로고침 직전 마지막 저장 (동기)
+ipcMain.on('saveSync',(e,txt,isDraft)=>{try{const f=isDraft?DRAFT:FILE;if(!isDraft){backup();setTimeout(()=>{try{nasLater()}catch(err){}},0)}fs.writeFileSync(f+'.tmp',txt,'utf8');fs.renameSync(f+'.tmp',f);e.returnValue=true}catch(err){e.returnValue=false}});
+
+/* ================= 폰으로 보기: 같은 와이파이 안에서 보기 전용 웹 화면 =================
+   PC가 작은 웹서버가 됨. 폰은 http://PC주소:포트 로 접속 → mobile.html → view.json(PIN 확인).
+   view.json은 [적용]된 시간표(timetable.json)만 씀 (수정 중 초안은 안 나감).
+   나중에 인터넷 서버로 옮길 때도 mobile.html + view.json 구조 그대로 쓰면 됨. */
+const http=require('http'),os=require('os');
+const MOB=path.join(DATA,'mobile.json');
+let mob={on:false,pin:'',port:8787},srv=null,srvErr='';
+try{mob=Object.assign(mob,JSON.parse(fs.readFileSync(MOB,'utf8')))}catch(e){}
+function lanIPs(){const out=[];Object.values(os.networkInterfaces()).forEach(a=>(a||[]).forEach(i=>{if(i.family==='IPv4'&&!i.internal&&!/^169\.254/.test(i.address))out.push(i.address)}));return out}
+function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){return null}
+  const at=fs.statSync(FILE).mtimeMs;
+  return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
+    return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),
+      students:(b.students||[]).map(st=>({id:st.id,name:st.name,grade:st.grade||'',away:st.status==='휴원'})),
+      noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).map(n=>({d:n.d,p:n.p,t:n.t,names:n.names})),
+      specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
+      classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
+      sessions:(v.sessions||[]).map(o=>({cls:o.cls,t:o.t,d:o.d,p:o.p}))}})}}
+const MANIFEST=JSON.stringify({name:'Y-MATH 시간표',short_name:'Y-MATH',start_url:'./',scope:'./',display:'standalone',background_color:'#17243F',theme_color:'#17243F',icons:[{src:'icon.png',sizes:'256x256',type:'image/png',purpose:'any'}]});
+const FAIL={};
+function handle(req,res){const u=new URL(req.url,'http://x');const ip=req.socket.remoteAddress||'';
+  const send=(code,type,body)=>{res.writeHead(code,{'Content-Type':type,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(body)};
+  if(u.pathname==='/'||u.pathname==='/index.html'){try{return send(200,'text/html; charset=utf-8',fs.readFileSync(path.join(__dirname,'mobile.html')))}catch(e){return send(500,'text/plain','no page')}}
+  if(/^\/fonts\/[\w.-]+\.woff2$/.test(u.pathname)){const f=path.join(__dirname,u.pathname);if(fs.existsSync(f)){res.writeHead(200,{'Content-Type':'font/woff2','Cache-Control':'max-age=86400'});return res.end(fs.readFileSync(f))}}
+  if(u.pathname==='/manifest.webmanifest')return send(200,'application/manifest+json; charset=utf-8',MANIFEST);
+  if(u.pathname==='/icon.png'){try{res.writeHead(200,{'Content-Type':'image/png'});return res.end(fs.readFileSync(path.join(__dirname,'icon.png')))}catch(e){}}
+  if(u.pathname==='/view.json'){const f=FAIL[ip]||{n:0,until:0};if(Date.now()<f.until)return send(429,'application/json','{"err":"wait"}');
+    const pin=req.headers['x-pin']||u.searchParams.get('pin')||'';
+    if(mob.pin&&pin!==mob.pin){f.n++;if(f.n>=5){f.until=Date.now()+30000;f.n=0}FAIL[ip]=f;return send(401,'application/json','{"err":"pin"}')}
+    FAIL[ip]={n:0,until:0};const v=publicView();return v?send(200,'application/json; charset=utf-8',JSON.stringify(v)):send(503,'application/json','{"err":"nodata"}')}
+  send(404,'text/plain','not found')}
+function startServer(){if(srv){try{srv.close()}catch(e){}srv=null}srvErr='';if(!mob.on)return;
+  srv=http.createServer(handle);srv.on('error',e=>{srvErr=e.code==='EADDRINUSE'?`포트 ${mob.port}을(를) 다른 프로그램이 쓰고 있어요`:e.message;srv=null});
+  srv.listen(mob.port,'0.0.0.0')}
+function mobInfo(){return {on:mob.on,pin:mob.pin,port:mob.port,running:!!(srv&&srv.listening),err:srvErr,gh:ghInfo(),nas:{on:!!mob.nasOn,base:mob.nasBase||'',sub:mob.nasSub||'',host:mob.nasHost||'',last:NAS.last,err:NAS.err},urls:lanIPs().map(ip=>`http://${ip}:${mob.port}`)}}
+ipcMain.handle('mobileGet',()=>new Promise(r=>setTimeout(()=>r(mobInfo()),150)));
+ipcMain.handle('mobileSet',(e,o)=>{mob.on=!!o.on;mob.pin=String(o.pin||'').trim().slice(0,32);const pt=+o.port;if(pt>=1024&&pt<=65535)mob.port=pt;
+  fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');startServer();return new Promise(r=>setTimeout(()=>r(mobInfo()),400))});
+
+/* ================= 학원 서버(시놀로지 NAS)로 올리기 =================
+   [적용]으로 timetable.json이 저장될 때마다 NAS의 웹 폴더(예: Z:\web\ymt-xxxxxxxx)에 index.html(=mobile.html)·view.json·글꼴을 복사.
+   view.json은 선생님용 번호로 잠금(AES-256-GCM, 키 = PBKDF2-SHA256 20만 회) → 폰에서 번호를 넣어야 풀림. PC가 꺼져 있어도 마지막 적용본을 볼 수 있음. */
+const crypto=require('crypto');
+const NAS={last:0,err:''};let nasT=null;
+function nasDir(){return mob.nasOn&&mob.nasBase&&mob.nasSub?path.join(mob.nasBase,mob.nasSub):null}
+function encView(obj,pass){const salt=crypto.randomBytes(16),iv=crypto.randomBytes(12),it=600000;const key=crypto.pbkdf2Sync(Buffer.from(pass,'utf8'),salt,it,32,'sha256');
+  const c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);
+  return {app:'ymath-view',enc:1,kdf:'pbkdf2-sha256',it,salt:salt.toString('base64'),iv:iv.toString('base64'),ct:ct.toString('base64')}}
+function wr(f,data){const t=f+'.tmp';fs.writeFileSync(t,data);try{fs.renameSync(t,f)}catch(e){fs.copyFileSync(t,f);fs.unlinkSync(t)}}
+function publishNas(){const d=nasDir();if(!d)return;NAS.err='';
+  try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');
+    if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
+    fs.mkdirSync(path.join(d,'fonts'),{recursive:true});const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
+    wr(path.join(d,'view.json'),JSON.stringify(encView(v,mob.pin)));
+    wr(path.join(d,'index.html'),fs.readFileSync(path.join(__dirname,'mobile.html')));
+    try{fs.copyFileSync(path.join(__dirname,'icon.png'),path.join(d,'icon.png'))}catch(e){}
+    try{wr(path.join(d,'manifest.webmanifest'),MANIFEST)}catch(e){}
+    for(const f of fs.readdirSync(path.join(__dirname,'fonts')).filter(x=>x.endsWith('.woff2'))){const to=path.join(d,'fonts',f);if(!fs.existsSync(to))fs.copyFileSync(path.join(__dirname,'fonts',f),to)}
+    NAS.last=Date.now()}catch(e){NAS.err=e.message}
+  try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{last:NAS.last,err:NAS.err})}catch(e){}}
+function nasLater(){if(nasDir()){clearTimeout(nasT);nasT=setTimeout(publishNas,2500)}if(mob.ghOn){clearTimeout(ghT);ghT=setTimeout(publishGh,3000)}}
+/* ================= 인터넷(GitHub Pages)으로 올리기 =================
+   저장소(예: ymath-timetable)에 index.html·view.json(암호화)·글꼴을 GitHub API로 올림 → https://아이디.github.io/저장소/
+   연결 키는 윈도우 보안 저장(safeStorage)으로 암호화해서 data/mobile.json에 둠. 같은 내용이면 다시 안 올림(git blob sha 비교). */
+const GH={last:0,err:'',url:'',busy:false};let ghT=null;
+function ghToken(){try{if(mob.ghTok&&safeStorage.isEncryptionAvailable())return safeStorage.decryptString(Buffer.from(mob.ghTok,'base64'));return mob.ghTokPlain||''}catch(e){return ''}}
+function ghSetToken(t){if(!t)return;if(safeStorage.isEncryptionAvailable()){mob.ghTok=safeStorage.encryptString(t).toString('base64');delete mob.ghTokPlain}else mob.ghTokPlain=t}
+async function gh(method,url,body,_re){const r=await fetch((process.env.YMT_GH_API||'https://api.github.com')+url,{method,headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'},body:body?JSON.stringify(body):undefined});
+  if(r.status===401&&!_re&&await tokenRefresh())return gh(method,url,body,true);
+  try{const ex=r.headers.get('github-authentication-token-expiration');if(ex){const t=Date.parse(ex.replace(' UTC','Z').replace(' ','T'));if(t&&mob.ghExp!==t){mob.ghExp=t;fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}}}catch(e){}
+  let j=null;try{j=await r.json()}catch(e){}return {status:r.status,j}}
+/* 연결 키 자동 갱신: 원장님이 새 키를 넣으면 sync/token.json(관리자 키로 암호화)에 올려 두고,
+   다른 PC는 401(만료)이 나면 공개 저장소에서 키 없이 그 파일을 읽어 새 키로 바꿈 (10분에 한 번만 시도) */
+let tokTried=0;
+async function tokenRefresh(){try{const c=mob.sync||{};if(!c.on||!syKey()||!mob.ghOwner||!mob.ghRepo)return false;if(Date.now()-tokTried<600000)return false;tokTried=Date.now();
+    const r=await fetch((process.env.YMT_GH_API||'https://api.github.com')+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/token.json`,{headers:{'Accept':'application/vnd.github.raw+json','User-Agent':'ymath-timetable'}});
+    if(!r.ok)return false;const o=syDec(Buffer.from(await r.arrayBuffer()));if(!o||!o.t||o.t===ghToken())return false;ghSetToken(o.t);fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');return true}catch(e){return false}}
+async function tokenPublish(){try{const c=mob.sync||{};if(!c.on||c.role!=='owner'||!syKey()||!ghToken())return;if(!mob.ghOwner)await ghConnect();await ghPut('sync/token.json',syEnc({t:ghToken(),at:Date.now()}),'연결 키 갱신')}catch(e){}}
+const blobSha=buf=>crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob '+buf.length+'\0'),buf])).digest('hex');
+async function ghPut(file,buf,msg){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/${file}`;const g=await gh('GET',u);
+  if(g.status===200&&g.j&&g.j.sha===blobSha(buf))return false;
+  const p=await gh('PUT',u,{message:msg,content:buf.toString('base64'),...(g.status===200&&g.j?{sha:g.j.sha}:{})});
+  if(p.status!==200&&p.status!==201)throw new Error(ghErr(p,file));return true}
+function ghErr(r,what){if(r.status===401)return '연결 키가 맞지 않거나 기한이 지났어요';if(r.status===403)return '연결 키에 쓰기 권한이 없어요 (Contents: Read and write)';if(r.status===404)return `저장소 ${mob.ghOwner}/${mob.ghRepo}을(를) 찾지 못했어요 · 이름과 키의 저장소 선택을 확인해 주세요`;return `GitHub 오류 ${r.status}${what?' ('+what+')':''}: ${(r.j&&r.j.message)||''}`}
+async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)throw new Error(ghErr(me));mob.ghOwner=me.j.login;
+  const rp=await gh('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}`);if(rp.status!==200)throw new Error(ghErr(rp));
+  if(rp.j.private)throw new Error('저장소가 비공개(Private)예요 · 무료 GitHub Pages는 공개(Public) 저장소만 돼요 (시간표는 암호화돼 있어서 공개여도 안전해요)');
+  GH.branch=rp.j.default_branch||'main'}
+async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;const g=await gh('GET',u);if(g.status===200){GH.url=g.j.html_url||'';return true}
+  const c=await gh('POST',u,{source:{branch:GH.branch||'main',path:'/'}});if(c.status===201||c.status===200){GH.url=(c.j&&c.j.html_url)||'';return true}
+  GH.url='';GH.pagesOff=true;return false}
+async function publishGh(){if(!mob.ghOn||GH.busy)return;GH.busy=true;GH.err='';GH.pagesOff=false;
+  try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
+    await ghConnect();const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
+    const st=new Date().toISOString().slice(0,16).replace('T',' ');
+    await ghPut('index.html',fs.readFileSync(path.join(__dirname,'mobile.html')),'화면 '+st);
+    await ghPut('.nojekyll',Buffer.from(''),'설정');
+    await ghPut('manifest.webmanifest',Buffer.from(MANIFEST),'앱 아이콘 정보');
+    await ghPut('icon.png',fs.readFileSync(path.join(__dirname,'icon.png')),'아이콘');
+    for(const f of ['IBMPlexSansKR-Regular.woff2','IBMPlexSansKR-SemiBold.woff2','IBMPlexSansKR-Bold.woff2','IBMPlexMono-Medium.woff2'])await ghPut('fonts/'+f,fs.readFileSync(path.join(__dirname,'fonts',f)),'글꼴');
+    await ghPut('view.json',Buffer.from(JSON.stringify(encView(v,mob.pin))),'시간표 '+st);
+    await ghPages();if(!GH.url)GH.url=`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`;GH.last=Date.now()}
+  catch(e){GH.err=e.message||String(e)}
+  GH.busy=false;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}}
+function ghInfo(){return {exp:mob.ghExp||0,on:!!mob.ghOn,repo:mob.ghRepo||'',owner:mob.ghOwner||'',hasTok:!!ghToken(),last:GH.last,err:GH.err,url:GH.url||(mob.ghOwner&&mob.ghRepo?`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`:''),pagesOff:!!GH.pagesOff,busy:GH.busy}}
+ipcMain.handle('ghSet',async(e,o)=>{mob.ghOn=!!o.on;if(o.repo!==undefined)mob.ghRepo=String(o.repo||'').trim().replace(/^.*\//,'');if(o.token)ghSetToken(String(o.token).trim());
+  if(o.pin!==undefined)mob.pin=String(o.pin||'').trim().slice(0,32);fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(mob.ghOn)await publishGh();if(o.token)await tokenPublish();return mobInfo()});
+ipcMain.handle('ghNow',async()=>{await publishGh();return mobInfo()});
+ipcMain.handle('nasSet',(e,o)=>{if(o.pickBase!==undefined){}
+  mob.nasOn=!!o.on;if(o.base!==undefined)mob.nasBase=o.base;if(o.host!==undefined)mob.nasHost=String(o.host||'').trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');
+  if(o.pin!==undefined)mob.pin=String(o.pin||'').trim().slice(0,32);
+  if(mob.nasOn&&!mob.nasSub)mob.nasSub='ymt-'+crypto.randomBytes(5).toString('hex');
+  fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(mob.nasOn)publishNas();return mobInfo()});
+ipcMain.handle('nasPick',async()=>{const r=await dialog.showOpenDialog(win,{title:'시놀로지 웹 폴더 고르기 (예: Z:\\web)',properties:['openDirectory'],defaultPath:fs.existsSync('Z:\\')?'Z:\\':undefined});return r.canceled?null:r.filePaths[0]});
+ipcMain.handle('nasNow',()=>{publishNas();return mobInfo()});
+
+/* ================= 지점 연동 (GitHub 저장소를 창고로) =================
+   sync/branches/<지점id>.json = 지점 전체(강사·교시·학생·반·버전) — 관리자 키(무작위 32바이트)로 AES-256-GCM 암호화
+   sync/locks/<지점id>.json = {by,dev,at} 수정 잠금 (먼저 켠 사람만 수정)
+   역할: owner(프로그램 관리자, 모든 지점) / branch(지점 관리자, 자기 지점만). 지점 관리자는 관리자 코드로 연결 */
+const SY={last:0,err:''};
+function syCfg(){return mob.sync||(mob.sync={})}
+function syKey(){const c=syCfg();try{if(c.keyEnc&&safeStorage.isEncryptionAvailable())return Buffer.from(safeStorage.decryptString(Buffer.from(c.keyEnc,'base64')),'base64');if(c.keyPlain)return Buffer.from(c.keyPlain,'base64')}catch(e){}return null}
+function sySetKey(b64){const c=syCfg();if(safeStorage.isEncryptionAvailable()){c.keyEnc=safeStorage.encryptString(b64).toString('base64');delete c.keyPlain}else c.keyPlain=b64}
+function syEnc(obj){const iv=crypto.randomBytes(12),c=crypto.createCipheriv('aes-256-gcm',syKey(),iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);return Buffer.from(JSON.stringify({ymt:'branch',v:1,iv:iv.toString('base64'),ct:ct.toString('base64')}))}
+function syDec(buf){const j=JSON.parse(buf.toString('utf8'));const iv=Buffer.from(j.iv,'base64'),all=Buffer.from(j.ct,'base64');const d=crypto.createDecipheriv('aes-256-gcm',syKey(),iv);d.setAuthTag(all.subarray(all.length-16));return JSON.parse(Buffer.concat([d.update(all.subarray(0,all.length-16)),d.final()]).toString('utf8'))}
+const syBase=()=>`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync`;
+async function syRaw(pathU,_re){const r=await fetch((process.env.YMT_GH_API||'https://api.github.com')+pathU,{headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'}});
+  if(r.status===401&&!_re&&await tokenRefresh())return syRaw(pathU,true);if(!r.ok)throw new Error(ghErr({status:r.status,j:null}));return Buffer.from(await r.arrayBuffer())}
+async function syDir(sub){const r=await gh('GET',`${syBase()}/${sub}`);if(r.status===404)return [];if(r.status!==200)throw new Error(ghErr(r));return (r.j||[]).filter(x=>x.type==='file'&&x.name.endsWith('.json')).map(x=>({id:x.name.replace(/\.json$/,''),sha:x.sha,path:x.path}))}
+function syReady(){const c=syCfg();return !!(c.on&&syKey()&&ghToken()&&mob.ghOwner&&mob.ghRepo)}
+function syInfo(){const c=syCfg();return {on:!!c.on,role:c.role||'owner',branch:c.branch||'',name:c.name||'',dev:c.dev||'',last:SY.last,err:SY.err,ready:syReady(),ghReady:!!(ghToken()&&mob.ghRepo)}}
+function sySave(){fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}
+// 받기: 바뀐 지점만 내용까지
+ipcMain.handle('syncPull',async(e,known)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};
+  try{if(!mob.ghOwner)await ghConnect();const list=await syDir('branches');const out=[];
+    for(const f of list){if(known&&known[f.id]===f.sha)continue;try{out.push({id:f.id,sha:f.sha,data:syDec(await syRaw(`${syBase()}/branches/${f.id}.json`))})}catch(err){out.push({id:f.id,sha:f.sha,err:'풀지 못했어요(관리자 키가 다름)'})}}
+    let locks={};try{for(const l of await syDir('locks')){try{locks[l.id]=Object.assign(JSON.parse((await syRaw(`${syBase()}/locks/${l.id}.json`)).toString('utf8')),{sha:l.sha})}catch(err){}}}catch(err){}
+    SY.last=Date.now();SY.err='';return {ok:true,present:list.map(f=>({id:f.id,sha:f.sha})),changed:out,locks}}
+  catch(err){SY.err=err.message;return {ok:false,err:err.message}}});
+// 올리기: [{id,data,sha}] — sha가 다르면(누가 먼저 올림) 서버 것을 백업해 두고 덮어씀
+ipcMain.handle('syncPush',async(e,items)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};const done={},conflicts=[];
+  try{if(!mob.ghOwner)await ghConnect();
+    for(const it of items){const u=`${syBase()}/branches/${it.id}.json`;const cur=await gh('GET',u);let sha=cur.status===200?cur.j.sha:undefined;
+      if(sha&&sha!==it.sha){if(!it.force){let by='',at=0;try{const d=syDec(await syRaw(u));by=(d._sync||{}).by||'';at=(d._sync||{}).at||0}catch(err){}conflicts.push({id:it.id,by,at,sha});continue}
+        try{fs.writeFileSync(path.join(BAK,`timetable_충돌_상대본_${it.id}_${stamp()}.json`),JSON.stringify(syDec(await syRaw(u))),'utf8')}catch(err){}}
+      const p=await gh('PUT',u,{message:`${syCfg().name||'관리자'} · ${(it.data&&it.data.name)||it.id}`,content:syEnc(it.data).toString('base64'),...(sha?{sha}:{})});
+      if(p.status!==200&&p.status!==201)throw new Error(ghErr(p,it.id));done[it.id]=p.j.content.sha}
+    SY.last=Date.now();SY.err='';return {ok:conflicts.length===0,conflicts,shas:done}}catch(err){SY.err=err.message;return {ok:false,err:err.message,shas:done,conflicts}}});
+ipcMain.handle('syncDelete',async(e,ids)=>{try{for(const id of ids){for(const sub of ['branches','locks']){const u=`${syBase()}/${sub}/${id}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'지점 삭제',sha:g.j.sha})}}return {ok:true}}catch(err){return {ok:false,err:err.message}}});
+// 잠금
+ipcMain.handle('syncLock',async(e,id)=>{if(!syReady())return {ok:true,off:true};const c=syCfg();const u=`${syBase()}/locks/${id}.json`;
+  try{if(!mob.ghOwner)await ghConnect();const g=await gh('GET',u);
+    if(g.status===200){const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev===c.dev)return {ok:true};return {ok:false,by:l.by,at:l.at}}
+    const body={by:c.name||(c.role==='owner'?'프로그램 관리자':'지점 관리자'),dev:c.dev,at:Date.now()};
+    const p=await gh('PUT',u,{message:'잠금 '+body.by,content:Buffer.from(JSON.stringify(body)).toString('base64')});
+    if(p.status===201||p.status===200)return {ok:true};const g2=await gh('GET',u);if(g2.status===200){const l=JSON.parse(Buffer.from(g2.j.content,'base64').toString('utf8'));return {ok:false,by:l.by,at:l.at}}
+    return {ok:false,err:ghErr(p)}}catch(err){return {ok:false,offline:true,err:err.message}}});
+ipcMain.handle('syncUnlock',async(e,ids,force)=>{const c=syCfg();const res={};
+  for(const id of ids){try{const u=`${syBase()}/locks/${id}.json`;const g=await gh('GET',u);if(g.status!==200){res[id]=true;continue}
+    const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev!==c.dev&&!(force&&c.role==='owner')){res[id]=false;continue}
+    const d=await gh('DELETE',u,{message:'잠금 풀기',sha:g.j.sha});res[id]=d.status===200}catch(err){res[id]=false}}return res});
+// 켜기(원장님) / 코드로 연결(지점 관리자) / 코드 만들기 / 끊기
+ipcMain.handle('syncInfo',()=>syInfo());
+ipcMain.handle('syncEnable',async(e,o)=>{const c=syCfg();if(!ghToken()||!mob.ghRepo)return {ok:false,err:'먼저 [폰으로 보기 → 인터넷(GitHub)으로 올리기]를 연결해 주세요'};
+  try{await ghConnect()}catch(err){return {ok:false,err:err.message}}
+  if(!syKey())sySetKey(crypto.randomBytes(32).toString('base64'));c.on=true;c.role='owner';try{updEnsureKeys()}catch(err){}c.name=String(o&&o.name||c.name||'부원장').slice(0,20);c.dev=c.dev||crypto.randomBytes(6).toString('hex');sySave();await tokenPublish();return {ok:true,info:syInfo()}});
+ipcMain.handle('syncCode',(e,branchId)=>{const c=syCfg();if(c.role!=='owner'||!syReady())return null;
+  try{updEnsureKeys()}catch(err){}const o={v:1,o:mob.ghOwner,r:mob.ghRepo,t:ghToken(),k:syKey().toString('base64'),p:mob.pin||'',b:branchId||'*',u:c.pub||''};
+  if(!branchId||branchId==='*'){try{const pk=updPriv();if(pk)o.s=pk.export({type:'pkcs8',format:'pem'})}catch(err){}}return 'YMT1.'+Buffer.from(JSON.stringify(o)).toString('base64url')});
+ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.from(String(code).trim().replace(/^YMT1\./,''),'base64url').toString('utf8'));if(!o.t||!o.k||!o.r)throw 0}catch(err){return {ok:false,err:'코드가 올바르지 않아요 · 프로그램 관리자에게 받은 코드를 통째로 붙여넣어 주세요'}}
+  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(c.role==='owner'?'원장님':'지점 관리자');c.dev=c.dev||crypto.randomBytes(6).toString('hex');sySave();
+  try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
+ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo()});
+ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
+
+/* ================= 자동 업데이트 (원장님 PC → 지점 PC) =================
+   원장님 PC가 켜질 때 자기 프로그램 파일(index·mobile·main·preload·package)을 저장소 app/에 올리고,
+   app/version.json = {m:목록(JSON 글자), sig} 에 원장님 PC만 가진 서명 키(ed25519)로 서명.
+   다른 PC는 2분마다 확인 → 서명·파일 해시가 맞고 버전이 더 높을 때만 내려받아 바꿈(index.html은 마지막). 서명 확인용 공개키는 관리자 코드에 들어 있음. */
+const UPD_FILES=['main.js','preload.js','package.json','mobile.html','index.html'];
+const vcmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0)}return 0};
+function updPriv(){const c=syCfg();try{if(c.signEnc&&safeStorage.isEncryptionAvailable())return crypto.createPrivateKey(safeStorage.decryptString(Buffer.from(c.signEnc,'base64')));if(c.signPlain)return crypto.createPrivateKey(c.signPlain)}catch(e){}return null}
+function updEnsureKeys(){const c=syCfg();if(c.pub)return;  // 공개키가 이미 있으면(다른 원장님 PC로 연결된 경우 포함) 새로 만들지 않음
+const {publicKey,privateKey}=crypto.generateKeyPairSync('ed25519');const pem=privateKey.export({type:'pkcs8',format:'pem'});
+  if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(pem).toString('base64');delete c.signPlain}else c.signPlain=pem;
+  c.pub=publicKey.export({type:'spki',format:'der'}).toString('base64');sySave()}
+const sha256=b=>crypto.createHash('sha256').update(b).digest('hex');
+async function updRemote(){try{return JSON.parse((await syRaw(`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/app/version.json`)).toString('utf8'))}catch(e){return null}}
+ipcMain.handle('updPublish',async(e,ver)=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false};if(!c.pub)try{updEnsureKeys()}catch(err){}const priv=updPriv();if(!priv)return {ok:false,nokey:true};
+  try{if(!mob.ghOwner)await ghConnect();const rv=await updRemote();let cur=null;try{cur=rv&&JSON.parse(rv.m)}catch(err){}
+    if(cur&&vcmp(cur.ver,ver)>=0)return {ok:true,skipped:true,remote:cur.ver};
+    const files={};for(const f of UPD_FILES){const b=fs.readFileSync(path.join(__dirname,f));files[f]=sha256(b);await ghPut('app/'+f,b,`프로그램 ${ver} · ${f}`)}
+    const m=JSON.stringify({ver,at:Date.now(),files});const sig=crypto.sign(null,Buffer.from(m),priv).toString('base64');
+    await ghPut('app/version.json',Buffer.from(JSON.stringify({m,sig})),`프로그램 ${ver}`);return {ok:true,published:ver}}catch(err){return {ok:false,err:err.message}}});
+let updBusy=false;
+ipcMain.handle('updCheck',async(e,ver)=>{const c=syCfg();if(!syReady()||!c.pub||updBusy)return {ok:false};updBusy=true;
+  try{if(!mob.ghOwner)await ghConnect();const rv=await updRemote();if(!rv)return {ok:true,none:true};
+    const pub=crypto.createPublicKey({key:Buffer.from(c.pub,'base64'),format:'der',type:'spki'});
+    if(!crypto.verify(null,Buffer.from(rv.m),pub,Buffer.from(rv.sig,'base64')))return {ok:false,err:'업데이트 서명이 맞지 않아 받지 않았어요'};
+    const m=JSON.parse(rv.m);if(vcmp(m.ver,ver)<=0)return {ok:true,latest:true};
+    const got={};for(const f of UPD_FILES){if(!m.files[f])continue;const local=fs.existsSync(path.join(__dirname,f))?sha256(fs.readFileSync(path.join(__dirname,f))):'';if(local===m.files[f])continue;
+      const b=await syRaw(`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/app/${f}`);if(sha256(b)!==m.files[f])return {ok:false,err:`업데이트 파일(${f})이 목록과 달라 받지 않았어요`};got[f]=b}
+    const restart=!!(got['main.js']||got['preload.js']||got['package.json']);
+    for(const f of UPD_FILES.filter(x=>x!=='index.html'))if(got[f]){fs.writeFileSync(path.join(__dirname,f+'.new'),got[f]);fs.renameSync(path.join(__dirname,f+'.new'),path.join(__dirname,f))}
+    if(got['index.html']&&!restart){fs.writeFileSync(path.join(__dirname,'index.html.new'),got['index.html']);fs.renameSync(path.join(__dirname,'index.html.new'),path.join(__dirname,'index.html'))}
+    else if(got['index.html'])UPD_PENDING=got['index.html'];
+    return {ok:true,updated:m.ver,restart}}catch(err){return {ok:false,err:err.message}}finally{updBusy=false}});
+let UPD_PENDING=null;
+app.on('will-quit',()=>{try{if(UPD_PENDING){fs.writeFileSync(path.join(__dirname,'index.html'),UPD_PENDING);UPD_PENDING=null}}catch(e){}});
+ipcMain.handle('relaunch',()=>{try{if(UPD_PENDING){fs.writeFileSync(path.join(__dirname,'index.html'),UPD_PENDING);UPD_PENDING=null}}catch(e){}app.relaunch();app.exit(0)});
+ipcMain.handle('setTheme',(e,m)=>{nativeTheme.themeSource=m;return true});
+ipcMain.handle('win',(e,a)=>{const w=BrowserWindow.fromWebContents(e.sender);if(!w)return null;
+  if(a==='min')w.minimize();else if(a==='max'){if(w.isFullScreen())w.setFullScreen(false);else if(w.isMaximized())w.unmaximize();else w.maximize()}else if(a==='close')w.close();
+  return {max:w.isMaximized(),full:w.isFullScreen()}});
+ipcMain.handle('openFolder',(e,w)=>shell.openPath(w==='out'?OUT:DATA));
+ipcMain.handle('zoom',(e,d)=>{zoom=d===0?0:Math.max(-4,Math.min(4,zoom+d));win.webContents.setZoomLevel(zoom*0.5);return zoom});
+app.whenReady().then(()=>{
+  startServer();setTimeout(()=>{try{publishNas()}catch(e){}try{publishGh()}catch(e){}},4000);
+  Menu.setApplicationMenu(null);
+  win=new BrowserWindow({width:1500,height:940,minWidth:900,minHeight:600,title:'Y-MATH 시간표',backgroundColor:'#17243F',
+    frame:false,thickFrame:true,icon:path.join(__dirname,process.platform==='win32'?'icon.ico':'icon.png'),
+    webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,nodeIntegration:false,spellcheck:false}});
+  win.loadFile(path.join(__dirname,'index.html'));
+  const st=()=>{try{win.webContents.send('winstate',{max:win.isMaximized(),full:win.isFullScreen()})}catch(e){}};
+  ['maximize','unmaximize','enter-full-screen','leave-full-screen','restore'].forEach(ev=>win.on(ev,st));
+  win.webContents.on('did-finish-load',st);
+  win.webContents.on('before-input-event',(e,i)=>{if(i.type!=='keyDown')return;if(i.key==='F12'&&i.control&&i.shift)win.webContents.toggleDevTools();else if(i.key==='F11'){win.setFullScreen(!win.isFullScreen());e.preventDefault()}});
+  win.on('close',e=>{ /* 저장은 변경 즉시 됨 */ });
+  // 업데이트 파일(index.html)이 바뀌면 껐다 켜지 않아도 자동 새로고침
+  let rt=null,last=0;try{last=fs.statSync(path.join(__dirname,'index.html')).mtimeMs}catch(e){}
+  fs.watch(__dirname,(ev,f)=>{if(!f||!/^index\.html$/i.test(f))return;clearTimeout(rt);rt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'index.html')).mtimeMs;if(m===last)return;last=m}catch(e){return}
+    if(win&&!win.isDestroyed()){win.webContents.send('updated');setTimeout(()=>win.webContents.reloadIgnoringCache(),300)}},800)});
+  // 폰 화면(mobile.html)이 바뀌면 GitHub·NAS에도 바로 다시 올림
+  let mt=null,mlast=0;try{mlast=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs}catch(e){}
+  fs.watch(__dirname,(ev,f)=>{if(!f||!/^mobile\.html$/i.test(f))return;clearTimeout(mt);mt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs;if(m===mlast)return;mlast=m}catch(e){return}
+    try{publishNas()}catch(e){}try{publishGh()}catch(e){}},1500)});
+});
+app.on('window-all-closed',()=>app.quit());
