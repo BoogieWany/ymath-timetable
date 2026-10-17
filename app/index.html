@@ -604,6 +604,11 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .qahit{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:4px}.qahit .btn.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 .qamore{overflow:hidden;max-height:240px;opacity:1;transition:max-height .32s cubic-bezier(.22,.61,.36,1),opacity .25s}.qamore.off{max-height:0;opacity:0}
 .qag{flex-wrap:wrap}.qag button{min-width:44px}
+/* 적용 중 · 수정 모드 준비 중 */
+.spin{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;margin-right:7px;vertical-align:-2px;animation:ymSpin .7s linear infinite;opacity:.85}
+@keyframes ymSpin{to{transform:rotate(360deg)}}
+.btn.busy{opacity:.9;cursor:progress}
+.mbusy{display:inline-flex;align-items:center;font-size:12.5px;color:var(--muted);padding:0 4px;animation:ymFade .25s ease}
 </style>
 </head>
 <body>
@@ -2959,7 +2964,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.35.0', APPDATE='2026-10-17';
+const APPVER='3.35.1', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3079,21 +3084,23 @@ function commit(fn,msg){
   if(AUTO.prev&&!/자동 배치 안/.test(msg||'')){toast('자동 배치 미리보기 중이에요. 위쪽에서 [적용] 또는 [취소]를 먼저 누르세요');return}
   if(!UI.edit){toast('보기 모드예요. 위쪽 보기·수정 스위치를 켜야 고칠 수 있어요');render();return}
   if(typeof syncGuard==='function'&&!syncGuard())return;
-  hist.u.push(JSON.stringify(DB));if(hist.u.length>80)hist.u.shift();hist.r=[];
+  hist.u.push(dbSnap());if(hist.u.length>80)hist.u.shift();hist.r=[];
   fn();DB.updated=new Date().toISOString();markDirty();if(msg)toast(msg);render();
 }
 /* 수정 모드: 들어갈 때 자동 백업 → 초안(draft.json)에서 작업 → [적용]하면 원본에 반영, [버리기]하면 원래대로 */
 let ORIG=null;
 const hashStr=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
 const baseHashOf=db=>Object.fromEntries((db.branches||[]).map(b=>[b.id,hashStr(JSON.stringify(b))]));
-async function enterEdit(){if(typeof syOn==='function'&&syOn()){await syncPull({silent:true});if(!await syncLockCur())return}
+async function enterEdit(){if(UI.entering)return;UI.entering=true;renderMode();try{await enterEditGo()}finally{UI.entering=false;renderMode()}}
+async function enterEditGo(){if(typeof syOn==='function'&&syOn()){await syncPull({silent:true,noLocks:false});if(!await syncLockCur())return}
   ORIG=JSON.stringify(DB);DB._baseHash=baseHashOf(DB);try{if(bridge)await bridge.backupNamed(ORIG,'수정전')}catch(e){}
   UI.edit=true;hist.u=[];hist.r=[];document.body.classList.add('editing');await saveNow();render();toast('수정 모드 · 원본은 백업해 뒀어요')}
 // 초안 보관: 수정 내용은 초안 파일에 그대로 두고 원본 보기로 돌아감 → 며칠 뒤 스위치를 켜면 이어서
 async function holdEdit(){await saveNow();UI._draft=JSON.stringify(DB);if(ORIG)DB=JSON.parse(ORIG);ORIG=null;UI.edit=false;document.body.classList.remove('editing');
   hist.u=[];hist.r=[];UI.picked=null;UI.sel=null;render();toast('초안을 보관했어요 · 지금은 원본 시간표예요. 스위치를 켜면 이어서 고칠 수 있어요')}
 function draftAge(){try{const d=JSON.parse(UI._draft||'null');if(!d||!d.updated)return '';const t=new Date(d.updated);return `${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
-async function applyEdit(){if(typeof syOn==='function'&&syOn()){const pre=await syncPreApply();if(pre.conflicts.length){const ch=await syConflictDlg(pre.conflicts);if(ch==='cancel'){render();return}
+async function applyEdit(){if(UI.applying)return;UI.applying=true;renderMode();try{await applyEditGo()}finally{UI.applying=false;renderMode()}}
+async function applyEditGo(){if(typeof syOn==='function'&&syOn()){const pre=await syncPreApply();if(pre.conflicts.length){const ch=await syConflictDlg(pre.conflicts);if(ch==='cancel'){render();return}
     if(ch==='theirs'){try{if(bridge)await bridge.backupNamed(JSON.stringify(DB),'내수정_버림')}catch(e){}await discardEdit();await syncPull({full:true});toast('상대 것을 받고 내 수정은 버렸어요 · 버린 것은 백업 폴더에 있어요',5000);return}
     SYNC.force=new Set(pre.conflicts.map(c=>c.id))}}
   delete DB._baseHash;
@@ -3105,13 +3112,17 @@ async function discardEdit(){if(ORIG)DB=JSON.parse(ORIG);UI.edit=false;document.
 function renderMode(){const m=$('modeBox');if(!m)return;
   // 보기 ↔ 수정 토글. 수정 중에 끄면 [적용] / [버리기] 중 고르기
   m.innerHTML=`<span class="mtg"><span class="${UI.edit?'':'on'}">보기</span><button class="tgl mtgl" id="modeTgl" role="switch" aria-checked="${UI.edit}" aria-label="수정 모드" title="${UI.edit?'끄면 적용 · 버리기 · 보관하고 나가기 중에 골라요':'켜면 원본을 백업하고 수정 모드로'}"><i></i></button><span class="${UI.edit?'on ed':''}">수정${UI.edit?' · 초안':''}</span></span>`
-    +(UI.edit?`<span class="mbtns"><button class="btn pri" data-act="applyEdit" title="고친 내용을 원본 시간표에 반영">적용</button><button class="btn" data-act="holdEdit" title="원본은 그대로 두고 초안만 보관">보관</button><button class="btn danger" data-act="discardEdit" title="두 번 누르면 수정 전으로">버리기</button></span>`:'')
+    +(UI.applying?`<span class="mbtns"><button class="btn pri busy" disabled><i class="spin"></i>적용 중…</button></span>`:UI.entering?`<span class="mbtns"><span class="mbusy"><i class="spin"></i>수정 모드 준비 중…</span></span>`:'')
+    +(UI.edit&&!UI.applying?`<span class="mbtns"><button class="btn pri" data-act="applyEdit" title="고친 내용을 원본 시간표에 반영">적용</button><button class="btn" data-act="holdEdit" title="원본은 그대로 두고 초안만 보관">보관</button><button class="btn danger" data-act="discardEdit" title="두 번 누르면 수정 전으로">버리기</button></span>`:'')
     +(UI._askOff?`<span class="mpop" role="dialog" aria-label="수정 모드 끄기"><b>수정한 내용을</b><button class="btn pri" data-act="applyEdit">적용</button><button class="btn danger" data-act="discardEdit">버리기</button><button class="btn" data-act="holdEdit" title="원본은 그대로 두고 초안만 보관 · 나중에 이어서">보관하고 나가기</button><button class="btn" data-act="cancelOff">계속 수정</button></span>`:'')
     +(UI._askOn&&!UI.edit?`<span class="mpop" role="dialog" aria-label="수정 모드 켜기"><b>보관 중인 초안 (${draftAge()})</b><button class="btn pri" data-act="resumeDraft">이어서 수정</button><button class="btn danger" data-act="dropDraftNew">버리고 새로 시작</button><button class="btn" data-act="cancelOn">취소</button></span>`:'')
     +(!UI.edit&&UI._draft&&!UI._askOn?`<button class="dbadge" id="modeTgl2" data-act="openAskOn" title="보관 중인 수정 초안이 있어요 · 눌러서 이어서 수정">보관 초안 ${draftAge()}</button>`:'');
   $('undoRow').hidden=!UI.edit}
-function undo(){if(!hist.u.length)return;hist.r.push(JSON.stringify(DB));DB=JSON.parse(hist.u.pop());UI.picked=null;markDirty();render();toast('되돌렸어요')}
-function redo(){if(!hist.r.length)return;hist.u.push(JSON.stringify(DB));DB=JSON.parse(hist.r.pop());UI.picked=null;markDirty();render();toast('다시 했어요')}
+/* 되돌리기 기록엔 적용 기록(history)을 빼고 담음 — 기록이 쌓여도 한 동작마다 무거워지지 않게 */
+function dbSnap(){const h=DB.history;DB.history=undefined;const s=JSON.stringify(DB);DB.history=h;return s}
+function dbRestore(s){const h=DB.history;DB=JSON.parse(s);DB.history=h}
+function undo(){if(!hist.u.length)return;hist.r.push(dbSnap());dbRestore(hist.u.pop());UI.picked=null;markDirty();render();toast('되돌렸어요')}
+function redo(){if(!hist.r.length)return;hist.u.push(dbSnap());dbRestore(hist.r.pop());UI.picked=null;markDirty();render();toast('다시 했어요')}
 
 /* ================= 점검 ================= */
 function analyze(){
@@ -3224,12 +3235,12 @@ function gsVars(g){const base=UI._base||96,fit=Math.max(base,UI._fit||base);cons
 function applyNames(){document.querySelectorAll('#gridScroll table.grid').forEach(t=>t.classList.toggle('withnames',namesOn()));syncNamesToggle();stretchLater()}
 // 카드 높이: 모든 줄을 같은 높이로, 배율에 비례해서 커짐 (이름이 보이면 가장 긴 명단 기준 × 배율)
 function stretchChips(){const sc=document.getElementById('gridScroll');if(!sc)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length)return;
-  const g=UI.gs,prev=tbs.map(t=>t.style.getPropertyValue('--ch'));
-  sc.classList.add('measuring');tbs.forEach(t=>t.style.setProperty('--ch','10px'));void sc.offsetHeight;
-  let nat=0;sc.querySelectorAll('td.slot:not(.spcell) .chip').forEach(c=>{nat=Math.max(nat,c.offsetHeight)});
-  tbs.forEach((t,k)=>t.style.setProperty('--ch',prev[k]||'40px'));void sc.offsetHeight;sc.classList.remove('measuring');
+  const g=UI.gs;
+  // 카드 내용의 실제 높이 = 맨 아래 요소의 바닥 − 카드 위 + 아래 여백 (표를 줄였다 늘리는 측정 없이 한 번만 읽음 → 덜컥거림 없음)
+  let nat=0;sc.querySelectorAll('td.slot:not(.spcell) .chip').forEach(c=>{const l=c.lastElementChild;if(!l)return;const top=c.getBoundingClientRect().top;const lr=l.getBoundingClientRect();const h=lr.bottom-top+4;if(h>nat)nat=h});
+  nat=Math.ceil(nat);
   const base=(UI._baseH||40)*g;const H=Math.round(namesOn()&&g>=GS_NAMES&&UI.namesOv===null?Math.max(base,(nat+8)*Math.sqrt(g/GS_NAMES)):Math.max(base,nat+8));
-  requestAnimationFrame(()=>tbs.forEach(t=>t.style.setProperty('--ch',H+'px')))}
+  if(tbs.every(t=>t.style.getPropertyValue('--ch')===H+'px'))return;requestAnimationFrame(()=>tbs.forEach(t=>{if(t.style.getPropertyValue('--ch')!==H+'px')t.style.setProperty('--ch',H+'px')}))}
 let _stT=null;function stretchLater(){clearTimeout(_stT);stretchChips();_stT=setTimeout(stretchChips,300)}
 // 100% = 휠 없이 한 화면에 들어오는 칸 너비
 function calcBase(){const sc=document.getElementById('gridScroll');if(!sc)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length)return;
@@ -4431,8 +4442,8 @@ async function syncPull(opt={}){if(!syOn()||SYNC.busy||UI.peek||(typeof AUTO!=='
   else renderSyncState();
   try{await syncResend(r)}catch(e){console.warn(e)}return true}
 /* 적용 전 확인: 내가 고친 지점을 다른 PC가 먼저 고쳐 올렸는지 */
-async function syncPreApply(){if(!syOn())return {conflicts:[]};let r;try{r=await bridge.syncPull(DB.syncKnown||{})}catch(e){r={ok:false}}
-  if(!r.ok)return {conflicts:[],offline:true};SYNC.locks=r.locks||{};
+async function syncPreApply(){if(!syOn())return {conflicts:[]};let r;try{r=await bridge.syncPull(DB.syncKnown||{},{noLocks:true})}catch(e){r={ok:false}}
+  if(!r.ok)return {conflicts:[],offline:true};if(r.locks)SYNC.locks=r.locks;
   const mineIds=new Set([...SYNC.mine,...SYNC.offline]);const known=DB.syncKnown=DB.syncKnown||{};
   const conflicts=r.changed.filter(c=>!c.err&&c.data&&mineIds.has(c.id)).map(c=>({id:c.id,by:(c.data._sync||{}).by||'다른 관리자',at:(c.data._sync||{}).at||0,sha:c.sha,data:c.data}));
   const others={present:r.present,changed:r.changed.filter(c=>!mineIds.has(c.id))};
