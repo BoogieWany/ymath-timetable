@@ -347,14 +347,16 @@ body.wide td.free:hover .fadd{opacity:.9}
 .gnote.pend i{color:#a86a12}.gnote.pend.my{cursor:pointer}
 @media (prefers-color-scheme:dark){.gnote.pend i{color:#f0c27a}}
 html.shl,html.shl body{overflow:hidden}
-#sh{touch-action:none;overscroll-behavior:contain}#sh textarea,#sh input,#sh select,#sh .rqsug{touch-action:auto}
-#sh .shp{margin-bottom:var(--kb,0px);transition:transform .34s cubic-bezier(.22,.61,.36,1),margin-bottom .2s ease}
-#sh{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,16,30,0);transition:background .28s ease;pointer-events:none}
-#sh.on{background:rgba(10,16,30,.38);pointer-events:auto}
-#sh .shp{width:100%;max-width:560px;background:var(--panel);color:var(--fg);border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(10,20,40,.18);transform:translateY(105%);transition:transform .34s cubic-bezier(.22,.61,.36,1)}
-#sh.on .shp{transform:none}
-body.wide #sh{align-items:center}body.wide #sh .shp{max-width:460px;border-radius:18px;transform:translateY(14px) scale(.98);opacity:0;transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .25s}
-body.wide #sh.on .shp{transform:none;opacity:1}
+.sh{touch-action:none;overscroll-behavior:contain}.sh textarea,.sh input,.sh select,.sh .rqsug{touch-action:auto}
+.sh .shp{margin-bottom:var(--kb,0px);transition:transform .34s cubic-bezier(.22,.61,.36,1),margin-bottom .2s ease}
+.sh{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.sh::before{content:"";position:absolute;inset:0;background:rgba(10,16,30,.38);opacity:0;transition:opacity .28s ease;will-change:opacity}
+.sh.on{pointer-events:auto}.sh.on::before{opacity:1}
+.sh .shp{position:relative;will-change:transform}
+.sh .shp{width:100%;max-width:680px;background:var(--panel);color:var(--fg);border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(10,20,40,.18);transform:translateY(105%);transition:transform .34s cubic-bezier(.22,.61,.36,1)}
+.sh.on .shp{transform:none}
+body.wide .sh{align-items:center}body.wide .sh .shp{max-width:460px;border-radius:18px;transform:translateY(14px) scale(.98);opacity:0;transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .25s}
+body.wide .sh.on .shp{transform:none;opacity:1}
 .shp h3{margin:0 0 4px;font-size:18px}.shp .ssub{margin:0 0 12px;color:var(--muted);font-size:14px}.shp .mono{font-family:var(--mono)}
 .shp .sex{margin:-4px 0 12px;font-size:13px;color:var(--muted)}
 .shp input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:12px 14px;font-size:16px;outline:none;transition:border-color .2s}
@@ -403,9 +405,9 @@ body.wide #sh.on .shp{transform:none;opacity:1}
 body:not(.wide){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 body:not(.wide) input,body:not(.wide) textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #pk{position:fixed;inset:0;z-index:60;pointer-events:none}
-#pk::before{content:"";position:absolute;inset:0;background:rgba(12,18,32,.22);opacity:0;transition:opacity .2s ease}
+#pk::before{content:"";position:absolute;inset:0;background:rgba(12,18,32,.22);opacity:0;transition:opacity .2s ease;will-change:opacity}
 #pk.on::before{opacity:1}
-#pk .pkc{position:absolute;left:50%;width:min(92vw,400px);max-height:70vh;overflow:hidden;background:var(--panel);color:var(--fg);border-radius:18px;padding:14px 16px 14px;box-shadow:0 18px 50px rgba(10,20,40,.28),0 2px 8px rgba(10,20,40,.12);opacity:0;transform:translateX(-50%) scale(.94);transition:opacity .16s ease,transform .22s cubic-bezier(.22,.61,.36,1)}
+#pk .pkc{position:absolute;left:50%;width:min(92vw,400px);max-height:70vh;overflow:hidden;background:var(--panel);color:var(--fg);border-radius:18px;padding:14px 16px 14px;box-shadow:0 18px 50px rgba(10,20,40,.28),0 2px 8px rgba(10,20,40,.12);opacity:0;transform:translateX(-50%) scale(.94);transition:opacity .16s ease,transform .22s cubic-bezier(.22,.61,.36,1);will-change:transform,opacity}
 #pk.on .pkc{opacity:1;transform:translateX(-50%) scale(1)}
 .pkh{display:flex;align-items:center;gap:10px}
 .pkh>i{flex:none;width:5px;align-self:stretch;border-radius:3px;background:var(--c)}
@@ -696,7 +698,7 @@ let shY=0;function pageLock(on){const h=document.documentElement;if(on){if(h.cla
 window.addEventListener('scroll',()=>{if(document.documentElement.classList.contains('shl')&&Math.abs(window.scrollY-shY)>1)window.scrollTo(0,shY)},{passive:true});
 function kbFit(){const w=$('sh'),vv=window.visualViewport;if(!w||!vv)return;const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);w.style.setProperty('--kb',kb+'px')}
 if(window.visualViewport){visualViewport.addEventListener('resize',kbFit);visualViewport.addEventListener('scroll',kbFit)}
-function shOpen(html){shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
+function shOpen(html){shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.className='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
   w.addEventListener('click',e=>{if(e.target===w)shClose()});requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')))}
 function shClose(now){const w=$('sh');if(!w)return;w.id='';if(document.activeElement&&w.contains(document.activeElement))document.activeElement.blur();if(now){w.remove();return}w.classList.remove('on');setTimeout(()=>{w.remove();if(!$('sh'))pageLock(false)},360)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sh'))shClose()});
@@ -752,7 +754,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.2</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.3</div></div>`};
 document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
