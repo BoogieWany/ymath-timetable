@@ -582,6 +582,10 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .admerr{min-height:18px;margin-top:6px;font-size:12.5px;color:var(--err)}
 @keyframes ymShake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 .dlg.shake{animation:ymShake .36s ease}
+.card-h .admset-b{margin-left:auto;display:inline-flex;align-items:center;gap:7px}
+.card-h .admset-b i{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .25s}
+.card-h .admset-b.on{background:color-mix(in srgb,#F4B860 16%,var(--panel));border-color:color-mix(in srgb,#F4B860 60%,var(--line))}.card-h .admset-b.on i{background:#E0952B}
+.syncb.adm{background:color-mix(in srgb,#F4B860 20%,var(--panel));color:#9a5b08}
 </style>
 </head>
 <body>
@@ -596,7 +600,6 @@ body.editing #gridScroll .grid thead th{z-index:3}
     <span class="themesel" role="group" aria-label="화면 테마"><button data-theme-set="light">밝게</button><button data-theme-set="dark">어둡게</button><button data-theme-set="auto">자동</button></span>
     <span class="modewrap"><span class="modebox" id="modeBox"></span>
       <span class="undorow" id="undoRow"><button class="btn" id="undoBtn" title="Ctrl+Z">↶ 되돌리기</button><button class="btn" id="redoBtn" title="Ctrl+Y">↷ 다시하기</button></span></span>
-    <button class="admb" id="admBtn" data-act="admToggle" hidden></button>
     <span class="syncb" id="syncBadge" hidden></span>
     <span class="saved" id="saved">저장됨</span>
   </div>
@@ -2938,7 +2941,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.33.1', APPDATE='2026-10-17';
+const APPVER='3.33.2', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3402,7 +3405,7 @@ function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-
   set('데이터','백업 저장·불러오기, 폴더 열기');set('화면 크기','글씨·화면 배율')}
 function viewSettings(){
   const b=B();const used=t=>b.versions.some(v=>v.sessions.some(o=>o.t===t)||v.classes.some(c=>c.members[t]));
-  let h=`<div class="card-h"><h2>설정</h2><span class="hint">Y-MATH 시간표 ${APPVER} (${APPDATE})</span></div>
+  let h=`<div class="card-h"><h2>설정</h2><span class="hint">Y-MATH 시간표 ${APPVER} (${APPDATE})</span>${admBtnHTML()}</div>
   <div class="sec"><h3>지점</h3><div class="row"><label>빈 칸 메모 이름</label><span class="seg" role="group" aria-label="빈 칸 메모 이름">${NOTE_LABELS.map(l=>`<button data-nlabel="${l}" aria-pressed="${noteLabel()===l}">${l}</button>`).join('')}</span><span class="hint">시간표 빈 칸에 적는 명단(보강 등)을 부를 이름 · 지점 시간표 위 '○○ 보기'로 보이기/가리기</span></div><div class="row"><label for="bName">지점 이름</label><input id="bName" value="${esc(b.name)}"><span class="sp"></span>${isOwner()?`<button class="btn" data-act="newBranch">새 지점 만들기</button><button class="btn danger" data-act="delBranch" ${DB.branches.length<2?'disabled':''}>이 지점 삭제</button>`:''}</div><div class="hint">새 지점은 지금 지점의 강사·교시 설정을 복사해서 시작해요. 학생과 반은 비어 있어요.</div></div>
   <div class="sec"><h3>강사와 휴무 요일</h3><table class="tbl" style="max-width:720px"><thead><tr><th>이름</th><th>휴무 요일 (눌러서 켜고 끄기)</th><th></th></tr></thead><tbody>`;
   b.teachers.forEach((t,i)=>{h+=`<tr><td><input data-tname="${t.id}" value="${esc(t.name)}" style="width:110px"></td><td>${DAYS.map(d=>`<button class="dbtn" data-off="${t.id}|${d}" aria-pressed="${(t.off||[]).includes(d)}">${d}</button>`).join(' ')}</td><td><button class="btn" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button> <button class="btn" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button> <button class="btn danger" data-deltea="${t.id}" ${used(t.id)?'disabled title="수업이나 반 명단에 있는 강사는 먼저 빼야 해요"':''}>삭제</button></td></tr>`});
@@ -3790,6 +3793,8 @@ document.addEventListener('click',async e=>{
     case 'keyHow':keyHowDlg();break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
     case 'admGo':admGo();break;
+    case 'admJoin':admJoin();break;
+    case 'admSetGo':{const st=JSON.parse(localStorage.getItem('ymt_acc')||'{}');st.syncBox=true;localStorage.setItem('ymt_acc',JSON.stringify(st));render();setTimeout(()=>{const e=document.querySelector('.admset');if(e){e.scrollIntoView({behavior:'smooth',block:'center'});const i=$('admNew');if(i)i.focus()}},200);break}
     case 'admPwSave':admPwSave(false);break;
     case 'admPwClear':if(!armed(el,'admclr'))return;admPwSave(true);break;
     case 'admHomeSave':admHomeSave();break;
@@ -4388,7 +4393,7 @@ async function syncResend(r){const pend=syPend().filter(id=>DB.branches.some(b=>
   if(done.length){await bridge.syncUnlock(done);done.forEach(id=>{SYNC.mine.delete(id);SYNC.offline.delete(id)});toast(`밀려 있던 적용을 올렸어요: ${done.map(syBName).join(', ')}`)}
   await saveNow();renderSyncState()}
 async function syncLockCur(){if(!syOn())return true;const id=B().id;
-  if(!canEditB(id)){toast(`${B().name}은(는) 보기만 할 수 있어요 · 내 지점(${syBName(myBr())})으로 바꿔 주세요${admLocked()?' · 다른 지점은 위쪽 [관리자 열기]':''}`);return false}
+  if(!canEditB(id)){toast(`${B().name}은(는) 보기만 할 수 있어요 · 내 지점(${syBName(myBr())})으로 바꿔 주세요${admLocked()?' · 다른 지점은 설정 맨 위 [관리자 모드]':''}`);return false}
   if(SYNC.mine.has(id)||SYNC.offline.has(id))return true;
   const r=await bridge.syncLock(id);if(r.ok){SYNC.mine.add(id);renderSyncState();return true}
   if(r.offline){SYNC.offline.add(id);toast('인터넷에 연결되지 않아 잠그지 못했어요 · 이 PC에서 고치고, [적용]할 때 올라가요');return true}
@@ -4430,7 +4435,7 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
     <div class="hint">코드에는 저장소 연결 키와 시간표 암호 키가 들어 있어요. 카톡 1:1로 해당 관리자에게만 보내고, 받은 쪽에서 연결한 뒤 메시지를 지우게 해 주세요.<br>지점 관리자는 그 지점의 시간표·반·학생·강사·교시·지점 이름을 프로그램 관리자와 같은 권한으로 고칠 수 있고, 다른 지점은 보기만 돼요. 프로그램 설정(지점 추가·삭제, 폰으로 보기, 연동)은 프로그램 관리자만 바꿀 수 있어요.</div>`}
-  else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 위쪽 [관리자 열기]에 비밀번호를 넣으면 보여요</span></div>`;
+  else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span></div>`;
   else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정은 프로그램 관리자가 관리해요</span><span class="sp"></span><button class="btn danger" data-act="syOff">연결 끊기</button></div>`;
   if(owner)h+=admSetHTML(i);
   el.innerHTML=h}
@@ -4531,7 +4536,7 @@ async function rqDecide(num,ok){const x=RQS.list.find(i=>i.num===+num);if(!x||RQ
 const tnB=x=>{const b=DB.branches.find(i=>i.id===x.br);const t=b&&b.teachers.find(i=>i.id===x.t);return t?t.name:(x.tn||'')};
 async function rqRender(){const el=$('rqBox');if(!el)return;if(!bridge||!bridge.rqInfo){el.innerHTML='<h3>선생님 보강 요청</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
   let i;try{i=RQS.info=await bridge.rqInfo()}catch(e){el.innerHTML='<h3>선생님 보강 요청</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
-  if(!isOwner()){el.innerHTML=`<h3>선생님 보강 요청</h3><div class="hint">${i.ready?`켜져 있어요 · 선생님이 브라우저 시간표에서 요청하면 위쪽에 "선생님 요청 ○건"이 떠요. ${esc(syBName(myBr()))} 요청은 이 PC에서 승인할 수 있어요.${admLocked()?' 다른 지점 요청과 설정은 [관리자 열기] 후에 보여요.':''}`:'꺼져 있어요 · 프로그램 관리자가 켜면 쓸 수 있어요'}</div>`;return}
+  if(!isOwner()){el.innerHTML=`<h3>선생님 보강 요청</h3><div class="hint">${i.ready?`켜져 있어요 · 선생님이 브라우저 시간표에서 요청하면 위쪽에 "선생님 요청 ○건"이 떠요. ${esc(syBName(myBr()))} 요청은 이 PC에서 승인할 수 있어요.${admLocked()?' 다른 지점 요청과 설정은 [관리자 모드]를 연 뒤에 보여요.':''}`:'꺼져 있어요 · 프로그램 관리자가 켜면 쓸 수 있어요'}</div>`;return}
   if(!MOBI&&bridge.mobileGet){try{MOBI=await bridge.mobileGet()}catch(e){}}const g=(MOBI&&MOBI.gh)||{};
   el.innerHTML=`<h3>선생님 보강 요청</h3>
   <div class="row"><span class="nmt"><button class="tgl" id="rqOn" role="switch" aria-checked="${!!i.on}" aria-label="선생님 요청 받기"><i></i></button></span><b>선생님 요청 받기</b><span class="hint">브라우저 '내 시간표'의 빈 칸을 눌러 명단을 보내면, 승인한 것만 시간표에 들어가요</span></div>
@@ -4552,20 +4557,23 @@ async function rqSave(on){const tok=(($('rqTok')&&$('rqTok').value)||'').trim();
 setTimeout(()=>rqTick(true),6000);setInterval(()=>{if(!document.hidden)rqTick()},120000);window.addEventListener('focus',()=>rqTick());
 
 /* ---- 관리자 잠금 화면 ---- */
-function admRender(){const b=$('admBtn');if(!b)return;const show=syOn()&&SYNC.info.role==='owner'&&!!SYNC.info.pw;b.hidden=!show;if(!show)return;
-  b.className='admb'+(ADM.open?' open':'');b.innerHTML=ADM.open?'<i></i>관리자 모드<span>잠그기</span>':`<i></i>${esc(syBName(myBr()))} 모드<span>관리자 열기</span>`;
-  b.title=ADM.open?`눌러서 다시 ${syBName(myBr())} 모드로`:'비밀번호를 넣으면 다른 지점·설정을 관리할 수 있어요'}
-function admDlg(){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg admdlg" role="dialog" aria-modal="true" aria-labelledby="adT" style="width:min(400px,100%)"><h2 id="adT">관리자 모드 열기</h2>
+function admRender(){const el=$('syncBadge');if(!el||el.hidden)return;if(ADM.open&&SYNC.info.pw&&el.textContent==='연동됨'){el.className='syncb adm';el.textContent='관리자 모드';el.title='설정 맨 위 [관리자 모드 잠그기]로 다시 '+syBName(myBr())+' 모드로'}}
+/* 설정 맨 위 [관리자 모드] — 모든 PC에 보임. 관리자 PC는 비밀번호, 지점 PC는 '관리자 코드가 필요해요' 안내 */
+function admBtnHTML(){if(!syOn())return '';const ownerPC=SYNC.info.role==='owner';
+  if(ownerPC&&!SYNC.info.pw)return `<button class="btn admset-b" data-act="admSetGo" title="비밀번호를 정하면 평소엔 내 지점 모드로 열려요">관리자 잠금 설정</button>`;
+  if(ownerPC&&ADM.open)return `<button class="btn admset-b on" data-act="admToggle"><i></i>관리자 모드 · 잠그기</button>`;
+  return `<button class="btn admset-b" data-act="admToggle"><i></i>관리자 모드</button>`}
+function admDlg(){if(SYNC.info.role!=='owner'){admNeedCode();return}$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg admdlg" role="dialog" aria-modal="true" aria-labelledby="adT" style="width:min(400px,100%)"><h2 id="adT">관리자 모드 열기</h2>
   <div class="hint" style="margin:-4px 0 12px">다른 지점 수정, 지점 코드, 폰으로 보기·요청 키 같은 설정이 열려요</div>
   <input id="admPw" type="password" autocomplete="off" placeholder="관리자 비밀번호" style="width:100%;font-size:15px;padding:10px 12px"><div class="admerr" id="admErr"></div>
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="admGo">열기</button></div></div>`;setTimeout(()=>{const i=$('admPw');if(i)i.focus()},60)}
 async function admGo(){const i=$('admPw');if(!i)return;const r=await bridge.admCheck(i.value);
   if(!r.ok){const e=$('admErr');e.textContent=r.wait?`여러 번 틀려서 ${r.wait}초 뒤에 다시 해 주세요`:'비밀번호가 맞지 않아요';const d=document.querySelector('.admdlg');if(d){d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake')}i.select();return}
-  ADM.open=true;$('modal').hidden=true;render();toast('관리자 모드예요 · 끝나면 위쪽 [잠그기]를 눌러 주세요',4000);rqTick(true)}
+  ADM.open=true;$('modal').hidden=true;render();toast('관리자 모드예요 · 끝나면 설정 맨 위 [잠그기]를 눌러 주세요',4000);rqTick(true)}
 function admLock(){if(UI.edit&&[...SYNC.mine,...SYNC.offline].some(id=>id!==myBr())){toast('다른 지점을 고치는 중이에요 · [적용]이나 [버리기]로 끝낸 뒤 잠가 주세요',5000);return}
   ADM.open=false;if(!UI.edit)DB.currentBranch=myBr();render();rqTick(true);toast(`${syBName(myBr())} 모드로 돌아왔어요`)}
 function admSetHTML(i){const home=myBr();const sel=`<select id="admHome">${DB.branches.map(b=>`<option value="${b.id}" ${b.id===home?'selected':''}>${esc(b.name)}</option>`).join('')}</select>`;
-  return `<div class="admset"><b>관리자 잠금</b><span class="hint">${i.pw?'켜져 있어요 · 평소엔 내 지점 모드, 위쪽 [관리자 열기]에 비밀번호를 넣어야 관리자 기능이 열려요 (업데이트 보내기는 잠가 둬도 계속돼요)':'비밀번호를 정하면 이 PC는 평소엔 내 지점 모드로 열리고, 비밀번호를 넣어야 관리자 기능이 열려요'}</span>
+  return `<div class="admset"><b>관리자 잠금</b><span class="hint">${i.pw?'켜져 있어요 · 평소엔 내 지점 모드, 설정 맨 위 [관리자 모드]에 비밀번호를 넣어야 관리자 기능이 열려요 (업데이트 보내기는 잠가 둬도 계속돼요)':'비밀번호를 정하면 이 PC는 평소엔 내 지점 모드로 열리고, 비밀번호를 넣어야 관리자 기능이 열려요'}</span>
     <div class="row"><label for="admHome">내 지점</label>${sel}${i.pw?'<button class="btn" data-act="admHomeSave">저장</button>':''}</div>
     <div class="row">${i.pw?'<input id="admOld" type="password" autocomplete="off" placeholder="지금 비밀번호" style="width:150px">':''}<input id="admNew" type="password" autocomplete="new-password" placeholder="${i.pw?'새 비밀번호':'관리자 비밀번호 (4자리 이상)'}" style="width:180px"><input id="admNew2" type="password" autocomplete="new-password" placeholder="한 번 더" style="width:140px">
       <button class="btn pri" data-act="admPwSave">${i.pw?'비밀번호 바꾸기':'비밀번호 정하고 잠그기'}</button>${i.pw?'<button class="btn danger" data-act="admPwClear" title="지금 비밀번호를 넣어야 해요">잠금 없애기</button>':''}</div>
@@ -4575,9 +4583,28 @@ async function admPwSave(clear){const o={home:($('admHome')||{}).value||''};cons
   else{const a=($('admNew')||{}).value||'',b=($('admNew2')||{}).value||'';if(a.length<4){toast('비밀번호는 4자리 이상으로 정해 주세요');return}if(a!==b){toast('두 번 넣은 비밀번호가 달라요');return}o.pw=a;o.old=old}
   const r=await bridge.admSet(o);if(!r.ok){toast(r.err,4000);return}const had=SYNC.info.pw;SYNC.info=r.info;
   if(clear){ADM.open=false;toast('관리자 잠금을 없앴어요 · 이 PC는 항상 관리자 모드예요')}
-  else if(!had){ADM.open=false;DB.currentBranch=myBr();toast(`잠갔어요 · 이제 평소엔 ${syBName(myBr())} 모드예요. 관리자 기능은 위쪽 [관리자 열기]`,5000)}
+  else if(!had){ADM.open=false;DB.currentBranch=myBr();toast(`잠갔어요 · 이제 평소엔 ${syBName(myBr())} 모드예요. 관리자 기능은 설정 맨 위 [관리자 모드]`,5000)}
   else toast('비밀번호를 바꿨어요');render()}
 async function admHomeSave(){const r=await bridge.admSet({home:$('admHome').value});if(!r.ok){toast(r.err);return}SYNC.info=r.info;render();toast(`내 지점을 ${syBName(myBr())}(으)로 정했어요`)}
+
+function admNeedCode(){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg admdlg" role="dialog" aria-modal="true" aria-labelledby="anT" style="width:min(560px,100%)"><h2 id="anT">관리자 코드가 필요해요</h2>
+  <div class="hint" style="margin:-4px 0 12px">이 PC는 지점 관리자 PC예요. 관리자 모드는 프로그램 관리자에게 받은 <b>관리자 PC용 코드</b>를 넣어야 쓸 수 있어요.<br>코드를 넣으면 이 PC는 관리자 PC가 되고, 바로 관리자 비밀번호를 정해서 평소엔 지금처럼 ${esc(syBName(myBr()))} 모드로 열려요.</div>
+  <textarea id="anCode" rows="4" style="width:100%;font-family:var(--f-mono);font-size:11px" placeholder="YMT1.로 시작하는 관리자 PC용 코드"></textarea>
+  <div class="row"><input id="anPw" type="password" autocomplete="new-password" placeholder="관리자 비밀번호 (4자리 이상)" style="width:200px"><input id="anPw2" type="password" autocomplete="new-password" placeholder="한 번 더" style="width:150px"></div>
+  <div class="admerr" id="admErr"></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="admJoin">관리자 PC로 바꾸기</button></div></div>`}
+async function admJoin(){const code=($('anCode').value||'').trim(),pw=$('anPw').value,pw2=$('anPw2').value,err=$('admErr');
+  const bad=m=>{err.textContent=m;const d=document.querySelector('.admdlg');if(d){d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake')}};
+  let o=null;try{o=JSON.parse(decodeURIComponent(escape(atob(code.replace(/^YMT1\./,'').replace(/-/g,'+').replace(/_/g,'/')))))}catch(e){}
+  if(!o||!o.k||!o.t)return bad('코드가 올바르지 않아요 · 받은 코드를 통째로 붙여넣어 주세요');
+  if(o.b!=='*')return bad('지점 코드예요 · 관리자 PC용 코드가 필요해요');
+  if(pw.length<4)return bad('비밀번호는 4자리 이상으로 정해 주세요');if(pw!==pw2)return bad('두 번 넣은 비밀번호가 달라요');
+  if(UI.edit)return bad('수정 모드를 먼저 끝내 주세요');
+  const home=myBr();err.textContent='바꾸는 중…';try{await bridge.backupNamed(JSON.stringify(DB),'관리자전환전')}catch(e){}
+  const r=await bridge.syncJoin(code,SYNC.info.name||'');if(!r.ok)return bad(r.err||'연결하지 못했어요');
+  const s=await bridge.admSet({home,pw});SYNC.info=s.ok?s.info:r.info;ADM.open=false;
+  await syncPull({full:true,silent:true});$('modal').hidden=true;DB.currentBranch=myBr();render();rqTick(true);
+  toast(`관리자 PC가 됐어요 · 평소엔 ${syBName(myBr())} 모드, 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 열려요`,6000)}
 </script>
 <script>/* ================= 방학 특강 =================
    특강 = 정규 교시표와 별개로 요일·시작 시간·길이·기간(시작~끝 날짜)을 갖는 수업. 지점(b.specials)에 저장.
@@ -4773,7 +4800,7 @@ const HELP=[
   <li>시간표 위 <b>[보강 보기]</b> 체크로 보이기/가리기. 폰·브라우저 전체 시간표에도 같은 스위치가 있어요.</li>
   <li>이름표(보강 / 추가수업 / 조교시간)는 [설정 → 지점]에서 지점마다 골라요.</li></ul>`},
  {id:'noterq',t:'선생님 보강 요청 (브라우저 → 승인)',b:`<ul><li>선생님이 브라우저 시간표 <b>전체 → 내 시간표</b>에서 빈 칸(공강)을 누르면 학생 이름을 적어 요청할 수 있어요. 그 칸에는 '승인 대기'로 보여요.</li><li>요청이 오면 프로그램 위쪽에 <b>선생님 보강 요청 ○건</b>이 떠요. [확인하기] → [승인]하면 그 칸의 빈 칸 메모로 들어가고, [거절]하면 사라져요. 수정 모드 중에는 끝낸 뒤 승인해요.</li><li>지점 관리자는 자기 지점 요청을, 프로그램 관리자는 모든 지점 요청을 승인할 수 있어요.</li><li>처음 한 번 프로그램 관리자 PC의 [설정 → 선생님 보강 요청]에 <b>요청 키</b>(Issues 권한만 있는 GitHub 키)를 넣고 켜요. 이 키로는 요청만 남길 수 있고 시간표는 못 바꿔요.</li></ul>`},
- {id:'admlock',t:'관리자 잠금 (평소엔 내 지점 모드)',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>위쪽 <b>[관리자 열기]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고, <b>[잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li></ul>`},
+ {id:'admlock',t:'관리자 잠금 (평소엔 내 지점 모드)',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li></ul>`},
  {id:'ver',t:'버전 · 적용 기록 · 백업',b:`
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
