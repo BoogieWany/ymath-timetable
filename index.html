@@ -325,6 +325,10 @@ body.land .note{padding:10px}
 .gnote{border:1.5px dashed rgba(100,112,137,.55);border-radius:.45em;padding:.3em .45em;font-size:.9em;line-height:1.3;flex:1 1 auto;display:flex;flex-direction:column;gap:.1em;animation:tinR .3s ease}
 .gnote i{font-style:normal;font-size:.8em;font-weight:700;color:var(--muted)}
 .gnote span{word-break:keep-all}
+.nxbar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:color-mix(in srgb,#7BA7E0 16%,var(--panel));border:1px solid color-mix(in srgb,#7BA7E0 40%,transparent);border-radius:12px;padding:9px 12px;margin:0 0 10px;font-size:calc(13.5px*var(--mz,1));animation:tinR .3s ease}
+.nxbar button{flex:none;border:0;background:var(--acc);color:var(--panel);border-radius:9px;padding:7px 12px;font-weight:700;font-size:13px}
+.nxbar.on{background:color-mix(in srgb,#F4B860 18%,var(--panel));border-color:color-mix(in srgb,#F4B860 55%,transparent)}
+.nxbar.on button{background:var(--panel);color:var(--fg);border:1px solid var(--line)}
 .gnote i b{font-weight:700;color:var(--fg)}
 .gnote.lnk{border-style:solid;border-color:color-mix(in srgb,var(--nc) 55%,transparent);border-left-width:4px;background:color-mix(in srgb,var(--nc) 12%,var(--panel))}
 .rqk{display:flex;gap:6px;margin:0 0 10px}.rqk.rqn{flex-wrap:wrap;gap:5px}.rqk.rqn button{flex:1 0 calc(25% - 5px);padding:8px 0}.gnote i small{font-weight:500;opacity:.85;margin-left:2px}.rqk button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:9px 0;font-size:14px;font-weight:600;transition:background .2s,color .2s,border-color .2s}.rqk button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--panel)}
@@ -413,18 +417,25 @@ async function dec(j,pass){const key=await viewKey(j,pass);
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},key,b64(j.ct));return JSON.parse(new TextDecoder().decode(pt))}
 function showPin(msg){$('tabs').innerHTML='';$('main').innerHTML=`<form class="pin" id="pf"><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" autocomplete="current-password" autocapitalize="off" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button>열기</button></form>`;
   $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
-const B=()=>D.branches.find(b=>b.id===ST.br)||D.branches[0];
+/* 예정 시간표: 날짜가 되면 그 시간표가 지금 시간표 (PC가 꺼져 있어도) · 공개된 예정은 [미리 보기]로 */
+function nextApply(){if(!D)return;const t=tdStr();D.branches.forEach(b=>{if(b.next&&b.next.from<=t){b.classes=b.next.classes;b.sessions=b.next.sessions;b.version=b.next.version;b.notes=[];delete b.next}})}
+const B0=()=>D.branches.find(b=>b.id===ST.br)||D.branches[0];
+const B=()=>{const b=B0();return ST.nx&&b.next&&b.next.pub?Object.assign({},b,{classes:b.next.classes,sessions:b.next.sessions,version:b.next.version,notes:[],_nx:true}):b};
+const wdn=s=>{const [y,m,d]=s.split('-').map(Number);return '일월화수목금토'[new Date(y,m-1,d).getDay()]};
+function nxBar(){const b=B0();if(!b.next||!b.next.pub)return '';const f=b.next.from;const lab=`${+f.slice(5,7)}/${+f.slice(8,10)}(${wdn(f)})`;
+  return ST.nx?`<div class="nxbar on"><span>예정 시간표 미리 보는 중 · <b>${lab}부터</b> ${esc(b.next.version)}</span><button data-act="nxOff">지금 시간표로</button></div>`
+    :`<div class="nxbar"><span><b>${lab}부터</b> 시간표가 바뀌어요</span><button data-act="nxOn">미리 보기</button></div>`}
 function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
   $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
 const TABS=()=>wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']];
-function render(){if(!D)return;const b=B();ST.br=b.id;
+function render(){if(!D)return;nextApply();const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
   $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
   meta(false);sizeHd();
   const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid}[ST.tab]||vToday;
-  $('main').innerHTML=v(b);zmBar();
+  $('main').innerHTML=nxBar()+v(b);zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}}}
 /* 1분마다: 오늘 화면의 '지금·다음' 표시만 새로 */
 function tick(){if(ST.tab==='today'&&!document.querySelector('#main input:focus'))render()}
@@ -538,7 +549,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const tRow=`<span class="seg tch" role="group" aria-label="강사">${[['','모든 강사']].concat(myT?[[myT,'내 시간표']]:[]).concat(tchList(b).filter(t=>t.id!==myT).map(t=>[t.id,t.name])).map(([id,l])=>`<button data-gt="${id}" aria-pressed="${(ST.gt||'')===id}"${id===myT&&id?' class="mine"':''}>${esc(l)}</button>`).join('')}</span>`;
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
-  const mine=!!(gT&&gT.id===myT&&rqOn());const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 요청</small>`:'';
+  const mine=!!(gT&&gT.id===myT&&rqOn()&&!b._nx);const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 요청</small>`:'';
   const nk=n=>esc(n.k||b.noteLabel||'보강')+(n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:'');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);return `<div class="gnote${c?' lnk':''}${extra||''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}><i>${pre||''}${nk(n)}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${esc(n.names)}</span>`:''}</div>`};
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
     :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}${rqH2}</span></div>`;
@@ -667,7 +678,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.38.1</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.39.0</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -694,6 +705,7 @@ document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.targ
   if(ds.act==='port'){try{screen.orientation.unlock()}catch(err){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(err){}return}
   if(ds.act==='hdHide'){document.body.classList.add('hdoff');sizeHd();if(pzV())setTimeout(()=>pzSetup(true),50);return}
   if(ds.act==='hdShow'){document.body.classList.remove('hdoff');sizeHd();if(pzV())setTimeout(()=>pzSetup(true),50);return}
+  if(ds.act==='nxOn'||ds.act==='nxOff'){ST.nx=ds.act==='nxOn';if(!wide)ST.fit=true;render();window.scrollTo(0,0);fzToast(ST.nx?'예정 시간표 미리 보기':'지금 시간표',1400);return}
   if(ds.act==='noMe'){ls.set('m_noMe','1');render();return}
   if(ds.act==='reMe'){ls.set('m_me','');ls.set('m_noMe','');ST.brPicked=false;ST.tab='today';render();window.scrollTo(0,0);return}
   if(ds.act==='noinst'){ls.set('m_noinst','1');render();return}
