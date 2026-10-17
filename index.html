@@ -419,6 +419,7 @@ body:not(.wide) input,body:not(.wide) textarea{-webkit-user-select:text;user-sel
 .pkn{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .pkn span{background:var(--chip);border-radius:8px;padding:5px 9px;font-size:13.5px;line-height:1.2}
 .pkn span small{margin-left:4px;font-size:10.5px;color:var(--muted)}
+.pkn span[hidden]{display:none}.pkn span.more{background:none;color:var(--muted);padding-left:2px}
 .pkn span.aw{text-decoration:line-through;opacity:.55}.pkn span.none{background:none;color:var(--muted);padding-left:0}
 .pkm{margin-top:12px;border-top:1px solid var(--line2);padding-top:9px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted)}
 .pkm b{color:var(--fg);font-weight:600;margin-right:2px}.pkm span{display:block;color:var(--fg);margin-top:1px}
@@ -754,7 +755,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.3</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.41.4</div></div>`};
 document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -937,9 +938,17 @@ function pkBody(el){const b=B();
 function pkNames(b,ids){return ids.map(id=>{const s=S(b,id);if(!s)return '';return `<span${s.away?' class="aw"':''}>${esc(s.name)}${s.grade?`<small>${esc(s.grade)}</small>`:''}</span>`}).join('')||'<span class="none">명단 없음</span>'}
 function pkShow(el){PK.tm=0;const h=pkBody(el);if(!h)return;PK.on=true;PZ.g=null;cancelAnimationFrame(PZ.raf);
   let w=$('pk');if(!w){w=document.createElement('div');w.id='pk';w.setAttribute('aria-hidden','true');document.body.appendChild(w)}
-  w.innerHTML=`<div class="pkc">${h}</div>`;w.classList.remove('on');const cd=w.firstChild;const H=innerHeight,ch=Math.min(cd.offsetHeight,H*.7);
-  const top=PK.y>H*.5?Math.max(12,PK.y-34-ch):Math.min(H-ch-12,PK.y+34);cd.style.top=top+'px';cd.style.transformOrigin=`50% ${PK.y>H*.5?'100%':'0'}`;
+  w.innerHTML=`<div class="pkc">${h}</div>`;w.classList.remove('on');const cd=w.firstChild;
+  /* 손가락은 아래에서 올라오니 누른 곳 아래는 손에 가려짐 → 창은 항상 손가락 위에.
+     위에 자리가 모자라면 화면 맨 위에 붙이고, 그래도 길면 이름 칸만 줄여 '외 n명' */
+  const top0=10,gap=30;
+  const room=PK.y-gap-top0;const fit=room>=170?room:Math.max(room,Math.min(innerHeight*.5,320));pkFit(cd,fit);const ch=cd.offsetHeight;
+  const top=ch<=room?PK.y-gap-ch:top0;cd.style.top=top+'px';cd.style.transformOrigin=`50% ${ch<=room?'100%':'0'}`;
   requestAnimationFrame(()=>w.classList.add('on'));if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}}
+function pkFit(cd,maxH){if(cd.offsetHeight<=maxH)return;const box=cd.querySelector('.pkn');if(!box)return;const ns=[...box.querySelectorAll('span:not(.more)')];if(ns.length<2)return;
+  const more=document.createElement('span');more.className='more';box.appendChild(more);let k=ns.length;
+  while(k>1&&cd.offsetHeight>maxH){k--;ns[k].hidden=true;more.textContent=`외 ${ns.length-k}명`}
+  if(k===ns.length)more.remove()}
 function pkHide(){PK.on=false;const w=$('pk');if(w)w.classList.remove('on')}
 function pkCancel(){if(PK.tm){clearTimeout(PK.tm);PK.tm=0}}
 document.addEventListener('touchstart',e=>{pkCancel();if(wide||e.touches.length!==1){if(PK.on)pkHide();return}const el=e.target.closest&&e.target.closest('[data-pk],[data-spk]');if(!el||e.target.closest('#sh'))return;
