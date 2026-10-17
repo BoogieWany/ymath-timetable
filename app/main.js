@@ -173,7 +173,7 @@ function syInfo(){const c=syCfg();return {on:!!c.on,role:c.role||'owner',branch:
 function sySave(){fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}
 // 받기: 바뀐 지점만 내용까지
 ipcMain.handle('syncPull',async(e,known)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};
-  try{if(!mob.ghOwner)await ghConnect();const list=await syDir('branches');const out=[];
+  try{if(!mob.ghOwner)await ghConnect();if(await syRevoked()){syWipe();return {ok:false,revoked:true,err:'프로그램 관리자가 이 PC의 연결을 끊었어요'}}const list=await syDir('branches');const out=[];
     for(const f of list){if(known&&known[f.id]===f.sha)continue;try{out.push({id:f.id,sha:f.sha,data:syDec(await syRaw(`${syBase()}/branches/${f.id}.json`))})}catch(err){out.push({id:f.id,sha:f.sha,err:'풀지 못했어요(관리자 키가 다름)'})}}
     let locks={};try{for(const l of await syDir('locks')){try{locks[l.id]=Object.assign(JSON.parse((await syRaw(`${syBase()}/locks/${l.id}.json`)).toString('utf8')),{sha:l.sha})}catch(err){}}}catch(err){}
     SY.last=Date.now();SY.err='';return {ok:true,present:list.map(f=>({id:f.id,sha:f.sha})),changed:out,locks}}
@@ -209,10 +209,22 @@ ipcMain.handle('syncCode',(e,branchId)=>{const c=syCfg();if(c.role!=='owner'||!s
   try{updEnsureKeys()}catch(err){}const o={v:1,o:mob.ghOwner,r:mob.ghRepo,t:ghToken(),k:syKey().toString('base64'),p:mob.pin||'',b:branchId||'*',u:c.pub||''};
   if(!branchId||branchId==='*'){try{const pk=updPriv();if(pk)o.s=pk.export({type:'pkcs8',format:'pem'})}catch(err){}}return 'YMT1.'+Buffer.from(JSON.stringify(o)).toString('base64url')});
 ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.from(String(code).trim().replace(/^YMT1\./,''),'base64url').toString('utf8'));if(!o.t||!o.k||!o.r)throw 0}catch(err){return {ok:false,err:'코드가 올바르지 않아요 · 프로그램 관리자에게 받은 코드를 통째로 붙여넣어 주세요'}}
-  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(c.role==='owner'?'원장님':'지점 관리자');c.dev=c.dev||crypto.randomBytes(6).toString('hex');sySave();
+  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(c.role==='owner'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
 ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo()});
 ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
+/* 연결된 PC 목록·원격 끊기: 각 PC가 sync/devices/<dev>.json(관리자 키 암호화)에 이름·역할·지점·버전·날짜를 남김 (바뀔 때·하루 한 번만 씀)
+   관리자가 [연결 끊기] → sync/revoke.json에 그 PC 표시 → 그 PC는 다음 동기화 때 연동을 끄고 키를 지움 (시간표 파일은 그 PC에 남음) */
+async function syRevoked(){try{const r=await fetch(API()+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/revoke.json?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'}});
+  if(!r.ok)return false;const o=syDec(Buffer.from(await r.arrayBuffer()));const c=syCfg();return !!(o&&o[c.dev])}catch(e){return false}}
+function syWipe(){const c=syCfg();c.on=false;['keyEnc','keyPlain','signEnc','signPlain','admPw','beat','home'].forEach(k=>delete c[k]);c.revoked=Date.now();delete mob.ghTok;delete mob.ghTokPlain;mob.ghOn=false;mob.rq={};sySave()}
+ipcMain.handle('syncBeat',async(e,ver)=>{const c=syCfg();if(!syReady())return false;const d={name:c.name||'',role:c.role||'owner',branch:c.branch||'',ver:String(ver||''),day:new Date().toISOString().slice(0,10)};const sig=JSON.stringify(d);
+  if(c.beat===sig)return false;try{if(!mob.ghOwner)await ghConnect();await ghPut(`sync/devices/${c.dev}.json`,syEnc(d),'PC 확인 · '+(c.name||''));c.beat=sig;sySave();return true}catch(err){return false}});
+ipcMain.handle('syncDevices',async()=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false,list:[]};
+  try{if(!mob.ghOwner)await ghConnect();const out=[];for(const f of await syDir('devices')){try{out.push(Object.assign(syDec(await syRaw(`${syBase()}/devices/${f.id}.json`)),{dev:f.id,me:f.id===c.dev}))}catch(err){}}return {ok:true,list:out}}catch(err){return {ok:false,err:err.message,list:[]}}});
+ipcMain.handle('syncRevoke',async(e,dev)=>{const c=syCfg();if(!syReady()||c.role!=='owner'||!dev||dev===c.dev)return {ok:false,err:'끊을 수 없어요'};
+  try{if(!mob.ghOwner)await ghConnect();let o={};try{o=syDec(await syRaw(`${syBase()}/revoke.json`))||{}}catch(err){}o[dev]=Date.now();
+    await ghPut('sync/revoke.json',syEnc(o),'PC 연결 끊기');const u=`${syBase()}/devices/${dev}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'PC 연결 끊기',sha:g.j.sha});return {ok:true}}catch(err){return {ok:false,err:err.message}}});
 /* 관리자 잠금: 프로그램 관리자 PC를 평소엔 '내 지점 모드'로 — 비밀번호를 넣어야 관리자 기능이 열림 (화면 잠금 · 업데이트 보내기는 계속) */
 const ADMF={n:0,until:0};
 const admHash=(pw,salt)=>crypto.pbkdf2Sync(Buffer.from(String(pw),'utf8'),salt,200000,32,'sha256');
