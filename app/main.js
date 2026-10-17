@@ -177,10 +177,11 @@ function syReady(){const c=syCfg();return !!(c.on&&syKey()&&ghToken()&&mob.ghOwn
 function syInfo(){const c=syCfg();return {on:!!c.on,role:c.role||'owner',branch:c.branch||'',home:c.home||'',pw:!!(c.admPw&&c.admPw.h),name:c.name||'',dev:c.dev||'',last:SY.last,err:SY.err,ready:syReady(),ghReady:!!(ghToken()&&mob.ghRepo)}}
 function sySave(){fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}
 // 받기: 바뀐 지점만 내용까지
-ipcMain.handle('syncPull',async(e,known)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};
+const LOCKC={}; // 잠금 파일 내용은 판 번호(sha)가 같으면 다시 받지 않음
+ipcMain.handle('syncPull',async(e,known,opt)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};
   try{if(!mob.ghOwner)await ghConnect();if(await syRevoked()){syWipe();return {ok:false,revoked:true,err:'프로그램 관리자가 이 PC의 연결을 끊었어요'}}const list=await syDir('branches');const out=[];
     for(const f of list){if(known&&known[f.id]===f.sha)continue;try{out.push({id:f.id,sha:f.sha,data:syDec(await syRaw(`${syBase()}/branches/${f.id}.json`))})}catch(err){out.push({id:f.id,sha:f.sha,err:'풀지 못했어요(관리자 키가 다름)'})}}
-    let locks={};try{for(const l of await syDir('locks')){try{locks[l.id]=Object.assign(JSON.parse((await syRaw(`${syBase()}/locks/${l.id}.json`)).toString('utf8')),{sha:l.sha})}catch(err){}}}catch(err){}
+    let locks=opt&&opt.noLocks?null:{};if(locks)try{for(const l of await syDir('locks')){try{const hit=LOCKC[l.id];if(hit&&hit.sha===l.sha){locks[l.id]=hit;continue}locks[l.id]=LOCKC[l.id]=Object.assign(JSON.parse((await syRaw(`${syBase()}/locks/${l.id}.json`)).toString('utf8')),{sha:l.sha})}catch(err){}}}catch(err){}
     SY.last=Date.now();SY.err='';return {ok:true,present:list.map(f=>({id:f.id,sha:f.sha})),changed:out,locks}}
   catch(err){SY.err=err.message;return {ok:false,err:err.message}}});
 // 올리기: [{id,data,sha}] — sha가 다르면(누가 먼저 올림) 서버 것을 백업해 두고 덮어씀
