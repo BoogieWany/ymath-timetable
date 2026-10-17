@@ -325,6 +325,10 @@ body.land .note{padding:10px}
 .gnote{border:1.5px dashed rgba(100,112,137,.55);border-radius:.45em;padding:.3em .45em;font-size:.9em;line-height:1.3;flex:1 1 auto;display:flex;flex-direction:column;gap:.1em;animation:tinR .3s ease}
 .gnote i{font-style:normal;font-size:.8em;font-weight:700;color:var(--muted)}
 .gnote span{word-break:keep-all}
+.exb{display:inline-block;font-size:.78em;font-weight:700;padding:.1em .55em;border-radius:999px;color:#fff;white-space:nowrap;vertical-align:.08em}.exb.cancel{background:#b4572a}.exb.sub{background:#2c5aa0}.exb.move{background:#7a4fb0}
+.gc .gx{margin-top:.2em}.gc .gx .exb{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.gc.exc,.card.exc{opacity:.55}.gc.exc{background-image:repeating-linear-gradient(135deg,transparent 0 7px,rgba(255,255,255,.35) 7px 9px)}
+.gnote.exg{border-style:dashed;border-color:color-mix(in srgb,var(--nc) 70%,transparent);background:color-mix(in srgb,var(--nc) 14%,var(--panel))}
 .nxbar{display:flex;align-items:center;gap:10px;justify-content:space-between;background:color-mix(in srgb,#7BA7E0 16%,var(--panel));border:1px solid color-mix(in srgb,#7BA7E0 40%,transparent);border-radius:12px;padding:9px 12px;margin:0 0 10px;font-size:calc(13.5px*var(--mz,1));animation:tinR .3s ease}
 .nxbar button{flex:none;border:0;background:var(--acc);color:var(--panel);border-radius:9px;padding:7px 12px;font-weight:700;font-size:13px}
 .nxbar.on{background:color-mix(in srgb,#F4B860 18%,var(--panel));border-color:color-mix(in srgb,#F4B860 55%,transparent)}
@@ -459,14 +463,28 @@ const stTag=st=>st?`<span class="st ${st}">${{now:'지금',next:'다음',done:'�
 function spCard(b,s,sub,st){const mem=(s.members||[]).map(id=>S(b,id)).filter(Boolean);const act=mem.filter(x=>!x.away);const k='sp'+s.id;const open=ST.open.has(k);
   return `<div class="card spc${open?' open':''}${st==='done'?' done':''}" style="--c:${esc(s.color||'#9aa3b5')}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(s.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(s.name)}</b><span class="tag">특강</span>${stTag(st)}<span class="n">${act.length}명</span></span><span class="t2">${sub}</span></span></button>
     <div class="nmw"><div><div class="nm">${mem.map(x=>`<span>${x.away?`<s>${esc(x.name)}</s>`:esc(x.name)}</span>`).join('')||'<span>명단 없음</span>'}</div></div></div></div>`}
-function card(b,o,sub,hit,st){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});
+/* ===== 당일 변경: b.ex[{date,sid,kind,t,p,memo}] — 오늘 화면엔 오늘 것을 실제로 반영, 주간 화면엔 7일 안의 것을 배지·점선 카드로 ===== */
+const plusD=(s,n)=>{const [y,m,d]=s.split('-').map(Number);const x=new Date(y,m-1,d+n);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const exL=b=>(b.ex||[]).filter(x=>x.date>=tdStr());
+const exNearV=(b,sid)=>b._nx||!sid?null:exL(b).filter(x=>x.sid===sid&&x.date<plusD(tdStr(),7)).sort((a,z)=>a.date.localeCompare(z.date))[0]||null;
+const exOnV=(b,sid,date)=>b._nx||!sid?null:(b.ex||[]).find(x=>x.sid===sid&&x.date===date)||null;
+/* 오늘 날짜의 변경을 반영한 수업 목록 (대강이면 강사, 이동이면 교시가 바뀜 · 명단은 원래 강사 것) */
+function todaySess(b,d){const t=tdStr();return b.sessions.filter(o=>o.d===d).map(o=>{const x=exOnV(b,o.id,t);return x?Object.assign({},o,{_ex:x,_today:1,_t0:o.t,_p0:o.p,t:x.kind!=='cancel'&&x.t?x.t:o.t,p:x.kind==='move'?x.p:o.p}):o})}
+function exTag(b,o){const x=o._ex||exNearV(b,o.id);if(!x)return '';const pre=o._today?'오늘':`${+x.date.slice(5,7)}/${+x.date.slice(8,10)}`;
+  const txt=x.kind==='cancel'?`${pre} 휴강`:x.kind==='sub'?(o._today?`오늘 대강 · 원래 ${esc(T(b,o._t0))}T`:`${pre} 대강 ${esc(T(b,x.t))}T`):(o._today?`오늘만 이 시간 · 원래 ${esc(pshort(per(b,o.d,o._p0).name))}`:`${pre} → ${esc(pshort(per(b,o.d,x.p).name))}${x.t&&x.t!==o.t?' '+esc(T(b,x.t))+'T':''}`);
+  return `<span class="exb ${x.kind}"${x.memo?` title="${esc(x.memo)}"`:''}>${txt}</span>`}
+const exCancel=(b,o)=>{const x=o._ex||exNearV(b,o.id);return !!(x&&x.kind==='cancel'&&(o._today||x.date===tdStr()||true))};
+/* 주간 표: 대강·이동으로 이 칸에 오는 수업 (7일 안) */
+function exGhostV(b,d,p,t){if(b._nx)return '';return exL(b).filter(x=>x.date<plusD(tdStr(),7)&&x.kind!=='cancel').map(x=>{const o=b.sessions.find(s=>s.id===x.sid);if(!o||o.d!==d)return '';const tp=x.kind==='move'?x.p:o.p,tt=x.t||o.t;if(tp!==p||(t&&tt!==t))return '';const c=C(b,o.cls);if(!c)return '';
+  return `<div class="gnote exg" style="--nc:${esc(c.color||'#9aa3b5')}"><i>${+x.date.slice(5,7)}/${+x.date.slice(8,10)}만 · ${x.kind==='sub'?'대강':'옮겨 옴'}</i><span><b>${esc(c.name)}</b> ${x.kind==='sub'?esc(T(b,o.t))+'T 대신':esc(pshort(per(b,o.d,o.p).name))+'에서'}</span></div>`}).join('')}
+function card(b,o,sub,hit,st){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o._t0||o.t]||[];const xt=exTag(b,o);const xc=xt&&(o._ex||exNearV(b,o.id)).kind==='cancel';const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});
   const k=o.d+o.p+o.t+o.cls;const open=ST.open.has(k)||hit;
-  return `<div class="card${open?' open':''}${hit?' hit':''}${st==='done'?' done':''}" style="--c:${esc(c.color||'#9aa3b5')}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(c.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(c.name)}</b>${stTag(st)}<span class="n">${act.length}명</span></span><span class="t2">${sub}</span></span></button>
+  return `<div class="card${open?' open':''}${hit?' hit':''}${st==='done'?' done':''}${xc?' exc':''}" style="--c:${esc(c.color||'#9aa3b5')}"><button data-k="${esc(k)}" aria-expanded="${open}"><span class="bar" style="background:${esc(c.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(c.name)}</b>${stTag(st)}<span class="n">${act.length}명</span></span><span class="t2">${sub}${xt?' '+xt:''}</span></span></button>
     <div class="nmw"><div><div class="nm">${mem.map(id=>{const s=S(b,id);if(!s)return'';return `<span>${s.away?`<s>${esc(s.name)}</s>`:esc(s.name)}</span>`}).join('')||'<span>명단 없음</span>'}</div></div></div></div>`}
 
 /* ===== 오늘: 내 수업 먼저, 그다음 오늘 전체 ===== */
 function todayItems(b,d){const it=[];
-  b.sessions.filter(o=>o.d===d).forEach(o=>{const [s,e]=pRange(b,d,o.p);it.push({o,s,e,t:o.t})});
+  (d===todayD()?todaySess(b,d):b.sessions.filter(o=>o.d===d)).forEach(o=>{const [s,e]=pRange(b,d,o.p);it.push({o,s,e,t:o.t})});
   sps(b).filter(x=>(x.days||[]).includes(d)).forEach(x=>{const s=toMin(x.start);it.push({sp:x,s,e:s+(+x.dur||120),t:x.t})});
   return it.sort((x,y)=>x.s-y.s)}
 function marks(items){const nm=nowMin();let nx=false;return items.map(x=>{let st='';if(x.e<=nm)st='done';else if(x.s<=nm)st='now';else if(!nx){st='next';nx=true}return st})}
@@ -497,7 +515,8 @@ function vToday(b){const d=todayD();const dt=new Date();const me=ME();const myT=
 function dayBody(b,d,mark){const ps=(b.days||{})[d]||[];const tord={};b.teachers.forEach((t,i)=>tord[t.id]=i);let any=false,h='';const nm=nowMin();
   const sd=sps(b).filter(s=>(s.days||[]).includes(d)).sort((x,y)=>toMin(x.start)-toMin(y.start)||tord[x.t]-tord[y.t]);
   if(sd.length){any=true;h+=`<div class="per"><b>특강</b><span>방학</span></div><div class="list">${sd.map(s=>{const a=toMin(s.start),e=a+(+s.dur||120);return spCard(b,s,`${spTime(s)} · ${esc(T(b,s.t))}T${spD(s)}`,mark?(e<=nm?'done':a<=nm?'now':''):'')}).join('')}</div>`}
-  ps.forEach((pp,p)=>{const os=b.sessions.filter(o=>o.d===d&&o.p===p).sort((x,y)=>tord[x.t]-tord[y.t]);if(!os.length)return;any=true;
+  const SS=mark&&d===todayD()?todaySess(b,d):b.sessions;
+  ps.forEach((pp,p)=>{const os=SS.filter(o=>o.d===d&&o.p===p).sort((x,y)=>tord[x.t]-tord[y.t]);if(!os.length)return;any=true;
     const [s,e]=pRange(b,d,p);const now=mark&&s<=nm&&nm<e,done=mark&&e<=nm;
     h+=`<div class="per"><b>${esc(pshort(pp.name))}</b><span>${esc(pp.time)}</span>${now?'<span class="now">지금</span>':''}</div><div class="list">${os.map(o=>card(b,o,`${esc(T(b,o.t))}T`,false,done?'done':'')).join('')}</div>`});
   if(!any)h+=`<div class="empty">${mark?'오늘은':'이 요일에는'} 수업이 없어요</div>`;return h}
@@ -535,8 +554,8 @@ function vStu(b,parts){const q=ST.q.trim();const sb=`<div class="search"><input 
 /* ===== PC: 지점 시간표 격자 (프로그램 보기 화면과 같은 배치) ===== */
 function txtColor(hex){const h=(hex||'#999999').replace('#','');if(h.length<6)return'#151a26';const [r,g,bb]=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(c=>c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4));return (0.2126*r+0.7152*g+0.0722*bb)>0.36?'#151a26':'#ffffff'}
 function names(b,ids,hl){return true?`<div class="gnw"><div><div class="gn">${ids.map(id=>{const s=S(b,id);if(!s)return'';const n=esc(s.name);return `<span${id===hl?' style="font-weight:700;text-decoration:underline"':''}>${s.away?`<s>${n}</s>`:n}</span>`}).join('')}</div></div></div>`:''}
-function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});const bg=c.color||'#9aa3b5';
-  return `<div class="gc" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
+function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>{const s=S(b,id);return s&&!s.away});const bg=c.color||'#9aa3b5';const xt=exTag(b,o);const xc=xt&&exNearV(b,o.id).kind==='cancel';
+  return `<div class="gc${xc?' exc':''}" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${act.length}명</i></div>${xt?`<div class="gx">${xt}</div>`:''}${names(b,mem,ST.stu)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>{const x=S(b,id);return x&&!x.away});const bg=s.color||'#9aa3b5';
   return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
 function gzHTML(){const b=D&&B();const nl=b&&((b.notes||[]).length||rqFor(b).length)?`<button class="tg" id="ntTg" role="switch" aria-checked="${ST.nt}"><i></i>메모 보기</button>`:'';return nl+`<button class="tg" id="nmTg" role="switch" aria-checked="${ST.nm}"><i></i>학생 이름 모두 보기</button>${ST.nm?'':'<small class="tgh">반 카드를 누르면 그 반 이름이 보여요</small>'}`}
@@ -572,7 +591,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
         if(p>=((b.days||{})[c.d]||[]).length){h+=`<td class="none${e}"></td>`;return}
         const os=b.sessions.filter(o=>o.d===c.d&&o.p===p&&o.t===c.t.id);const free=mine&&!os.length;const shw=!os.length&&(ST.nt||free);
         const ns=shw?(b.notes||[]).filter(n=>n.d===c.d&&n.p===p&&n.t===c.t.id&&noteLive(n)):[];const ok=shw?rqOkAt(b,c.d,p,c.t.id):[];const pd=shw?rqAt(b,c.d,p,c.t.id):[];
-        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${ns.concat(ok).map(n=>gn(n,'','')).join('')}${pd.map(x=>gn(x,'승인 대기 · ',' pend'+(x.t===myT?' my':''))).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ 요청</span>`:''}</div></td>`});
+        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${exGhostV(b,c.d,p,c.t.id)}${ns.concat(ok).map(n=>gn(n,'','')).join('')}${pd.map(x=>gn(x,'승인 대기 · ',' pend'+(x.t===myT?' my':''))).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ 요청</span>`:''}</div></td>`});
       h+='</tr>'}
     h+='</tbody></table></div>'});
   if(!wide)h+='</div></div>';
@@ -585,7 +604,7 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
   for(let p=0;p<mp;p++){h+=`<tr><th class="pl">${perLabel(b,['월'],p)||perLabel(b,['토'],p)}</th>`;
     DAYS.forEach(d=>{if(p>=((b.days||{})[d]||[]).length){h+='<td class="w none end"></td>';return}
       const os=b.sessions.filter(o=>o.d===d&&o.p===p&&fo(o));const off=ST.tab==='tch'&&((TT(b,ST.t)||{}).off||[]).includes(d);
-      h+=`<td class="w end${off?' offd':''}"><div class="cw"><span class="tm">${esc(per(b,d,p).time)}</span>${os.map(o=>gChip(b,o,sub(o))).join('')}</div></td>`});
+      h+=`<td class="w end${off?' offd':''}"><div class="cw"><span class="tm">${esc(per(b,d,p).time)}</span>${os.map(o=>gChip(b,o,sub(o))).join('')}${ST.tab==='tch'?exGhostV(b,d,p,ST.t):''}</div></td>`});
     h+='</tr>'}
   return h+'</tbody></table></div>'}
 /* ===== 선생님 요청: '내 시간표' 빈 칸을 누르면 명단을 적어 보냄 → 부원장 승인 후 시간표에 들어감 =====
@@ -678,7 +697,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.39.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.40.0</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
