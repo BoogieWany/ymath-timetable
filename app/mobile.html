@@ -388,7 +388,7 @@ async function load(pin){
     if(j.enc){if(!p){showPin('');return}
       if(!(window.crypto&&crypto.subtle)){$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
       if(D&&lastCt===j.ct){lastOk=Date.now();meta(false);tick();rqFetch();return}
-      try{j=await dec(j,p);lastCt=JSON.parse(raw).ct}catch(e){ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
+      try{j=await dec(j,p);lastCt=JSON.parse(raw).ct}catch(e){KC.k=null;ls.set('m_pin','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
     const first=!D;D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();ls.set('m_cache',raw);if(first)initBr();render();rqFetch(true)}
   catch(e){if(!D){const c=ls.get('m_cache','');if(c&&p){try{let j=JSON.parse(c);if(j.enc)j=await dec(j,p);D=j;initBr();render();meta(true);return}catch(err){}}
       $('main').innerHTML='<div class="off"><b>시간표를 받지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
@@ -396,8 +396,13 @@ async function load(pin){
 function initBr(){const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
   if(me&&me.br===ST.br&&!ls.get('m_t',''))ST.t=me.t}
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function dec(j,pass){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+/* 번호로 키 만들기(60만 회)는 소금·번호가 같으면 한 번만 — 시간표가 바뀔 때마다 1~2초씩 기다리지 않게 */
+const KC={k:null,salt:'',it:0,pass:''};
+async function viewKey(j,pass){if(KC.k&&KC.salt===j.salt&&KC.it===j.it&&KC.pass===pass)return KC.k;
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
   const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(j.salt),iterations:j.it,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  KC.k=key;KC.salt=j.salt;KC.it=j.it;KC.pass=pass;return key}
+async function dec(j,pass){const key=await viewKey(j,pass);
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},key,b64(j.ct));return JSON.parse(new TextDecoder().decode(pt))}
 function showPin(msg){$('tabs').innerHTML='';$('main').innerHTML=`<form class="pin" id="pf"><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" autocomplete="current-password" autocapitalize="off" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button>열기</button></form>`;
   $('pf').onsubmit=e=>{e.preventDefault();load($('pi').value.trim())};setTimeout(()=>$('pi').focus(),50)}
@@ -574,13 +579,19 @@ const u8b64=u=>{let s='';for(let i=0;i<u.length;i++)s+=String.fromCharCode(u[i])
 async function rqKey(){if(RQ.k&&RQ.kraw===D.rq.k)return RQ.k;RQ.k=await crypto.subtle.importKey('raw',b64(D.rq.k),'AES-GCM',false,['encrypt','decrypt']);RQ.kraw=D.rq.k;return RQ.k}
 async function rqEnc(o){const k=await rqKey();const iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o))));return JSON.stringify({v:1,iv:u8b64(iv),ct:u8b64(ct)})}
 async function rqDec(s){const j=JSON.parse(s);const k=await rqKey();return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},k,b64(j.ct))))}
-async function rqRead(list){const out=[];for(const i of list||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=await rqDec(i.body||'');if(x&&x.br)out.push(Object.assign(x,{num:i.number}))}catch(e){}}return out}
-async function rqFetch(force){if(!rqOn()){if(RQ.list.length||RQ.ok.length){RQ.list=[];RQ.ok=[]}return}if(!force&&Date.now()-RQ.last<100000)return;RQ.last=Date.now();
+async function rqRead(list){const out=[];for(const i of list||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=await rqDec(i.body||'');if(x&&x.br)out.push(Object.assign(x,{num:i.number,reason:i.state_reason||''}))}catch(e){}}return out}
+/* 조회 간격: '내 시간표'를 보고 있거나 내 지점에 대기 중 요청이 있으면 100초, 아니면 5분 (여러 폰이 같은 키로 물어봐서 횟수를 아낌) */
+function rqIv(){const me=ME();const b=D&&B();const myT=me&&b&&me.br===b.id?me.t:'';return ST.tab==='grid'&&b&&((ST.gt&&ST.gt===myT)||RQ.list.some(x=>x.br===b.id))?100000:300000}
+async function rqFetch(force){if(!rqOn()){if(RQ.list.length||RQ.ok.length){RQ.list=[];RQ.ok=[]}return}if(!force&&Date.now()-RQ.last<rqIv())return;RQ.last=Date.now();
   try{const base=`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`;const r=await fetch(`${base}?state=open&per_page=100`,{headers:rqH(),cache:'no-store'});if(!r.ok)return;
     const list=await rqRead(await r.json());let ok=RQ.ok;
     if(RQ.list.length||RQ.ok.length){const since=new Date(Date.now()-20*60000).toISOString();const r2=await fetch(`${base}?state=closed&since=${encodeURIComponent(since)}&per_page=50`,{headers:rqH(),cache:'no-store'});
-      if(r2.ok)ok=await rqRead((await r2.json()).filter(i=>i.state_reason==='completed'))}else ok=[];
-    RQ.list=list;RQ.ok=ok;const sig=JSON.stringify([list.map(x=>x.num),ok.map(x=>x.num)]);if(sig!==RQ.sig){RQ.sig=sig;if(ST.tab==='grid'&&!$('sh'))render()}}catch(e){}}
+      if(r2.ok){const closed=await rqRead(await r2.json());ok=closed.filter(x=>x.reason==='completed');rqNotify(list,closed)}}else ok=[];
+    RQ.list=list;RQ.ok=ok;RQ.seen=true;const sig=JSON.stringify([list.map(x=>x.num),ok.map(x=>x.num)]);if(sig!==RQ.sig){RQ.sig=sig;if(ST.tab==='grid'&&!$('sh'))render()}}catch(e){}}
+/* 내가 보낸 요청이 목록에서 사라지면: 승인됐는지·거절됐는지 알려 줌 */
+function rqNotify(list,closed){const me=ME();if(!me||!RQ.seen)return;const gone=RQ.list.filter(x=>x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(!gone.length)return;
+  const lab=(D.branches.find(b=>b.id===me.br)||{}).noteLabel||'보강';const w=x=>{const c=closed.find(y=>y.num===x.num);return c&&c.reason==='completed'?'승인':c&&c.reason==='not_planned'?'거절':'처리'};
+  const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';fzToast(`${lab} 요청이 ${w(g)}됐어요 · ${g.names}${more}`,3600)}
 const rqFor=b=>RQ.list.filter(x=>x.br===b.id);
 const rqAt=(b,d,p,t)=>RQ.list.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t);
 /* 막 승인된 것: 새 시간표 파일이 오기 전까지만 보통 메모처럼 보여 줌 */
@@ -629,7 +640,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.33.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.36.0</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -647,7 +658,7 @@ document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.targ
   if(ds.br){ST.gt='';ST.br=ds.br;ls.set('m_br',ds.br);ST.open.clear();render();return}
   if(ds.act==='pbrBack'){ST.brPicked=false;render();return}
   if(ds.me){ls.set('m_me',JSON.stringify({br:B().id,t:ds.me}));ST.t=ds.me;ls.set('m_t',ds.me);render();return}
-  if(ds.gt!==undefined){ST.gt=ds.gt;render();return}
+  if(ds.gt!==undefined){ST.gt=ds.gt;render();rqFetch();return}
   if(ds.gm){ST.gm=ds.gm;ls.set('m_gm',ds.gm);render();return}
   if(ds.gz){if(ds.gz==='fit'){ST.fit=true;ls.set(FK(),'1');fitNow()}else zoomBy(+ds.gz);return}
   if(ds.act==='rot'){if(LQ.matches||document.fullscreenElement){try{screen.orientation.unlock()}catch(err){}try{if(document.fullscreenElement)await document.exitFullscreen()}catch(err){}setTimeout(()=>{if(LQ.matches)fzToast('폰을 세로로 돌려 주세요')},400);return}
