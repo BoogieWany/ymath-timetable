@@ -633,6 +633,15 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .exg{border:1.5px dashed color-mix(in srgb,var(--nc) 70%,transparent);border-radius:6px;padding:3px 6px;margin-top:2px;font-size:11.5px;line-height:1.3;background:color-mix(in srgb,var(--nc) 14%,var(--panel));display:flex;flex-direction:column}
 .exg i{font-style:normal;font-size:10px;font-weight:700;color:var(--muted)}.exg span{font-size:10.5px;color:var(--muted)}
 .exhave{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.exi{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line2);border-radius:10px;padding:7px 10px;font-size:13px}
+/* 적용 기록 떠 있는 창 */
+.hfloat{position:fixed;top:120px;right:24px;z-index:60;width:min(380px,calc(100vw - 32px));max-height:min(64vh,560px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(10,20,40,.22);opacity:0;transform:translateY(8px) scale(.985);transition:opacity .22s ease,transform .26s cubic-bezier(.22,.61,.36,1)}
+.hfloat.on{opacity:1;transform:none}.hfloat.drag{transition:none;user-select:none}
+.hfh{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 14px;border-bottom:1px solid var(--line2);cursor:move}.hfh .hint{flex:1}
+.hfh .cp-x{background:transparent;border:0;font-size:18px;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:8px}.hfh .cp-x:hover{background:var(--line2);color:var(--fg)}
+.hfl{overflow:auto;padding:6px}.hfi{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:9px;transition:background .15s}
+.hfi:hover{background:var(--line2)}.hfi.on{background:color-mix(in srgb,#F4B860 18%,var(--panel))}
+.hfi b{font-size:12.5px;display:block}.hfi small{font-size:11.5px;color:var(--muted)}.hfb{display:flex;gap:4px;flex:none;align-items:center}
+.hff{padding:8px 10px;border-top:1px solid var(--line2);display:flex;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -2989,7 +2998,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.40.0', APPDATE='2026-10-17';
+const APPVER='3.40.1', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3496,8 +3505,8 @@ function renderVPanel(){
   p.innerHTML=`<div class="vrow"><b>시간표 버전</b><span class="hint">학기·기간마다 시간표를 따로 보관해요. 복사해서 새 기간 시간표를 만들고 고치면 이전 것은 그대로 남아요.</span></div>`+
   b.versions.map(v=>{const live=v.id===b.current,sc=b.sched&&b.sched.ver===v.id,open=v.id===V().id;return `<div class="vrow${sc?' vsched':''}"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="버전 이름"><span class="vtag${live?' live':sc?' sc':''}">${live?'지금 시간표':sc?`예정 · ${ntMd(b.sched.from)}부터${b.sched.pub?' · 공개':' · 비공개'}`:'보관'}</span><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${open?'<b class="hint">(이 PC에서 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}${live?'':`<button class="btn" data-vsched="${v.id}">${sc?'예정 바꾸기':'예정으로 정하기'}</button><button class="btn" data-vdiff="${v.id}">바뀌는 점</button><button class="btn" data-vlive="${v.id}" title="바로 지금 시간표로 (수정 모드)">지금 시간표로</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 버전</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2||live?'disabled':''}>삭제</button></div>`}).join('')+
   `<div class="vrow"><button class="btn" data-act="siOpen">시트 엑셀로 새 버전 만들기</button><span class="hint">구글 시트에서 받은 시간표 .xlsx를 읽어 이 지점의 새 시간표 버전으로</span></div>`+
-  `<div class="vrow" style="margin-top:8px"><b>적용 기록</b><span class="hint">수정 모드에서 [적용]할 때마다 적용하기 전 시간표가 여기 남아요. 언제든 열어 보거나 되돌릴 수 있어요.</span></div>`+
-  ((UI.peek?UI._real:null,HIST.length)?HIST.slice(0,30).map(h=>`<div class="vrow"><b class="mono" style="min-width:130px">${fmtAt(h.at)}</b><span class="hint">적용 전 · ${esc(histSummary(h))}</span>${UI.peek===h.id?'<b class="hint">(보는 중)</b>':`<button class="btn" data-hpeek="${h.id}">보기</button>`}<button class="btn" data-hrestore="${h.id}">이 시간표로 되돌리기</button></div>`).join('')+(HIST.length>30?`<div class="hint">최근 30개만 보여요 (전체 ${HIST.length}개)</div>`:''):'<div class="hint">아직 적용 기록이 없어요</div>');
+  `<div class="vrow" style="margin-top:8px"><b>적용 기록</b><span class="hint">[적용]할 때마다 적용하기 전 시간표가 남아요 · ${HIST.length}개</span><button class="btn" data-act="histOpen" ${HIST.length?'':'disabled'}>적용 기록 열기</button></div>`;
+  histRender();
 }
 
 /* ================= 렌더 ================= */
@@ -3517,7 +3526,7 @@ function render(){
   $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?viewGrid(ISS):UI.view==='teacher'?viewTeacher():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
-  renderVPanel();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
+  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
 }
 // 시간표가 화면에 꽉 차고 자동 점검이 항상 아래에 보이도록 높이 맞춤
 function fitGrid(){const sc=$('view').querySelector('.scroll');if(!sc)return;if(sc.id==='gridScroll'){sc.style.maxHeight='none';document.documentElement.style.setProperty('--toph',($('view').closest('.main').previousElementSibling.getBoundingClientRect().height+(document.body.classList.contains('exe')?36:0))+'px');calcBase();stretchLater();return}const side=$('side');
@@ -3860,6 +3869,8 @@ document.addEventListener('click',async e=>{
     case 'spList':spListDlg();break;
     case 'keyHow':keyHowDlg();break;
     case 'qaOpen':qaOpen(ds.o);break;
+    case 'histOpen':histOpen();break;
+    case 'histClose':histClose();break;
     case 'exOpen':closePop();exDlg(ds.o);break;
     case 'exSave':exSave();break;
     case 'exDel':exDel(ds.x);break;
@@ -3999,6 +4010,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('add_')){addMember(e.target.id.slice(4));return}
   if((e.key==='Delete')&&UI.edit&&UI.picked&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)){if(e.shiftKey)trashCard(UI.picked);else{trashClass(UI.picked.cls);UI.picked=null;UI.sel=null;render()}return}
   if(e.key==='Escape'&&UI.pop){closePop();return}
+  if(e.key==='Escape'&&UI.histOn&&$('modal').hidden&&!UI.peek){histClose();return}
   if(e.key==='Escape'&&SI.res){$('modal').hidden=true;SI.res=null;return}
   if(e.key==='Escape'&&XI.res){$('modal').hidden=true;XI.res=null;return}
   if(e.key==='Escape'&&UI.auto&&!AUTO.prev){$('modal').hidden=true;UI.auto=null;return}
@@ -4176,6 +4188,20 @@ if(bridge&&bridge.onUpdated)bridge.onUpdated(()=>{keepState()});
   // 처음 설치: 설정 화면에서 지점 코드 입력 창부터
   if(UI.firstRun&&bridge&&bridge.syncJoin&&!syOn()){UI.view='settings';render();syJoinDlg(true)}
 })();
+
+/* ===== 적용 기록: 떠 있는 작은 창 — 필요할 때만 열고, 보는 중에도 열어 둔 채 다른 기록으로 바로 바꿔 볼 수 있음 (머리를 끌어 옮김) ===== */
+function histOpen(){let w=$('histFloat');if(!w){w=document.createElement('div');w.id='histFloat';w.className='hfloat';w.setAttribute('role','dialog');w.setAttribute('aria-label','적용 기록');document.body.appendChild(w);
+    const st=(()=>{try{return JSON.parse(localStorage.getItem('ymt_hpos')||'null')}catch(e){return null}})();if(st){w.style.left=Math.min(st.x,innerWidth-200)+'px';w.style.top=Math.min(st.y,innerHeight-120)+'px';w.style.right='auto'}}
+  UI.histOn=true;histRender();requestAnimationFrame(()=>w.classList.add('on'))}
+function histClose(){const w=$('histFloat');UI.histOn=false;if(!w)return;w.classList.remove('on');setTimeout(()=>{if(!UI.histOn)w.remove()},220)}
+function histRender(){const w=$('histFloat');if(!w||!UI.histOn)return;const sc=w.querySelector('.hfl');const top=sc?sc.scrollTop:0;
+  w.innerHTML=`<div class="hfh"><b>적용 기록</b><span class="hint">${HIST.length}개 · 적용하기 전 시간표</span><button class="cp-x" data-act="histClose" aria-label="닫기">×</button></div>
+  <div class="hfl">${HIST.length?HIST.slice(0,60).map(h=>`<div class="hfi${UI.peek===h.id?' on':''}"><div><b class="mono">${fmtAt(h.at)}</b><small>${esc(histSummary(h))}</small></div><div class="hfb">${UI.peek===h.id?'<span class="hint">보는 중</span>':`<button class="btn sm" data-hpeek="${h.id}">보기</button>`}<button class="btn sm" data-hrestore="${h.id}" title="두 번 누르면 이 시간표를 초안으로 불러와요">되돌리기</button></div></div>`).join(''):'<div class="hint" style="padding:12px">아직 적용 기록이 없어요</div>'}</div>
+  ${UI.peek?'<div class="hff"><button class="btn pri" data-act="endPeek">지금 시간표로 돌아가기</button></div>':''}`;
+  const n=w.querySelector('.hfl');if(n)n.scrollTop=top}
+(()=>{let drag=null;document.addEventListener('mousedown',e=>{const h=e.target.closest&&e.target.closest('#histFloat .hfh');if(!h||e.target.closest('button'))return;const w=$('histFloat');const r=w.getBoundingClientRect();drag={dx:e.clientX-r.left,dy:e.clientY-r.top};w.classList.add('drag');e.preventDefault()});
+  document.addEventListener('mousemove',e=>{if(!drag)return;const w=$('histFloat');if(!w)return;const x=Math.max(4,Math.min(innerWidth-w.offsetWidth-4,e.clientX-drag.dx)),y=Math.max(4,Math.min(innerHeight-60,e.clientY-drag.dy));w.style.left=x+'px';w.style.top=y+'px';w.style.right='auto'});
+  document.addEventListener('mouseup',()=>{if(!drag)return;drag=null;const w=$('histFloat');if(!w)return;w.classList.remove('drag');try{localStorage.setItem('ymt_hpos',JSON.stringify({x:parseInt(w.style.left),y:parseInt(w.style.top)}))}catch(e){}})})();
 </script>
 <script>/* ================= 자동 배치 (AI 없이 계산: 무작위 재시작 + 담금질 탐색) =================
    지켜야 할 것(어기면 안 됨): 강사 한 칸 한 수업, 학생 겹침, 학생 수업 불가, 강사 휴무일, 고등학생 초등부 시간
@@ -5069,7 +5095,7 @@ const HELP=[
  {id:'admlock',t:'관리자 모드 · 잠금',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
  {id:'ver',t:'버전 · 적용 기록 · 백업',b:`
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
-  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
+  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [버전 관리 → 적용 기록 열기]를 누르면 작은 창이 떠요(머리를 끌어 옮기고 Esc·×로 닫기). [보기]로 지난 시간표를 보면서 다른 기록으로 바로 바꿔 볼 수 있고, [되돌리기](두 번)로 그 시간표를 초안으로 불러와요.</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요. [설정 → 데이터]에서 백업 파일로 저장·불러오기.</li></ul>`},
  {id:'ex',t:'당일 변경 (휴강 · 대강 · 시간 이동)',b:`<ul><li>지점 시간표에서 수업 카드를 누르면 명단 창 아래 <b>[당일 변경 · 휴강 / 대강 / 시간 이동]</b>이 있어요. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 1~2분 뒤 보여요(급한 변경용).</li>
   <li>날짜(그 요일 다음 5번 중)를 고르고 <b>휴강</b> / <b>대강</b>(대신 들어갈 선생님) / <b>시간 이동</b>(같은 날 다른 교시, 강사도 바꿀 수 있음) 중 하나 + 메모(선택).</li>
