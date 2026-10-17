@@ -169,7 +169,7 @@ async function syRaw(pathU,_re){const r=await fetch((process.env.YMT_GH_API||'ht
   if(r.status===401&&!_re&&await tokenRefresh())return syRaw(pathU,true);if(!r.ok)throw new Error(ghErr({status:r.status,j:null}));return Buffer.from(await r.arrayBuffer())}
 async function syDir(sub){const r=await gh('GET',`${syBase()}/${sub}`);if(r.status===404)return [];if(r.status!==200)throw new Error(ghErr(r));return (r.j||[]).filter(x=>x.type==='file'&&x.name.endsWith('.json')).map(x=>({id:x.name.replace(/\.json$/,''),sha:x.sha,path:x.path}))}
 function syReady(){const c=syCfg();return !!(c.on&&syKey()&&ghToken()&&mob.ghOwner&&mob.ghRepo)}
-function syInfo(){const c=syCfg();return {on:!!c.on,role:c.role||'owner',branch:c.branch||'',name:c.name||'',dev:c.dev||'',last:SY.last,err:SY.err,ready:syReady(),ghReady:!!(ghToken()&&mob.ghRepo)}}
+function syInfo(){const c=syCfg();return {on:!!c.on,role:c.role||'owner',branch:c.branch||'',home:c.home||'',pw:!!(c.admPw&&c.admPw.h),name:c.name||'',dev:c.dev||'',last:SY.last,err:SY.err,ready:syReady(),ghReady:!!(ghToken()&&mob.ghRepo)}}
 function sySave(){fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}
 // 받기: 바뀐 지점만 내용까지
 ipcMain.handle('syncPull',async(e,known)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};
@@ -213,6 +213,17 @@ ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.fro
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
 ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo()});
 ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
+/* 관리자 잠금: 프로그램 관리자 PC를 평소엔 '내 지점 모드'로 — 비밀번호를 넣어야 관리자 기능이 열림 (화면 잠금 · 업데이트 보내기는 계속) */
+const ADMF={n:0,until:0};
+const admHash=(pw,salt)=>crypto.pbkdf2Sync(Buffer.from(String(pw),'utf8'),salt,200000,32,'sha256');
+function admOk(pw){const c=syCfg();if(!c.admPw||!c.admPw.h)return true;const h=admHash(pw,Buffer.from(c.admPw.s,'base64'));return crypto.timingSafeEqual(h,Buffer.from(c.admPw.h,'base64'))}
+ipcMain.handle('admCheck',(e,pw)=>{if(Date.now()<ADMF.until)return {ok:false,wait:Math.ceil((ADMF.until-Date.now())/1000)};
+  if(admOk(pw)){ADMF.n=0;return {ok:true}}ADMF.n++;if(ADMF.n>=5){ADMF.n=0;ADMF.until=Date.now()+30000}return {ok:false}});
+ipcMain.handle('admSet',(e,o)=>{const c=syCfg();if(c.role!=='owner')return {ok:false,err:'프로그램 관리자 PC에서만 정할 수 있어요'};
+  if((o.pw!==undefined||o.clear)&&c.admPw&&c.admPw.h&&!admOk(o.old||''))return {ok:false,err:'지금 비밀번호가 맞지 않아요'};
+  if(o.home!==undefined)c.home=String(o.home||'');
+  if(o.clear)delete c.admPw;else if(o.pw!==undefined){const pw=String(o.pw);if(pw.length<4)return {ok:false,err:'비밀번호는 4자리 이상으로 정해 주세요'};const s=crypto.randomBytes(16);c.admPw={s:s.toString('base64'),h:admHash(pw,s).toString('base64')}}
+  sySave();return {ok:true,info:syInfo()}});
 
 /* ================= 선생님 보강 요청 (브라우저 시간표 → GitHub 이슈) =================
    선생님 브라우저는 '요청 남기기'만 되는 키(Issues 권한만)로 저장소에 이슈를 만듦. 내용(지점·칸·이름)은 요청 키(k, 32바이트)로 AES-GCM 암호화.
