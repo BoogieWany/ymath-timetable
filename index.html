@@ -325,6 +325,11 @@ body.land .note{padding:10px}
 .gnote{border:1.5px dashed rgba(100,112,137,.55);border-radius:.45em;padding:.3em .45em;font-size:.9em;line-height:1.3;flex:1 1 auto;display:flex;flex-direction:column;gap:.1em;animation:tinR .3s ease}
 .gnote i{font-style:normal;font-size:.8em;font-weight:700;color:var(--muted)}
 .gnote span{word-break:keep-all}
+.gnote i b{font-weight:700;color:var(--fg)}
+.gnote.lnk{border-style:solid;border-color:color-mix(in srgb,var(--nc) 55%,transparent);border-left-width:4px;background:color-mix(in srgb,var(--nc) 12%,var(--panel))}
+.rqk{display:flex;gap:6px;margin:0 0 10px}.rqk button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:9px 0;font-size:14px;font-weight:600;transition:background .2s,color .2s,border-color .2s}.rqk button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--panel)}
+.slab{display:block;font-size:12.5px;font-weight:600;margin:2px 0 5px;color:var(--muted)}
+#rqClsRow{margin:0 0 10px}#rqClsRow select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:11px 12px;font-size:15px}
 /* 선생님 요청: 내 시간표 빈 칸 → 요청 → 승인 대기 */
 table.g td.free{cursor:pointer;transition:background .2s}
 body.wide table.g td.free:hover{background:color-mix(in srgb,var(--acc) 5%,var(--panel))}
@@ -521,7 +526,7 @@ function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||
   return `<div class="gc" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>{const x=S(b,id);return x&&!x.away});const bg=s.color||'#9aa3b5';
   return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${act.length}명</i></div>${names(b,mem,ST.stu)}</div>`}
-function gzHTML(){const b=D&&B();const nl=b&&((b.notes||[]).length||rqFor(b).length)?`<button class="tg" id="ntTg" role="switch" aria-checked="${ST.nt}"><i></i>${esc(b.noteLabel||'보강')} 보기</button>`:'';return nl+`<button class="tg" id="nmTg" role="switch" aria-checked="${ST.nm}"><i></i>학생 이름 모두 보기</button>${ST.nm?'':'<small class="tgh">반 카드를 누르면 그 반 이름이 보여요</small>'}`}
+function gzHTML(){const b=D&&B();const nl=b&&((b.notes||[]).length||rqFor(b).length)?`<button class="tg" id="ntTg" role="switch" aria-checked="${ST.nt}"><i></i>메모 보기</button>`:'';return nl+`<button class="tg" id="nmTg" role="switch" aria-checked="${ST.nm}"><i></i>학생 이름 모두 보기</button>${ST.nm?'':'<small class="tgh">반 카드를 누르면 그 반 이름이 보여요</small>'}`}
 function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days.find(d=>/[토일]/.test(d)&&d!==days[0]);const w=we&&((b.days||{})[we]||[])[p];
   if(!a)return w?`<b>${esc(pshort(w.name))}</b><span>${we} ${esc(w.time)}</span>`:'';
   return `<b>${esc(pshort(a.name))}</b><span>${esc(a.time)}</span>${w&&!/[토일]/.test(days[0])?`<span class="we">${we} ${esc(w.time)}</span>`:''}`}
@@ -531,7 +536,8 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const tRow=`<span class="seg tch" role="group" aria-label="강사">${[['','모든 강사']].concat(myT?[[myT,'내 시간표']]:[]).concat(tchList(b).filter(t=>t.id!==myT).map(t=>[t.id,t.name])).map(([id,l])=>`<button data-gt="${id}" aria-pressed="${(ST.gt||'')===id}"${id===myT&&id?' class="mine"':''}>${esc(l)}</button>`).join('')}</span>`;
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
-  const mine=!!(gT&&gT.id===myT&&rqOn());const lab=esc(b.noteLabel||'보강');const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 ${lab} 요청</small>`:'';
+  const mine=!!(gT&&gT.id===myT&&rqOn());const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강·추가수업 요청</small>`:'';
+  const nk=n=>esc(n.k||b.noteLabel||'보강');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);return `<div class="gnote${c?' lnk':''}${extra||''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}><i>${pre||''}${nk(n)}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${esc(n.names)}</span>`:''}</div>`};
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
     :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}${rqH2}</span></div>`;
   if(!b.teachers.length)return h+'<div class="empty">시간표가 비어 있어요</div>'+foot();
@@ -553,7 +559,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
         if(p>=((b.days||{})[c.d]||[]).length){h+=`<td class="none${e}"></td>`;return}
         const os=b.sessions.filter(o=>o.d===c.d&&o.p===p&&o.t===c.t.id);const free=mine&&!os.length;const shw=!os.length&&(ST.nt||free);
         const ns=shw?(b.notes||[]).filter(n=>n.d===c.d&&n.p===p&&n.t===c.t.id):[];const ok=shw?rqOkAt(b,c.d,p,c.t.id):[];const pd=shw?rqAt(b,c.d,p,c.t.id):[];
-        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${ns.concat(ok).map(n=>`<div class="gnote"><i>${lab}</i><span>${esc(n.names)}</span></div>`).join('')}${pd.map(x=>`<div class="gnote pend${x.t===myT?' my':''}"${x.t===myT?` data-rqn="${x.num}"`:''}><i>승인 대기 · ${lab}</i><span>${esc(x.names)}</span></div>`).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ ${lab}</span>`:''}</div></td>`});
+        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${ns.concat(ok).map(n=>gn(n,'','')).join('')}${pd.map(x=>gn(x,'승인 대기 · ',' pend'+(x.t===myT?' my':''))).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ 요청</span>`:''}</div></td>`});
       h+='</tr>'}
     h+='</tbody></table></div>'});
   if(!wide)h+='</div></div>';
@@ -590,20 +596,27 @@ async function rqFetch(force){if(!rqOn()){if(RQ.list.length||RQ.ok.length){RQ.li
     RQ.list=list;RQ.ok=ok;RQ.seen=true;const sig=JSON.stringify([list.map(x=>x.num),ok.map(x=>x.num)]);if(sig!==RQ.sig){RQ.sig=sig;if(ST.tab==='grid'&&!$('sh'))render()}}catch(e){}}
 /* 내가 보낸 요청이 목록에서 사라지면: 승인됐는지·거절됐는지 알려 줌 */
 function rqNotify(list,closed){const me=ME();if(!me||!RQ.seen)return;const gone=RQ.list.filter(x=>x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(!gone.length)return;
-  const lab=(D.branches.find(b=>b.id===me.br)||{}).noteLabel||'보강';const w=x=>{const c=closed.find(y=>y.num===x.num);return c&&c.reason==='completed'?'승인':c&&c.reason==='not_planned'?'거절':'처리'};
-  const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';fzToast(`${lab} 요청이 ${w(g)}됐어요 · ${g.names}${more}`,3600)}
+  const lab=gone[0].k||'보강';const w=x=>{const c=closed.find(y=>y.num===x.num);return c&&c.reason==='completed'?'승인':c&&c.reason==='not_planned'?'거절':'처리'};
+  const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';fzToast(`${lab} 요청이 ${w(g)}됐어요 · ${g.names||(g.cls&&(C(D.branches.find(b=>b.id===me.br)||{classes:[]},g.cls)||{}).name)||''}${more}`,3600)}
 const rqFor=b=>RQ.list.filter(x=>x.br===b.id);
 const rqAt=(b,d,p,t)=>RQ.list.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t);
 /* 막 승인된 것: 새 시간표 파일이 오기 전까지만 보통 메모처럼 보여 줌 */
 function rqOkAt(b,d,p,t){const ns=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===t).map(n=>n.names).join(', ').split(/,\s*/);
-  return RQ.ok.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t&&String(x.names).split(/,\s*/).some(n=>n&&!ns.includes(n)))}
+  const cs=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===t).map(n=>n.cls||'');
+  return RQ.ok.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t&&(String(x.names||'').split(/,\s*/).some(n=>n&&!ns.includes(n))||(x.cls&&!cs.includes(x.cls))))}
 function shOpen(html){shClose(true);const w=document.createElement('div');w.id='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
   w.addEventListener('click',e=>{if(e.target===w)shClose()});requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')))}
 function shClose(now){const w=$('sh');if(!w)return;w.id='';if(now){w.remove();return}w.classList.remove('on');setTimeout(()=>w.remove(),360)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sh'))shClose()});
-function rqSheet(d,p){const b=B(),me=ME();const t=TT(b,me.t);const pp=per(b,d,p);const lab=esc(b.noteLabel||'보강');
-  const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>n.names).join(', ');
-  shOpen(`<h3>${lab} 요청</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${ex?`<p class="sex">지금 적힌 명단: ${esc(ex)}</p>`:''}
+const RQ_KINDS=['보강','추가수업','조교시간'];
+function rqKindSel(){const b=document.querySelector('[data-rqk][aria-pressed="true"]');return b?b.dataset.rqk:'보강'}
+function rqSetKind(k){document.querySelectorAll('[data-rqk]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.rqk===k)));const r=$('rqClsRow');if(r)r.hidden=k!=='추가수업';ls.set('m_rqk',k)}
+function rqSheet(d,p){const b=B(),me=ME();const t=TT(b,me.t);const pp=per(b,d,p);const k=ls.get('m_rqk','보강');
+  const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>(n.k||'보강')+(n.cls&&C(b,n.cls)?' '+C(b,n.cls).name:'')+(n.names?' '+n.names:'')).join(' / ');
+  const mine=b.classes.filter(c=>(c.members||{})[me.t]!==undefined);const others=b.classes.filter(c=>(c.members||{})[me.t]===undefined);const opt=c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`;
+  shOpen(`<h3>빈 칸 요청</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${ex?`<p class="sex">지금 적힌 메모: ${esc(ex)}</p>`:''}
+    <div class="rqk" role="group" aria-label="종류">${RQ_KINDS.map(x=>`<button data-rqk="${x}" aria-pressed="${x===k}">${x}</button>`).join('')}</div>
+    <div id="rqClsRow" ${k==='추가수업'?'':'hidden'}><label class="slab" for="rqCls">연결할 수업</label><select id="rqCls"><option value="">(연결 안 함)</option>${mine.length?`<optgroup label="내 수업">${mine.map(opt).join('')}</optgroup>`:''}${others.length?`<optgroup label="다른 수업">${others.map(opt).join('')}</optgroup>`:''}</select></div>
     <input id="rqIn" placeholder="학생 이름 (쉼표나 띄어쓰기로 여러 명)" autocomplete="off" autocapitalize="off" enterkeyhint="send" aria-label="학생 이름"><div id="rqSug" class="rqsug"></div>
     <p class="snote" id="rqMsg">보내면 '승인 대기'로 보이고, 부원장님이 승인하면 시간표에 들어가요</p>
     <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="rqGo" data-act="rqSend" data-rd="${d}" data-rp="${p}">요청 보내기</button></div>`);
@@ -616,15 +629,16 @@ document.addEventListener('input',e=>{if(e.target.id==='rqIn')rqSug()});
 document.addEventListener('compositionend',e=>{if(e.target.id==='rqIn')rqSug()});
 document.addEventListener('keydown',e=>{if(e.target.id==='rqIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();const g=$('rqGo');if(g)g.click()}});
 async function rqSend(d,p){const b=B(),me=ME();const i=$('rqIn'),g=$('rqGo'),msg=$('rqMsg');if(!i||!me)return;
-  const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length){msg.textContent='학생 이름을 넣어 주세요';msg.classList.add('err');i.focus();return}
+  const k=rqKindSel(),cls=k==='추가수업'?(($('rqCls')||{}).value||''):'';
+  const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length&&!(k==='추가수업'&&cls)){msg.textContent=k==='추가수업'?'학생 이름을 넣거나 연결할 수업을 골라 주세요':'학생 이름을 넣어 주세요';msg.classList.add('err');i.focus();return}
   g.disabled=true;g.textContent='보내는 중…';
-  try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
+  try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),k,cls,names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 요청',body})});
     if(r.status!==201)throw new Error(r.status===401||r.status===403?'요청 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':r.status===410?'요청 받기가 꺼져 있어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
     const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';shClose();render();fzToast('요청을 보냈어요 · 승인되면 시간표에 들어가요',2600)}
   catch(err){g.disabled=false;g.textContent='다시 보내기';msg.textContent=err.message&&/[가-힣]/.test(err.message)?err.message:'인터넷 연결을 확인하고 다시 보내 주세요';msg.classList.add('err')}}
-function rqPendSheet(num){const x=RQ.list.find(i=>i.num===+num);if(!x)return;const b=B();const pp=per(b,x.d,+x.p);const lab=esc(b.noteLabel||'보강');
-  shOpen(`<h3>승인 대기 중인 ${lab} 요청</h3><p class="ssub">${x.d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(x.tn||'')}T</p><div class="names">${esc(x.names)}</div>
+function rqPendSheet(num){const x=RQ.list.find(i=>i.num===+num);if(!x)return;const b=B();const pp=per(b,x.d,+x.p);const lab=esc(x.k||'보강');const xc=x.cls&&C(b,x.cls);
+  shOpen(`<h3>승인 대기 중인 ${lab} 요청</h3><p class="ssub">${x.d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(x.tn||'')}T${xc?' · '+esc(xc.name):''}</p><div class="names">${esc(x.names||(xc?'수업만 연결':''))}</div>
     <p class="snote" id="rqMsg">부원장님이 승인하면 시간표에 들어가요. 잘못 보냈으면 취소할 수 있어요</p>
     <div class="sbtn"><button data-act="shClose">닫기</button><button class="dan" id="rqGo" data-act="rqCancel" data-rn="${x.num}">요청 취소</button></div>`)}
 async function rqCancel(num){const g=$('rqGo'),msg=$('rqMsg');if(g){g.disabled=true;g.textContent='취소하는 중…'}
@@ -633,14 +647,14 @@ async function rqCancel(num){const g=$('rqGo'),msg=$('rqMsg');if(g){g.disabled=t
   catch(e){if(g){g.disabled=false;g.textContent='요청 취소'}if(msg){msg.textContent='취소하지 못했어요 · 인터넷 연결을 확인해 주세요';msg.classList.add('err')}}}
 function rqClick(e){const sh=e.target.closest('#sh');
   if(sh){const t=e.target.closest('button');if(!t)return true;const ds=t.dataset;
-    if(ds.act==='shClose')shClose();else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);
+    if(ds.act==='shClose')shClose();else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.rqk){rqSetKind(ds.rqk);const i=$('rqIn');if(i)i.focus()}
     else if(ds.rqpick){const i=$('rqIn');i.value=i.value.replace(/([^,\s]*)$/,'')+ds.rqpick+', ';i.focus();rqSug()}return true}
   if(!rqOn())return false;
   const pn=e.target.closest('.gnote.pend.my');if(pn){rqPendSheet(pn.dataset.rqn);return true}
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.36.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.37.0</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
