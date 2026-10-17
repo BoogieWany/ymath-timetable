@@ -117,10 +117,14 @@ async function tokenRefresh(){try{const c=mob.sync||{};if(!c.on||!syKey()||!mob.
     if(!r.ok)return false;const o=syDec(Buffer.from(await r.arrayBuffer()));if(!o||!o.t||o.t===ghToken())return false;ghSetToken(o.t);fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');return true}catch(e){return false}}
 async function tokenPublish(){try{const c=mob.sync||{};if(!c.on||c.role!=='owner'||!syKey()||!ghToken())return;if(!mob.ghOwner)await ghConnect();await ghPut('sync/token.json',syEnc({t:ghToken(),at:Date.now()}),'연결 키 갱신')}catch(e){}}
 const blobSha=buf=>crypto.createHash('sha1').update(Buffer.concat([Buffer.from('blob '+buf.length+'\0'),buf])).digest('hex');
-async function ghPut(file,buf,msg){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/${file}`;const g=await gh('GET',u);
-  if(g.status===200&&g.j&&g.j.sha===blobSha(buf))return false;
-  const p=await gh('PUT',u,{message:msg,content:buf.toString('base64'),...(g.status===200&&g.j?{sha:g.j.sha}:{})});
-  if(p.status!==200&&p.status!==201)throw new Error(ghErr(p,file));return true}
+// 409/422(판 번호가 어긋남 — 다른 PC가 막 올렸거나 GitHub가 옛 번호를 알려 줌)이면 잠깐 쉬고 최신 번호로 두 번까지 다시
+async function ghPut(file,buf,msg){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/${file}`;
+  for(let k=0;;k++){const g=await gh('GET',u+(k?`?t=${Date.now()}`:''));
+    if(g.status===200&&g.j&&g.j.sha===blobSha(buf))return false;
+    const p=await gh('PUT',u,{message:msg,content:buf.toString('base64'),...(g.status===200&&g.j?{sha:g.j.sha}:{})});
+    if(p.status===200||p.status===201)return true;
+    if((p.status===409||p.status===422)&&k<2){await new Promise(r=>setTimeout(r,1200+k*1500));continue}
+    throw new Error(ghErr(p,file))}}
 function ghErr(r,what){if(r.status===401)return '연결 키가 맞지 않거나 기한이 지났어요';if(r.status===403)return '연결 키에 쓰기 권한이 없어요 (Contents: Read and write)';if(r.status===404)return `저장소 ${mob.ghOwner}/${mob.ghRepo}을(를) 찾지 못했어요 · 이름과 키의 저장소 선택을 확인해 주세요`;return `GitHub 오류 ${r.status}${what?' ('+what+')':''}: ${(r.j&&r.j.message)||''}`}
 async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)throw new Error(ghErr(me));mob.ghOwner=me.j.login;
   const rp=await gh('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}`);if(rp.status!==200)throw new Error(ghErr(rp));
@@ -129,7 +133,7 @@ async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)t
 async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;const g=await gh('GET',u);if(g.status===200){GH.url=g.j.html_url||'';return true}
   const c=await gh('POST',u,{source:{branch:GH.branch||'main',path:'/'}});if(c.status===201||c.status===200){GH.url=(c.j&&c.j.html_url)||'';return true}
   GH.url='';GH.pagesOff=true;return false}
-async function publishGh(){if(!mob.ghOn||GH.busy)return;GH.busy=true;GH.err='';GH.pagesOff=false;
+async function publishGh(){if(!mob.ghOn)return;if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
   try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
     await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');v.rq=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
@@ -141,7 +145,8 @@ async function publishGh(){if(!mob.ghOn||GH.busy)return;GH.busy=true;GH.err='';G
     await ghPut('view.json',Buffer.from(JSON.stringify(encView(v,mob.pin))),'시간표 '+st);
     await ghPages();if(!GH.url)GH.url=`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`;GH.last=Date.now()}
   catch(e){GH.err=e.message||String(e)}
-  GH.busy=false;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}}
+  GH.busy=false;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}
+  if(GH.again){GH.again=false;clearTimeout(ghT);ghT=setTimeout(publishGh,1500)}}
 function ghInfo(){return {exp:mob.ghExp||0,on:!!mob.ghOn,repo:mob.ghRepo||'',owner:mob.ghOwner||'',hasTok:!!ghToken(),last:GH.last,err:GH.err,url:GH.url||(mob.ghOwner&&mob.ghRepo?`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`:''),pagesOff:!!GH.pagesOff,busy:GH.busy}}
 ipcMain.handle('ghSet',async(e,o)=>{mob.ghOn=!!o.on;if(o.repo!==undefined)mob.ghRepo=String(o.repo||'').trim().replace(/^.*\//,'');if(o.token)ghSetToken(String(o.token).trim());
   let pinCh=false;if(o.pin!==undefined){const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin){mob.pin=np;mob.pinAt=Date.now();pinCh=true}}fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(pinCh)await rqPublish();if(mob.ghOn)await publishGh();if(o.token)await tokenPublish();return mobInfo()});
