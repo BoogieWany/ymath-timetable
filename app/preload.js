@@ -1,6 +1,8 @@
 const {contextBridge,ipcRenderer}=require('electron');
 contextBridge.exposeInMainWorld('api',{
   load:()=>ipcRenderer.invoke('load'),
+  histLoad:()=>ipcRenderer.invoke('histLoad'),
+  histSave:t=>ipcRenderer.invoke('histSave',t),
   save:(t,o)=>ipcRenderer.invoke('save',t,o),
   pdf:o=>ipcRenderer.invoke('pdf',o),
   exportFile:o=>ipcRenderer.invoke('exportFile',o),
@@ -36,6 +38,7 @@ contextBridge.exposeInMainWorld('api',{
   syncRevoke:d=>ipcRenderer.invoke('syncRevoke',d),
   ghSet:o=>ipcRenderer.invoke('ghSet',o),
   ghNow:()=>ipcRenderer.invoke('ghNow'),
+  ghLater:()=>ipcRenderer.invoke('ghLater'),
   rqInfo:()=>ipcRenderer.invoke('rqInfo'),
   rqSet:o=>ipcRenderer.invoke('rqSet',o),
   rqList:()=>ipcRenderer.invoke('rqList'),
