@@ -610,13 +610,13 @@ function shClose(now){const w=$('sh');if(!w)return;w.id='';if(now){w.remove();re
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sh'))shClose()});
 const RQ_KINDS=['보강','추가수업','조교시간'];
 function rqKindSel(){const b=document.querySelector('[data-rqk][aria-pressed="true"]');return b?b.dataset.rqk:'보강'}
-function rqSetKind(k){document.querySelectorAll('[data-rqk]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.rqk===k)));const r=$('rqClsRow');if(r)r.hidden=k!=='추가수업';ls.set('m_rqk',k)}
+function rqSetKind(k){document.querySelectorAll('[data-rqk]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.rqk===k)));ls.set('m_rqk',k)}
 function rqSheet(d,p){const b=B(),me=ME();const t=TT(b,me.t);const pp=per(b,d,p);const k=ls.get('m_rqk','보강');
   const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>(n.k||'보강')+(n.cls&&C(b,n.cls)?' '+C(b,n.cls).name:'')+(n.names?' '+n.names:'')).join(' / ');
   const mine=b.classes.filter(c=>(c.members||{})[me.t]!==undefined);const others=b.classes.filter(c=>(c.members||{})[me.t]===undefined);const opt=c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`;
   shOpen(`<h3>빈 칸 요청</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${ex?`<p class="sex">지금 적힌 메모: ${esc(ex)}</p>`:''}
     <div class="rqk" role="group" aria-label="종류">${RQ_KINDS.map(x=>`<button data-rqk="${x}" aria-pressed="${x===k}">${x}</button>`).join('')}</div>
-    <div id="rqClsRow" ${k==='추가수업'?'':'hidden'}><label class="slab" for="rqCls">연결할 수업</label><select id="rqCls"><option value="">(연결 안 함)</option>${mine.length?`<optgroup label="내 수업">${mine.map(opt).join('')}</optgroup>`:''}${others.length?`<optgroup label="다른 수업">${others.map(opt).join('')}</optgroup>`:''}</select></div>
+    <div id="rqClsRow"><label class="slab" for="rqCls">연결할 수업 <small>(선택)</small></label><select id="rqCls"><option value="">(연결 안 함)</option>${mine.length?`<optgroup label="내 수업">${mine.map(opt).join('')}</optgroup>`:''}${others.length?`<optgroup label="다른 수업">${others.map(opt).join('')}</optgroup>`:''}</select></div>
     <input id="rqIn" placeholder="학생 이름 (쉼표나 띄어쓰기로 여러 명)" autocomplete="off" autocapitalize="off" enterkeyhint="send" aria-label="학생 이름"><div id="rqSug" class="rqsug"></div>
     <p class="snote" id="rqMsg">보내면 '승인 대기'로 보이고, 부원장님이 승인하면 시간표에 들어가요</p>
     <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="rqGo" data-act="rqSend" data-rd="${d}" data-rp="${p}">요청 보내기</button></div>`);
@@ -629,8 +629,8 @@ document.addEventListener('input',e=>{if(e.target.id==='rqIn')rqSug()});
 document.addEventListener('compositionend',e=>{if(e.target.id==='rqIn')rqSug()});
 document.addEventListener('keydown',e=>{if(e.target.id==='rqIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();const g=$('rqGo');if(g)g.click()}});
 async function rqSend(d,p){const b=B(),me=ME();const i=$('rqIn'),g=$('rqGo'),msg=$('rqMsg');if(!i||!me)return;
-  const k=rqKindSel(),cls=k==='추가수업'?(($('rqCls')||{}).value||''):'';
-  const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length&&!(k==='추가수업'&&cls)){msg.textContent=k==='추가수업'?'학생 이름을 넣거나 연결할 수업을 골라 주세요':'학생 이름을 넣어 주세요';msg.classList.add('err');i.focus();return}
+  const k=rqKindSel(),cls=($('rqCls')||{}).value||'';
+  const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length&&!cls){msg.textContent='학생 이름을 넣거나 연결할 수업을 골라 주세요';msg.classList.add('err');i.focus();return}
   g.disabled=true;g.textContent='보내는 중…';
   try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),k,cls,names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 요청',body})});
@@ -654,7 +654,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.37.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.37.1</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
