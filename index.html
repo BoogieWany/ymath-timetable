@@ -697,7 +697,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.40.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.40.3</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -805,6 +805,15 @@ function goTab(k){if(!D||k===ST.tab)return;const ks=TABS().map(t=>t[0]);const di
   hd.addEventListener('touchend',e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
     if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4){const ks=TABS().map(x=>x[0]);const i=ks.indexOf(ST.tab)+(dx<0?1:-1);if(i>=0&&i<ks.length)goTab(ks[i])}},{passive:true});
   window.addEventListener('resize',()=>tabInd(true))})();
+/* 화면 아래쪽(높이의 아래 45%)에서도 좌우로 밀면 옆 탭으로 — 엄지가 닿기 쉬운 곳. 바는 위에 그대로.
+   가로로 밀리는 칩 줄·입력칸·요청 창은 제외, 전체 표는 확대해서 옆으로 움직일 수 있을 땐 표 이동이 먼저 */
+(()=>{let g=null;const skip=el=>!!(el.closest&&el.closest('#hd,#sh,input,select,textarea,.chips,.seg,.res,#zm'));
+  const pzFree=()=>{const v=pzV();return !v||PZ.W*PZ.s<=PZ.vw+2};
+  document.addEventListener('touchstart',e=>{g=null;if(wide||e.touches.length!==1||!D)return;const t=e.touches[0];if(t.clientY<window.innerHeight*0.55||skip(e.target))return;
+    const inPz=pzV()&&pzV().contains(e.target);if(inPz&&!pzFree())return;g={x:t.clientX,y:t.clientY,t:performance.now()}},{passive:true});
+  document.addEventListener('touchmove',e=>{if(g&&e.touches.length>1)g=null},{passive:true});
+  document.addEventListener('touchend',e=>{if(!g)return;const t=e.changedTouches[0],dx=t.clientX-g.x,dy=t.clientY-g.y,dt=performance.now()-g.t;g=null;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6&&dt<700){const ks=TABS().map(x=>x[0]);const i=ks.indexOf(ST.tab)+(dx<0?1:-1);if(i>=0&&i<ks.length)goTab(ks[i])}},{passive:true})})();
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 function stuUpd(){const P=vStu(B(),true);const l=$('sL'),r=$('sR');if(l)l.innerHTML=P.l;if(r)r.innerHTML=P.r}
 /* 한글 입력 중에는 입력 칸을 다시 그리지 않음(자모가 끊어지지 않게) — 결과만 바꿈 */
