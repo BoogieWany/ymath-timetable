@@ -645,6 +645,14 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .hdel{border:0;background:transparent;color:var(--muted);width:24px;height:26px;border-radius:7px;font-size:15px;cursor:pointer;opacity:.55;transition:opacity .15s,background .15s,color .15s}
 .hfi:hover .hdel{opacity:1}.hdel:hover{background:color-mix(in srgb,#b4572a 14%,transparent);color:#b4572a}
 .hdel.armed{opacity:1;width:auto;padding:0 8px;font-size:11.5px;font-weight:700;background:#b4572a;color:#fff}
+/* 선생님 공지 (설정) */
+.annl{display:flex;flex-direction:column;gap:6px;max-width:720px}
+.anni{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.anni .annt{flex:1;white-space:pre-wrap;line-height:1.45}
+.annf{max-width:720px;margin-top:12px}
+.annf textarea{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:14px;line-height:1.5;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;outline:none;transition:border-color .15s,box-shadow .15s}
+.annf textarea:focus{border-color:var(--acc,#1f2f5c);box-shadow:0 0 0 3px rgba(31,47,92,.12)}
+.annf .row{margin-top:8px}
 </style>
 </head>
 <body>
@@ -3001,7 +3009,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.40.4', APPDATE='2026-10-17';
+const APPVER='3.41.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3478,6 +3486,7 @@ function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-
   set('요일별 교시와 시작 시간',Object.entries(grp).map(([k,ds])=>{const j=ds.join('');return (j==='월화수목금'?'월~금':j)+' '+k}).join('  /  '));
   const i=SYNC&&SYNC.info;set('syncBox',i&&i.on?(isOwner()?'켜짐 · 프로그램 관리자':'켜짐 · 지점 관리자'):'꺼짐');
   const g=MOBI&&MOBI.gh;set('mobBox',g&&g.on?'켜짐 · GitHub'+(g.url?' · '+g.url.replace(/^https?:\/\//,''):''):'꺼짐');
+  {const n=annLive(b).length;set('선생님 공지',n?`올라간 공지 ${n}개`:'없음')}
   const q=RQS&&RQS.info;set('rqBox',q&&q.ready?'켜짐'+(RQS.list.filter(x=>!x.bad).length?` · 남은 요청 ${RQS.list.filter(x=>!x.bad).length}건`:''):'꺼짐');
   set('데이터','백업 저장·불러오기, 폴더 열기');set('화면 크기','글씨·화면 배율')}
 function viewSettings(){
@@ -3493,7 +3502,7 @@ function viewSettings(){
   h+=`</div></div>
   <div class="sec" id="syncBox"></div>
   <div class="sec" id="mobBox"><h3>폰으로 보기 <span class="hint">보기 전용</span></h3><div class="hint">불러오는 중…</div></div>
-  <div class="sec" id="rqBox"><h3>선생님 보강 요청</h3><div class="hint">불러오는 중…</div></div>
+  <div class="sec" id="rqBox"><h3>선생님 보강 요청</h3><div class="hint">불러오는 중…</div></div>${annHTML()}
   <div class="sec"><h3>데이터</h3><div class="hint">모든 변경은 프로그램 폴더의 data\\timetable.json에 자동 저장되고, 30분마다 data\\backup에 백업이 쌓여요.</div>
   <div class="row"><button class="btn" data-act="exportBackup">백업 파일로 저장</button>${isOwner()?'<button class="btn" data-act="importBackup">백업 파일 불러오기</button>':''}${isOwner()?'<button class="btn danger" data-act="resetAllDlg" style="margin-left:auto;order:9">전체 초기화</button>':''}${bridge?'<button class="btn" data-act="openData">data 폴더 열기</button><button class="btn" data-act="openOut">PDF 폴더 열기</button>':''}</div></div>
   <div class="sec"><h3>화면 크기</h3><div class="row"><button class="btn" data-zoom="-1">작게</button><button class="btn" data-zoom="0">기본</button><button class="btn" data-zoom="1">크게</button><span class="hint">지점 시간표 화면에서는 Ctrl + 휠이 시간표 카드 크기를 바꿔요 (커지면 학생 이름 표시)</span></div></div>`;
@@ -3768,6 +3777,7 @@ function armed(btn,key,txt){if(btn.dataset.armed===key)return true;document.quer
 /* ================= 이벤트 ================= */
 document.addEventListener('click',async e=>{
   const so=e.target.closest&&e.target.closest('[data-stuout]');if(so){const [cid,tid]=so.dataset.stuout.split('|');const sid=UI.student;commit(()=>{const c=C(cid);c.members[tid]=(c.members[tid]||[]).filter(x=>x!==sid)},`${sname(sid)}을(를) ${C(cid).name}(${tn(tid)}T)에서 뺐어요 · 되돌리기 가능`);return}
+  const and=e.target.closest&&e.target.closest('[data-anndel]');if(and){if(!armed(and,'ad'+and.dataset.anndel,'한 번 더 누르면 내려요'))return;annDel(and.dataset.anndel);return}
   const syr=e.target.closest&&e.target.closest('[data-syrevoke]');if(syr){syRevokeGo(syr);return}
   const syc=e.target.closest&&e.target.closest('[data-sycode]');if(syc){const id=syc.dataset.sycode;const code=await bridge.syncCode(id);if(!code){toast('코드를 만들 수 없어요');return}syCodeDlg(code,id==='*'?'프로그램 관리자 다른 PC용':syBName(id));return}
   const syu=e.target.closest&&e.target.closest('[data-syunlock]');if(syu){if(!armed(syu,'su'+syu.dataset.syunlock))return;const r=await bridge.syncUnlock([syu.dataset.syunlock],true);toast(r[syu.dataset.syunlock]?'잠금을 풀었어요':'풀지 못했어요');await syncPull({silent:true});syncRender();return}
@@ -3878,6 +3888,7 @@ document.addEventListener('click',async e=>{
     case 'histClear':{if(!armed(el,'hclr','한 번 더 누르면 모두 지워요'))return;if(UI.peek)endPeek();const n=HIST.length;HIST=[];histSave();histRender();renderVPanel();toast(`적용 기록 ${n}개를 모두 지웠어요`);break}
     case 'exOpen':closePop();exDlg(ds.o);break;
     case 'exSave':exSave();break;
+    case 'annAdd':annAdd();break;
     case 'exDel':exDel(ds.x);break;
     case 'schedSave':schedSave(false);break;
     case 'schedDel':schedSave(true);break;
@@ -5046,6 +5057,21 @@ async function exSave(){const sid=$('modal').dataset.ex;const o=V().sessions.fin
 async function exDel(xid){const b=B();const x=(b.ex||[]).find(y=>y.id===xid);if(!x)return;const sid=x.sid;$('modal').hidden=true;
   const ok=await quickChange(()=>{const bb=B();bb.ex=(bb.ex||[]).filter(y=>y.id!==xid)},`${ntMd(x.date)} 당일 변경을 취소했어요 · 원래대로`);if(ok&&!UI.edit)exDlg(sid)}
 function exExpire(){DB.branches.forEach(b=>{if(typeof canEditB==='function'&&!canEditB(b.id))return;if(b.ex)b.ex=b.ex.filter(x=>x.date>=ntToday())})}
+
+/* ===== 선생님 공지: 폰 시간표 아래에 떠요 (지점별 · 끝나는 날 지나면 저절로 내려감) ===== */
+function annLive(b){const t=todayStr();return (b.ann||[]).filter(a=>!a.until||a.until>=t)}
+function annAddDay(d,n){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`}
+function annMD(d){const [,m,dd]=d.split('-');return `${+m}/${+dd}`}
+function annHTML(){const b=B();const ed=!(typeof syOn==='function'&&syOn())||canEditB(b.id);const L=annLive(b);
+  return `<div class="sec"><h3>선생님 공지 <span class="hint">${esc(b.name)} 선생님들 폰 시간표 아래에 떠요 · 공지가 없으면 안 보여요</span></h3>
+  <div class="hint" style="margin-bottom:8px">${esc(b.name)} 선생님들 폰 시간표 아래에 떠요 · 공지가 없으면 그 칸은 안 보여요</div>
+  ${L.length?`<div class="annl">${L.map(a=>`<div class="anni"><div class="annt">${esc(a.tx)}</div><span class="hint">${a.until?annMD(a.until)+'까지':''}</span>${ed?`<button class="btn" data-anndel="${a.id}" data-label="내리기">내리기</button>`:''}</div>`).join('')}</div>`:'<div class="hint">지금 올라간 공지가 없어요.</div>'}
+  ${ed?`<div class="annf"><textarea id="annTx" rows="2" maxlength="300" placeholder="예: 금요일 시험 대비 특강은 2강의실에서 해요"></textarea>
+  <div class="row"><label for="annUntil">언제까지</label><input type="date" id="annUntil" value="${annAddDay(todayStr(),6)}" min="${todayStr()}"><span class="hint">이 날이 지나면 폰에서 저절로 사라져요</span><span class="sp"></span><button class="btn pri" data-act="annAdd">폰에 올리기</button></div></div>`:'<div class="hint">다른 지점 공지는 보기만 할 수 있어요.</div>'}</div>`}
+async function annAdd(){const tx=($('annTx').value||'').trim(),u=$('annUntil').value;if(!tx){toast('공지 내용을 적어 주세요');$('annTx').focus();return}
+  if(!u||u<todayStr()){toast('언제까지 보일지 오늘 이후 날짜로 골라 주세요');return}
+  await quickChange(()=>{const b=B();b.ann=annLive(b);b.ann.push({id:uid('a'),tx,until:u,at:Date.now()})},'공지를 올렸어요')}
+async function annDel(id){await quickChange(()=>{const b=B();b.ann=annLive(b).filter(a=>a.id!==id)},'공지를 내렸어요')}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5121,6 +5147,9 @@ const HELP=[
   <li>[설정 → 폰으로 보기]에서 <b>선생님용 번호</b>(영문+숫자 8자 이상)를 정해요. 번호를 바꾸면 지점 PC에도 자동으로 전달돼요.</li>
   <li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]할 때마다 올라가서 어디서나 폰으로 봐요. 나온 <b>QR/주소</b>를 선생님들께 주세요. 시간표는 번호로 암호화돼요.</li>
   <li>폰 화면 (위쪽 바, 또는 <b>화면 아래쪽 절반</b> 아무 데서나 손가락으로 옆으로 밀면 옆 탭으로 — 엄지로 편하게. 전체 표를 확대한 동안엔 표 이동이 먼저): <b>전체</b>(프로그램 첫 화면처럼 지점 시간표 전체 표 · 표 위 강사 버튼으로 <b>모든 강사 / 내 시간표 / 특정 강사</b>만 · 반 카드엔 인원수만, <b>카드를 누르면 학생 이름</b> · [학생 이름 모두 보기] 스위치 · 폰에선 처음에 표 전체가 한 화면에 들어오고 표 칸 안에서 지도처럼 두 손가락으로 확대·한 손가락으로 끌기·두 번 톡 확대(위쪽 바는 그대로), 맨 위 <b>[−][+]</b>로 글씨(전체 표에선 표) 크기, <b>↔</b>로 폭에 맞춰 처음 크기, <b>↻</b>로 가로·세로 보기 · 가로로 돌리면 위쪽 바가 한 줄로 얇아지고 <b>▲</b>로 숨기기, <b>▼ 메뉴</b>로 다시 보이기, 맨 위 [−][+]로 표 크기) · <b>오늘</b>(처음 한 번 <b>지점 → 이름</b> 순서로 고르면 <b>내 수업</b>이 맨 위, 지금·다음 표시) · 요일별 · 강사별 · 학생 찾기. 1분마다 새로 받아요.</li>
+  <li>폰에서 <b>카드를 꾹 누르고 있으면</b>(0.4초) 그 수업이 크게 떠요 — 반 이름·선생님·요일·교시·시간·학생 이름 전체·연결된 보강 메모·당일 변경. 손을 떼면 사라져요. 길게 눌러도 글자 선택이나 복사 메뉴는 안 떠요.</li>
+  <li>폰 화면 아래 빈 곳: <b>학원 공지</b>(있을 때만)와 <b>내 메모</b>. 내 메모는 그 폰에만 저장되는 개인 메모예요(+ 추가 · 동그라미를 누르면 다 한 것 · 글을 누르면 고치기·지우기). 전체 표를 확대하면 슬며시 숨었다가 처음 크기로 오면 다시 보여요.</li>
+  <li><b>선생님 공지</b>는 [설정 → 선생님 공지]에서 지점마다 써요. 언제까지 보일지 날짜를 정하면 그 날이 지나면 폰에서 저절로 사라지고, [내리기](두 번)로 바로 내릴 수도 있어요. 수정 모드 없이 바로 저장되고 1~2분 뒤 선생님 폰에 보여요.</li>
   <li>번호는 기기마다 <b>한 번만</b> 넣으면 돼요. 폰에 뜨는 안내대로 <b>홈 화면에 추가</b>하면 앱처럼 열려요. (카톡으로 받은 주소는 다른 브라우저로 연 뒤 추가)</li>
   <li><b>PC 브라우저</b>로 같은 주소를 열면 위쪽 <b>지점 버튼</b>으로 지점을 바꿔 가며 설치 없이 프로그램처럼 <b>지점 시간표 전체 격자</b>로 보여요. 강사별·학생 찾기도 주간 격자, [인쇄]도 돼요. 크기는 오른쪽 아래 <b>[작게]·[크게]·[화면에 맞춤]</b> 버튼(또는 Ctrl+마우스 휠)으로 바꿔요. 처음엔 화면 폭에 자동으로 맞춰져요.</li>
   <li>선생님이 <b>전체 → 내 시간표</b>에서 빈 칸을 누르면 보강을 요청할 수 있어요(횟수 선택). <a data-help="noterq">선생님 보강 요청</a> 참고.</li>
