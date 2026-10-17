@@ -626,6 +626,13 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .dfi{padding:8px 10px;border:1px solid var(--line2);border-radius:10px;margin-bottom:6px;font-size:13px}.dfl{font-size:12.5px;margin-top:4px;color:var(--muted)}
 .dfo{color:#b4572a;text-decoration:line-through;text-decoration-color:color-mix(in srgb,#b4572a 50%,transparent)}.dfn{color:#2E7D4F;font-weight:600}
 :root[data-theme="dark"] .dfn{color:#7fd3a1}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dfn{color:#7fd3a1}}
+/* 당일 변경 */
+.exb{display:inline-block;margin-top:3px;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.85);color:#1b2233;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.exb.cancel{background:#b4572a;color:#fff}.exb.sub{background:#2c5aa0;color:#fff}.exb.move{background:#7a4fb0;color:#fff}
+.chip.excancel{opacity:.55;background-image:repeating-linear-gradient(135deg,transparent 0 7px,rgba(255,255,255,.35) 7px 9px)!important}
+.exg{border:1.5px dashed color-mix(in srgb,var(--nc) 70%,transparent);border-radius:6px;padding:3px 6px;margin-top:2px;font-size:11.5px;line-height:1.3;background:color-mix(in srgb,var(--nc) 14%,var(--panel));display:flex;flex-direction:column}
+.exg i{font-style:normal;font-size:10px;font-weight:700;color:var(--muted)}.exg span{font-size:10.5px;color:var(--muted)}
+.exhave{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.exi{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line2);border-radius:10px;padding:7px 10px;font-size:13px}
 </style>
 </head>
 <body>
@@ -2982,7 +2989,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.39.0', APPDATE='2026-10-17';
+const APPVER='3.40.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3125,6 +3132,7 @@ async function applyEditGo(){if(typeof syOn==='function'&&syOn()){const pre=awai
     SYNC.force=new Set(pre.conflicts.map(c=>c.id))}}
   delete DB._baseHash;
   try{const k=notesExpire();if(k)setTimeout(()=>toast(`횟수가 끝난 메모 ${k}개를 지웠어요`),1600)}catch(e){}
+  try{exExpire()}catch(e){}
   try{const o=JSON.parse(ORIG||'null');if(o){HIST.unshift({id:uid('h'),at:new Date().toISOString(),snap:JSON.stringify(o.branches)});if(HIST.length>200)HIST.length=200;histSave()}}catch(e){}
   UI.edit=false;document.body.classList.remove('editing');await saveNow();try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}
   ORIG=null;hist.u=[];hist.r=[];UI.picked=null;render();toast('수정한 시간표를 적용했어요 · 적용 전 시간표는 [버전 관리 → 적용 기록]에 남아요');if(typeof syOn==='function'&&syOn())await syncAfterApply()}
@@ -3226,7 +3234,8 @@ function chip(o,opt={}){
   const sub=opt.sub??`${tn(o.t)}T · ${act.length}명`;
   const ed=UI.edit&&UI.view==='grid'&&opt.drag!==false;
   const nm=opt.names?`<span class="nm">${mem.map(id=>{const n=active(id)?esc(sname(id)):`<s>${esc(sname(id))}</s>`;return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓으면 반 전체·이 수업만·복사 중에 골라요">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기 (Shift=이 수업만)">×</i></span>`:`<span class="sn">${n}</span>`}).join('')}</span>`:'';
-  return `<button class="chip${opt.drag===false?'':''} ${cl.slice(1).join(' ')}" ${opt.drag===false||!UI.edit?'':'draggable="true"'} data-sid="${o.id}" style="background:${bg};color:${fg}" title="${esc(c.name)} · ${esc(tn(o.t))}T · ${esc(act.map(sname).join(' '))}"><b>${esc(c.name)}</b><small>${esc(sub)}</small>${nm}</button>`;
+  const ex=typeof exNear==='function'?exNear(o.id):null;if(ex&&ex.kind==='cancel')cl.push('excancel');
+  return `<button class="chip${opt.drag===false?'':''} ${cl.slice(1).join(' ')}" ${opt.drag===false||!UI.edit?'':'draggable="true"'} data-sid="${o.id}" style="background:${bg};color:${fg}" title="${esc(c.name)} · ${esc(tn(o.t))}T · ${esc(act.map(sname).join(' '))}"><b>${esc(c.name)}</b><small>${esc(sub)}</small>${ex?exBadge(ex):''}${nm}</button>`;
 }
 /* 카드 눌렀을 때 명단 펼침 창 (이름이 안 보이거나 잘릴 때) */
 function needPop(el){if(!namesOn())return true;const nm=el&&el.querySelector('.nm');return !!nm&&nm.scrollHeight>nm.clientHeight+2}
@@ -3238,7 +3247,7 @@ function renderPop(){const pe=$('cardPop');if(!pe)return;
   const c=C(o.cls),mem=members(o),act=mem.filter(active),bg=c.color||'#9aa3b5',ed=UI.edit;
   pe.innerHTML=`<div class="cp-h" style="background:${bg};color:${txtColor(bg)}"><b>${esc(c.name)}</b><span>${esc(tn(o.t))}T · ${o.d} ${esc(pname(o.d,o.p).replace(/^(저녁|주말)\s*/,''))} ${esc(ptime(o.d,o.p))} · ${act.length}명</span><button class="cp-x" data-act="closePop" aria-label="닫기">×</button></div>
     <div class="cp-nm">${mem.length?mem.map(id=>{const n=active(id)?esc(sname(id)):`<s>${esc(sname(id))}</s>`;return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓기">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기">×</i></span>`:`<span class="sn">${n}</span>`}).join(''):'<span class="hint">명단이 비어 있어요</span>'}</div>
-    ${ed?`<div class="cp-add"><button data-act="qaOpen" data-o="${o.id}">+ 학생 넣기 · 신입 등록</button></div>`:''}
+    ${ed?`<div class="cp-add"><button data-act="qaOpen" data-o="${o.id}">+ 학생 넣기 · 신입 등록</button></div>`:''}${o.id&&V().id===B().current?`<div class="cp-add"><button data-act="exOpen" data-o="${o.id}">당일 변경 · 휴강 / 대강 / 시간 이동</button></div>`:''}
     <div class="cp-tip">${ed?'이름을 끌어서 다른 반 카드에 놓으면 옮겨요 · × 빼기':'수정 모드에서 학생을 넣거나 신입을 바로 등록할 수 있어요'}</div>`;
   pe.hidden=false;const r=ch.getBoundingClientRect(),w=pe.offsetWidth,h=pe.offsetHeight;
   let x=r.right+8;if(x+w>window.innerWidth-8)x=r.left-w-8;if(x<8)x=Math.min(window.innerWidth-w-8,r.left);
@@ -3327,7 +3336,7 @@ function viewGrid(iss){
         let fc='',ft='';
         if(fit){const f=fit[c.d+'|'+p+'|'+c.t.id];if(f&&f.lv!=='self'){fc=' fit-'+f.lv;ft=f.why}}
         const tm='';
-        h+=`<td class="slot${off?' offday':''}${fc}${end}" data-d="${c.d}" data-p="${p}" data-t="${c.t.id}" title="${esc(c.d+' '+pname(c.d,p)+' '+ptime(c.d,p)+' · '+c.t.name+'T'+(ft?' · '+ft:'')+(os.length>1?' · 수업 '+os.length+'개 겹쳐 둠':''))}">${tm}${os.map(o=>chip(o,{bad,names:true,sub:`${activeMembers(o).length}명`})).join('')}${noteCell(c.d,p,c.t.id,!os.length)}</td>`.replace('<td class="slot',os.length>1?'<td class="slot stacked':'<td class="slot')});
+        h+=`<td class="slot${off?' offday':''}${fc}${end}" data-d="${c.d}" data-p="${p}" data-t="${c.t.id}" title="${esc(c.d+' '+pname(c.d,p)+' '+ptime(c.d,p)+' · '+c.t.name+'T'+(ft?' · '+ft:'')+(os.length>1?' · 수업 '+os.length+'개 겹쳐 둠':''))}">${tm}${os.map(o=>chip(o,{bad,names:true,sub:`${activeMembers(o).length}명`})).join('')}${typeof exGhosts==='function'?exGhosts(c.d,p,c.t.id):''}${noteCell(c.d,p,c.t.id,!os.length)}</td>`.replace('<td class="slot',os.length>1?'<td class="slot stacked':'<td class="slot')});
       h+='</tr>';
     }
     h+='</tbody></table>';
@@ -3851,6 +3860,9 @@ document.addEventListener('click',async e=>{
     case 'spList':spListDlg();break;
     case 'keyHow':keyHowDlg();break;
     case 'qaOpen':qaOpen(ds.o);break;
+    case 'exOpen':closePop();exDlg(ds.o);break;
+    case 'exSave':exSave();break;
+    case 'exDel':exDel(ds.x);break;
     case 'schedSave':schedSave(false);break;
     case 'schedDel':schedSave(true);break;
     case 'vvBack':vvSet('');break;
@@ -4959,6 +4971,47 @@ function schedDiffDlg(vid){const b=B();const a=b.versions.find(x=>x.id===b.curre
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dfT" style="width:min(760px,100%)"><h2 id="dfT">바뀌는 점 · ${esc(a.name)} → ${esc(z.name)}</h2>
     <div class="dfw">${h||'<div class="empty">반·시간·학생이 모두 같아요</div>'}</div>
     <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">닫기</button></div></div>`}
+
+/* ===== 당일 변경 — b.ex[{id,date,sid,kind:'cancel'|'sub'|'move',t,p,memo}] (지금 시간표의 수업 id 기준)
+   그날만 휴강 / 대강(다른 강사) / 시간 이동(같은 날 다른 교시, 강사도 바꿀 수 있음). 날짜가 지나면 안 보이고 다음 적용 때 지워짐.
+   수정 모드가 아니어도 바로 저장·올림(quickChange) — 급한 변경이라서 ===== */
+const EX_KIND={cancel:'휴강',sub:'대강',move:'시간 이동'};
+const ntDow=s=>{const [y,m,d]=s.split('-').map(Number);return '일월화수목금토'[new Date(y,m-1,d).getDay()]};
+function exList(){const b=B();return (b.ex||[]).filter(x=>x.date>=ntToday())}
+function exLimit(){return ntPlusW(ntToday(),1)} // 7일 안
+function exNear(sid){if(V().id!==B().current)return null;return exList().filter(x=>x.sid===sid&&x.date<exLimit()).sort((a,b)=>a.date.localeCompare(b.date))[0]||null}
+function exBadge(x){const t=x.kind==='cancel'?'휴강':x.kind==='sub'?`대강 ${tn(x.t)}T`:`→ ${pname(sesOf(x).d,x.p).replace(/^(저녁|주말)\s*/,'')}${x.t&&x.t!==sesOf(x).t?' '+tn(x.t)+'T':''}`;return `<span class="exb ${x.kind}" title="${esc(EX_KIND[x.kind])}${x.memo?' · '+esc(x.memo):''}">${ntMd(x.date)} ${esc(t)}</span>`}
+function sesOf(x){return V().sessions.find(o=>o.id===x.sid)||{}}
+function exGhosts(d,p,t){if(V().id!==B().current)return '';return exList().filter(x=>x.date<exLimit()&&x.kind!=='cancel').map(x=>{const o=sesOf(x);if(!o.id||o.d!==d)return '';const tp=x.kind==='move'?x.p:o.p,tt=x.t||o.t;if(tp!==p||tt!==t)return '';const c=C(o.cls);if(!c)return '';
+  return `<div class="exg" style="--nc:${esc(c.color||'#9aa3b5')}" title="${esc(x.memo||'')}"><i>${ntMd(x.date)}만 · ${x.kind==='sub'?'대강':'옮겨 옴'}</i><b>${esc(c.name)}</b><span>${x.kind==='sub'?esc(tn(o.t))+'T 대신':esc(pname(o.d,o.p).replace(/^(저녁|주말)\s*/,''))+'에서'}</span></div>`}).join('')}
+function exDates(d){const out=[];const now=new Date();let add=(DAYS.indexOf(d)-((now.getDay()+6)%7)+7)%7;for(let i=0;i<5;i++){out.push(ntYmd(new Date(now.getFullYear(),now.getMonth(),now.getDate()+add+7*i)))}return out}
+function exDlg(sid){const b=B(),o=V().sessions.find(x=>x.id===sid);if(!o)return;const c=C(o.cls);const have=(b.ex||[]).filter(x=>x.sid===sid&&x.date>=ntToday()).sort((a,z)=>a.date.localeCompare(z.date));
+  const ds=exDates(o.d);const tl=b.teachers.filter(t=>t.id!==o.t);const ps=per(o.d);
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg exdlg" role="dialog" aria-modal="true" aria-labelledby="exT" style="width:min(560px,100%)"><h2 id="exT">당일 변경 · ${esc(c?c.name:'')}</h2>
+    <div class="hint" style="margin:-4px 0 12px">${o.d}요일 ${esc(pname(o.d,o.p))} ${esc(ptime(o.d,o.p))} · ${esc(tn(o.t))}T · 원래 시간표는 그대로 두고 그날만 바뀌어요</div>
+    ${have.length?`<div class="exhave">${have.map(x=>`<div class="exi"><span>${ntMd(x.date)}(${ntDow(x.date)}) <b>${EX_KIND[x.kind]}</b>${x.kind==='sub'?' · '+esc(tn(x.t))+'T':x.kind==='move'?' · '+esc(pname(o.d,x.p))+(x.t&&x.t!==o.t?' · '+esc(tn(x.t))+'T':''):''}${x.memo?` <span class="hint">${esc(x.memo)}</span>`:''}</span><button class="btn sm" data-act="exDel" data-x="${esc(x.id)}">취소</button></div>`).join('')}</div>`:''}
+    <div class="row"><label for="exDate">날짜</label><select id="exDate">${ds.map((x,i)=>`<option value="${x}">${ntMd(x)}(${ntDow(x)})${x===ntToday()?' 오늘':i===0?' 다음 수업':''}</option>`).join('')}</select></div>
+    <div class="row"><span class="seg" role="group" aria-label="종류">${['cancel','sub','move'].map((k,i)=>`<button data-exk="${k}" aria-pressed="${i===0}">${EX_KIND[k]}</button>`).join('')}</span></div>
+    <div class="row exopt" data-for="sub" hidden><label for="exSubT">대강 선생님</label><select id="exSubT">${tl.map(t=>`<option value="${t.id}">${esc(t.name)}T</option>`).join('')}</select></div>
+    <div class="row exopt" data-for="move" hidden><label for="exP">옮길 교시</label><select id="exP">${ps.map((x,i)=>i===o.p?'':`<option value="${i}">${esc(x.name)} ${esc(x.time)}</option>`).join('')}</select><label for="exMT">강사</label><select id="exMT"><option value="${o.t}">${esc(tn(o.t))}T (그대로)</option>${tl.map(t=>`<option value="${t.id}">${esc(t.name)}T</option>`).join('')}</select></div>
+    <div class="row"><label for="exMemo">메모</label><input id="exMemo" placeholder="사유 (선택) 예: 학교 행사" style="flex:1"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="exSave">저장</button></div></div>`;
+  $('modal').dataset.ex=sid}
+document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('[data-exk]');if(!k)return;document.querySelectorAll('[data-exk]').forEach(x=>x.setAttribute('aria-pressed',String(x===k)));document.querySelectorAll('.exopt').forEach(r=>r.hidden=r.dataset.for!==k.dataset.exk)});
+async function quickChange(fn,msg){if(UI.edit){commit(fn,msg+' · [적용]하면 반영돼요');return true}
+  if(UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)){toast('지금 보고 있는 미리보기를 먼저 닫아 주세요');return false}
+  const id=B().id;if(typeof syOn==='function'&&syOn()){if(!canEditB(id)){toast('다른 지점은 보기만 할 수 있어요');return false}
+    await syncPull({silent:true});const l=await bridge.syncLock(id);if(!l.ok){toast(l.offline?'인터넷에 연결되지 않아 저장하지 못했어요':`${l.by||'다른 관리자'} 님이 ${B().name}을(를) 고치고 있어요 · 끝나면 다시 해 주세요`,5000);return false}SYNC.mine.add(id)}
+  fn();DB.updated=new Date().toISOString();await saveNow();if(typeof syOn==='function'&&syOn())await syncAfterApply();render();toast(msg+' · 선생님 화면에 1~2분 뒤 보여요',4000);return true}
+async function exSave(){const sid=$('modal').dataset.ex;const o=V().sessions.find(x=>x.id===sid);if(!o)return;const k=(document.querySelector('[data-exk][aria-pressed="true"]')||{}).dataset.exk||'cancel';
+  const x={id:uid('e'),date:$('exDate').value,sid,kind:k,memo:($('exMemo').value||'').trim()};
+  if(k==='sub')x.t=$('exSubT').value;if(k==='move'){x.p=+$('exP').value;x.t=$('exMT').value;if(isNaN(x.p)){toast('옮길 교시를 골라 주세요');return}}
+  if(k==='sub'&&!x.t){toast('대강 선생님을 골라 주세요');return}
+  $('modal').hidden=true;const c=C(o.cls);
+  await quickChange(()=>{const b=B();b.ex=(b.ex||[]).filter(y=>!(y.sid===sid&&y.date===x.date));b.ex.push(x)},`${ntMd(x.date)} ${c?c.name:''} ${EX_KIND[k]}${k==='sub'?' · '+tn(x.t)+'T':''}로 정했어요`)}
+async function exDel(xid){const b=B();const x=(b.ex||[]).find(y=>y.id===xid);if(!x)return;const sid=x.sid;$('modal').hidden=true;
+  const ok=await quickChange(()=>{const bb=B();bb.ex=(bb.ex||[]).filter(y=>y.id!==xid)},`${ntMd(x.date)} 당일 변경을 취소했어요 · 원래대로`);if(ok&&!UI.edit)exDlg(sid)}
+function exExpire(){DB.branches.forEach(b=>{if(typeof canEditB==='function'&&!canEditB(b.id))return;if(b.ex)b.ex=b.ex.filter(x=>x.date>=ntToday())})}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5018,6 +5071,11 @@ const HELP=[
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요. [설정 → 데이터]에서 백업 파일로 저장·불러오기.</li></ul>`},
+ {id:'ex',t:'당일 변경 (휴강 · 대강 · 시간 이동)',b:`<ul><li>지점 시간표에서 수업 카드를 누르면 명단 창 아래 <b>[당일 변경 · 휴강 / 대강 / 시간 이동]</b>이 있어요. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 1~2분 뒤 보여요(급한 변경용).</li>
+  <li>날짜(그 요일 다음 5번 중)를 고르고 <b>휴강</b> / <b>대강</b>(대신 들어갈 선생님) / <b>시간 이동</b>(같은 날 다른 교시, 강사도 바꿀 수 있음) 중 하나 + 메모(선택).</li>
+  <li>원래 시간표는 그대로예요. 카드에 "10/22 휴강"처럼 배지가 붙고, 대강·이동은 들어가는 칸에 점선 카드가 생겨요. 그날이 지나면 저절로 원래대로 돌아와요(지난 기록은 다음 [적용] 때 지워짐).</li>
+  <li>선생님 브라우저: <b>오늘</b> 화면엔 그날 바뀐 대로 보여요(휴강은 흐리게, 대강은 대강 선생님의 '오늘 수업'에 들어감). 전체 시간표엔 7일 안의 변경이 배지로 보여요.</li>
+  <li>잘못 넣었으면 같은 창 위쪽 목록에서 <b>[취소]</b>.</li></ul>`},
  {id:'sched',t:'예정 시간표 (날짜에 자동으로 바뀜)',b:`<ul><li>[버전 관리]에서 지금 시간표를 <b>[복사해서 새 버전]</b> → 새 버전은 <b>이 PC에서만</b> 열려요. 고치고 [적용]해도 선생님들께는 지금 시간표가 그대로 보여요(위쪽 파란 띠로 알려 줘요).</li>
   <li>다 고쳤으면 그 버전의 <b>[예정으로 정하기]</b> → 시작 날짜를 고르면, 그날부터 그 버전이 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날 저절로 바뀌어요(PC가 꺼져 있어도).</li>
   <li><b>선생님들께 미리 보여 주기(공개)</b>를 켜면 브라우저 시간표 위에 "○/○부터 시간표가 바뀌어요 [미리 보기]"가 생겨요. 확정 전엔 꺼 두세요.</li>
