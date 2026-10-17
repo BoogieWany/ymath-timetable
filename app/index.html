@@ -616,6 +616,16 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .ntcls select{flex:1;min-width:160px}
 .nchip i small{font-weight:500;color:var(--muted);margin-left:3px;font-size:10px}
 .rqcnt{font-size:12px;color:var(--acc,#1f2f5c);font-weight:600}
+/* 예정 시간표 */
+.vvbar{background:color-mix(in srgb,#7BA7E0 16%,var(--panel));animation:ymRise .3s cubic-bezier(.22,.61,.36,1)}
+.vtag{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--line2);color:var(--muted);white-space:nowrap}
+.vtag.live{background:color-mix(in srgb,#2E7D4F 15%,var(--panel));color:#2E7D4F}.vtag.sc{background:color-mix(in srgb,#7BA7E0 22%,var(--panel));color:#2c5aa0}
+:root[data-theme="dark"] .vtag.live{color:#7fd3a1}:root[data-theme="dark"] .vtag.sc{color:#a9c8f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vtag.live{color:#7fd3a1}:root:not([data-theme="light"]) .vtag.sc{color:#a9c8f5}}
+.dfw{max-height:min(62vh,600px);overflow:auto;padding-right:4px}.dfh{font-size:14px;margin:14px 0 6px}.dfh:first-child{margin-top:0}
+.dfi{padding:8px 10px;border:1px solid var(--line2);border-radius:10px;margin-bottom:6px;font-size:13px}.dfl{font-size:12.5px;margin-top:4px;color:var(--muted)}
+.dfo{color:#b4572a;text-decoration:line-through;text-decoration-color:color-mix(in srgb,#b4572a 50%,transparent)}.dfn{color:#2E7D4F;font-weight:600}
+:root[data-theme="dark"] .dfn{color:#7fd3a1}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dfn{color:#7fd3a1}}
 </style>
 </head>
 <body>
@@ -636,6 +646,7 @@ body.editing #gridScroll .grid thead th{z-index:3}
   <div class="vpanel" id="vpanel" hidden></div>
   <div class="draftbar peekbar" id="peekBar" hidden><b>지난 시간표 보는 중</b><span class="hint">보기만 할 수 있어요. 지금 시간표는 그대로예요.</span><button class="btn pri" data-act="endPeek">지금 시간표로 돌아가기</button><button class="btn" data-act="peekRestore">이 시간표로 되돌리기</button></div>
   <div class="draftbar autobar" id="autoBar" hidden><b>자동 배치 미리보기</b><span class="hint">테두리 표시된 카드가 다시 배치된 반이에요. 아직 저장되지 않았어요.</span><button class="btn pri" data-act="auApplyCur">이 안 적용</button><button class="btn" data-act="auBack">다른 안 보기</button><button class="btn danger" data-act="auCancel">취소</button></div>
+  <div class="draftbar vvbar" id="vvBar" hidden></div>
   <div class="draftbar" id="draftBar" hidden><b>끝내지 않은 수정 초안이 있어요.</b><span class="hint">지난번 [적용]이나 [버리기] 없이 프로그램을 닫았어요.</span><button class="btn pri" data-act="resumeDraft">이어서 수정</button><button class="btn danger" data-act="dropDraft">초안 버리기</button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-v="grid">지점 시간표</button>
@@ -2971,7 +2982,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.38.1', APPDATE='2026-10-17';
+const APPVER='3.39.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -2994,7 +3005,9 @@ let UI={edit:false,view:'grid',mode:'week',namesOv:null,showOff:false,gs:(()=>{t
 const hist={u:[],r:[]};
 
 function B(){return DB.branches.find(b=>b.id===DB.currentBranch)||DB.branches[0]}
-function V(){const b=B();return b.versions.find(v=>v.id===b.current)||b.versions[0]}
+/* V() = 이 PC에서 보고·고치는 버전(UI.vv) — 선생님들께 보이는 '지금 시간표'는 b.current. 다른 버전을 열어도 b.current는 안 바뀜 */
+function V(){const b=B();const lv=UI.vv&&UI.vv[b.id];return (lv&&b.versions.find(v=>v.id===lv))||b.versions.find(v=>v.id===b.current)||b.versions[0]}
+function vvSet(id){const b=B();UI.vv=UI.vv||{};if(!id||id===b.current)delete UI.vv[b.id];else UI.vv[b.id]=id;UI.picked=null;UI.hl=new Set();UI.sel=null;UI.cls=null;UI.pop=null;render()}
 function T(id){return B().teachers.find(t=>t.id===id)}
 function tn(id){const t=T(id);return t?t.name:'(삭제된 강사)'}
 function S(id){return B().students.find(s=>s.id===id)}
@@ -3472,7 +3485,7 @@ function fmtAt(iso){const t=new Date(iso);return `${t.getFullYear()}.${t.getMont
 function renderVPanel(){
   const p=$('vpanel');if(p.hidden)return;const b=B();
   p.innerHTML=`<div class="vrow"><b>시간표 버전</b><span class="hint">학기·기간마다 시간표를 따로 보관해요. 복사해서 새 기간 시간표를 만들고 고치면 이전 것은 그대로 남아요.</span></div>`+
-  b.versions.map(v=>`<div class="vrow"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="버전 이름"><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${v.id===b.current?'<b class="hint">(지금 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 버전</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2?'disabled':''}>삭제</button></div>`).join('')+
+  b.versions.map(v=>{const live=v.id===b.current,sc=b.sched&&b.sched.ver===v.id,open=v.id===V().id;return `<div class="vrow${sc?' vsched':''}"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="버전 이름"><span class="vtag${live?' live':sc?' sc':''}">${live?'지금 시간표':sc?`예정 · ${ntMd(b.sched.from)}부터${b.sched.pub?' · 공개':' · 비공개'}`:'보관'}</span><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${open?'<b class="hint">(이 PC에서 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}${live?'':`<button class="btn" data-vsched="${v.id}">${sc?'예정 바꾸기':'예정으로 정하기'}</button><button class="btn" data-vdiff="${v.id}">바뀌는 점</button><button class="btn" data-vlive="${v.id}" title="바로 지금 시간표로 (수정 모드)">지금 시간표로</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 버전</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2||live?'disabled':''}>삭제</button></div>`}).join('')+
   `<div class="vrow"><button class="btn" data-act="siOpen">시트 엑셀로 새 버전 만들기</button><span class="hint">구글 시트에서 받은 시간표 .xlsx를 읽어 이 지점의 새 시간표 버전으로</span></div>`+
   `<div class="vrow" style="margin-top:8px"><b>적용 기록</b><span class="hint">수정 모드에서 [적용]할 때마다 적용하기 전 시간표가 여기 남아요. 언제든 열어 보거나 되돌릴 수 있어요.</span></div>`+
   ((UI.peek?UI._real:null,HIST.length)?HIST.slice(0,30).map(h=>`<div class="vrow"><b class="mono" style="min-width:130px">${fmtAt(h.at)}</b><span class="hint">적용 전 · ${esc(histSummary(h))}</span>${UI.peek===h.id?'<b class="hint">(보는 중)</b>':`<button class="btn" data-hpeek="${h.id}">보기</button>`}<button class="btn" data-hrestore="${h.id}">이 시간표로 되돌리기</button></div>`).join('')+(HIST.length>30?`<div class="hint">최근 30개만 보여요 (전체 ${HIST.length}개)</div>`:''):'<div class="hint">아직 적용 기록이 없어요</div>');
@@ -3484,7 +3497,7 @@ function render(){
   _cnt=null;DUP=dupNames();
   const b=B();
   $('brSel').innerHTML=DB.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
-  $('verSel').innerHTML=b.versions.map(x=>`<option value="${x.id}" ${x.id===b.current?'selected':''}>${esc(x.name)}</option>`).join('');
+  $('verSel').innerHTML=b.versions.map(x=>`<option value="${x.id}" ${x.id===V().id?'selected':''}>${esc(x.name)}${x.id===b.current?' (지금)':b.sched&&b.sched.ver===x.id?` (예정 ${ntMd(b.sched.from)})`:''}</option>`).join('');schedBar();
   $('undoBtn').disabled=!hist.u.length;$('redoBtn').disabled=!hist.r.length;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===UI.view));
   ISS=analyze();
@@ -3798,9 +3811,12 @@ document.addEventListener('click',async e=>{
   if(ds.pdel){const d=ds.pdel;commit(()=>{B().days[d].pop()});return}
   if(ds.zoom){if(bridge)bridge.zoom(+ds.zoom);return}
   if(ds.gz){setGs(UI.gs+(+ds.gz)*0.25);return}
-  if(ds.vopen){B().current=ds.vopen;markDirty();render();UI.picked=null;UI.hl=new Set();UI.sel=null;return}
-  if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);b.current=nv.id},'새 버전을 만들었어요. 이름을 바꿔 주세요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
-  if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(!b.versions.some(v=>v.id===b.current))b.current=b.versions[0].id},'버전을 삭제했어요');UI.cls=null;return}
+  if(ds.vopen){vvSet(ds.vopen);return}
+  if(ds.vlive){const id=ds.vlive;const v=B().versions.find(x=>x.id===id);commit(()=>{const b=B();b.current=id;if(b.sched&&b.sched.ver===id)delete b.sched},`'${v?v.name:''}'을(를) 지금 시간표로 정했어요 · [적용]하면 선생님들께 보여요`);vvSet('');return}
+  if(ds.vsched){schedDlg(ds.vsched);return}
+  if(ds.vdiff){schedDiffDlg(ds.vdiff);return}
+  if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.from=c.id;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);UI.vv=UI.vv||{};UI.vv[b.id]=nv.id},'새 버전을 만들었어요 · 지금 이 버전을 고치는 중이고, 선생님들께는 지금 시간표가 그대로 보여요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
+  if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;if(ds.vdel===B().current){toast('지금 시간표는 지울 수 없어요 · 다른 버전을 지금 시간표로 정한 뒤 지워 주세요',4500);return}commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(b.sched&&b.sched.ver===ds.vdel)delete b.sched;if(UI.vv&&UI.vv[b.id]===ds.vdel)delete UI.vv[b.id]},'버전을 삭제했어요');UI.cls=null;return}
   switch(ds.act){
     case 'avEdit':{if(UI._draft)await resumeDraft(true);else await enterEdit();renderAvail();break}
     case 'avClose':$('modal').hidden=true;UI.avStu=null;break;
@@ -3835,6 +3851,9 @@ document.addEventListener('click',async e=>{
     case 'spList':spListDlg();break;
     case 'keyHow':keyHowDlg();break;
     case 'qaOpen':qaOpen(ds.o);break;
+    case 'schedSave':schedSave(false);break;
+    case 'schedDel':schedSave(true);break;
+    case 'vvBack':vvSet('');break;
     case 'ntFill':ntFill();break;
     case 'qaSave':qaSave();break;
     case 'helpClose':helpClose();break;
@@ -4006,7 +4025,7 @@ document.addEventListener('change',e=>{
   if(ds.nct){if(t.checked)UI.nc.rule[ds.nct]=2;else delete UI.nc.rule[ds.nct];UI.nc.name=$('ncName').value;renderNewClass();return}
   if(ds.ncr){UI.nc.rule[ds.ncr]=Math.max(0,Math.min(14,+t.value||0));return}
   if(t.id==='brSel'){DB.currentBranch=t.value;UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;UI.teacher=null;UI.student=null;markDirty();render();if(UI.edit&&syOn()&&canEditB(t.value))syncLockCur();return}
-  if(t.id==='verSel'){B().current=t.value;markDirty();render();UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
+  if(t.id==='verSel'){vvSet(t.value);return}
   if(t.id==='optOff'){UI.showOff=t.checked;render();return}
   if(t.id==='optNote'){UI.noteOn=t.checked;try{localStorage.setItem('ymt_note',t.checked?'1':'0')}catch(err){}render();return}
   if(t.id==='tSel'){UI.teacher=t.value;render();return}
@@ -4890,6 +4909,56 @@ function ntSave(del){const o=JSON.parse($('modal').dataset.nt||'{}');const k=ntK
   $('modal').hidden=true;
   commit(()=>{const b=B();b.notes=b.notes||[];const dt=ci.cnt?{cnt:ci.cnt,from:ci.from,until:ci.until}:{cnt:undefined,from:undefined,until:undefined};if(o.id){const i=b.notes.findIndex(x=>x.id===o.id);if(i>=0){if(keep)Object.assign(b.notes[i],{names:txt,k,cls},dt);else b.notes.splice(i,1)}}else if(keep)b.notes.push(Object.assign({id:uid('n'),d:o.d,p:+o.p,t:o.t,k,cls,names:txt},dt))},
     keep?`${k} 메모를 적었어요`:`메모를 지웠어요`)}
+
+/* ===== 예정 시간표 — b.sched={ver,from,pub}: from(YYYY-MM-DD)이 되면 그 버전이 '지금 시간표'(b.current)로 바뀜
+   선생님 화면은 view.json의 next로 날짜가 되면 스스로 바꿔 보여 주고(PC가 꺼져 있어도), PC는 켜져 있으면 데이터도 바꿔 둠(schedTick).
+   pub=true면 선생님 브라우저에서 날짜 전에도 '예정 시간표 미리 보기'가 보임 ===== */
+function schedBar(){const el=$('vvBar');if(!el)return;const b=B(),v=V();const sc=b.sched&&b.sched.ver===v.id;
+  if(v.id===b.current){el.hidden=true;return}el.hidden=false;
+  el.innerHTML=`<b>${esc(v.name)} ${sc?`· 예정 (${ntMd(b.sched.from)}부터)`:'· 보관 버전'}을 보는 중</b><span class="hint">이 PC에서만 보여요 · 선생님들께는 지금 시간표(${esc((b.versions.find(x=>x.id===b.current)||{}).name||'')})가 그대로 보여요${sc&&b.sched.pub?' · 예정 미리 보기는 공개 중':''}</span><button class="btn" data-vdiff="${v.id}">바뀌는 점</button>${sc?'':`<button class="btn" data-vsched="${v.id}">예정으로 정하기</button>`}<button class="btn pri" data-act="vvBack">지금 시간표로 돌아가기</button>`}
+function schedDlg(vid){const b=B(),v=b.versions.find(x=>x.id===vid);if(!v)return;const sc=b.sched&&b.sched.ver===vid?b.sched:null;
+  const d=new Date(),def=sc?sc.from:ntYmd(new Date(d.getFullYear(),d.getMonth()+1,1));
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="scT" style="width:min(520px,100%)"><h2 id="scT">예정 시간표 · ${esc(v.name)}</h2>
+    <div class="hint" style="margin:-4px 0 12px">정한 날짜가 되면 이 버전이 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날부터 저절로 바뀌어요(PC가 꺼져 있어도).</div>
+    <div class="row"><label for="scFrom">시작 날짜</label><input type="date" id="scFrom" value="${esc(def)}" min="${ntToday()}"></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="scPub" ${sc&&sc.pub?'checked':''}> 선생님들께 미리 보여 주기 (공개)</label><span class="hint">켜면 브라우저 시간표에 '예정 시간표 미리 보기'가 생겨요</span></div>
+    ${b.sched&&b.sched.ver!==vid?`<div class="box warn"><span>다른 버전(${esc((b.versions.find(x=>x.id===b.sched.ver)||{}).name||'')})이 예정으로 잡혀 있어요 · 저장하면 이 버전으로 바뀌어요</span></div>`:''}
+    <div class="row" style="justify-content:flex-end;margin-top:12px">${sc?'<button class="btn danger" data-act="schedDel" style="margin-right:auto">예정 취소</button>':''}<button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="schedSave">저장</button></div></div>`;
+  $('modal').dataset.sc=vid}
+function schedSave(del){const vid=$('modal').dataset.sc;const from=($('scFrom')||{}).value||'';const pub=!!($('scPub')||{}).checked;
+  if(!del&&!/^\d{4}-\d{2}-\d{2}$/.test(from)){toast('시작 날짜를 골라 주세요');return}
+  if(!del&&from<=ntToday()){toast('내일 이후 날짜로 골라 주세요 · 오늘 바로 바꾸려면 [지금 시간표로]를 눌러요',4500);return}
+  $('modal').hidden=true;const v=B().versions.find(x=>x.id===vid);
+  commit(()=>{const b=B();if(del)delete b.sched;else b.sched={ver:vid,from,pub}},del?'예정을 취소했어요':`'${v?v.name:''}'을(를) ${ntMd(from)}부터 지금 시간표로 바꾸게 정했어요${pub?' · 선생님들께 미리 보기 공개':''} · [적용]하면 반영돼요`)}
+/* 날짜가 된 예정 시간표를 실제로 바꿔 둠 — 내가 고칠 수 있는 지점만, 수정 중이 아닐 때 */
+let schedBusy=false;
+async function schedTick(){if(schedBusy||typeof UI==='undefined'||UI.edit||UI.peek)return;const due=DB.branches.filter(b=>b.sched&&b.sched.from<=ntToday()&&b.versions.some(v=>v.id===b.sched.ver)&&(typeof canEditB!=='function'||canEditB(b.id)));if(!due.length)return;schedBusy=true;
+  try{for(const b of due){if(typeof syOn==='function'&&syOn()){try{await syncPull({silent:true})}catch(e){}const bb=DB.branches.find(x=>x.id===b.id);if(!bb||!bb.sched||bb.sched.from>ntToday())continue;const l=await bridge.syncLock(b.id);if(!l.ok)continue;SYNC.mine.add(b.id)}
+      const bb=DB.branches.find(x=>x.id===b.id);const old=JSON.stringify(DB.branches);const nv=bb.versions.find(v=>v.id===bb.sched.ver);
+      HIST.unshift({id:uid('h'),at:new Date().toISOString(),snap:old});if(HIST.length>200)HIST.length=200;histSave();
+      bb.current=bb.sched.ver;delete bb.sched;if(UI.vv)delete UI.vv[bb.id];DB.updated=new Date().toISOString();await saveNow();if(typeof syOn==='function'&&syOn())await syncAfterApply();
+      toast(`${bb.name} · 예정 시간표(${nv?nv.name:''})로 바뀌었어요`,5000)}
+    render()}finally{schedBusy=false}}
+setTimeout(()=>{try{schedTick()}catch(e){}},8000);setInterval(()=>{if(!document.hidden)try{schedTick()}catch(e){}},30*60*1000);
+/* 바뀌는 점: 지금 시간표 ↔ 고른 버전 — 반은 복사 출처(c.from)나 이름으로 짝지음 */
+function schedDiff(b,a,z){const out={add:[],del:[],ch:[]};const tn2=id=>(b.teachers.find(t=>t.id===id)||{}).name||'?';
+  const pname2=(d,p)=>((b.days[d]||[])[p]||{}).name||'';const slot=(v,c)=>v.sessions.filter(o=>o.cls===c.id).map(o=>`${o.d} ${pname2(o.d,o.p).replace(/^(저녁|주말)\s*/,'')}(${tn2(o.t)})`).sort((x,y)=>x.localeCompare(y,'ko'));
+  const mem=c=>[...new Set(Object.values(c.members||{}).flat())];const sn=id=>(b.students.find(s=>s.id===id)||{}).name||'?';
+  const used=new Set();
+  z.classes.forEach(c=>{let o=a.classes.find(x=>x.id===c.from&&!used.has(x.id))||a.classes.find(x=>x.name===c.name&&!used.has(x.id));
+    if(!o){out.add.push({c,slots:slot(z,c),n:mem(c).length});return}used.add(o.id);
+    const s1=slot(a,o),s2=slot(z,c);const m1=mem(o),m2=mem(c);const inS=m2.filter(x=>!m1.includes(x)).map(sn),outS=m1.filter(x=>!m2.includes(x)).map(sn);
+    const sc=s1.join('|')!==s2.join('|'),ren=o.name!==c.name;if(sc||inS.length||outS.length||ren)out.ch.push({c,o,s1,s2,sc,inS,outS,ren})});
+  a.classes.forEach(o=>{if(!used.has(o.id))out.del.push({c:o,slots:slot(a,o),n:mem(o).length})});return out}
+function schedDiffDlg(vid){const b=B();const a=b.versions.find(x=>x.id===b.current),z=b.versions.find(x=>x.id===vid);if(!a||!z)return;if(a.id===z.id){toast('지금 시간표예요');return}
+  const r=schedDiff(b,a,z);const sw=c=>`<span class="sw" style="background:${esc(c.color||'#9aa3b5')};vertical-align:-2px"></span>`;
+  const sec=(t,n,body)=>n?`<h3 class="dfh">${t} <span class="hint">${n}개</span></h3>${body}`:'';
+  const h=sec('새로 생기는 반',r.add.length,r.add.map(x=>`<div class="dfi">${sw(x.c)} <b>${esc(x.c.name)}</b> <span class="hint">${esc(x.slots.join(' · ')||'시간 없음')} · ${x.n}명</span></div>`).join(''))
+   +sec('없어지는 반',r.del.length,r.del.map(x=>`<div class="dfi">${sw(x.c)} <b>${esc(x.c.name)}</b> <span class="hint">${esc(x.slots.join(' · '))} · ${x.n}명</span></div>`).join(''))
+   +sec('바뀌는 반',r.ch.length,r.ch.map(x=>`<div class="dfi">${sw(x.c)} <b>${esc(x.c.name)}</b>${x.ren?` <span class="hint">(${esc(x.o.name)}에서 이름 바뀜)</span>`:''}${x.sc?`<div class="dfl">시간 ${x.s1.filter(s=>!x.s2.includes(s)).map(s=>`<span class="dfo">${esc(s)}</span>`).join(' · ')}${x.s1.some(s=>!x.s2.includes(s))&&x.s2.some(s=>!x.s1.includes(s))?' → ':''}${x.s2.filter(s=>!x.s1.includes(s)).map(s=>`<span class="dfn">${esc(s)}</span>`).join(' · ')}${x.s1.filter(s=>x.s2.includes(s)).length?` <span class="hint">(그대로: ${esc(x.s1.filter(s=>x.s2.includes(s)).join(' · '))})</span>`:''}</div>`:''}${x.inS.length?`<div class="dfl">들어옴 <span class="dfn">${esc(x.inS.join(', '))}</span></div>`:''}${x.outS.length?`<div class="dfl">빠짐 <span class="dfo">${esc(x.outS.join(', '))}</span></div>`:''}</div>`).join(''));
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dfT" style="width:min(760px,100%)"><h2 id="dfT">바뀌는 점 · ${esc(a.name)} → ${esc(z.name)}</h2>
+    <div class="dfw">${h||'<div class="empty">반·시간·학생이 모두 같아요</div>'}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">닫기</button></div></div>`}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -4949,6 +5018,11 @@ const HELP=[
   <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. 눌러서 보기 → [이 시간표로 되돌리기].</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요. [설정 → 데이터]에서 백업 파일로 저장·불러오기.</li></ul>`},
+ {id:'sched',t:'예정 시간표 (날짜에 자동으로 바뀜)',b:`<ul><li>[버전 관리]에서 지금 시간표를 <b>[복사해서 새 버전]</b> → 새 버전은 <b>이 PC에서만</b> 열려요. 고치고 [적용]해도 선생님들께는 지금 시간표가 그대로 보여요(위쪽 파란 띠로 알려 줘요).</li>
+  <li>다 고쳤으면 그 버전의 <b>[예정으로 정하기]</b> → 시작 날짜를 고르면, 그날부터 그 버전이 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날 저절로 바뀌어요(PC가 꺼져 있어도).</li>
+  <li><b>선생님들께 미리 보여 주기(공개)</b>를 켜면 브라우저 시간표 위에 "○/○부터 시간표가 바뀌어요 [미리 보기]"가 생겨요. 확정 전엔 꺼 두세요.</li>
+  <li><b>[바뀌는 점]</b>을 누르면 지금 시간표와 비교해 새로 생기는 반·없어지는 반·시간이 바뀌는 반·들어오고 빠지는 학생을 보여 줘요.</li>
+  <li>날짜를 기다리지 않고 바로 바꾸려면 <b>[지금 시간표로]</b>(수정 모드) → [적용]. 버전 고르기(위쪽 시간표 칸)는 이 PC에서 보는 것만 바뀌어요.</li></ul>`},
  {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사별·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
  {id:'phone',t:'폰으로 보기 (브라우저 시간표)',b:`
   <ul><li><b>지점 관리자</b>는 [설정 → 폰으로 보기]에서 QR·<b>[주소 복사]</b>·<b>[안내문 복사]</b>로 선생님들께 알려 주면 돼요. 아래 설정은 프로그램 관리자가 해요.</li>
