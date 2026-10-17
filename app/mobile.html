@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#17243F">
 <meta name="robots" content="noindex">
 <title>Y-MATH 시간표</title>
@@ -338,6 +338,8 @@ body.wide td.free:hover .fadd{opacity:.9}
 .gnote.pend{border-color:color-mix(in srgb,#F4B860 75%,transparent);background:color-mix(in srgb,#F4B860 9%,var(--panel))}
 .gnote.pend i{color:#a86a12}.gnote.pend.my{cursor:pointer}
 @media (prefers-color-scheme:dark){.gnote.pend i{color:#f0c27a}}
+body.shlock{position:fixed;left:0;right:0;overflow:hidden}
+#sh .shp{margin-bottom:var(--kb,0px);transition:transform .34s cubic-bezier(.22,.61,.36,1),margin-bottom .2s ease}
 #sh{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,16,30,0);transition:background .28s ease;pointer-events:none}
 #sh.on{background:rgba(10,16,30,.38);pointer-events:auto}
 #sh .shp{width:100%;max-width:560px;background:var(--panel);color:var(--fg);border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(10,20,40,.18);transform:translateY(105%);transition:transform .34s cubic-bezier(.22,.61,.36,1)}
@@ -605,9 +607,13 @@ const rqAt=(b,d,p,t)=>RQ.list.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t)
 function rqOkAt(b,d,p,t){const ns=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===t).map(n=>n.names).join(', ').split(/,\s*/);
   const cs=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===t).map(n=>n.cls||'');
   return RQ.ok.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t&&(String(x.names||'').split(/,\s*/).some(n=>n&&!ns.includes(n))||(x.cls&&!cs.includes(x.cls))))}
-function shOpen(html){shClose(true);const w=document.createElement('div');w.id='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
+/* 요청 창이 열린 동안 뒤 페이지를 고정(키보드가 올라와도 뒤 화면이 위아래로 튀지 않게) + 키보드 높이만큼 창을 올림 */
+let shY=0;function pageLock(on){const b=document.body;if(on){if(b.classList.contains('shlock'))return;shY=window.scrollY;b.style.top=-shY+'px';b.classList.add('shlock')}else{if(!b.classList.contains('shlock'))return;b.classList.remove('shlock');b.style.top='';window.scrollTo(0,shY)}}
+function kbFit(){const w=$('sh'),vv=window.visualViewport;if(!w||!vv)return;const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);w.style.setProperty('--kb',kb+'px')}
+if(window.visualViewport){visualViewport.addEventListener('resize',kbFit);visualViewport.addEventListener('scroll',kbFit)}
+function shOpen(html){shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true">${html}</div>`;document.body.appendChild(w);
   w.addEventListener('click',e=>{if(e.target===w)shClose()});requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')))}
-function shClose(now){const w=$('sh');if(!w)return;w.id='';if(now){w.remove();return}w.classList.remove('on');setTimeout(()=>w.remove(),360)}
+function shClose(now){const w=$('sh');if(!w)return;w.id='';if(document.activeElement&&w.contains(document.activeElement))document.activeElement.blur();if(now){w.remove();return}w.classList.remove('on');setTimeout(()=>{w.remove();if(!$('sh'))pageLock(false)},360)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sh'))shClose()});
 /* 선생님 요청은 보강만 · 횟수(1~8회) — 3회면 첫 수업일부터 3주 동안 보이고 지나면 저절로 사라짐 */
 function rqCntSel(){const b=document.querySelector('[data-rqn2][aria-pressed="true"]');return b?+b.dataset.rqn2:1}
@@ -661,7 +667,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=()=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.38.0</div></div>`};
+  return `<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.38.1</div></div>`};
 document.addEventListener('click',async e=>{if(rqClick(e))return;const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -744,7 +750,7 @@ document.addEventListener('touchend',e=>{const g=PZ.g;if(!g)return;const c=pzC()
     if(now-PZ.lastTap<300){PZ.lastTap=0;e.preventDefault();pzAnimTo(PZ.s>PZ.fit*1.3?PZ.fit:Math.max(PZ.fit*2.5,1.2),x,y);return}PZ.lastTap=now;if(c)c.style.willChange='';return}
   if(g.k==='pan'&&g.moved&&performance.now()-g.lt<80){let vx=PZ.vx*16,vy=PZ.vy*16;const step=()=>{vx*=.93;vy*=.93;PZ.x+=vx;PZ.y+=vy;pzApply();if(Math.abs(vx)+Math.abs(vy)>.4)PZ.raf=requestAnimationFrame(step);else if(c)c.style.willChange=''};PZ.raf=requestAnimationFrame(step)}
   else if(c)c.style.willChange=''},{passive:false});
-window.addEventListener('resize',()=>{if(pzV()&&!kbOpen())setTimeout(()=>{if(!kbOpen())pzSetup(true)},120)});
+let pzW=window.innerWidth;window.addEventListener('resize',()=>{if(!pzV())return;const wch=window.innerWidth!==pzW;pzW=window.innerWidth;if(kbOpen())return;setTimeout(()=>{if(kbOpen()||!pzV())return;if(wch)pzSetup(true);else{pzSize();pzMeasure();pzApply()}},120)});
 /* ===== 가로 모드: 얇은 바 + 숨기기/보이기 ===== */
 /* 가로 모드 판단: 화면(기기) 방향으로 — 키보드가 올라와 보이는 영역이 낮아져도 가로로 착각하지 않게 (예전엔 이것 때문에 입력할 때 번쩍임) */
 const LQ=(()=>{const so=screen.orientation;const calc=()=>{const t=so&&so.type?so.type.startsWith('landscape'):Math.abs(window.orientation||0)===90;return t&&Math.min(screen.width,screen.height)<=560};
