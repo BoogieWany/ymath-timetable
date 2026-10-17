@@ -74,7 +74,7 @@ function startServer(){if(srv){try{srv.close()}catch(e){}srv=null}srvErr='';if(!
   srv.listen(mob.port,'0.0.0.0')}
 function mobInfo(){return {on:mob.on,pin:mob.pin,port:mob.port,running:!!(srv&&srv.listening),err:srvErr,gh:ghInfo(),nas:{on:!!mob.nasOn,base:mob.nasBase||'',sub:mob.nasSub||'',host:mob.nasHost||'',last:NAS.last,err:NAS.err},urls:lanIPs().map(ip=>`http://${ip}:${mob.port}`)}}
 ipcMain.handle('mobileGet',()=>new Promise(r=>setTimeout(()=>r(mobInfo()),150)));
-ipcMain.handle('mobileSet',(e,o)=>{mob.on=!!o.on;mob.pin=String(o.pin||'').trim().slice(0,32);const pt=+o.port;if(pt>=1024&&pt<=65535)mob.port=pt;
+ipcMain.handle('mobileSet',async(e,o)=>{mob.on=!!o.on;{const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin&&syCfg().role!=='branch'){mob.pin=np;mob.pinAt=Date.now();try{await rqPublish()}catch(err){}}}const pt=+o.port;if(pt>=1024&&pt<=65535)mob.port=pt;
   fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');startServer();return new Promise(r=>setTimeout(()=>r(mobInfo()),400))});
 
 /* ================= 학원 서버(시놀로지 NAS)로 올리기 =================
@@ -131,7 +131,7 @@ async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;con
   GH.url='';GH.pagesOff=true;return false}
 async function publishGh(){if(!mob.ghOn||GH.busy)return;GH.busy=true;GH.err='';GH.pagesOff=false;
   try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
-    await ghConnect();await rqRefresh();const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');v.rq=rqView();
+    await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');v.rq=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
     await ghPut('index.html',fs.readFileSync(path.join(__dirname,'mobile.html')),'화면 '+st);
     await ghPut('.nojekyll',Buffer.from(''),'설정');
@@ -144,7 +144,7 @@ async function publishGh(){if(!mob.ghOn||GH.busy)return;GH.busy=true;GH.err='';G
   GH.busy=false;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}}
 function ghInfo(){return {exp:mob.ghExp||0,on:!!mob.ghOn,repo:mob.ghRepo||'',owner:mob.ghOwner||'',hasTok:!!ghToken(),last:GH.last,err:GH.err,url:GH.url||(mob.ghOwner&&mob.ghRepo?`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`:''),pagesOff:!!GH.pagesOff,busy:GH.busy}}
 ipcMain.handle('ghSet',async(e,o)=>{mob.ghOn=!!o.on;if(o.repo!==undefined)mob.ghRepo=String(o.repo||'').trim().replace(/^.*\//,'');if(o.token)ghSetToken(String(o.token).trim());
-  if(o.pin!==undefined)mob.pin=String(o.pin||'').trim().slice(0,32);fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(mob.ghOn)await publishGh();if(o.token)await tokenPublish();return mobInfo()});
+  let pinCh=false;if(o.pin!==undefined){const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin){mob.pin=np;mob.pinAt=Date.now();pinCh=true}}fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(pinCh)await rqPublish();if(mob.ghOn)await publishGh();if(o.token)await tokenPublish();return mobInfo()});
 ipcMain.handle('ghNow',async()=>{await publishGh();return mobInfo()});
 ipcMain.handle('nasSet',(e,o)=>{if(o.pickBase!==undefined){}
   mob.nasOn=!!o.on;if(o.base!==undefined)mob.nasBase=o.base;if(o.host!==undefined)mob.nasHost=String(o.host||'').trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');
@@ -236,14 +236,16 @@ function rqSetTok(t){const r=rqCfg();if(safeStorage.isEncryptionAvailable()){r.t
 const rqOn=()=>{const r=rqCfg();return !!(r.on&&r.k&&rqTok())};
 function rqView(){return rqOn()&&mob.ghOwner&&mob.ghRepo?{t:rqTok(),k:rqCfg().k,o:mob.ghOwner,r:mob.ghRepo}:null}
 let rqFetched=0;
-async function rqRefresh(force){const c=syCfg();if(!c.on||c.role==='owner'||!syKey()||!mob.ghOwner||!mob.ghRepo)return;if(!force&&Date.now()-rqFetched<600000)return;rqFetched=Date.now();
+/* sync/req.json = 관리자 PC들끼리·지점 PC와 나누는 공유 설정 (요청 키·선생님용 번호) — 각 항목은 더 나중에 바꾼 쪽(at)이 이김 → 관리자 PC가 여러 대여도·인수인계해도 그대로 */
+async function rqRefresh(force){const c=syCfg();if(!c.on||!syKey()||!mob.ghOwner||!mob.ghRepo)return;if(!force&&Date.now()-rqFetched<600000)return;rqFetched=Date.now();
   try{const r=await fetch(API()+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/req.json?t=${Date.now()}`,{headers:{'Accept':'application/vnd.github.raw+json','User-Agent':'ymath-timetable',...(ghToken()?{'Authorization':'Bearer '+ghToken()}:{})}});
-    if(r.status===404){if(mob.rq&&mob.rq.on){mob.rq={};sySave()}return}if(!r.ok)return;
-    const o=syDec(Buffer.from(await r.arrayBuffer()));const rq=rqCfg();const before=JSON.stringify([rq.on,rq.k,rqTok()]);
-    rq.on=!!o.on;rq.k=o.k||'';if(o.t)rqSetTok(o.t);else{delete rq.tokEnc;delete rq.tokPlain}
-    if(JSON.stringify([rq.on,rq.k,rqTok()])!==before){sySave();if(mob.ghOn){clearTimeout(ghT);ghT=setTimeout(publishGh,1500)}}}catch(e){}}
+    if(r.status===404){if(c.role!=='owner'&&mob.rq&&mob.rq.on){mob.rq={};sySave()}return}if(!r.ok)return;
+    const o=syDec(Buffer.from(await r.arrayBuffer()));const rq=rqCfg();const before=JSON.stringify([rq.on,rq.k,rqTok(),mob.pin]);
+    if((o.at||0)>(rq.at||0)||(c.role!=='owner'&&!rq.at)){rq.on=!!o.on;rq.k=o.k||'';rq.at=o.at||0;if(o.t)rqSetTok(o.t);else{delete rq.tokEnc;delete rq.tokPlain}}
+    if(o.pin&&(o.pinAt||0)>(mob.pinAt||0)){mob.pin=o.pin;mob.pinAt=o.pinAt}
+    if(JSON.stringify([rq.on,rq.k,rqTok(),mob.pin])!==before)sySave()}catch(e){}}
 async function rqPublish(){const c=syCfg();if(!c.on||c.role!=='owner'||!syKey()||!ghToken())return;const r=rqCfg();
-  try{if(!mob.ghOwner)await ghConnect();await ghPut('sync/req.json',syEnc({on:!!r.on,t:rqTok(),k:r.k||'',at:Date.now()}),'보강 요청 설정')}catch(e){}}
+  try{if(!mob.ghOwner)await ghConnect();await ghPut('sync/req.json',syEnc({on:!!r.on,t:rqTok(),k:r.k||'',at:r.at||0,pin:mob.pin||'',pinAt:mob.pinAt||0}),'공유 설정')}catch(e){}}
 async function rqApi(method,url,body){const r=await fetch(API()+url,{method,headers:{'Authorization':'Bearer '+rqTok(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable',...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
   let j=null;try{j=await r.json()}catch(e){}return {status:r.status,j}}
 function rqErr(r){if(r.status===401)return '요청 키가 맞지 않거나 기한이 지났어요';if(r.status===403)return '요청 키에 Issues 권한이 없어요 (Issues: Read and write)';if(r.status===404)return '저장소를 찾지 못했어요 · 요청 키의 저장소 선택을 확인해 주세요';if(r.status===410)return '저장소의 Issues 기능이 꺼져 있어요 · 저장소 Settings → General → Features → Issues 체크';return `GitHub 오류 ${r.status}: ${(r.j&&r.j.message)||''}`}
@@ -253,7 +255,7 @@ function rqInfo(){const r=rqCfg(),c=syCfg();return {on:!!r.on,hasTok:!!rqTok(),r
 const RQ={err:''};
 ipcMain.handle('rqInfo',async()=>{await rqRefresh();return rqInfo()});
 ipcMain.handle('rqSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')return Object.assign(rqInfo(),{err:'프로그램 관리자 PC에서만 바꿀 수 있어요'});const r=rqCfg();
-  const old=rqTok();if(o.token)rqSetTok(String(o.token).trim());if(!r.k)r.k=crypto.randomBytes(32).toString('base64');r.on=!!o.on;RQ.err='';
+  await rqRefresh(true);const old=rqTok();if(o.token)rqSetTok(String(o.token).trim());if(!r.k)r.k=crypto.randomBytes(32).toString('base64');r.on=!!o.on;r.at=Date.now();RQ.err='';
   if(r.on){if(!rqTok()){r.on=false;RQ.err='요청 키를 넣어 주세요'}
     else{try{if(!mob.ghOwner)await ghConnect();const t=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues?per_page=1`);if(t.status!==200){RQ.err=rqErr(t);r.on=false;if(o.token){if(old)rqSetTok(old);else{delete r.tokEnc;delete r.tokPlain}}}}catch(err){RQ.err=err.message;r.on=false}}}
   sySave();await rqPublish();if(mob.ghOn)await publishGh();return rqInfo()});
