@@ -227,6 +227,7 @@ body.wide,html:has(body.wide){touch-action:auto}
 .fz button.rs{font-size:17px}
 .hdx,#hdShow{display:none}
 .foot .cheer{font-size:calc(13.5px*var(--mz,1));color:var(--fg);opacity:.72;margin:0 auto 10px;max-width:320px;line-height:1.55;word-break:keep-all;letter-spacing:-.1px}
+.dkc{text-align:center;margin:12px auto 2px;font-size:calc(13px*var(--mz,1))}
 .foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
 /* 가로 모드 */
 body.land .hd{display:flex;align-items:center;gap:10px;padding:calc(4px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))}
@@ -956,7 +957,7 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.50.4</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">${b&&!b._nx&&!nd?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.50.5</div></div>`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -1154,7 +1155,7 @@ function dockIn(b){const A=b&&!b._nx?annL(b):[];const M=memoL();
   const P=b&&!b._nx?b.students.filter(isPreS).sort((a,z)=>a.from.localeCompare(z.from)):[];
   const pcls=s=>{const out=[];b.classes.forEach(c=>Object.entries(c.members||{}).forEach(([t,a])=>{if(a.includes(s.id))out.push(`${c.name}(${T(b,t)}T)`)}));return [...new Set(out)].join(', ')};
   return `${P.length?`<div class="ann nwa"><span class="annk">새로 오는 학생</span>${P.map(s=>`<p><b>${esc(s.name)}</b> ${esc(s.grade||'')} · ${mdd(s.from)}(${wdn(s.from)})부터${pcls(s)?' · '+esc(pcls(s)):''}</p>`).join('')}</div>`:''}${A.map(a=>`<div class="ann"><span class="annk">공지</span><p>${esc(a.tx)}</p>${a.until?`<small>${mdd(a.until)}까지</small>`:''}</div>`).join('')}
-  <div class="memo"><div class="memoh"><b>내 메모</b><small>이 폰에만 저장돼요</small><button class="memoadd" data-memo="add">+ 추가</button></div>
+  <div class="memo"><div class="memoh"><b>내 메모</b><small>${DESK?'이 PC에만':'이 폰에만'} 저장돼요</small><button class="memoadd" data-memo="add">+ 추가</button></div>
   <ul>${M.map(memoLi).join('')}</ul><button class="mempty" data-memo="add"${M.length?' hidden':''}>할 일이나 메모를 적어 두세요</button>
   <button class="mclr" data-memo="clr"${M.some(m=>m.done)?'':' hidden'}>다 한 것 지우기</button></div>`}
 const memoLi=m=>`<li class="${m.done?'dn':''}" data-mli="${esc(m.id)}"><button class="mck" data-memock="${esc(m.id)}" aria-label="${m.done?'안 한 걸로':'다 했어요'}" aria-pressed="${!!m.done}"><i></i></button><button class="mtx" data-memoed="${esc(m.id)}">${esc(m.tx)}</button></li>`;
@@ -1168,10 +1169,11 @@ function memoIn(m){const ul=$('dock')&&$('dock').querySelector('.memo ul');if(!u
   li.animate([{opacity:0,height:'0px',transform:'translateY(-4px)'},{opacity:1,height:h+'px',transform:'none'}],{duration:300,easing:EASE});memoFix()}
 function memoOut(ids){const d=$('dock');if(!d)return;ids.forEach(id=>{const li=d.querySelector(`li[data-mli="${CSS.escape(id)}"]`);if(!li)return;
   const a=li.animate([{opacity:1,height:li.offsetHeight+'px'},{opacity:0,height:'0px'}],{duration:240,easing:EASE});a.onfinish=()=>li.remove()});setTimeout(memoFix,ids.length?120:0)}
-function dockHTML(b,inGrid){return `<div id="dock" class="dock${inGrid?' ind':''}">${dockIn(b)}</div>`}
-function dockRefresh(){const d=$('dock');if(d){d.innerHTML=dockIn(B());if(d.classList.contains('ind'))requestAnimationFrame(pzDock)}}
+const dockCheer=(b,g)=>g&&b&&!b._nx?`<div class="cheer dkc">${cheerLine(b)}</div>`:'';
+function dockHTML(b,inGrid){return `<div id="dock" class="dock${inGrid?' ind':''}">${dockIn(b)}${dockCheer(b,inGrid)}</div>`}
+function dockRefresh(){const d=$('dock');if(d){d.innerHTML=dockIn(B())+dockCheer(B(),d.classList.contains('ind'));if(d.classList.contains('ind'))requestAnimationFrame(pzDock)}}
 function memoSheet(id){const m=id?memoL().find(x=>x.id===id):null;
-  shOpen(`<h3>${m?'메모 고치기':'메모 추가'}</h3><p class="ssub">이 폰에만 저장돼요 · 다른 사람은 볼 수 없어요</p>
+  shOpen(`<h3>${m?'메모 고치기':'메모 추가'}</h3><p class="ssub">${DESK?'이 PC에만':'이 폰에만'} 저장돼요 · 다른 사람은 볼 수 없어요</p>
     <textarea id="memoIn" rows="3" maxlength="300" placeholder="예: 수요일 고2 시험지 챙기기">${m?esc(m.tx):''}</textarea>
     <div class="sbtn">${m?`<button class="dan" data-memo="del" data-mid="${esc(m.id)}">지우기</button>`:'<button data-act="shClose">취소</button>'}<button class="pri" data-memo="save" data-mid="${m?esc(m.id):''}">저장</button></div>`);
   if(wide)setTimeout(()=>{const i=$('memoIn');if(i)i.focus()},60)}
