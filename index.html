@@ -230,6 +230,7 @@ body.wide,html:has(body.wide){touch-action:auto}
 .dock.ind .foot{margin-top:14px}
 .gpad{height:114px}
 body.nolog .hd-r .fz,body.nolog #brb,body.nolog #rotB{visibility:hidden}
+main.zm{--mz:1;zoom:var(--mzz,1)}
 .pin input.pcode{text-align:center;letter-spacing:10px;font-family:var(--mono);font-size:22px;padding-left:20px}
 .foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
 /* 가로 모드 */
@@ -531,7 +532,7 @@ html.desk.glass .hd{background:rgba(23,36,63,.70)}html.desk.glass.scr .hd{backgr
 </head>
 <body>
 <header class="hd" id="hd">
-  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="화면"><button data-fz="-1" class="pm" aria-label="글씨 작게" title="글씨 작게 (전체 표에선 표 축소)">−</button><button data-fz="1" class="pm" aria-label="글씨 크게" title="글씨 크게 (전체 표에선 표 확대)">+</button><button data-fz="0" class="rs" aria-label="처음 화면으로" title="폭에 맞춰 처음 크기로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button></span><select id="br" aria-label="지점"></select><button id="brb" class="brb" data-act="brSheet" aria-label="지점 고르기"><span id="brn"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></button><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
+  <div class="hd-r"><img src="icon.png" alt=""><b>Y-MATH 시간표</b><span class="fz" role="group" aria-label="화면"><button data-fz="-1" class="pm" aria-label="화면 작게" title="화면 작게 (전체 표에선 표 축소)">−</button><button data-fz="1" class="pm" aria-label="화면 크게" title="화면 크게 (전체 표에선 표 확대)">+</button><button data-fz="0" class="rs" aria-label="처음 화면으로" title="폭에 맞춰 처음 크기로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button></span><select id="br" aria-label="지점"></select><button id="brb" class="brb" data-act="brSheet" aria-label="지점 고르기"><span id="brn"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></button><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
   <div class="meta" id="meta"></div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
@@ -552,10 +553,12 @@ const ls={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set
 const WQ=matchMedia('(min-width:1000px)');let wide=WQ.matches;document.body.classList.toggle('wide',wide);
 let lastCt=null;let D=null,ST={br:ls.get('m_br',''),tab:wide?'grid':'today',day:null,t:ls.get('m_t',''),q:'',stu:null,open:new Set(),gm:ls.get('m_gm','week'),gz:0,fit:true,nm:ls.get('m_nm2','0')==='1',gt:'',nt:ls.get('m_nt','1')==='1'},lastOk=0;
 const todayD=()=>DAYS[(new Date().getDay()+6)%7];
+if(ls.get('m_mzv','')!=='2'){ls.set('m_mz','1');ls.set('m_mzv','2')} // 화면 전체 확대로 바뀌면서 예전 글씨 배율은 한 번 100%로
 let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
 function loadGz(){ST.gz=wide?(+ls.get(GK(),'12.5')||12.5):11;ST.fit=wide?ls.get(FK(),'1')==='1':true}loadGz();
-function applyMz(){document.documentElement.style.setProperty('--mz',wide?1:MZ)}applyMz();
+/* 화면 크기(−/+): 전체 표 말고는 글자만이 아니라 카드·버튼·간격까지 같은 비율로 (main 전체를 zoom) · 위쪽 바·아래 창은 예전처럼 글자만 */
+function applyMz(){const r=document.documentElement.style;r.setProperty('--mz',wide?1:MZ);r.setProperty('--mzz',MZ)}applyMz();
 const ME=()=>{if(D&&D.v2){const m=D.me||[];return m.find(x=>x.br===ST.br)||m[0]||null}try{return JSON.parse(ls.get('m_me','null'))}catch(e){return null}};
 /* ===== 개인 코드 로그인(v2): 코드 → 키(PBKDF2) → 내 '열쇠 묶음'을 찾아 풂 → 내가 볼 수 있는 지점만 풀림 ===== */
 const LK=()=>{try{return JSON.parse(ls.get('m_lk','null'))}catch(e){return null}};
@@ -658,7 +661,7 @@ function render(){if(!D)return;document.body.classList.remove('nolog');nextApply
   $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
   meta(false);sizeHd();
   const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid}[ST.tab]||vToday;
-  const mh=nxBar()+v(b);if(mh!==ST.mh||!$('main').firstChild){ST.mh=mh;$('main').innerHTML=mh}zmBar();
+  $('main').classList.toggle('zm',ST.tab!=='grid');const mh=nxBar()+v(b);if(mh!==ST.mh||!$('main').firstChild){ST.mh=mh;$('main').innerHTML=mh}zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}ctFill()}liveTick();glowApply()}
 /* 1분마다: 오늘 화면은 교시가 바뀌었을 때만 다시 그리고(같으면 그대로), 분 단위 글자·남은 시간 선·지금 시각 선만 조용히 */
 function tick(){if(ST.tab==='today'&&!document.querySelector('#main input:focus'))render();else liveTick()}
@@ -726,7 +729,7 @@ function meHTML(b){if(D&&D.v2)return'';const me=ME();if(me&&D.branches.some(x=>x
   if(multi&&!ST.brPicked)return `<div class="note"><p><b>① 어느 지점 선생님이세요?</b><br><small>지점 → 이름 순서로 한 번만 고르면 다음부터 내 지점·내 수업이 바로 나와요</small></p><div class="me big">${D.branches.map(x=>`<button data-pbr="${x.id}">${esc(x.name)}</button>`).join('')}${skip}</div></div>`;
   const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id)||sps(b).some(s=>s.t===t.id));
   return `<div class="note"><p><b>${multi?'② ':''}${multi?esc(b.name)+' · ':''}이름을 고르세요</b><br><small>한 번만 고르면 다음부터 내 수업이 맨 위에 나와요</small></p><div class="me">${ts.map(t=>`<button data-me="${t.id}">${esc(t.name)}</button>`).join('')||'<small style="color:var(--muted)">이 지점엔 아직 수업이 없어요</small>'}${multi?'<button class="skip" data-act="pbrBack">← 지점 다시 고르기</button>':''}${skip}</div></div>`}
-let fzT=0;function fzToast(msg,ms){let t=$('fzt');if(!t){t=document.createElement('div');t.id='fzt';document.body.appendChild(t)}t.textContent=msg||('글씨 '+Math.round(MZ*100)+'%');t.style.opacity=1;clearTimeout(fzT);fzT=setTimeout(()=>t.style.opacity=0,ms||1100)}
+let fzT=0;function fzToast(msg,ms){let t=$('fzt');if(!t){t=document.createElement('div');t.id='fzt';document.body.appendChild(t)}t.textContent=msg||('화면 '+Math.round(MZ*100)+'%');t.style.opacity=1;clearTimeout(fzT);fzT=setTimeout(()=>t.style.opacity=0,ms||1100)}
 let bip=null;
 const DESK=/YMT-Desk/.test(navigator.userAgent);
 if(DESK){const R=document.documentElement;R.classList.add('desk');if(/YMT-Desk\/\d+ glass/.test(navigator.userAgent))R.classList.add('glass');
@@ -982,7 +985,7 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.52.1</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.52.2</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1035,7 +1038,10 @@ function zmBar(){let z=$('zm');const has=wide&&document.querySelector('table.g')
   if(!z){z=document.createElement('div');z.id='zm';z.setAttribute('role','group');z.setAttribute('aria-label','시간표 크기');document.body.appendChild(z)}
   z.innerHTML=`<button data-gz="-1" title="작게 (Ctrl + 마우스 휠 아래)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6"/></svg><span>작게</span></button><b id="zmPct">${Math.round(ST.gz/12.5*100)}%</b><button data-gz="1" title="크게 (Ctrl + 마우스 휠 위)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M7.5 10.5h6M10.5 7.5v6"/></svg><span>크게</span></button><button id="zmFit" data-gz="fit" aria-pressed="${ST.fit}" title="표 전체가 화면 폭에 딱 맞게"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>화면에 맞춤</span></button>`;
   if(ST.fit)requestAnimationFrame(fitNow)}
-window.addEventListener('wheel',e=>{if(e.ctrlKey&&wide&&document.querySelector('table.g')){e.preventDefault();zoomBy(e.deltaY<0?1:-1)}},{passive:false});
+/* PC(넓은 화면): 표가 아닌 탭은 Ctrl + 휠 / Ctrl + +·−·0 으로 화면 전체 배율 (폰의 −/+ 버튼과 같음) */
+function mzStep(d){if(d===0)MZ=1;else MZ=Math.round(Math.max(.85,Math.min(1.45,MZ+d*.1))*100)/100;ls.set('m_mz',String(MZ));applyMz();sizeHd();fzToast()}
+window.addEventListener('wheel',e=>{if(!e.ctrlKey||!wide||!D)return;e.preventDefault();if(document.querySelector('table.g'))zoomBy(e.deltaY<0?1:-1);else{const n=performance.now();if(n-(window._mzT||0)<90)return;window._mzT=n;mzStep(e.deltaY<0?1:-1)}},{passive:false});
+window.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!D||document.querySelector('table.g'))return;const k=e.key;if(k==='='||k==='+'){e.preventDefault();mzStep(1)}else if(k==='-'||k==='_'){e.preventDefault();mzStep(-1)}else if(k==='0'){e.preventDefault();mzStep(0)}});
 document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!document.querySelector('table.g'))return;
   if(e.key==='='||e.key==='+'){e.preventDefault();zoomBy(1)}else if(e.key==='-'){e.preventDefault();zoomBy(-1)}else if(e.key==='0'){e.preventDefault();ST.fit=true;ls.set(FK(),'1');fitNow()}});
 let rzT=0;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(ST.fit&&wide)fitNow()},150)});
@@ -1075,7 +1081,7 @@ function pzZoomTh(th){const v=pzV(),c=pzC();if(!v||!c)return;const r=th.getBound
 document.addEventListener('gesturestart',e=>{if(!wide)e.preventDefault()});
 document.addEventListener('touchstart',e=>{const v=pzV();if(wide||!v||!v.contains(e.target))return;cancelAnimationFrame(PZ.raf);const c=pzC();if(e.touches.length>=2)c.style.willChange='transform';
   if(e.touches.length>=2){const [a,b]=e.touches;const [ax,ay]=pzLocal(a),[bx,by]=pzLocal(b);PZ.g={k:'pinch',d:Math.hypot(ax-bx,ay-by)||1,s0:PZ.s,cx:((ax+bx)/2-PZ.x)/PZ.s,cy:((ay+by)/2-PZ.y)/PZ.s}}
-  else{const [x,y]=pzLocal(e.touches[0]);const b=pzB();PZ.x=pzUnRb(PZ.x,b.x0,b.x1,PZ.vw);PZ.y=pzUnRb(PZ.y,b.y0,b.y1,PZ.vh);PZ.g={k:'pan',ax:'',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:false,t0:performance.now()};PZ.vx=PZ.vy=0}},{passive:true});
+  else{const [x,y]=pzLocal(e.touches[0]);const b=pzB();PZ.x=pzUnRb(PZ.x,b.x0,b.x1,PZ.vw);PZ.y=pzUnRb(PZ.y,b.y0,b.y1,PZ.vh);PZ.g={k:'pan',ax:'',sx:x,sy:y,x0:PZ.x,y0:PZ.y,lx:x,ly:y,lt:performance.now(),moved:false,t0:performance.now(),eL:b.x0!==b.x1&&PZ.x>=b.x1-1,eR:b.x0!==b.x1&&PZ.x<=b.x0+1};PZ.vx=PZ.vy=0}},{passive:true});
 document.addEventListener('touchmove',e=>{const g=PZ.g;if(!g)return;e.preventDefault();
   if(e.touches.length>=2){const [a,b]=e.touches;const [ax,ay]=pzLocal(a),[bx,by]=pzLocal(b);if(g.k!=='pinch'){const c=pzC();if(c)c.style.willChange='transform';PZ.g={k:'pinch',d:Math.hypot(ax-bx,ay-by)||1,s0:PZ.s,cx:((ax+bx)/2-PZ.x)/PZ.s,cy:((ay+by)/2-PZ.y)/PZ.s};return}
     const ns=Math.max(PZ.fit*.9,Math.min(5,g.s0*Math.hypot(ax-bx,ay-by)/g.d));const mx=(ax+bx)/2,my=(ay+by)/2;PZ.s=ns;PZ.x=mx-g.cx*ns;PZ.y=my-g.cy*ns;pzApply();g.moved=true}
@@ -1090,6 +1096,8 @@ document.addEventListener('touchend',e=>{const g=PZ.g;if(!g)return;const c=pzC()
   PZ.g=null;cancelAnimationFrame(PZ.fr);PZ.fr=0;
   if(g.k==='pan'&&!g.moved){const now=performance.now(),t=e.changedTouches[0];const [x,y]=pzLocal(t);
     if(now-PZ.lastTap<300&&!(e.target.closest&&e.target.closest('th'))){PZ.lastTap=0;e.preventDefault();pzAnimTo(PZ.s>PZ.fit*1.3?PZ.fit:Math.max(PZ.fit*2.5,1.2),x,y);return}PZ.lastTap=now;{const b=pzB();if(b.x0!==b.x1)PZ.x=pzRb(PZ.x,b.x0,b.x1,PZ.vw);if(b.y0!==b.y1)PZ.y=pzRb(PZ.y,b.y0,b.y1,PZ.vh)}pzBack();return}
+  if(g.k==='pan'&&g.moved&&g.tx!=null&&g.ax!=='y'){/* 확대한 표: 끝에 닿은 채로 한 번 더 밀면 옆 탭으로 (사진 앱처럼) */const b=pzB();const ks=TABS().map(t=>t[0]),i=ks.indexOf(ST.tab);const over=g.eL&&g.tx-b.x1>84?-1:g.eR&&b.x0-g.tx>84?1:0;const nk=over&&ks[i+over];
+    if(nk){PZ.x=pzRb(g.tx,b.x0,b.x1,PZ.vw);pzDraw();pzBack();setTimeout(()=>goTab(nk),140);return}}
   if(g.k==='pan'&&g.moved){if(g.tx!=null){const b=pzB();PZ.x=b.x0===b.x1?b.x0:pzRb(g.tx,b.x0,b.x1,PZ.vw);PZ.y=b.y0===b.y1?b.y0:pzRb(g.ty,b.y0,b.y1,PZ.vh)}
     let vx=g.ax==='y'?0:PZ.vx,vy=g.ax==='x'?0:PZ.vy;if(performance.now()-g.lt>90)vx=vy=0;const cap=4.5;vx=Math.max(-cap,Math.min(cap,vx));vy=Math.max(-cap,Math.min(cap,vy));
     if(Math.hypot(vx,vy)<.08){pzBack();return}let lt=performance.now();
@@ -1120,7 +1128,7 @@ function goTab(k){if(!D||k===ST.tab)return;const ks=TABS().map(t=>t[0]);const di
 window.addEventListener('resize',()=>tabInd(true));
 /* ===== 탭 밀기: 위쪽 바에서, 또는 화면 아래쪽(아래 45%)에서 옆으로 밀면 내용이 손가락을 따라오고 노란 밑줄도 같이 미끄러짐.
    놓으면 많이 밀었거나 빠르게 튕겼으면 옆 탭으로, 아니면 제자리로. 끝 탭에선 고무줄처럼 조금만 밀림.
-   가로로 밀리는 칩 줄·입력칸·창은 제외, 전체 표는 확대해서 옆으로 움직일 수 있을 땐 표 이동이 먼저 */
+   가로로 밀리는 칩 줄·입력칸·창은 제외, 전체 표는 확대해서 옆으로 움직일 수 있을 땐 표 이동이 먼저 — 표 끝에 닿은 채로 한 번 더 밀면 옆 탭(위 pz touchend) */
 const TG={g:null};
 (()=>{const skip=el=>!!(el.closest&&el.closest('#sh,#pk,input,select,textarea,.chips,.seg,.res,#zm,.memo li,.brb'));
   const pzFree=()=>{const v=pzV();return !v||PZ.W*PZ.s<=PZ.vw+2};const main=()=>$('main');
