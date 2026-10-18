@@ -672,6 +672,14 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .tchtbl .ops{white-space:nowrap}.tchtbl .ops .btn{margin-left:3px}.tchtbl .rqn{color:#b4572a}
 .seg.gteach{max-width:min(760px,60vw);overflow-x:auto;scrollbar-width:none}.seg.gteach::-webkit-scrollbar{display:none}.seg.gteach button{white-space:nowrap}
 .tchtbl .lnk{border:0;background:none;color:var(--acc,#1f2f5c);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;margin-left:4px;opacity:.75;text-decoration:underline;text-underline-offset:3px;transition:opacity .15s}.tchtbl .lnk:hover{opacity:1}
+/* 프로그램 관리 · 강사용 모든 지점 보기 */
+.tallb{display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-top:1px solid var(--line)}
+.tallb:first-of-type{border-top:0}
+.tallb>b{width:110px;flex:none;padding-top:5px}
+.tallw{display:flex;flex-wrap:wrap;gap:8px 18px}
+.tall{display:inline-flex;align-items:center;gap:8px;cursor:pointer;min-height:30px}
+.tlink{border:0;background:none;padding:0 1px;margin:0;font:inherit;color:var(--acc,#1f2f5c);font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);text-underline-offset:3px;transition:text-decoration-color .15s}
+.tlink:hover{text-decoration-color:currentColor}
 </style>
 </head>
 <body>
@@ -701,6 +709,7 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
     <button class="tab" role="tab" data-v="students">학생 관리</button>
     <button class="tab" role="tab" data-v="teacher">강사 관리</button>
     <button class="tab" role="tab" data-v="settings">설정</button>
+    <button class="tab" role="tab" data-v="admin" id="admTab" hidden>프로그램 관리</button>
     <button class="tab helptab" role="tab" data-v="help" title="사용 설명서 (F1)">? 도움말</button>
   </nav>
 </div>
@@ -3028,7 +3037,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.51.1', APPDATE='2026-10-18';
+const APPVER='3.52.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3112,7 +3121,7 @@ async function mobRender(info){const el=$('mobBox');if(!el)return;
   if(MOBI.nas&&MOBI.nas.on&&bridge.nasSet){try{MOBI=await bridge.nasSet({on:false,pin:MOBI.pin,host:MOBI.nas.host||''})}catch(e){}} // 학원 서버(NAS) 올리기 기능은 없앰 — 켜져 있던 건 끔
   const m=MOBI,n=m.nas||{},g=m.gh||{};const url=n.host&&n.sub?`https://${n.host}/${n.sub}/`:'';
   // 지점 관리자 PC: 설정은 못 바꾸고, 선생님들께 줄 주소·QR·안내문만
-  if(!isOwner()){el.innerHTML=`<h3>폰으로 보기 <span class="hint">선생님들께 알려 줄 주소 · 설정은 프로그램 관리자가 해요</span></h3>${g.url?`<div class="mobqr"><div class="qrc">${qrSvg(g.url)}<b>${esc(g.url)}</b></div><div class="hint" style="max-width:420px"><span class="row" style="margin:0 0 8px;gap:6px"><button class="btn pri" data-act="mobCopy" data-u="${esc(g.url)}">주소 복사</button><button class="btn" data-act="mobCopyMsg" data-u="${esc(g.url)}">안내문 복사</button></span>이 주소(QR)를 선생님들께 공유하세요. 폰 카메라로 QR을 찍으면 바로 열려요.<br>선생님마다 <b>개인 로그인 코드</b>로 열려요 · 코드는 [강사 관리]에서 만들고 [복사]로 1:1로 보내 주세요.</div></div>`:'<div class="hint">아직 주소가 없어요. 지점 코드로 연결하면 보여요.</div>'}`;return}
+  if(!ADMV()){el.innerHTML=`<h3>폰으로 보기 <span class="hint">선생님들께 알려 줄 주소 · ${isOwner()?'연결 설정은 '+admGoTab+'에서':'설정은 프로그램 관리자가 해요'}</span></h3>${g.url?`<div class="mobqr"><div class="qrc">${qrSvg(g.url)}<b>${esc(g.url)}</b></div><div class="hint" style="max-width:420px"><span class="row" style="margin:0 0 8px;gap:6px"><button class="btn pri" data-act="mobCopy" data-u="${esc(g.url)}">주소 복사</button><button class="btn" data-act="mobCopyMsg" data-u="${esc(g.url)}">안내문 복사</button></span>이 주소(QR)를 선생님들께 공유하세요. 폰 카메라로 QR을 찍으면 바로 열려요.<br>선생님마다 <b>개인 로그인 코드</b>로 열려요 · 코드는 [강사 관리]에서 만들고 [복사]로 1:1로 보내 주세요.</div></div>`:`<div class="hint">아직 주소가 없어요. ${isOwner()?admGoTab+'에서 [인터넷(GitHub)으로 올리기]를 켜면 보여요.':'지점 코드로 연결하면 보여요.'}</div>`}`;return}
   el.innerHTML=`<h3>폰으로 보기 <span class="hint">보기 전용 · [적용]한 시간표만</span></h3>
   <div class="mobsec"><div class="row"><span class="nmt"><button class="tgl" id="ghOn" role="switch" aria-checked="${!!g.on}" aria-label="인터넷으로 올리기"><i></i></button></span><b>인터넷(GitHub)으로 올리기</b><span class="hint">추천 · 어디서나 · PC가 꺼져 있어도 마지막 적용본 · 무료</span></div>
     <div class="row"><label for="ghRepo">저장소 이름</label><input id="ghRepo" value="${esc(g.repo||'ymath-timetable')}" style="width:170px">
@@ -3144,7 +3153,7 @@ async function ghSave(o){const pin=pinOk();if(pin===null)return;const g=MOBI.gh|
   if(on&&!tok&&!g.hasTok){toast('연결 키를 넣어 주세요 · 아래 [처음 한 번 준비]를 보세요');return}
   toast('GitHub에 연결하는 중…');const info=await bridge.ghSet({on,pin,repo:$('ghRepo').value,...(tok?{token:tok}:{})});mobRender(info);
   toast(info.gh.err?'올리지 못했어요 · 아래 내용을 확인해 주세요':on?'인터넷에 올렸어요 · 1~2분 뒤 주소가 열려요':'인터넷 올리기를 껐어요')}
-if(bridge&&bridge.onNas)bridge.onNas(st=>{if(!MOBI)return;if(st.gh)MOBI.gh=st.gh;else if(MOBI.nas){MOBI.nas.last=st.last;MOBI.nas.err=st.err}if(UI.view==='settings'&&!(document.activeElement&&/INPUT/.test(document.activeElement.tagName)))mobRender(MOBI)});
+if(bridge&&bridge.onNas)bridge.onNas(st=>{if(!MOBI)return;if(st.gh)MOBI.gh=st.gh;else if(MOBI.nas){MOBI.nas.last=st.last;MOBI.nas.err=st.err}if((UI.view==='settings'||UI.view==='admin')&&!(document.activeElement&&/INPUT/.test(document.activeElement.tagName)))mobRender(MOBI)});
 function renderTitle(){const el=$('tbInfo');if(!el)return;const b=B(),v=V();const ls=(typeof syOn==='function'&&syOn()&&b._sync&&b._sync.at)?`<i>·</i><span class="lm">마지막 적용 ${esc(b._sync.by||'')} ${fmtT(b._sync.at)}</span>`:'';el.innerHTML=`<span>${esc(b.name)}</span><i>›</i><span>${esc(v?v.name:'')}</span><i>›</i><span id="tbMode" class="${UI.edit?'ed':''}">${UI.peek?'지난 시간표 보기':UI.edit?'수정 · 초안':'보기'}</span>${ls}`;syncSaved()}
 function syncSaved(){const s=$('saved'),t=$('tbSaved'),d=$('tbDot');if(!t||!s)return;t.textContent=s.textContent;d.className='tb-dot'+(/중|실패/.test(s.textContent)?' busy':'')}
 function markDirty(){$('saved').textContent='저장 중…';$('saved').className='saved dirty';clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,400)}
@@ -3524,14 +3533,14 @@ function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-
   const g=MOBI&&MOBI.gh;set('mobBox',g&&g.on?'켜짐 · GitHub'+(g.url?' · '+g.url.replace(/^https?:\/\//,''):''):'꺼짐');
   {const n=annLive(b).length;set('선생님 공지',n?`올라간 공지 ${n}개`:'없음')}
   const q=RQS&&RQS.info;set('rqBox',q&&q.ready?'켜짐'+(RQS.list.filter(x=>!x.bad).length?` · 남은 요청 ${RQS.list.filter(x=>!x.bad).length}건`:''):'꺼짐');
-  set('데이터','백업 저장·불러오기, 폴더 열기');set('화면 크기','글씨·화면 배율')}
+  set('데이터','백업 저장, 폴더 열기');set('데이터 관리','백업 불러오기, 전체 초기화');{const on=DB.branches.flatMap(x=>(x.teachers||[]).filter(t=>t.all).map(t=>t.name));set('강사용 모든 지점 보기',on.length?[...new Set(on)].join(', ')+' 켜짐':'아무도 안 켬')}set('지점',b.name);set('화면 크기','글씨·화면 배율')}
 function viewSettings(){
   const b=B();const cur=V(),sch=b.sched&&b.versions.find(v=>v.id===b.sched.ver);
   /* 삭제 막는 건 지금 시간표·예정 시간표·특강에 있을 때만. 지난 버전에만 있으면 지울 수 있고 그 버전엔 '(삭제된 강사)'로 남아요 */
   const inV=(v,t)=>!!v&&(v.sessions.some(o=>o.t===t)||v.classes.some(c=>(c.members[t]||[]).length));
   const used=t=>inV(cur,t)||inV(sch,t)||(b.specials||[]).some(x=>x.t===t);const usedOld=t=>!used(t)&&b.versions.some(v=>v!==cur&&v!==sch&&inV(v,t));
   let h=`<div class="card-h"><h2>설정</h2><span class="hint">Y-MATH 시간표 ${APPVER} (${APPDATE})</span>${admBtnHTML()}</div>
-  <div class="sec"><h3>지점</h3><div class="row"><label for="bName">지점 이름</label><input id="bName" value="${esc(b.name)}"><span class="sp"></span>${isOwner()?`<button class="btn" data-act="newBranch">새 지점 만들기</button><button class="btn danger" data-act="delBranch" ${DB.branches.length<2?'disabled':''}>이 지점 삭제</button>`:''}</div><div class="hint">새 지점은 지금 지점의 강사·교시 설정을 복사해서 시작해요. 학생과 반은 비어 있어요.</div></div>
+  <div class="sec"><h3>지점</h3><div class="row"><label for="bName">지점 이름</label><input id="bName" value="${esc(b.name)}"></div></div>
   <div class="sec"><h3>요일별 교시와 시작 시간</h3><div class="days">`;
   DAYS.forEach(d=>{const ps=per(d);h+=`<div class="tbox"><h3>${d}요일</h3>${ps.map((x,p)=>`<div class="row"><input data-pn="${d}|${p}" value="${esc(x.name)}" aria-label="${d} ${p+1}번째 교시 이름"><input class="t" data-pt="${d}|${p}" value="${esc(x.time)}" aria-label="시작 시간"></div>`).join('')}
     <div class="row"><button class="btn" data-padd="${d}">교시 추가</button><button class="btn" data-pdel="${d}" ${!ps.length||V().sessions.some(o=>o.d===d&&o.p===ps.length-1)?'disabled':''}>마지막 교시 빼기</button></div></div>`});
@@ -3540,10 +3549,23 @@ function viewSettings(){
   <div class="sec" id="mobBox"><h3>폰으로 보기 <span class="hint">보기 전용</span></h3><div class="hint">불러오는 중…</div></div>
   <div class="sec" id="rqBox"><h3>선생님 보강 요청</h3><div class="hint">불러오는 중…</div></div>${annHTML()}
   <div class="sec"><h3>데이터</h3><div class="hint">모든 변경은 프로그램 폴더의 data\\timetable.json에 자동 저장되고, 30분마다 data\\backup에 백업이 쌓여요.</div>
-  <div class="row"><button class="btn" data-act="exportBackup">백업 파일로 저장</button>${isOwner()?'<button class="btn" data-act="importBackup">백업 파일 불러오기</button>':''}${isOwner()?'<button class="btn danger" data-act="resetAllDlg" style="margin-left:auto;order:9">전체 초기화</button>':''}${bridge?'<button class="btn" data-act="openData">data 폴더 열기</button><button class="btn" data-act="openOut">PDF 폴더 열기</button>':''}</div></div>
+  <div class="row"><button class="btn" data-act="exportBackup">백업 파일로 저장</button>${bridge?'<button class="btn" data-act="openData">data 폴더 열기</button><button class="btn" data-act="openOut">PDF 폴더 열기</button>':''}</div></div>
   <div class="sec"><h3>화면 크기</h3><div class="row"><button class="btn" data-zoom="-1">작게</button><button class="btn" data-zoom="0">기본</button><button class="btn" data-zoom="1">크게</button><span class="hint">지점 시간표 화면에서는 Ctrl + 휠이 시간표 카드 크기를 바꿔요 (커지면 학생 이름 표시)</span></div></div>`;
   return h;
 }
+
+/* ================= 화면: 프로그램 관리 (프로그램 관리자만 · 관리자 모드를 열면 보임) ================= */
+function viewAdmin(){const b=B();
+  const all=DB.branches.map(x=>`<div class="tallb"><b>${esc(x.name)}</b><div class="tallw">${(x.teachers||[]).map(t=>`<label class="tall"><button class="tgl" role="switch" aria-checked="${!!t.all}" data-tall="${x.id}|${t.id}" aria-label="${esc(x.name)} ${esc(t.name)} 모든 지점 보기"><i></i></button>${esc(t.name)}</label>`).join('')||'<span class="hint">강사 없음</span>'}</div></div>`).join('');
+  return `<div class="card-h"><h2>프로그램 관리</h2><span class="hint">프로그램 관리자만 쓰는 설정이에요 · 지점장 PC에는 이 탭이 없어요</span>${admBtnHTML()}</div>
+  <div class="sec"><h3>지점</h3><div class="row"><span class="hint">지금 보는 지점: <b>${esc(b.name)}</b></span><span class="sp"></span><button class="btn" data-act="newBranch">새 지점 만들기</button><button class="btn danger" data-act="delBranch" ${DB.branches.length<2?'disabled':''}>이 지점 삭제</button></div><div class="hint">새 지점은 지금 지점의 강사·교시 설정을 복사해서 시작해요. 학생과 반은 비어 있어요. 지점 이름은 [설정 → 지점]에서 바꿔요.</div></div>
+  <div class="sec"><h3>강사용 모든 지점 보기</h3><div class="hint" style="margin-bottom:8px">켠 선생님은 강사용에서 이름이 없는 지점까지 모두 볼 수 있어요 · 끈 선생님은 이름이 있는 지점만 보여요 · 바로 저장돼요</div>${all}</div>
+  <div class="sec" id="syncBox"></div>
+  <div class="sec" id="mobBox"><h3>폰으로 보기</h3><div class="hint">불러오는 중…</div></div>
+  <div class="sec" id="rqBox"><h3>선생님 보강 요청</h3><div class="hint">불러오는 중…</div></div>
+  <div class="sec"><h3>데이터 관리</h3><div class="row"><button class="btn" data-act="importBackup">백업 파일 불러오기</button><button class="btn danger" data-act="resetAllDlg" style="margin-left:auto">전체 초기화</button></div><div class="hint">백업 저장·폴더 열기는 [설정 → 데이터]에 있어요.</div></div>`}
+const ADMV=()=>UI.view==='admin'&&isOwner();
+const admGoTab='<button class="tlink" data-act="admTabGo">[프로그램 관리] 탭</button>';
 
 /* ================= 버전 패널 ================= */
 function histSummary(h){try{const bs=JSON.parse(h.snap);const b=bs.find(x=>x.id===DB.currentBranch)||bs[0];const v=b.versions.find(x=>x.id===b.current)||b.versions[0];return `${b.name} · ${v.name} · 반 ${v.classes.length} · 수업 ${v.sessions.length}`}catch(e){return ''}}
@@ -3567,14 +3589,15 @@ function render(){
   $('undoBtn').disabled=!hist.u.length;$('redoBtn').disabled=!hist.r.length;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===UI.view));
   ISS=analyze();
-  const wide=['classes','students','settings','help','teacher'].includes(UI.view);
+  if(UI.view==='admin'&&!isOwner())UI.view='settings';{const at=$('admTab');if(at)at.hidden=!isOwner()}
+  const wide=['classes','students','settings','help','teacher','admin'].includes(UI.view);
   $('side').hidden=wide;
   const sc=$('view').querySelector('.scroll');const keep=sc?[sc.scrollLeft,sc.scrollTop]:null;
   {const vw=$('view');if(UI._lastView!==UI.view){UI._lastView=UI.view;vw.classList.remove('vin');void vw.offsetWidth;vw.classList.add('vin')}}
-  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():viewSettings());
+  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():UI.view==='admin'?viewAdmin():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
-  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
+  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
 }
 // 시간표가 화면에 꽉 차고 자동 점검이 항상 아래에 보이도록 높이 맞춤
 function fitGrid(){const sc=$('view').querySelector('.scroll');if(!sc)return;if(sc.id==='gridScroll'){sc.style.maxHeight='none';document.documentElement.style.setProperty('--toph',($('view').closest('.main').previousElementSibling.getBoundingClientRect().height+(document.body.classList.contains('exe')?36:0))+'px');calcBase();stretchLater();return}const side=$('side');
@@ -3967,6 +3990,7 @@ document.addEventListener('click',async e=>{
     case 'ntFill':ntFill();break;
     case 'qaSave':qaSave();break;
     case 'helpClose':helpClose();break;
+    case 'admTabGo':UI.view='admin';UI._keepScroll=false;render();window.scrollTo(0,0);break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
     case 'admGo':admGo();break;
     case 'admJoin':admJoin();break;
@@ -4671,14 +4695,15 @@ function renderSyncState(){const el=$('syncBadge');if(!el)return;if(!syOn()){el.
   if(syPend().length)el.className='syncb lock';
   el.textContent=SYNC.err?'연동 오류':syPend().length?'⏳ 올리기 대기':(!canEditB(b.id)?'보기 전용 지점':l&&!mine?`🔒 ${l.by} 수정 중`:mine?'🔒 내가 수정 중':'연동됨');
   admRender();el.title=SYNC.err||(isOwner()?'프로그램 관리자':`${admLocked()?'내 지점 모드':'지점 관리자'} · ${syBName(myBr())}`)+(SYNC.info.name?` · ${SYNC.info.name}`:'');
-  if(UI.view==='settings')syncRender()}
+  if(UI.view==='settings'||UI.view==='admin')syncRender()}
 /* ---- 설정 화면 ---- */
 async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bridge.syncInfo){el.innerHTML='';return}
   const i=SYNC.info=await bridge.syncInfo();
+  if(!i.on&&!ADMV()){el.innerHTML=`<h3>지점 연동 <span class="hint">꺼져 있어요</span></h3><div class="row"><button class="btn" data-act="syJoinDlg">지점 코드로 연결</button><span class="hint">지점장 PC는 받은 지점 코드만 넣으면 돼요${isOwner()?' · 프로그램 관리자 모드는 '+admGoTab+'에서 켜요':''}</span></div>`;return}
   if(!i.on){el.innerHTML=`<h3>지점 연동 <span class="hint">여러 PC(지점 관리자)가 같은 시간표를 함께 관리</span></h3>
     <div class="row"><label for="syName">내 이름</label><input id="syName" value="${esc(i.name||'부원장')}" style="width:120px"><button class="btn pri" data-act="syEnable" ${i.ghReady?'':'disabled'}>프로그램 관리자 모드 켜기</button><button class="btn" data-act="syJoinDlg">지점 코드로 연결</button></div>
     <div class="hint">${i.ghReady?'켜면 지점 시간표가 GitHub 저장소에 암호화돼서 올라가고, 지점마다 <b>지점 코드</b>를 만들어 줄 수 있어요.':'프로그램 관리자 PC는 먼저 아래 [폰으로 보기 → 인터넷(GitHub)으로 올리기]를 연결해 주세요.'} 지점 관리자 PC는 [지점 코드로 연결]만 하면 돼요.</div>`;return}
-  const owner=i.role==='owner'&&!admLocked();
+  const owner=i.role==='owner'&&!admLocked()&&UI.view==='admin';
   let h=`<h3>지점 연동 <span class="hint">${owner?'프로그램 관리자':'지점 관리자 · '+esc(syBName(i.branch))}</span></h3>
   <div class="row"><label for="syName">내 이름</label><input id="syName" value="${esc(i.name)}" style="width:120px"><button class="btn" data-act="syName">저장</button><span class="hint">잠금에 "○○ 수정 중"으로 보여요</span><span class="sp"></span>
     <span class="hint">${i.last?'마지막 동기화 '+fmtT(i.last):''}</span><button class="btn" data-act="syPull">지금 받기</button></div>
@@ -4687,6 +4712,7 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
     <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
     <div class="hint">코드에는 저장소 연결 키와 시간표 암호 키가 들어 있어요. 카톡 1:1로 해당 관리자에게만 보내고, 받은 쪽에서 연결한 뒤 메시지를 지우게 해 주세요.<br>지점 관리자는 그 지점의 시간표·반·학생·강사·교시·지점 이름을 프로그램 관리자와 같은 권한으로 고칠 수 있고, 다른 지점은 보기만 돼요. 프로그램 설정(지점 추가·삭제, 폰으로 보기, 연동)은 프로그램 관리자만 바꿀 수 있어요.</div>`}
+  else if(i.role==='owner'&&!admLocked())h+=`<div class="row"><span class="hint">지점 코드·수정 잠금·연결된 PC·관리자 잠금은 ${admGoTab}에 있어요</span></div>`;
   else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span></div>`;
   else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정과 PC 연결은 프로그램 관리자가 관리해요</span></div>`;
   if(owner)h+=admSetHTML(i);
@@ -4794,7 +4820,7 @@ async function rqDecide(num,ok){const x=RQS.list.find(i=>i.num===+num);if(!x||RQ
 const tnB=x=>{const b=DB.branches.find(i=>i.id===x.br);const t=b&&b.teachers.find(i=>i.id===x.t);return t?t.name:(x.tn||'')};
 async function rqRender(){const el=$('rqBox');if(!el)return;if(!bridge||!bridge.rqInfo){el.innerHTML='<h3>선생님 보강 요청</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
   let i;try{i=RQS.info=await bridge.rqInfo()}catch(e){el.innerHTML='<h3>선생님 보강 요청</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
-  if(!isOwner()){el.innerHTML=`<h3>선생님 보강 요청</h3><div class="hint">${i.ready?`켜져 있어요 · 선생님이 브라우저 시간표에서 요청하면 위쪽에 "선생님 요청 ○건"이 떠요. ${esc(syBName(myBr()))} 요청은 이 PC에서 승인할 수 있어요.${admLocked()?' 다른 지점 요청과 설정은 [관리자 모드]를 연 뒤에 보여요.':''}`:'꺼져 있어요 · 프로그램 관리자가 켜면 쓸 수 있어요'}</div>`;return}
+  if(!ADMV()){el.innerHTML=`<h3>선생님 보강 요청</h3><div class="hint">${i.ready?`켜져 있어요 · 선생님이 브라우저 시간표에서 요청하면 위쪽에 "선생님 요청 ○건"이 떠요. ${isOwner()?'요청 키·켜고 끄기는 '+admGoTab+'에서 해요.':esc(syBName(myBr()))+' 요청은 이 PC에서 승인할 수 있어요.'}${admLocked()?' 다른 지점 요청과 설정은 [관리자 모드]를 연 뒤에 보여요.':''}`:'꺼져 있어요 · 프로그램 관리자가 켜면 쓸 수 있어요'}</div>`;return}
   if(!MOBI&&bridge.mobileGet){try{MOBI=await bridge.mobileGet()}catch(e){}}const g=(MOBI&&MOBI.gh)||{};
   el.innerHTML=`<h3>선생님 보강 요청</h3>
   <div class="row"><span class="nmt"><button class="tgl" id="rqOn" role="switch" aria-checked="${!!i.on}" aria-label="선생님 요청 받기"><i></i></button></span><b>선생님 요청 받기</b><span class="hint">브라우저 '내 시간표'의 빈 칸을 눌러 명단을 보내면, 승인한 것만 시간표에 들어가요</span></div>
@@ -4827,9 +4853,9 @@ function admDlg(){if(SYNC.info.role!=='owner'){admNeedCode();return}$('modal').h
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="admGo">열기</button></div></div>`;setTimeout(()=>{const i=$('admPw');if(i)i.focus()},60)}
 async function admGo(){const i=$('admPw');if(!i)return;const r=await bridge.admCheck(i.value);
   if(!r.ok){const e=$('admErr');e.textContent=r.wait?`여러 번 틀려서 ${r.wait}초 뒤에 다시 해 주세요`:'비밀번호가 맞지 않아요';const d=document.querySelector('.admdlg');if(d){d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake')}i.select();return}
-  ADM.open=true;$('modal').hidden=true;render();toast('관리자 모드예요 · 끝나면 설정 맨 위 [잠그기]를 눌러 주세요',4000);rqTick(true)}
+  ADM.open=true;$('modal').hidden=true;UI.view='admin';UI._keepScroll=false;render();window.scrollTo(0,0);toast('관리자 모드예요 · 끝나면 위쪽 [관리자 모드 · 잠그기]를 눌러 주세요',4000);rqTick(true)}
 function admLock(){if(UI.edit&&[...SYNC.mine,...SYNC.offline].some(id=>id!==myBr())){toast('다른 지점을 고치는 중이에요 · [적용]이나 [버리기]로 끝낸 뒤 잠가 주세요',5000);return}
-  ADM.open=false;if(!UI.edit)DB.currentBranch=myBr();render();rqTick(true);toast(`${syBName(myBr())} 모드로 돌아왔어요`)}
+  ADM.open=false;if(!UI.edit)DB.currentBranch=myBr();if(UI.view==='admin')UI.view='settings';render();rqTick(true);toast(`${syBName(myBr())} 모드로 돌아왔어요`)}
 function admSetHTML(i){const home=myBr();const sel=`<select id="admHome">${DB.branches.map(b=>`<option value="${b.id}" ${b.id===home?'selected':''}>${esc(b.name)}</option>`).join('')}</select>`;
   return `<div class="admset"><b>관리자 잠금</b><span class="hint">${i.pw?'켜져 있어요 · 평소엔 내 지점 모드, 설정 맨 위 [관리자 모드]에 비밀번호를 넣어야 관리자 기능이 열려요 (업데이트 보내기는 잠가 둬도 계속돼요)':'비밀번호를 정하면 이 PC는 평소엔 내 지점 모드로 열리고, 비밀번호를 넣어야 관리자 기능이 열려요'}</span>
     <div class="row"><label for="admHome">내 지점</label>${sel}${i.pw?'<button class="btn" data-act="admHomeSave">저장</button>':''}</div>
@@ -5126,10 +5152,10 @@ function exDlg(sid){const b=B(),o=V().sessions.find(x=>x.id===sid);if(!o)return;
     <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="exSave">저장</button></div></div>`;
   $('modal').dataset.ex=sid}
 document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('[data-exk]');if(!k)return;document.querySelectorAll('[data-exk]').forEach(x=>x.setAttribute('aria-pressed',String(x===k)));document.querySelectorAll('.exopt').forEach(r=>r.hidden=r.dataset.for!==k.dataset.exk)});
-async function quickChange(fn,msg){if(fmtNew(B())){fmtBlock(B());return false}if(UI.edit){commit(fn,msg+' · [적용]하면 반영돼요');return true}
+async function quickChange(fn,msg,bid){const BB=()=>(bid&&DB.branches.find(x=>x.id===bid))||B();if(fmtNew(BB())){fmtBlock(BB());return false}if(UI.edit){commit(fn,msg+' · [적용]하면 반영돼요');return true}
   if(UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)){toast('지금 보고 있는 미리보기를 먼저 닫아 주세요');return false}
-  const id=B().id;if(typeof syOn==='function'&&syOn()){if(!canEditB(id)){toast('다른 지점은 보기만 할 수 있어요');return false}
-    await syncPull({silent:true});const l=await bridge.syncLock(id);if(!l.ok){toast(l.offline?'인터넷에 연결되지 않아 저장하지 못했어요':`${l.by||'다른 관리자'} 님이 ${B().name}을(를) 고치고 있어요 · 끝나면 다시 해 주세요`,5000);return false}SYNC.mine.add(id)}
+  const id=BB().id;if(typeof syOn==='function'&&syOn()){if(!canEditB(id)){toast('다른 지점은 보기만 할 수 있어요');return false}
+    await syncPull({silent:true});const l=await bridge.syncLock(id);if(!l.ok){toast(l.offline?'인터넷에 연결되지 않아 저장하지 못했어요':`${l.by||'다른 관리자'} 님이 ${BB().name}을(를) 고치고 있어요 · 끝나면 다시 해 주세요`,5000);return false}SYNC.mine.add(id)}
   fn();DB.updated=new Date().toISOString();await saveNow();if(typeof syOn==='function'&&syOn())await syncAfterApply();render();toast(msg+' · 선생님 화면에 1~2분 뒤 보여요',4000);return true}
 async function exSave(){const sid=$('modal').dataset.ex;const o=V().sessions.find(x=>x.id===sid);if(!o)return;const k=(document.querySelector('[data-exk][aria-pressed="true"]')||{}).dataset.exk||'cancel';
   const x={id:uid('e'),date:$('exDate').value,sid,kind:k,memo:($('exMemo').value||'').trim()};
@@ -5203,8 +5229,8 @@ async function ckNew(tid){const nm=x=>String(x||'').replace(/\s+/g,'');const t0=
   while(!c||used.has(c))c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);
   await quickChange(()=>{const t=B().teachers.find(x=>x.id===tid);if(t)t.ck=c},`${tn(tid)} 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`)}
 /* 모든 지점 보기: 관리자만 켜고 끔 */
-async function tAllTg(tid){if(!isOwner())return;const t0=B().teachers.find(x=>x.id===tid);if(!t0)return;const on=!t0.all;
-  await quickChange(()=>{const t=B().teachers.find(x=>x.id===tid);if(t){if(on)t.all=1;else delete t.all}},`${tn(tid)} 선생님: 강사용에서 ${on?'모든 지점을 볼 수 있어요':'이름 있는 지점만 보여요'}`)}
+async function tAllTg(v){if(!isOwner())return;const [bid,tid]=v.split('|');const bb=DB.branches.find(x=>x.id===bid);const t0=bb&&bb.teachers.find(x=>x.id===tid);if(!t0)return;const on=!t0.all;
+  await quickChange(()=>{const t=DB.branches.find(x=>x.id===bid).teachers.find(x=>x.id===tid);if(t){if(on)t.all=1;else delete t.all}},`${t0.name} 선생님: 강사용에서 ${on?'모든 지점을 볼 수 있어요':'이름 있는 지점만 보여요'}`,bid)}
 
 /* ===== 학생 상태 창: 재원 · 휴원 · 입학 예정(첫 수업일) — 수정 모드 없이 바로 저장 ===== */
 function stDlg(id){const s=S(id);if(!s)return;const cur=stLabel(s);
@@ -5233,11 +5259,11 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
   const nt=t=>(b.notes||[]).filter(n=>n.t===t&&(!n.until||n.until>=td)).length;
   const exn=t=>(b.ex||[]).filter(x=>x.date>=td&&x.date<wk&&(x.t===t||((v.sessions.find(o=>o.id===x.sid)||{}).t===t))).length;
   let h=`<div class="card-h"><h2>강사 관리 · ${esc(b.name)}</h2><span class="hint">강사 ${b.teachers.length}명 · 휴무·연락처·로그인 코드는 보기 모드에서도 바로 저장돼요 · 강사용은 개인 로그인 코드로 열리고 이름이 있는 지점만 보여요${E?'':' · 이름·순서·추가·삭제는 수정 모드에서'}</span></div>
-  <div class="scroll"><table class="tbl tchtbl"><thead><tr><th>이름</th><th>휴무 요일</th><th>연락처</th><th title="강사용 시간표에 로그인하는 6자리 · 담당 학생 연락처도 이 코드로 열려요 · 선생님께 1:1로 알려 주세요">로그인 코드</th>${isOwner()?'<th title="켜면 강사용에서 모든 지점 시간표를 볼 수 있어요 · 관리자만 바꿀 수 있어요">모든 지점</th>':''}<th class="num">주당</th><th class="num">반</th><th class="num">학생</th><th class="num">오늘</th><th class="num" title="빈 칸 메모(보강 등) · 승인 대기 요청">메모·요청</th><th class="num" title="오늘부터 7일 안의 휴강·대강·이동">이번 주 변경</th><th></th></tr></thead><tbody>`;
+  <div class="scroll"><table class="tbl tchtbl"><thead><tr><th>이름</th><th>휴무 요일</th><th>연락처</th><th title="강사용 시간표에 로그인하는 6자리 · 담당 학생 연락처도 이 코드로 열려요 · 선생님께 1:1로 알려 주세요">로그인 코드</th><th class="num">주당</th><th class="num">반</th><th class="num">학생</th><th class="num">오늘</th><th class="num" title="빈 칸 메모(보강 등) · 승인 대기 요청">메모·요청</th><th class="num" title="오늘부터 7일 안의 휴강·대강·이동">이번 주 변경</th><th></th></tr></thead><tbody>`;
   b.teachers.forEach((t,i)=>{const os=v.sessions.filter(o=>o.t===t.id);const cls=new Set(os.map(o=>o.cls)).size;const stu=new Set(os.flatMap(activeMembers)).size;const tdn=os.filter(o=>o.d===dn).length;const r=rq(t.id),n=nt(t.id),x=exn(t.id);
     h+=`<tr><td>${E?`<input data-tname="${t.id}" value="${esc(t.name)}" style="width:96px">`:`<b>${esc(t.name)}</b>`} <button class="lnk" data-tgo="${t.id}" title="이 강사 시간표 보기">시간표</button></td>
     <td class="offs">${DAYS.map(d=>`<button class="dbtn" data-off="${t.id}|${d}" aria-pressed="${(t.off||[]).includes(d)}" ${ed?'':'disabled'}>${d}</button>`).join('')}</td>
-    <td><button class="phc${t.ph?'':' none'}" data-tphed="${t.id}" ${ed?'':'disabled'}>${t.ph?`<b class="mono">${esc(phFmt(t.ph))}</b>`:'+ 넣기'}</button></td><td>${ckCell(t)}</td>${isOwner()?`<td><button class="tgl" role="switch" aria-checked="${!!t.all}" data-tall="${t.id}" aria-label="${esc(t.name)} 모든 지점 보기"><i></i></button></td>`:''}
+    <td><button class="phc${t.ph?'':' none'}" data-tphed="${t.id}" ${ed?'':'disabled'}>${t.ph?`<b class="mono">${esc(phFmt(t.ph))}</b>`:'+ 넣기'}</button></td><td>${ckCell(t)}</td>
     <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
     <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
   h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
@@ -5285,7 +5311,7 @@ const HELP=[
   <li><b>[강사 관리]</b> 탭: 강사마다 휴무 요일·선생님 연락처·<b>로그인 코드</b>를 보기 모드에서도 바로 바꾸고, 주당 타임·반·학생 수·오늘 수업·메모/요청·이번 주 변경을 한눈에 봐요. 이름·순서·추가·삭제는 수정 모드에서. [시간표]를 누르면 그 강사 주간 시간표로 가요.</li>
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
-  <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. <b>모든 지점</b> 스위치(관리자만 보임)를 켠 선생님은 전 지점을 봐요.</li>
+  <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
   <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 2주 동안 떠 있어요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
@@ -5327,6 +5353,7 @@ const HELP=[
  {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사 버튼·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
  {id:'phone',t:'폰으로 보기 (브라우저 시간표)',b:`
   <ul><li><b>지점 관리자</b>는 [설정 → 폰으로 보기]에서 QR·<b>[주소 복사]</b>·<b>[안내문 복사]</b>로 선생님들께 알려 주면 돼요. 아래 설정은 프로그램 관리자가 해요.</li>
+  <li><b>[프로그램 관리]</b> 탭: 프로그램 관리자만 쓰는 것(지점 만들기·삭제, 강사용 모든 지점 보기, 지점 연동 관리·지점 코드·관리자 잠금, 폰으로 보기 연결, 보강 요청 키, 백업 불러오기·전체 초기화)이 모여 있어요. 관리자 모드를 열면 이 탭이 생기고 바로 이동해요. 잠그면 탭이 사라져요. 지점장 PC에는 없어요.</li>
   <li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]할 때마다 올라가서 어디서나 폰으로 봐요. 나온 <b>QR/주소</b>를 선생님들께 주세요. 시간표는 지점마다 따로 암호화되고, 선생님 개인 로그인 코드로 이름 있는 지점만 열려요.</li>
   <li>폰 화면 (위쪽 바, 또는 <b>화면 아래쪽 절반</b> 아무 데서나 손가락으로 옆으로 밀면 내용이 손가락을 따라오다 옆 탭으로 넘어가요 — 조금만 밀면 제자리. 전체 표를 확대한 동안엔 표 이동이 먼저): <b>전체</b>(프로그램 첫 화면처럼 지점 시간표 전체 표 · 표 위 강사 버튼으로 <b>모든 강사 / 내 시간표 / 특정 강사</b>만 · 반 카드엔 인원수만, <b>카드를 누르면 학생 이름</b> · [학생 이름 모두 보기] 스위치 · 폰에선 처음에 표 전체가 한 화면에 들어오고 표 칸 안에서 지도처럼 두 손가락으로 확대·한 손가락으로 끌기·두 번 톡 확대(위쪽 바는 그대로), 맨 위 <b>[−][+]</b>로 글씨(전체 표에선 표) 크기, <b>↔</b>로 폭에 맞춰 처음 크기, <b>↻</b>로 가로·세로 보기 · 가로로 돌리면 위쪽 바가 한 줄로 얇아지고 <b>▲</b>로 숨기기, <b>▼ 메뉴</b>로 다시 보이기, 맨 위 [−][+]로 표 크기) · <b>오늘</b>(처음 한 번 <b>지점 → 이름</b> 순서로 고르면 <b>내 수업</b>이 맨 위, 지금·다음 표시) · 요일별 · 강사별 · <b>학생</b>(이름으로 찾으면 학교·학년·연락처·듣는 반이 한 장에). 1분마다 새로 받아요.</li>
   <li>폰에서 <b>카드를 꾹 누르고 있으면</b>(0.4초) 그 수업이 크게 떠요 — 반 이름·선생님·요일·교시·시간·학생 이름 전체·연결된 보강 메모·당일 변경. 손을 떼면 사라져요. <b>누른 채로 손가락을 학생 이름 위로 옮겨 떼면</b> 그 학생 카드(학교·학년·연락처·듣는 반)가 떠서 [닫기]를 누를 때까지 그대로 있어요. 길게 눌러도 글자 선택이나 복사 메뉴는 안 떠요.</li>
