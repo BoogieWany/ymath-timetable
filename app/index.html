@@ -3028,7 +3028,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.50.1', APPDATE='2026-10-17';
+const APPVER='3.50.2', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3684,8 +3684,10 @@ async function restoreHistory(id){const h=HIST.find(x=>x.id===id);if(!h)return;i
 /* ================= 학생 이름 옮기기 (시간표 카드 사이) =================
    기본: 반 전체(그 반의 모든 강사 명단)에서 빼서 새 반 전체에 넣기 · Shift: 이 수업(강사) 명단만 · Ctrl: 복사(원래 반에도 남김) */
 function moveStudent(id,fromSid,toSid,mode){const v=V();const fo=v.sessions.find(x=>x.id===fromSid),to=v.sessions.find(x=>x.id===toSid);if(!fo||!to)return;
-  const fc=C(fo.cls),tc=C(to.cls);if(!fc||!tc)return;if(fo.cls===to.cls&&(mode!=='one'||fo.t===to.t)){toast('같은 반이에요');return}
-  const tTs=mode==='one'?[to.t]:Object.keys(tc.members).length?Object.keys(tc.members):[to.t];
+  const fc=C(fo.cls),tc=C(to.cls);if(!fc||!tc)return;
+  /* 같은 반이라도 강사가 다르면 명단이 따로라 옮기거나 더할 수 있음 (예: 고1 A2 서성완T → 고1 A2 천상원T) */
+  const same=fo.cls===to.cls;if(same&&fo.t===to.t){toast('이미 이 수업이에요');return}if(same&&mode==='all')mode='one';
+  const tTs=(mode==='one'||same)?[to.t]:Object.keys(tc.members).length?Object.keys(tc.members):[to.t];
   if(tTs.every(t=>(tc.members[t]||[]).includes(id))){toast(`${sname(id)}은(는) 이미 ${tc.name}에 있어요`);return}
   commit(()=>{const f=C(fo.cls),k=C(to.cls);
     if(mode!=='copy'){(mode==='one'?[fo.t]:Object.keys(f.members)).forEach(t=>{f.members[t]=(f.members[t]||[]).filter(x=>x!==id)})}
@@ -4212,7 +4214,9 @@ document.addEventListener('drop',async e=>{const X=e.clientX,Y=e.clientY;const s
         commit(()=>{const c=C(to.cls);c.members[to.t]=c.members[to.t]||[];c.members[to.t].push(sd.id)},`${nm} → ${cl.name}(${tn(to.t)}T)에 넣었어요 (특강 명단은 그대로)`)}
       else if(e.target.closest&&e.target.closest('#trash'))spRemoveMember(sd.from.slice(3),sd.id);return}
     if(ch){const to=V().sessions.find(x=>x.id===ch.dataset.sid),fo=V().sessions.find(x=>x.id===sd.from);if(!to||!fo)return;
-      let mode=ctrl?'copy':shift?'one':null;
+      let mode=ctrl?'copy':shift?'one':null;const same=fo.cls===to.cls;
+      if(same&&fo.t===to.t){toast('이미 이 수업이에요');return}
+      if(!mode&&same)mode=await dropMenu(X,Y,`${nm} → ${C(to.cls).name}(${tn(to.t)}T)`,[{v:'one',t:`${tn(to.t)}T 수업으로 옮기기`,s:`${tn(fo.t)}T 명단에서 빼고 ${tn(to.t)}T 명단에 넣기`},{v:'copy',t:'여기에도 추가',s:`${tn(fo.t)}T 수업도 그대로 듣고 ${tn(to.t)}T 수업에도 넣기`}]);
       if(!mode)mode=await dropMenu(X,Y,`${nm} → ${C(to.cls).name}`,[{v:'all',t:'반 전체 옮기기',s:`${C(fo.cls).name}의 모든 수업에서 빼고 ${C(to.cls).name}의 모든 수업에 넣기`},{v:'one',t:'이 수업만 옮기기',s:`${tn(fo.t)}T 수업 → ${tn(to.t)}T 수업 (여러 반 섞어 다닐 때)`},{v:'copy',t:'추가만 (복사)',s:'원래 반에도 남기고 이 수업에 추가'}]);
       if(mode)moveStudent(sd.id,sd.from,ch.dataset.sid,mode==='copy'?'copy':mode)}
     else if(e.target.closest&&e.target.closest('#trash')){let one=shift?true:null;if(one===null){const v=await dropMenu(X,Y,`${nm} 빼기`,[{v:'all',t:'반 전체에서 빼기'},{v:'one',t:'이 수업에서만 빼기'}]);if(!v)return;one=v==='one'}removeStudent(sd.id,sd.from,one)}
