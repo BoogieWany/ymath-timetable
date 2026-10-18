@@ -658,6 +658,15 @@ body.updfade{opacity:0;transition:opacity .25s ease}
 .phc{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;padding:3px 9px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
 .phc:hover{border-color:var(--acc,#1f2f5c)}.phc.none{color:var(--muted);border-style:dashed}.phc b{font-weight:600}
 .ckc{font-size:13px;letter-spacing:1px;padding:2px 6px;border-radius:6px;background:var(--bg)}
+/* 입학 예정 · 신입 */
+.nm small.pre,.nm small.nw{font-size:.78em;font-weight:600;margin-left:3px;padding:0 4px;border-radius:5px;background:rgba(255,255,255,.55);color:#5a4210;white-space:nowrap}
+.nm small.nw{color:#1d5a37}
+button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
+.newbox .nbl{display:flex;flex-direction:column;gap:6px;max-width:980px}
+.nbi{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.nbt{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}.nbt.pre{background:#fff3dd;color:#8a5a00}.nbt.nw{background:#e3f4ea;color:#1d5a37}
+.nbd{font-weight:600;font-size:13px}.nbc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stseg{margin:4px 0 8px}
 </style>
 </head>
 <body>
@@ -3014,7 +3023,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.47.3', APPDATE='2026-10-17';
+const APPVER='3.48.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3047,7 +3056,15 @@ function C(id){return V().classes.find(c=>c.id===id)}
 function per(d){return B().days[d]||[]}
 function pname(d,p){const x=per(d)[p];return x?x.name:''}
 function ptime(d,p){const x=per(d)[p];return x?x.time:''}
-function active(id){const s=S(id);return s&&s.status!=='휴원'}
+/* 입학 예정: status '예정' + from(첫 수업일). 첫 수업일 전엔 인원에서 빼고 (예정 10/20) 표시, 그날부터는 저절로 재원 · 첫 수업일부터 2주는 (신입) */
+const dPlus=(d,n)=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const mdS=d=>d?`${+d.slice(5,7)}/${+d.slice(8,10)}`:'';
+function isPre(s){return !!s&&s.status==='예정'&&!!s.from&&s.from>todayStr()}
+function isNewS(s){return !!s&&!!s.from&&s.from<=todayStr()&&todayStr()<dPlus(s.from,14)&&s.status!=='휴원'}
+function stLabel(s){return s.status==='휴원'?'휴원':isPre(s)?'예정':'재원'}
+function nameMark(id){const s=S(id);return isPre(s)?`<small class="pre">예정 ${mdS(s.from)}</small>`:isNewS(s)?'<small class="nw">신입</small>':''}
+function active(id){const s=S(id);return s&&s.status!=='휴원'&&!isPre(s)}
+function cntTxt(o){const m=members(o);const p=m.filter(id=>isPre(S(id))).length;return `${m.filter(active).length}명${p?` +${p} 예정`:''}`}
 function members(o){const c=C(o.cls);return c?(c.members[o.t]||[]):[]}
 function activeMembers(o){return members(o).filter(active)}
 function isHigh(id){const s=S(id);return !!s&&/^고/.test(s.grade||'')}
@@ -3262,9 +3279,9 @@ function chip(o,opt={}){
   const c=C(o.cls);if(!c)return'';const bg=c.color||'#9aa3b5',fg=txtColor(bg);
   const cl=['chip'];if(UI.hl.size)cl.push(UI.hl.has(o.id)?'hl':'dim');else if(UI.picked&&UI.same===o.cls&&UI.picked.sid!==o.id)cl.push('same');if(opt.bad&&opt.bad.has(o.id))cl.push('bad');if(UI.picked&&UI.picked.sid===o.id)cl.push('picked');
   const mem=members(o),act=mem.filter(active);
-  const sub=opt.sub??`${tn(o.t)}T · ${act.length}명`;
+  const npre=mem.filter(id=>isPre(S(id))).length;const sub=opt.sub??`${tn(o.t)}T · ${act.length}명${npre?` +${npre} 예정`:''}`;
   const ed=UI.edit&&UI.view==='grid'&&opt.drag!==false;
-  const nm=opt.names?`<span class="nm">${mem.map(id=>{const n=active(id)?esc(sname(id)):`<s>${esc(sname(id))}</s>`;return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓으면 반 전체·이 수업만·복사 중에 골라요">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기 (Shift=이 수업만)">×</i></span>`:`<span class="sn">${n}</span>`}).join('')}</span>`:'';
+  const nm=opt.names?`<span class="nm">${mem.map(id=>{const s0=S(id);const n=(s0&&s0.status==='휴원')?`<s>${esc(sname(id))}</s>`:esc(sname(id))+nameMark(id);return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓으면 반 전체·이 수업만·복사 중에 골라요">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기 (Shift=이 수업만)">×</i></span>`:`<span class="sn">${n}</span>`}).join('')}</span>`:'';
   const ex=typeof exNear==='function'?exNear(o.id):null;if(ex&&ex.kind==='cancel')cl.push('excancel');
   return `<button class="chip${opt.drag===false?'':''} ${cl.slice(1).join(' ')}" ${opt.drag===false||!UI.edit?'':'draggable="true"'} data-sid="${o.id}" style="background:${bg};color:${fg}" title="${esc(c.name)} · ${esc(tn(o.t))}T · ${esc(act.map(sname).join(' '))}"><b>${esc(c.name)}</b><small>${esc(sub)}</small>${ex?exBadge(ex):''}${nm}</button>`;
 }
@@ -3277,7 +3294,7 @@ function renderPop(){const pe=$('cardPop');if(!pe)return;
   const ch=o&&document.querySelector(`#gridScroll .chip[data-sid="${o.id}"]`);if(!o||!ch){pe.hidden=true;if(!o)UI.pop=null;return}
   const c=C(o.cls),mem=members(o),act=mem.filter(active),bg=c.color||'#9aa3b5',ed=UI.edit;
   pe.innerHTML=`<div class="cp-h" style="background:${bg};color:${txtColor(bg)}"><b>${esc(c.name)}</b><span>${esc(tn(o.t))}T · ${o.d} ${esc(pname(o.d,o.p).replace(/^(저녁|주말)\s*/,''))} ${esc(ptime(o.d,o.p))} · ${act.length}명</span><button class="cp-x" data-act="closePop" aria-label="닫기">×</button></div>
-    <div class="cp-nm">${mem.length?mem.map(id=>{const n=active(id)?esc(sname(id)):`<s>${esc(sname(id))}</s>`;return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓기">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기">×</i></span>`:`<span class="sn">${n}</span>`}).join(''):'<span class="hint">명단이 비어 있어요</span>'}</div>
+    <div class="cp-nm">${mem.length?mem.map(id=>{const s0=S(id);const n=(s0&&s0.status==='휴원')?`<s>${esc(sname(id))}</s>`:esc(sname(id))+nameMark(id);return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓기">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기">×</i></span>`:`<span class="sn">${n}</span>`}).join(''):'<span class="hint">명단이 비어 있어요</span>'}</div>
     ${ed?`<div class="cp-add"><button data-act="qaOpen" data-o="${o.id}">+ 학생 넣기 · 신입 등록</button></div>`:''}${o.id&&V().id===B().current?`<div class="cp-add"><button data-act="exOpen" data-o="${o.id}">당일 변경 · 휴강 / 대강 / 시간 이동</button></div>`:''}
     <div class="cp-tip">${ed?'이름을 끌어서 다른 반 카드에 놓으면 옮겨요 · × 빼기':'수정 모드에서 학생을 넣거나 신입을 바로 등록할 수 있어요'}</div>`;
   pe.hidden=false;const r=ch.getBoundingClientRect(),w=pe.offsetWidth,h=pe.offsetHeight;
@@ -3367,7 +3384,7 @@ function viewGrid(iss){
         let fc='',ft='';
         if(fit){const f=fit[c.d+'|'+p+'|'+c.t.id];if(f&&f.lv!=='self'){fc=' fit-'+f.lv;ft=f.why}}
         const tm='';
-        h+=`<td class="slot${off?' offday':''}${fc}${end}" data-d="${c.d}" data-p="${p}" data-t="${c.t.id}" title="${esc(c.d+' '+pname(c.d,p)+' '+ptime(c.d,p)+' · '+c.t.name+'T'+(ft?' · '+ft:'')+(os.length>1?' · 수업 '+os.length+'개 겹쳐 둠':''))}">${tm}${os.map(o=>chip(o,{bad,names:true,sub:`${activeMembers(o).length}명`})).join('')}${typeof exGhosts==='function'?exGhosts(c.d,p,c.t.id):''}${noteCell(c.d,p,c.t.id,!os.length)}</td>`.replace('<td class="slot',os.length>1?'<td class="slot stacked':'<td class="slot')});
+        h+=`<td class="slot${off?' offday':''}${fc}${end}" data-d="${c.d}" data-p="${p}" data-t="${c.t.id}" title="${esc(c.d+' '+pname(c.d,p)+' '+ptime(c.d,p)+' · '+c.t.name+'T'+(ft?' · '+ft:'')+(os.length>1?' · 수업 '+os.length+'개 겹쳐 둠':''))}">${tm}${os.map(o=>chip(o,{bad,names:true,sub:cntTxt(o)})).join('')}${typeof exGhosts==='function'?exGhosts(c.d,p,c.t.id):''}${noteCell(c.d,p,c.t.id,!os.length)}</td>`.replace('<td class="slot',os.length>1?'<td class="slot stacked':'<td class="slot')});
       h+='</tr>';
     }
     h+='</tbody></table>';
@@ -3408,7 +3425,7 @@ function viewTeacher(){
   const os=V().sessions.filter(o=>o.t===UI.teacher);const t=T(UI.teacher);
   return `<div class="card-h"><h2>강사별 시간표</h2></div><div class="tools"><label for="tSel" class="hint">강사</label><select id="tSel">${b.teachers.map(x=>`<option value="${x.id}" ${x.id===UI.teacher?'selected':''}>${esc(x.name)}T</option>`).join('')}</select>
   <span class="hint">주 ${os.length}타임 · 학생 ${new Set(os.flatMap(activeMembers)).size}명 · 휴무 ${(t.off||[]).join('·')||'없음'}</span><span class="sp"></span>
-  <button class="btn" data-pdf="teacher1">이 강사 PDF</button><button class="btn" data-pdf="teacherAll">전체 강사 PDF</button></div>`+spPersonList(spShown().filter(x=>x.t===UI.teacher),{t:1})+personGrid(o=>o.t===UI.teacher,{t:UI.teacher,names:true,sub:o=>`${activeMembers(o).length}명`});
+  <button class="btn" data-pdf="teacher1">이 강사 PDF</button><button class="btn" data-pdf="teacherAll">전체 강사 PDF</button></div>`+spPersonList(spShown().filter(x=>x.t===UI.teacher),{t:1})+personGrid(o=>o.t===UI.teacher,{t:UI.teacher,names:true,sub:o=>cntTxt(o)});
 }
 function viewStudent(){
   const st=B().students.slice().sort((a,b)=>sortKo(a.name,b.name));
@@ -3457,17 +3474,18 @@ function viewStudents(){
   const inCls={};V().classes.forEach(c=>Object.entries(c.members).forEach(([t,a])=>a.forEach(id=>{(inCls[id]=inCls[id]||new Set()).add(`${c.name}(${tn(t)[0]})`)})));
   const grades=[...new Set(b.students.map(s=>s.grade))].sort((a,b)=>GRADE_ORDER(a)-GRADE_ORDER(b));
   const qm=s=>!f.q||s.name.includes(f.q.trim())||(s.school||'').includes(f.q.trim());
-  const list=b.students.filter(s=>(!f.g||s.grade===f.g)&&(!f.st||s.status===f.st)).sort((a,b)=>GRADE_ORDER(a.grade)-GRADE_ORDER(b.grade)||sortKo(a.name,b.name));
-  const nA=b.students.filter(s=>s.status!=='휴원').length;
-  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.length-nA}명</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
+  const list=b.students.filter(s=>(!f.g||s.grade===f.g)&&(!f.st||stLabel(s)===f.st)).sort((a,b)=>GRADE_ORDER(a.grade)-GRADE_ORDER(b.grade)||sortKo(a.name,b.name));
+  const nA=b.students.filter(s=>s.status!=='휴원'&&!isPre(s)).length;const nP=b.students.filter(isPre).length;
+  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
   if(UI.importRes){const r=UI.importRes;h+=`<div class="sec"><div class="box"><b>명부 가져오기 결과 (${r.total}명)</b>
     <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div><div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
     ${r.missing.length?`<div class="box warn"><span>명부에 없는 재원생 ${r.missing.length}명: ${esc(r.missing.map(id=>sname(id)).join(', '))}</span><div class="row"><button class="btn" data-act="missingAway">모두 휴원으로 바꾸기</button><span class="hint">퇴원생이면 아래 표에서 직접 삭제하세요</span></div></div>`:''}
     ${r.added.length?'<div class="hint">새 학생은 반 관리에서 반 명단에 넣어 주세요. "명부 반" 칸에 명부의 반 이름이 보여요.</div>':''}<div><button class="btn" data-act="closeImport">닫기</button></div></div></div>`}
-  h+=`<div class="tools"><input id="fq" placeholder="이름·학교 검색" value="${esc(f.q)}" style="width:160px"><select id="fg"><option value="">전체 학년</option>${grades.map(g=>`<option ${g===f.g?'selected':''}>${esc(g)}</option>`).join('')}</select><select id="fst"><option value="">재원+휴원</option><option ${f.st==='재원'?'selected':''}>재원</option><option ${f.st==='휴원'?'selected':''}>휴원</option></select>
-  <span class="sp"></span><input id="nName" placeholder="이름" style="width:90px"><input id="nSchool" placeholder="학교" style="width:100px"><input id="nGrade" placeholder="학년(예: 중2)" style="width:100px"><button class="btn" data-act="addStudent">학생 추가</button></div>
+  h+=newBoxHTML(b);
+  h+=`<div class="tools"><input id="fq" placeholder="이름·학교 검색" value="${esc(f.q)}" style="width:160px"><select id="fg"><option value="">전체 학년</option>${grades.map(g=>`<option ${g===f.g?'selected':''}>${esc(g)}</option>`).join('')}</select><select id="fst"><option value="">재원+휴원</option><option ${f.st==='재원'?'selected':''}>재원</option><option ${f.st==='휴원'?'selected':''}>휴원</option><option ${f.st==='예정'?'selected':''}>예정</option></select>
+  <span class="sp"></span><input id="nName" placeholder="이름" style="width:90px"><input id="nSchool" placeholder="학교" style="width:100px"><input id="nGrade" placeholder="학년(예: 중2)" style="width:100px"><input id="nFrom" type="date" title="첫 수업일 · 오늘 이후면 입학 예정으로 들어가요" style="width:140px"><button class="btn" data-act="addStudent">학생 추가</button></div>
   <div class="scroll"><table class="tbl"><thead><tr><th>이름</th><th>학교</th><th>학년</th><th>상태</th><th class="num">주당</th><th>수강 반 (강사)</th><th>시간 조건</th><th>연락처</th><th>명부 반</th><th></th></tr></thead><tbody>`;
-  list.forEach(s=>{h+=`<tr data-q="${esc(s.name+' '+(s.school||''))}"${qm(s)?'':' hidden'}><td><b>${esc(sname(s.id))}</b></td><td>${esc(s.school)}</td><td>${esc(s.grade)}</td><td><button class="st${s.status==='휴원'?' away':''}" data-status="${s.id}">${s.status||'재원'}</button></td><td class="num">${cnt[s.id]||0}</td><td>${esc([...(inCls[s.id]||[])].join(', '))||'<span class="hint">없음</span>'}</td><td>${availCell(s)}</td><td>${phCell(s)}</td><td class="hint">${esc(rcShow(s))}</td><td><button class="btn danger" data-delstu="${s.id}">삭제</button></td></tr>`});
+  list.forEach(s=>{h+=`<tr data-q="${esc(s.name+' '+(s.school||''))}"${qm(s)?'':' hidden'}><td><b>${esc(sname(s.id))}</b></td><td>${esc(s.school)}</td><td>${esc(s.grade)}</td><td><button class="st${s.status==='휴원'?' away':isPre(s)?' pre':''}" data-status="${s.id}">${s.status||'재원'}</button></td><td class="num">${cnt[s.id]||0}</td><td>${esc([...(inCls[s.id]||[])].join(', '))||'<span class="hint">없음</span>'}</td><td>${availCell(s)}</td><td>${phCell(s)}</td><td class="hint">${esc(rcShow(s))}</td><td><button class="btn danger" data-delstu="${s.id}">삭제</button></td></tr>`});
   h+=`<tr id="fqEmpty"${list.some(qm)?' hidden':''}><td colspan="10" class="empty">조건에 맞는 학생이 없어요</td></tr>`;
   return h+'</tbody></table></div>';
 }
@@ -3752,11 +3770,11 @@ function applyRoster(list){
       let m=b.students.filter(s=>s.name===r.name&&s.school===r.school&&!seen.has(s.id));
       if(m.length!==1)m=b.students.filter(s=>s.name===r.name&&s.grade===r.grade&&!seen.has(s.id));
       if(m.length!==1){const byName=b.students.filter(s=>s.name===r.name&&!seen.has(s.id));const same=list.filter(x=>x.name===r.name).length;if(byName.length===1&&same===1)m=byName}
-      if(m.length===1){const s=m[0];seen.add(s.id);const ch=s.school!==r.school||s.grade!==r.grade||s.status==='휴원';s.school=r.school;s.grade=r.grade;s.rosterClasses=r.classes;delete s.quick;if(s.status==='휴원')s.status='재원';
+      if(m.length===1){const s=m[0];seen.add(s.id);const ch=s.school!==r.school||s.grade!==r.grade||s.status==='휴원';if(s.status==='예정'&&!isPre(s))s.status='재원';s.school=r.school;s.grade=r.grade;s.rosterClasses=r.classes;delete s.quick;if(s.status==='휴원')s.status='재원';
         if(r.ph)s.ph=r.ph;if(r.pa&&r.pa.length)s.pa=r.pa;if(ch)res.changed.push(r.name)}
       else{const s={id:uid('s'),name:r.name,school:r.school,grade:r.grade,status:'재원',rosterClasses:r.classes,...(r.ph?{ph:r.ph}:{}),...(r.pa&&r.pa.length?{pa:r.pa}:{})};b.students.push(s);seen.add(s.id);res.added.push(r.name)}
     });
-    b.students.forEach(s=>{if(!seen.has(s.id)&&s.status!=='휴원')res.missing.push(s.id)});
+    b.students.forEach(s=>{if(!seen.has(s.id)&&s.status!=='휴원'&&s.status!=='예정')res.missing.push(s.id)});
   },`명부 ${list.length}명을 반영했어요`);
   UI.importRes=res;render();
 }
@@ -3863,7 +3881,7 @@ document.addEventListener('click',async e=>{
   if(ds.rm){const [t,id]=ds.rm.split('|');const c=UI.cls;commit(()=>{const m=C(c).members;m[t]=m[t].filter(x=>x!==id)},`${sname(id)} 뺐어요`);return}
   if(ds.add){addMember(ds.add);return}
   if(ds.deltch){if(!armed(el,'t'+ds.deltch))return;const c=UI.cls,t=ds.deltch;commit(()=>{const k=C(c);delete k.members[t];delete k.rule[t];V().sessions=V().sessions.filter(o=>!(o.cls===c&&o.t===t))},`${tn(t)}T를 이 반에서 뺐어요`);return}
-  if(ds.status){commit(()=>{const s=S(ds.status);s.status=s.status==='휴원'?'재원':'휴원'});return}
+  if(ds.status){stDlg(ds.status);return}
   if(ds.delstu){if(!armed(el,'s'+ds.delstu))return;const id=ds.delstu,n=sname(id);commit(()=>{const b=B();b.students=b.students.filter(s=>s.id!==id);b.versions.forEach(v=>v.classes.forEach(c=>Object.keys(c.members).forEach(t=>c.members[t]=c.members[t].filter(x=>x!==id))))},`${n} 삭제했어요`);return}
   if(ds.off){const [t,d]=ds.off.split('|');commit(()=>{const x=T(t);x.off=x.off||[];x.off=x.off.includes(d)?x.off.filter(y=>y!==d):[...x.off,d]});return}
   if(ds.tmove){const [t,dir]=ds.tmove.split('|');commit(()=>{const a=B().teachers;const i=a.findIndex(x=>x.id===t);const j=i+ +dir;[a[i],a[j]]=[a[j],a[i]]});return}
@@ -3921,6 +3939,7 @@ document.addEventListener('click',async e=>{
     case 'exOpen':closePop();exDlg(ds.o);break;
     case 'gradeUp':gradeUpDlg();break;
     case 'phSave':phSave();break;
+    case 'stSave':stSave();break;
     case 'gradeUpGo':gradeUpGo();break;
     case 'gradeUndo':if(!armed(el,'gradeUndo','한 번 더 누르면 되돌려요'))return;gradeUndoGo();break;
     case 'exSave':exSave();break;
@@ -3990,7 +4009,7 @@ document.addEventListener('click',async e=>{
     case 'importRoster':$('fileRoster').value='';$('fileRoster').click();break;
     case 'closeImport':UI.importRes=null;render();break;
     case 'missingAway':{const ids=UI.importRes.missing;commit(()=>ids.forEach(id=>{const s=S(id);if(s)s.status='휴원'}),`${ids.length}명을 휴원으로 바꿨어요`);UI.importRes.missing=[];render();break}
-    case 'addStudent':{const n=$('nName').value.trim();if(!n){toast('이름을 넣어 주세요');return}commit(()=>{B().students.push({id:uid('s'),name:n,school:$('nSchool').value.trim(),grade:$('nGrade').value.trim(),status:'재원',rosterClasses:[]})},`${n} 학생을 추가했어요`);break}
+    case 'addStudent':{const n=$('nName').value.trim();if(!n){toast('이름을 넣어 주세요');return}const fd=($('nFrom')||{}).value||'';const pre=fd&&fd>todayStr();commit(()=>{B().students.push({id:uid('s'),name:n,school:$('nSchool').value.trim(),grade:$('nGrade').value.trim(),status:pre?'예정':'재원',...(fd?{from:fd}:{}),rosterClasses:[]})},pre?`${n} 학생을 입학 예정(${mdS(fd)}부터)으로 추가했어요`:`${n} 학생을 추가했어요`);break}
     case 'addTeacher':{const n=$('newT').value.trim().replace(/T$/,'');if(!n){toast('강사 이름을 넣어 주세요');return}commit(()=>{B().teachers.push({id:uid('t'),name:n,off:[]})},`${n}T를 추가했어요`);break}
     case 'newBranch':{if(!isOwner()){toast('지점 추가는 프로그램 관리자만 할 수 있어요');return}const b=B();const id=uid('b');commit(()=>{DB.branches.push({id,name:'새 지점',teachers:JSON.parse(JSON.stringify(b.teachers)),days:JSON.parse(JSON.stringify(b.days)),students:[],versions:[{id:uid('v'),name:'새 시간표',classes:[],sessions:[]}],current:null});const nb=DB.branches[DB.branches.length-1];nb.current=nb.versions[0].id;DB.currentBranch=id},'새 지점을 만들었어요. 이름을 바꿔 주세요');if(syOn())syncLockCur();break}
     case 'delBranch':{if(!isOwner()){toast('지점 삭제는 프로그램 관리자만 할 수 있어요');return}if(!armed(el,'b'))return;if(syOn())SYNC.deleted.add(DB.currentBranch);commit(()=>{DB.branches=DB.branches.filter(b=>b.id!==DB.currentBranch);DB.currentBranch=DB.branches[0].id},'지점을 삭제했어요');break}
@@ -4020,6 +4039,7 @@ function qaDlgHTML(title,sub,s,withName){const b=B();const schools=[...new Set(b
     <div id="qaMore" class="qamore${withName?' off':''}">
       <label class="qal" for="qaSchool">학교 <span class="hint">비워 둬도 돼요</span></label><input id="qaSchool" list="qaSl" autocomplete="off" placeholder="예: 용호중" value="${esc(s&&s.school||'')}"><datalist id="qaSl">${schools.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
       <label class="qal">학년 <span class="hint">비워 둬도 돼요</span></label><div class="seg qag" role="group" aria-label="학년">${QA_GRADES.map(g=>`<button data-qag="${g}" aria-pressed="${!!(s&&s.grade===g)}">${g}</button>`).join('')}</div></div>
+      <label class="qal" for="qaFrom">첫 수업일 <span class="hint">오늘 이후면 입학 예정 · 비우면 바로 재원</span></label><input id="qaFrom" type="date" value="${esc(s&&s.from||'')}">
     <div class="admerr" id="qaErr"></div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" id="qaGo" data-act="qaSave">${withName?'넣기':'저장'}</button></div></div>`}
 function qaOpen(sid){if(!UI.edit){toast('수정 모드에서 넣을 수 있어요');return}const o=V().sessions.find(x=>x.id===sid);if(!o)return;
@@ -4036,8 +4056,8 @@ function qaHits(){if(!UI.qa||UI.qa.mode!=='add')return;const box=$('qaHit'),more
   const isNew=v&&!exact.length;more.classList.toggle('off',!isNew);go.textContent=isNew?'신입 등록하고 넣기':'넣기';
   if(exact.length===1&&!UI.qa.pick)UI.qa.pick=exact[0].id}
 function qaSave(){const q=UI.qa;if(!q)return;const err=$('qaErr');const name=($('qaName').value||'').trim();if(!name){err.textContent='이름을 넣어 주세요';return}
-  const school=(($('qaSchool')||{}).value||'').trim();const gb=document.querySelector('[data-qag][aria-pressed="true"]');const grade=gb?gb.dataset.qag:'';
-  if(q.mode==='edit'){const s=S(q.id);$('modal').hidden=true;UI.qa=null;commit(()=>{const x=S(s.id);x.name=name;x.school=school;x.grade=grade;if(school&&grade)delete x.quick},school&&grade?`${name} 정보를 넣었어요`:`${name} 정보를 저장했어요 · 빈 칸은 나중에 넣어도 돼요`);return}
+  const fd=(($('qaFrom')||{}).value||'');const school=(($('qaSchool')||{}).value||'').trim();const gb=document.querySelector('[data-qag][aria-pressed="true"]');const grade=gb?gb.dataset.qag:'';
+  if(q.mode==='edit'){const s=S(q.id);$('modal').hidden=true;UI.qa=null;commit(()=>{const x=S(s.id);x.name=name;x.school=school;x.grade=grade;if(fd){x.from=fd;if(fd>todayStr())x.status='예정'}if(school&&grade)delete x.quick},school&&grade?`${name} 정보를 넣었어요`:`${name} 정보를 저장했어요 · 빈 칸은 나중에 넣어도 돼요`);return}
   const o=V().sessions.find(x=>x.id===q.sid);if(!o){$('modal').hidden=true;return}const exact=qaMatch();
   let id=q.pick&&exact.some(s=>s.id===q.pick)?q.pick:null;
   if(!id&&exact.length>1){err.textContent='같은 이름이 여러 명이에요 · 아래 목록에서 골라 주세요';return}
@@ -4045,7 +4065,7 @@ function qaSave(){const q=UI.qa;if(!q)return;const err=$('qaErr');const name=($(
   if(id&&members(o).includes(id)){err.textContent='이미 이 반에 있어요';return}
   $('modal').hidden=true;UI.qa=null;
   if(id){commit(()=>{const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(id);const s=S(id);if(s&&s.status==='휴원')s.status='재원'},`${sname(id)} → ${C(o.cls).name} 추가`);return}
-  const nid=uid('s');commit(()=>{B().students.push({id:nid,name,school,grade,status:'재원',quick:(!school||!grade)?1:undefined,at:new Date().toISOString().slice(0,10)});const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(nid)},
+  const nid=uid('s');commit(()=>{B().students.push({id:nid,name,school,grade,status:fd&&fd>todayStr()?'예정':'재원',...(fd?{from:fd}:{}),quick:(!school||!grade)?1:undefined,at:new Date().toISOString().slice(0,10)});const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(nid)},
     school&&grade?`신입 ${name}을(를) 등록하고 ${C(o.cls).name}에 넣었어요`:`신입 ${name}을(를) 등록했어요 · 학교·학년은 아래 자동 점검 '신입 정보'에서 나중에 넣어도 돼요`)}
 document.addEventListener('input',e=>{if(e.target.id==='qaName')qaHits()});
 document.addEventListener('compositionend',e=>{if(e.target.id==='qaName')qaHits()});
@@ -5158,6 +5178,21 @@ async function phSave(){const dlg=document.querySelector('[data-ph]');if(!dlg)re
 function ckCell(t){const ed=!(typeof syOn==='function'&&syOn())||canEditB(B().id);
   return t.ck?`<span class="ckc mono">${esc(t.ck)}</span>${ed?` <button class="btn sm" data-cknew="${t.id}" data-label="바꾸기" title="새 코드로 바꾸면 그 선생님 폰에서 다시 넣어야 해요">바꾸기</button>`:''}`:(ed?`<button class="btn sm" data-cknew="${t.id}" data-label="만들기">만들기</button>`:'<span class="hint">없음</span>')}
 async function ckNew(tid){const c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);await quickChange(()=>{const t=B().teachers.find(x=>x.id===tid);if(t)t.ck=c},`${tn(tid)} 선생님 연락처 코드: ${c} · 선생님께 1:1로 알려 주세요`)}
+
+/* ===== 학생 상태 창: 재원 · 휴원 · 입학 예정(첫 수업일) — 수정 모드 없이 바로 저장 ===== */
+function stDlg(id){const s=S(id);if(!s)return;const cur=stLabel(s);
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="stT" style="width:min(440px,100%)" data-stid="${id}"><h2 id="stT">상태 · ${esc(sname(id))}</h2>
+  <div class="seg stseg" role="group" aria-label="상태">${['재원','휴원','예정'].map(x=>`<button data-stv="${x}" aria-pressed="${cur===x}">${x==='예정'?'입학 예정':x}</button>`).join('')}</div>
+  <div class="row"><label for="stFrom">첫 수업일</label><input id="stFrom" type="date" value="${esc(s.from||'')}"><span class="hint">예정이면 꼭 · 이 날부터 저절로 재원, 2주 동안 '신입'으로 보여요</span></div>
+  <div class="row" style="justify-content:flex-end"><span class="hint" style="flex:1">수정 모드가 아니어도 바로 저장돼요</span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="stSave">저장</button></div></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-stv]');if(!b)return;b.parentElement.querySelectorAll('[data-stv]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));if(b.dataset.stv==='예정'){const i=$('stFrom');if(i&&!i.value)i.focus()}});
+async function stSave(){const d=document.querySelector('[data-stid]');if(!d)return;const id=d.dataset.stid;const v=(document.querySelector('[data-stv][aria-pressed="true"]')||{}).dataset.stv||'재원';const fd=$('stFrom').value||'';
+  if(v==='예정'&&!(fd&&fd>todayStr())){toast('입학 예정은 첫 수업일을 오늘 이후로 정해 주세요');$('stFrom').focus();return}
+  $('modal').hidden=true;await quickChange(()=>{const s=B().students.find(x=>x.id===id);if(!s)return;s.status=v;if(fd)s.from=fd;else delete s.from},v==='예정'?`${sname(id)} · 입학 예정 ${mdS(fd)}부터 · 선생님 폰 공지에 바로 보여요`:`${sname(id)} · ${v}`)}
+/* 학생 관리 맨 위: 입학 예정 · 신입(첫 수업일부터 2주) */
+function newBoxHTML(b){const L=b.students.filter(s=>isPre(s)||isNewS(s)).sort((a,z)=>(a.from||'').localeCompare(z.from||''));if(!L.length)return '';
+  const cls=id=>V().classes.filter(c=>Object.values(c.members).some(a=>a.includes(id))).map(c=>c.name);
+  return `<div class="sec newbox"><h3>신입 · 입학 예정 <span class="hint">예정은 첫 수업일까지 선생님 폰 공지에 떠요 · 신입 표시는 첫 수업일부터 2주</span></h3><div class="nbl">${L.map(s=>`<div class="nbi"><span class="nbt ${isPre(s)?'pre':'nw'}">${isPre(s)?'예정':'신입'}</span><b>${esc(s.name)}</b><span class="hint">${esc([s.school,s.grade].filter(Boolean).join(' · '))}</span><span class="nbd">${mdS(s.from)}${isPre(s)?'부터':' 시작'}</span><span class="hint nbc">${esc(cls(s.id).join(', ')||'반 없음')}</span>${phCell(s)}<button class="btn sm" data-status="${s.id}">상태</button></div>`).join('')}</div></div>`}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5194,6 +5229,8 @@ const HELP=[
   <li><b>[학생 관리]</b>: 재원/휴원, <b>시간 조건</b>(칸을 눌러 보통 → 선호 → 불가)을 정하면 자동 점검·자동 배치에 반영돼요.</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li>폰 시간표에선 <b>그 학생 담당 선생님만</b> 연락처를 봐요. [설정 → 강사와 휴무 요일]의 <b>연락처 코드</b>(6자리)를 만들어 선생님께 1:1로 알려 주면, 선생님이 폰에서 '내 이름'을 정하고 학생을 찾은 뒤 [연락처 보기]에 코드를 한 번 넣어요. 번호를 누르면 바로 전화가 걸려요. 코드는 선생님마다 따로 잠겨 있어서 다른 선생님 반 학생 번호는 풀리지 않아요. [바꾸기]로 새 코드를 만들면 예전 코드는 못 써요.</li>
+  <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
+  <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 2주 동안 떠 있어요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
  {id:'cls',t:'반 관리',b:`
   <ul><li>반 이름·색·강사별 <b>주당 횟수</b>·강사별 명단을 고쳐요. 명단은 "반(강사)" 단위로 따로예요.</li>
