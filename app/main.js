@@ -60,14 +60,41 @@ function lanIPs(){const out=[];Object.values(os.networkInterfaces()).forEach(a=>
 const CT_IT=200000,CTK={},CTC={};
 function ctKey(code,br,tid){const salt=crypto.createHash('sha256').update('ymath-ct\0'+br+'\0'+tid).digest().subarray(0,16);const k=code+'|'+salt.toString('hex');
   return CTK[k]||(CTK[k]=crypto.pbkdf2Sync(String(code),salt,CT_IT,32,'sha256'))}
-function ctPack(b,v){const out={};const digits=x=>String(x||'').replace(/\D/g,'');
-  (b.teachers||[]).forEach(t=>{if(!t.ck)return;const ids=new Set();(v.classes||[]).forEach(c=>((c.members||{})[t.id]||[]).forEach(id=>ids.add(id)));(b.specials||[]).filter(x=>x.t===t.id).forEach(x=>(x.members||[]).forEach(id=>ids.add(id)));
-    const m={};(b.students||[]).forEach(st=>{if(!ids.has(st.id))return;const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));if(ph||pa.length)m[st.id]={...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}});
+// 그 선생님 반·특강 학생의 연락처(학생·보호자). withEmpty면 번호 없는 담당 학생도 {}로 넣음(= 담당이지만 번호 없음)
+function ctPlain(b,v,t,withEmpty){const digits=x=>String(x||'').replace(/\D/g,'');const ids=new Set();(v.classes||[]).forEach(c=>((c.members||{})[t.id]||[]).forEach(id=>ids.add(id)));(b.specials||[]).filter(x=>x.t===t.id).forEach(x=>(x.members||[]).forEach(id=>ids.add(id)));
+  const m={};(b.students||[]).forEach(st=>{if(!ids.has(st.id))return;const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));if(ph||pa.length)m[st.id]={...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})};else if(withEmpty)m[st.id]={}});return m}
+function ctPack(b,v){const out={};
+  (b.teachers||[]).forEach(t=>{if(!t.ck)return;const m=ctPlain(b,v,t,false);
     const pt=JSON.stringify(m);const ck=b.id+'|'+t.id+'|'+t.ck;const h=crypto.createHash('sha256').update(pt).digest('hex');
     if(CTC[ck]&&CTC[ck].h===h){out[t.id]=CTC[ck].o;return}
     const iv=crypto.randomBytes(12);const c=crypto.createCipheriv('aes-256-gcm',ctKey(t.ck,b.id,t.id),iv);const ct=Buffer.concat([c.update(Buffer.from(pt,'utf8')),c.final(),c.getAuthTag()]);
     const o={it:CT_IT,iv:iv.toString('base64'),ct:ct.toString('base64'),n:Object.keys(m).length};CTC[ck]={h,o};out[t.id]=o});
   return out}
+/* ===== 강사용 v2: 선생님마다 개인 코드로 로그인 — 이름이 있는 지점만 열림 =====
+   지점마다 새 열쇠로 따로 잠그고, 선생님(이름)마다 '열쇠 묶음'(볼 수 있는 지점 열쇠 + 담당 학생 연락처)을 개인 코드로 잠금.
+   개인 코드 → PBKDF2(소금은 저장소마다 고정 → 폰은 한 번 만든 키를 계속 씀) → HMAC으로 묶음 번호(id)와 잠금 열쇠.
+   같은 이름 = 같은 선생님(여러 지점에 있으면 그 지점들 모두). '모든 지점 보기'(t.all, 관리자만 켬)면 전 지점. */
+const LG_IT=300000,LGK={};
+function lgSalt(){return crypto.createHash('sha256').update('ymath-login-v1\0'+String((mob.ghOwner||'')+'/'+(mob.ghRepo||'')).toLowerCase()).digest().subarray(0,16)}
+function lgKey(code,salt){const k=code+'|'+salt.toString('hex');if(!LGK[k]){LGK[k]=new Promise((res,rej)=>crypto.pbkdf2(Buffer.from(String(code),'utf8'),salt,LG_IT,32,'sha256',(e,d)=>e?rej(e):res(d)));LGK[k].catch(()=>{delete LGK[k]})}return LGK[k]}
+const lgH=(k,s)=>crypto.createHmac('sha256',k).update(s).digest();
+function lgSeal(key,obj){const iv=crypto.randomBytes(12);const c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);return {iv:iv.toString('base64'),ct:ct.toString('base64')}}
+async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){db={branches:[]}}
+  const salt=lgSalt();const nm=x=>String(x||'').replace(/\s+/g,'');const kc=crypto.randomBytes(32),kb={},br={};
+  v.branches.forEach(b=>{const k=crypto.randomBytes(32);kb[b.id]=k;const o=Object.assign({},b);delete o.ct;br[b.id]=lgSeal(k,o)});
+  const com=lgSeal(kc,Object.assign({at:v.at},extra||{}));
+  const ppl={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const ver=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
+    (b.teachers||[]).forEach(t=>{const k=nm(t.name);if(k)(ppl[k]=ppl[k]||[]).push({b,t,ver})})});
+  const u=[],sig=[];
+  for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
+    const all=rs.some(r=>r.t.all);const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))];
+    const ct={};rs.forEach(r=>{ct[r.b.id]=Object.assign(ct[r.b.id]||{},ctPlain(r.b,r.ver,r.t,true))});
+    const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct};
+    for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify(ct)).digest('hex'))}}
+  for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
+  const o=Object.assign({},v);delete o.at;
+  const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
+  return {app:'ymath-view',enc:2,kdf:'pbkdf2-sha256',it:LG_IT,salt:salt.toString('base64'),h,com,br,u}}
 function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){return null}
   const at=Math.max(0,...(db.branches||[]).map(b=>(b._sync&&b._sync.at)||0))||fs.statSync(FILE).mtimeMs; // 적용 시각: 연동 중엔 모든 PC가 같은 값
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
@@ -94,8 +121,7 @@ function handle(req,res){const u=new URL(req.url,'http://x');const ip=req.socket
   if(u.pathname==='/icon.png'){try{res.writeHead(200,{'Content-Type':'image/png'});return res.end(fs.readFileSync(path.join(__dirname,'icon.png')))}catch(e){}}
   if(u.pathname==='/view.json'){const f=FAIL[ip]||{n:0,until:0};if(Date.now()<f.until)return send(429,'application/json','{"err":"wait"}');
     const pin=req.headers['x-pin']||u.searchParams.get('pin')||'';
-    if(mob.pin&&pin!==mob.pin){f.n++;if(f.n>=5){f.until=Date.now()+30000;f.n=0}FAIL[ip]=f;return send(401,'application/json','{"err":"pin"}')}
-    FAIL[ip]={n:0,until:0};const v=publicView();return v?send(200,'application/json; charset=utf-8',JSON.stringify(v)):send(503,'application/json','{"err":"nodata"}')}
+    FAIL[ip]={n:0,until:0};const v=publicView();if(!v)return send(503,'application/json','{"err":"nodata"}');encV2(v).then(x=>send(200,'application/json; charset=utf-8',JSON.stringify(x)),()=>send(500,'application/json','{"err":"enc"}'));return}
   send(404,'text/plain','not found')}
 function startServer(){if(srv){try{srv.close()}catch(e){}srv=null}srvErr='';if(!mob.on)return;
   srv=http.createServer(handle);srv.on('error',e=>{srvErr=e.code==='EADDRINUSE'?`포트 ${mob.port}을(를) 다른 프로그램이 쓰고 있어요`:e.message;srv=null});
@@ -123,10 +149,9 @@ async function encView(obj,pass){const {salt,key}=await viewKey(pass);const iv=c
   return {app:'ymath-view',enc:1,kdf:'pbkdf2-sha256',it:VIEW_IT,salt:salt.toString('base64'),iv:iv.toString('base64'),ct:ct.toString('base64'),h:viewHash(obj)}}
 function wr(f,data){const t=f+'.tmp';fs.writeFileSync(t,data);try{fs.renameSync(t,f)}catch(e){fs.copyFileSync(t,f);fs.unlinkSync(t)}}
 async function publishNas(){const d=nasDir();if(!d)return;NAS.err='';
-  try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');
-    if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
+  try{if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
     fs.mkdirSync(path.join(d,'fonts'),{recursive:true});const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
-    wr(path.join(d,'view.json'),JSON.stringify(await encView(v,mob.pin)));
+    wr(path.join(d,'view.json'),JSON.stringify(await encV2(v)));
     wr(path.join(d,'index.html'),fs.readFileSync(path.join(__dirname,'mobile.html')));
     try{fs.copyFileSync(path.join(__dirname,'icon.png'),path.join(d,'icon.png'))}catch(e){}
     try{wr(path.join(d,'manifest.webmanifest'),MANIFEST)}catch(e){}
@@ -169,8 +194,8 @@ async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;con
   const c=await gh('POST',u,{source:{branch:GH.branch||'main',path:'/'}});if(c.status===201||c.status===200){GH.url=(c.j&&c.j.html_url)||'';return true}
   GH.url='';GH.pagesOff=true;return false}
 async function publishGh(){if(!mob.ghOn)return;if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
-  try{if(!mob.pin||mob.pin.length<6)throw new Error('인터넷에 올릴 때는 선생님용 번호를 6자리 이상으로 정해 주세요');if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
-    await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');v.rq=rqView();
+  try{if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
+    await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');const rqv=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
     // 화면·글꼴 같은 고정 파일: 한 번 확인한 뒤엔 내용(sha)이 바뀔 때만 다시 확인 (매번 9번 묻던 걸 0번으로)
     const stat=async(file,buf,msg)=>{const s=blobSha(buf);if(GH.sha[file]===s)return;await ghPut(file,buf,msg);GH.sha[file]=s};
@@ -180,8 +205,8 @@ async function publishGh(){if(!mob.ghOn)return;if(GH.busy){GH.again=true;return}
     await stat('icon.png',fs.readFileSync(path.join(__dirname,'icon.png')),'아이콘');
     for(const f of ['IBMPlexSansKR-Regular.woff2','IBMPlexSansKR-SemiBold.woff2','IBMPlexSansKR-Bold.woff2','IBMPlexMono-Medium.woff2'])await stat('fonts/'+f,fs.readFileSync(path.join(__dirname,'fonts',f)),'글꼴');
     // 시간표: 올라가 있는 파일의 내용 해시가 같으면(다른 PC가 올렸어도) 건너뜀 → 커밋·Pages 빌드 없음
-    const vj=await encView(v,mob.pin);const vu=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/view.json`;const cur=await gh('GET',vu+`?t=${Date.now()}`);
-    let same=false;if(cur.status===200&&cur.j&&cur.j.content){try{const j=JSON.parse(Buffer.from(String(cur.j.content).replace(/\n/g,''),'base64').toString('utf8'));same=!!j.h&&j.h===vj.h&&j.salt===vj.salt}catch(e){}}
+    const vj=await encV2(v,rqv?{rq:rqv}:{});const vu=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/view.json`;const cur=await gh('GET',vu+`?t=${Date.now()}`);
+    let same=false;if(cur.status===200&&cur.j&&cur.j.content){try{const j=JSON.parse(Buffer.from(String(cur.j.content).replace(/\n/g,''),'base64').toString('utf8'));same=j.enc===2&&!!j.h&&j.h===vj.h&&j.salt===vj.salt}catch(e){}}
     GH.skipped=same;if(!same)await ghPut('view.json',Buffer.from(JSON.stringify(vj)),'시간표 '+st,cur.status===200?cur:null);
     await ghPages();if(!GH.url)GH.url=`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`;GH.last=Date.now()}
   catch(e){GH.err=e.message||String(e)}
