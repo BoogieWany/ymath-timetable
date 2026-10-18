@@ -667,6 +667,11 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .nbt{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}.nbt.pre{background:#fff3dd;color:#8a5a00}.nbt.nw{background:#e3f4ea;color:#1d5a37}
 .nbd{font-weight:600;font-size:13px}.nbc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stseg{margin:4px 0 8px}
+/* 강사 관리 */
+.tchtbl td{vertical-align:middle}.tchtbl .offs{white-space:nowrap}.tchtbl .offs .dbtn{margin-right:2px}
+.tchtbl .ops{white-space:nowrap}.tchtbl .ops .btn{margin-left:3px}.tchtbl .rqn{color:#b4572a}
+.seg.gteach{max-width:min(760px,60vw);overflow-x:auto;scrollbar-width:none}.seg.gteach::-webkit-scrollbar{display:none}.seg.gteach button{white-space:nowrap}
+.tchtbl .lnk{border:0;background:none;color:var(--acc,#1f2f5c);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px;margin-left:4px;opacity:.75;text-decoration:underline;text-underline-offset:3px;transition:opacity .15s}.tchtbl .lnk:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -691,7 +696,7 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
   <div class="draftbar" id="draftBar" hidden><b>끝내지 않은 수정 초안이 있어요.</b><span class="hint">지난번 [적용]이나 [버리기] 없이 프로그램을 닫았어요.</span><button class="btn pri" data-act="resumeDraft">이어서 수정</button><button class="btn danger" data-act="dropDraft">초안 버리기</button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-v="grid">지점 시간표</button>
-    <button class="tab" role="tab" data-v="teacher">강사별</button>
+    <button class="tab" role="tab" data-v="teacher">강사 관리</button>
     <button class="tab" role="tab" data-v="student">학생별</button>
     <button class="tab" role="tab" data-v="classes">반 관리</button>
     <button class="tab" role="tab" data-v="students">학생 관리</button>
@@ -3023,7 +3028,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.49.0', APPDATE='2026-10-17';
+const APPVER='3.50.0', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3356,7 +3361,7 @@ function viewGrid(iss){
   const blocks=groups[UI.mode]||[[UI.mode]];const bad=badSet(iss);
   const fit=null; // 추천 칸 표시는 끌 때만 (클릭으로는 옮기지 않음)
   const w=waiting();
-  let h=`<div class="tools"><h2 class="vt" title="반 카드를 끌어서 다른 칸에 놓으면 이동, 이미 수업이 있으면 서로 바뀌어요. 카드를 누른 뒤 옮길 칸을 눌러도 돼요.">${esc(B().name)} · ${esc(V().name)}</h2><div class="seg" role="group" aria-label="요일 보기">${[['week','전체'],['mwf','월수금'],['tts','화목토'],['sun','일']].map(([k,l])=>`<button data-mode="${k}" aria-pressed="${UI.mode===k}">${l}</button>`).join('')}${DAYS.map(d=>`<button data-mode="${d}" aria-pressed="${UI.mode===d}">${d}</button>`).join('')}</div>
+  let h=`<div class="tools"><h2 class="vt" title="반 카드를 끌어서 다른 칸에 놓으면 이동, 이미 수업이 있으면 서로 바뀌어요. 카드를 누른 뒤 옮길 칸을 눌러도 돼요.">${esc(B().name)} · ${esc(V().name)}</h2>${gTeachSeg()}
   <span class="zm"><button class="btn" data-gz="-1" aria-label="시간표 작게">－</button><b>${Math.round(UI.gs*100)}%</b><button class="btn" data-gz="1" aria-label="시간표 크게">＋</button></span><span class="nmt"><button class="tgl" id="nmTgl" role="switch" aria-checked="${namesOn()}" title="누르면 직접 켜고 끄기 · 보기나 확대를 바꾸면 다시 자동"><i></i></button><span>학생 이름</span><small id="nmHint">${UI.namesOv===null?'자동':'고정'}</small></span>
   <label class="chk"><input type="checkbox" id="optOff" ${UI.showOff?'checked':''}> 휴무 강사 칸도 보기</label>${noteToolbarHTML()}${spToolbarHTML()}
   <span class="sp"></span><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen" title="학원 관리 프로그램에서 뽑은 강사별 주간 시간표(.xls) 넣기">주간 시간표 가져오기</button>${UI.edit?'<button class="btn" data-act="recolorRand" title="누를 때마다 다른 색 조합 · 붙은 반끼리는 계속 구분되게">색 랜덤</button><button class="btn pri" data-act="autoOpen">자동 배치</button>':''}<button class="btn" data-pdf="branch">지점 시간표 PDF</button></div>
@@ -3419,6 +3424,11 @@ function personGrid(filter,opt){
   }
   return h+'</tbody></table></div>';
 }
+/* 지점 시간표 위 [전체 | 강사] — 강사를 고르면 그 강사의 주간 시간표 (예전 '강사별' 화면) */
+function gTeachSeg(){const b=B();return `<div class="seg gteach" role="group" aria-label="강사">${[['','전체']].concat(b.teachers.map(t=>[t.id,t.name])).map(([k,l])=>`<button data-gteach="${k}" aria-pressed="${(UI.gteach||'')===k}">${esc(l)}</button>`).join('')}</div>`}
+function viewTeacherIn(){const b=B();const t=T(UI.gteach);if(!t){UI.gteach='';return ''}UI.teacher=t.id;const os=V().sessions.filter(o=>o.t===t.id);
+  return `<div class="tools"><h2 class="vt">${esc(B().name)} · ${esc(V().name)}</h2>${gTeachSeg()}<span class="hint">주 ${os.length}타임 · 학생 ${new Set(os.flatMap(activeMembers)).size}명 · 휴무 ${(t.off||[]).join('·')||'없음'}</span><span class="sp"></span><button class="btn" data-pdf="teacher1">이 강사 PDF</button><button class="btn" data-pdf="teacherAll">전체 강사 PDF</button></div>`
+    +spPersonList(spShown().filter(x=>x.t===t.id),{t:1})+personGrid(o=>o.t===t.id,{t:t.id,names:true,sub:o=>cntTxt(o)})}
 function viewTeacher(){
   const b=B();if(!UI.teacher||!T(UI.teacher))UI.teacher=b.teachers[0]&&b.teachers[0].id;
   if(!UI.teacher)return '<div class="empty">설정에서 강사를 먼저 추가하세요.</div>';
@@ -3510,7 +3520,6 @@ function accSetup(){const root=$('view');if(!root)return;
   accSums()}
 function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-sum="${k}"]`);if(e)e.textContent=t};const b=B();
   set('지점',b.name);
-  set('강사와 휴무 요일',`강사 ${b.teachers.length}명`);
   const grp={};DAYS.forEach(d=>{const ps=per(d);const k=ps.length+'교시'+(ps[0]?` (${ps[0].time}~)`:'');(grp[k]=grp[k]||[]).push(d)});
   set('요일별 교시와 시작 시간',Object.entries(grp).map(([k,ds])=>{const j=ds.join('');return (j==='월화수목금'?'월~금':j)+' '+k}).join('  /  '));
   const i=SYNC&&SYNC.info;set('syncBox',i&&i.on?(isOwner()?'켜짐 · 프로그램 관리자':'켜짐 · 지점 관리자'):'꺼짐');
@@ -3525,9 +3534,6 @@ function viewSettings(){
   const used=t=>inV(cur,t)||inV(sch,t)||(b.specials||[]).some(x=>x.t===t);const usedOld=t=>!used(t)&&b.versions.some(v=>v!==cur&&v!==sch&&inV(v,t));
   let h=`<div class="card-h"><h2>설정</h2><span class="hint">Y-MATH 시간표 ${APPVER} (${APPDATE})</span>${admBtnHTML()}</div>
   <div class="sec"><h3>지점</h3><div class="row"><label for="bName">지점 이름</label><input id="bName" value="${esc(b.name)}"><span class="sp"></span>${isOwner()?`<button class="btn" data-act="newBranch">새 지점 만들기</button><button class="btn danger" data-act="delBranch" ${DB.branches.length<2?'disabled':''}>이 지점 삭제</button>`:''}</div><div class="hint">새 지점은 지금 지점의 강사·교시 설정을 복사해서 시작해요. 학생과 반은 비어 있어요.</div></div>
-  <div class="sec"><h3>강사와 휴무 요일</h3><table class="tbl" style="max-width:860px"><thead><tr><th>이름</th><th>휴무 요일 (눌러서 켜고 끄기)</th><th title="폰 시간표에서 담당 학생 연락처를 볼 때 넣는 번호 · 선생님께 1:1로 알려 주세요">연락처 코드</th><th></th></tr></thead><tbody>`;
-  b.teachers.forEach((t,i)=>{h+=`<tr><td><input data-tname="${t.id}" value="${esc(t.name)}" style="width:110px"></td><td>${DAYS.map(d=>`<button class="dbtn" data-off="${t.id}|${d}" aria-pressed="${(t.off||[]).includes(d)}">${d}</button>`).join(' ')}</td><td>${ckCell(t)}</td><td><button class="btn" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button> <button class="btn" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button> <button class="btn danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button></td></tr>`});
-  h+=`</tbody></table><div class="row"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div></div>
   <div class="sec"><h3>요일별 교시와 시작 시간</h3><div class="days">`;
   DAYS.forEach(d=>{const ps=per(d);h+=`<div class="tbox"><h3>${d}요일</h3>${ps.map((x,p)=>`<div class="row"><input data-pn="${d}|${p}" value="${esc(x.name)}" aria-label="${d} ${p+1}번째 교시 이름"><input class="t" data-pt="${d}|${p}" value="${esc(x.time)}" aria-label="시작 시간"></div>`).join('')}
     <div class="row"><button class="btn" data-padd="${d}">교시 추가</button><button class="btn" data-pdel="${d}" ${!ps.length||V().sessions.some(o=>o.d===d&&o.p===ps.length-1)?'disabled':''}>마지막 교시 빼기</button></div></div>`});
@@ -3563,11 +3569,11 @@ function render(){
   $('undoBtn').disabled=!hist.u.length;$('redoBtn').disabled=!hist.r.length;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===UI.view));
   ISS=analyze();
-  const wide=['classes','students','settings','help'].includes(UI.view);
+  const wide=['classes','students','settings','help','teacher'].includes(UI.view);
   $('side').hidden=wide;
   const sc=$('view').querySelector('.scroll');const keep=sc?[sc.scrollLeft,sc.scrollTop]:null;
   {const vw=$('view');if(UI._lastView!==UI.view){UI._lastView=UI.view;vw.classList.remove('vin');void vw.offsetWidth;vw.classList.add('vin')}}
-  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?viewGrid(ISS):UI.view==='teacher'?viewTeacher():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():viewSettings());
+  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
   renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
@@ -3837,7 +3843,7 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('button,li[data-x],td.slot');if(!el)return;const ds=el.dataset;
   if(el.classList.contains('tab')){if(ds.v==='help'&&UI.view!=='help')UI.helpFrom=UI.view;UI.view=ds.v;UI.picked=null;UI._keepScroll=false;render();return}
   if(el.matches('li[data-x]')){const i=ISS[+ds.x];if(i.qa){qaEdit(i.qa);return}if(i.rq){rqDlg();rqTick(true);return}UI.hl=new Set(i.ids);UI.sel=i.sp?{type:'sp',id:i.sp}:i.stu?{type:'stu',id:i.stu}:i.cls?{type:'cls',id:i.cls}:(i.ids[0]?{type:'ses',id:i.ids[0]}:null);
-    if(i.ids[0]&&UI.view==='grid'){const o=V().sessions.find(x=>x.id===i.ids[0]);if(o&&UI.mode!=='week'&&UI.mode!==o.d&&!({mwf:'월수금',tts:'화목토',sun:'일'}[UI.mode]||'').includes(o.d))UI.mode='week'}
+    if(i.ids[0]&&UI.view==='grid'){UI.mode='week';UI.gteach=''}
     render();const f=document.querySelector('.chip.hl');if(f)f.scrollIntoView({block:'nearest',inline:'center'});return}
   if(ds.spid&&el.classList.contains('chip')){const key='sp:'+ds.spid;UI.pop=(UI.pop===key)?null:(UI.view==='grid'&&needPop(el)?key:null);UI.sel={type:'sp',id:ds.spid};UI.hl=new Set();UI.picked=null;render();return}
   if(ds.spadd){const [d,t]=ds.spadd.split('|');spOpen(null,{d,t});return}
@@ -3853,6 +3859,7 @@ document.addEventListener('click',async e=>{
     UI.sel={type:'ses',id:o.id};UI.hl=new Set();UI.same=o.cls;render();return}
   if(ds.wait){const [cls,t,i]=ds.wait.split('|');if(!UI.edit){UI.sel={type:'cls',id:cls};render();return}UI.picked=(UI.picked&&!UI.picked.sid&&UI.picked.cls===cls&&UI.picked.t===t&&UI.picked.i===+i)?null:{cls,t,i:+i};UI.hl=new Set();UI.same=cls;UI.sel={type:'cls',id:cls};render();return}
   // 칸 클릭으로 카드 옮기기는 하지 않음 (실수 방지) — 끌어서만 옮김
+  if(ds.gteach!==undefined){UI.gteach=ds.gteach;UI.mode='week';UI._keepScroll=false;render();return}
   if(ds.mode){UI.mode=ds.mode;UI.namesOv=null;UI._keepScroll=false;render();return}
   if(ds.pdf){makePdf(ds.pdf);return}
   if(ds.stu){UI.sel={type:'stu',id:ds.stu};UI.hl=new Set(V().sessions.filter(o=>members(o).includes(ds.stu)).map(o=>o.id));render();return}
@@ -3883,9 +3890,11 @@ document.addEventListener('click',async e=>{
   if(ds.deltch){if(!armed(el,'t'+ds.deltch))return;const c=UI.cls,t=ds.deltch;commit(()=>{const k=C(c);delete k.members[t];delete k.rule[t];V().sessions=V().sessions.filter(o=>!(o.cls===c&&o.t===t))},`${tn(t)}T를 이 반에서 뺐어요`);return}
   if(ds.status){stDlg(ds.status);return}
   if(ds.delstu){if(!armed(el,'s'+ds.delstu))return;const id=ds.delstu,n=sname(id);commit(()=>{const b=B();b.students=b.students.filter(s=>s.id!==id);b.versions.forEach(v=>v.classes.forEach(c=>Object.keys(c.members).forEach(t=>c.members[t]=c.members[t].filter(x=>x!==id))))},`${n} 삭제했어요`);return}
-  if(ds.off){const [t,d]=ds.off.split('|');commit(()=>{const x=T(t);x.off=x.off||[];x.off=x.off.includes(d)?x.off.filter(y=>y!==d):[...x.off,d]});return}
+  if(ds.off){const [t,d]=ds.off.split('|');const f=()=>{const x=B().teachers.find(y=>y.id===t);x.off=x.off||[];x.off=x.off.includes(d)?x.off.filter(y=>y!==d):[...x.off,d]};if(UI.edit)commit(f);else quickChange(f,`${tn(t)}T 휴무 ${d}요일 ${(T(t).off||[]).includes(d)?'뺐어요':'넣었어요'}`);return}
   if(ds.tmove){const [t,dir]=ds.tmove.split('|');commit(()=>{const a=B().teachers;const i=a.findIndex(x=>x.id===t);const j=i+ +dir;[a[i],a[j]]=[a[j],a[i]]});return}
   if(ds.phed){phDlg(ds.phed);return}
+  if(ds.tphed){tphDlg(ds.tphed);return}
+  if(ds.tgo){UI.view='grid';UI.gteach=ds.tgo;UI.mode='week';render();return}
   if(ds.cknew){const t=B().teachers.find(x=>x.id===ds.cknew);if(t&&t.ck&&!armed(el,'ck'+ds.cknew,'한 번 더 누르면 바꿔요'))return;ckNew(ds.cknew);return}
   if(ds.deltea){if(!armed(el,'te'+ds.deltea,'한 번 더 누르면 삭제'))return;commit(()=>{const b=B();b.teachers=b.teachers.filter(t=>t.id!==ds.deltea);b.notes=(b.notes||[]).filter(n=>n.t!==ds.deltea)},'강사를 삭제했어요');return}
   if(ds.padd){const d=ds.padd;commit(()=>{const ps=B().days[d];const last=ps[ps.length-1];ps.push({name:/[토일]/.test(d)?`주말 ${ps.length+1}교시`:`저녁 ${ps.length}교시`,time:last?addMin(last.time,90):'17:00'})});return}
@@ -3939,6 +3948,7 @@ document.addEventListener('click',async e=>{
     case 'exOpen':closePop();exDlg(ds.o);break;
     case 'gradeUp':gradeUpDlg();break;
     case 'phSave':phSave();break;
+    case 'tphSave':tphSave();break;
     case 'stSave':stSave();break;
     case 'examSave':examSave();break;
     case 'gradeUpGo':gradeUpGo();break;
@@ -5198,6 +5208,31 @@ function newBoxHTML(b){const L=b.students.filter(s=>isPre(s)||isNewS(s)).sort((a
 
 async function examSave(){const f=$('exFrom').value,t=$('exTo').value;if((f&&!t)||(!f&&t)||(f&&t&&t<f)){toast('시험 기간을 시작·끝 날짜로 정해 주세요');return}
   await quickChange(()=>{const b=B();if(f&&t)b.exam={from:f,to:t};else delete b.exam},f?`시험 기간 ${annMD(f)}~${annMD(t)} 저장했어요`:'시험 기간을 해제했어요')}
+
+/* ===== 강사 관리 (예전 설정의 '강사와 휴무 요일' + 선생님 연락처 + 한눈에 보는 숫자) ===== */
+function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id===b.sched.ver);const td=todayStr(),wk=dPlus(td,7);const dn=['일','월','화','수','목','금','토'][new Date().getDay()];
+  const inV=(x,t)=>!!x&&(x.sessions.some(o=>o.t===t)||x.classes.some(c=>(c.members[t]||[]).length));
+  const used=t=>inV(v,t)||inV(sch,t)||(b.specials||[]).some(x=>x.t===t);const usedOld=t=>!used(t)&&b.versions.some(x=>x!==v&&x!==sch&&inV(x,t));
+  const ed=!(typeof syOn==='function'&&syOn())||canEditB(b.id);const E=UI.edit;
+  const rq=t=>(typeof RQS!=='undefined'&&RQS.list||[]).filter(x=>!x.bad&&x.br===b.id&&x.t===t).length;
+  const nt=t=>(b.notes||[]).filter(n=>n.t===t&&(!n.until||n.until>=td)).length;
+  const exn=t=>(b.ex||[]).filter(x=>x.date>=td&&x.date<wk&&(x.t===t||((v.sessions.find(o=>o.id===x.sid)||{}).t===t))).length;
+  let h=`<div class="card-h"><h2>강사 관리 · ${esc(b.name)}</h2><span class="hint">강사 ${b.teachers.length}명 · 휴무·연락처·연락처 코드는 보기 모드에서도 바로 저장돼요${E?'':' · 이름·순서·추가·삭제는 수정 모드에서'}</span></div>
+  <div class="scroll"><table class="tbl tchtbl"><thead><tr><th>이름</th><th>휴무 요일</th><th>연락처</th><th title="폰 시간표에서 담당 학생 연락처를 볼 때 넣는 번호 · 선생님께 1:1로 알려 주세요">연락처 코드</th><th class="num">주당</th><th class="num">반</th><th class="num">학생</th><th class="num">오늘</th><th class="num" title="빈 칸 메모(보강 등) · 승인 대기 요청">메모·요청</th><th class="num" title="오늘부터 7일 안의 휴강·대강·이동">이번 주 변경</th><th></th></tr></thead><tbody>`;
+  b.teachers.forEach((t,i)=>{const os=v.sessions.filter(o=>o.t===t.id);const cls=new Set(os.map(o=>o.cls)).size;const stu=new Set(os.flatMap(activeMembers)).size;const tdn=os.filter(o=>o.d===dn).length;const r=rq(t.id),n=nt(t.id),x=exn(t.id);
+    h+=`<tr><td>${E?`<input data-tname="${t.id}" value="${esc(t.name)}" style="width:96px">`:`<b>${esc(t.name)}</b>`} <button class="lnk" data-tgo="${t.id}" title="이 강사 시간표 보기">시간표</button></td>
+    <td class="offs">${DAYS.map(d=>`<button class="dbtn" data-off="${t.id}|${d}" aria-pressed="${(t.off||[]).includes(d)}" ${ed?'':'disabled'}>${d}</button>`).join('')}</td>
+    <td><button class="phc${t.ph?'':' none'}" data-tphed="${t.id}" ${ed?'':'disabled'}>${t.ph?`<b class="mono">${esc(phFmt(t.ph))}</b>`:'+ 넣기'}</button></td><td>${ckCell(t)}</td>
+    <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
+    <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
+  h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
+  return h}
+function tphDlg(id){const t=T(id);if(!t)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="tpT" style="width:min(400px,100%)" data-tph="${id}"><h2 id="tpT">연락처 · ${esc(t.name)}T</h2>
+  <div class="hint">부원장님이 급히 연락할 때 보는 번호예요. 선생님 폰 시간표에는 나오지 않아요.</div>
+  <div class="row"><label for="tpIn">휴대폰</label><input id="tpIn" inputmode="tel" placeholder="010-0000-0000" value="${esc(phFmt(t.ph||''))}" style="flex:1"></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="tphSave">저장</button></div></div>`;setTimeout(()=>{const i=$('tpIn');if(i)i.focus()},50)}
+async function tphSave(){const d=document.querySelector('[data-tph]');if(!d)return;const id=d.dataset.tph;const n=String($('tpIn').value||'').replace(/\D/g,'');if(n&&!/^0\d{8,10}$/.test(n)){toast('번호를 확인해 주세요');return}
+  $('modal').hidden=true;await quickChange(()=>{const t=B().teachers.find(x=>x.id===id);if(!t)return;if(n)t.ph=n;else delete t.ph},`${tn(id)}T 연락처를 저장했어요`)}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5208,10 +5243,10 @@ const HELP=[
   <li>시간표는 <b>[시트 시간표 가져오기]</b>(구글 시트 .xlsx)나 <b>[주간 시간표 가져오기]</b>(관리 프로그램 .xls)로 한 번에 만들거나, 수정 모드에서 반을 만들어 끌어 놓아요.</li>
   <li>지점 관리자는 프로그램 관리자에게 받은 <b>지점 코드</b>로 연결하면 학원 시간표가 그대로 들어와요. <a data-help="sync">지점 연동</a> 참고.</li></ol>`},
  {id:'view',t:'시간표 보기',b:`
-  <ul><li><b>전체 / 월수금 / 화목토 / 요일 하나</b> 버튼으로 보는 범위를 바꿔요.</li>
+  <ul><li>위쪽 <b>[전체 | 강사 이름]</b> 버튼으로 지점 전체 또는 한 강사의 주간 시간표를 봐요.</li>
   <li><b>Ctrl + 마우스 휠</b> 또는 <b>－ ＋</b>로 카드 크기를 바꿔요. 크게 하면 학생 이름이 보여요. <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
   <li>카드를 누르면 옆에 <b>명단 창</b>이 열리고, 오른쪽 아래 <b>선택한 항목</b>에 자세한 내용이 나와요.</li>
-  <li><b>강사별 / 학생별</b> 탭에서 한 사람의 주간 시간표를 봐요. 학생별은 [찾기] 칸에 이름을 치면 돼요.</li>
+  <li>한 강사는 지점 시간표의 강사 버튼, 한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. 학생별은 [찾기] 칸에 이름을 치면 돼요.</li>
   <li>아래 <b>자동 점검</b>에 겹침·빠진 수업·연강 아님 같은 문제가 떠요. 누르면 해당 카드가 강조돼요. 규칙은 경고일 뿐이라 예외는 그대로 둬도 돼요.</li></ul>`},
  {id:'edit',t:'수정 모드 · 적용 · 보관',b:`
   <ul><li>스위치를 켜면 원본을 자동 백업하고 <b>초안</b>에서 고쳐요. 고치는 동안 다른 PC·폰에는 안 보여요.</li>
@@ -5232,8 +5267,10 @@ const HELP=[
   <li>수정 모드에서 카드를 누르면 명단 창 아래 <b>[+ 학생 넣기 · 신입 등록]</b>이 있어요. 있는 학생은 이름을 고르면 바로 들어가고, 처음 보는 이름이면 <b>신입</b>으로 등록돼요. 바쁘면 이름만 넣고, 학교·학년은 나중에 아래 자동 점검의 <b>'신입 정보'</b>를 눌러 넣으면 돼요. 재학생명부를 다시 가져오면 자동으로 채워져요.</li>
   <li><b>학생별</b> 탭 위쪽 <b>수강 반</b> 줄에서도 × 빼기, [반에 넣기…]가 돼요.</li>
   <li><b>[학생 관리]</b>: 재원/휴원, <b>시간 조건</b>(칸을 눌러 보통 → 선호 → 불가)을 정하면 자동 점검·자동 배치에 반영돼요.</li>
+  <li><b>[강사 관리]</b> 탭: 강사마다 휴무 요일·선생님 연락처·연락처 코드를 보기 모드에서도 바로 바꾸고, 주당 타임·반·학생 수·오늘 수업·메모/요청·이번 주 변경을 한눈에 봐요. 이름·순서·추가·삭제는 수정 모드에서. [시간표]를 누르면 그 강사 주간 시간표로 가요.</li>
+  <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
-  <li>폰 시간표에선 <b>그 학생 담당 선생님만</b> 연락처를 봐요. [설정 → 강사와 휴무 요일]의 <b>연락처 코드</b>(6자리)를 만들어 선생님께 1:1로 알려 주면, 선생님이 폰에서 '내 이름'을 정하고 학생을 찾은 뒤 [연락처 보기]에 코드를 한 번 넣어요. 번호를 누르면 바로 전화가 걸려요. 코드는 선생님마다 따로 잠겨 있어서 다른 선생님 반 학생 번호는 풀리지 않아요. [바꾸기]로 새 코드를 만들면 예전 코드는 못 써요.</li>
+  <li>폰 시간표에선 <b>그 학생 담당 선생님만</b> 연락처를 봐요. [강사 관리]의 <b>연락처 코드</b>(6자리)를 만들어 선생님께 1:1로 알려 주면, 선생님이 폰에서 '내 이름'을 정하고 학생을 찾은 뒤 [연락처 보기]에 코드를 한 번 넣어요. 번호를 누르면 바로 전화가 걸려요. 코드는 선생님마다 따로 잠겨 있어서 다른 선생님 반 학생 번호는 풀리지 않아요. [바꾸기]로 새 코드를 만들면 예전 코드는 못 써요.</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
   <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 2주 동안 떠 있어요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
@@ -5272,7 +5309,7 @@ const HELP=[
   <li><b>선생님들께 미리 보여 주기(공개)</b>를 켜면 브라우저 시간표 위에 "○/○부터 시간표가 바뀌어요 [미리 보기]"가 생겨요. 확정 전엔 꺼 두세요.</li>
   <li><b>[바뀌는 점]</b>을 누르면 지금 시간표와 비교해 새로 생기는 반·없어지는 반·시간이 바뀌는 반·들어오고 빠지는 학생을 보여 줘요.</li>
   <li>날짜를 기다리지 않고 바로 바꾸려면 <b>[지금 시간표로]</b>(수정 모드) → [적용]. 버전 고르기(위쪽 시간표 칸)는 이 PC에서 보는 것만 바뀌어요.</li></ul>`},
- {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사별·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
+ {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사 버튼·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
  {id:'phone',t:'폰으로 보기 (브라우저 시간표)',b:`
   <ul><li><b>지점 관리자</b>는 [설정 → 폰으로 보기]에서 QR·<b>[주소 복사]</b>·<b>[안내문 복사]</b>로 선생님들께 알려 주면 돼요. 아래 설정은 프로그램 관리자가 해요.</li>
   <li>[설정 → 폰으로 보기]에서 <b>선생님용 번호</b>(영문+숫자 8자 이상)를 정해요. 번호를 바꾸면 지점 PC에도 자동으로 전달돼요.</li>
