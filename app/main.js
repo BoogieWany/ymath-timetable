@@ -55,6 +55,19 @@ const MOB=path.join(DATA,'mobile.json');
 let mob={on:false,pin:'',port:8787},srv=null,srvErr='';
 try{mob=Object.assign(mob,JSON.parse(fs.readFileSync(MOB,'utf8')))}catch(e){}
 function lanIPs(){const out=[];Object.values(os.networkInterfaces()).forEach(a=>(a||[]).forEach(i=>{if(i.family==='IPv4'&&!i.internal&&!/^169\.254/.test(i.address))out.push(i.address)}));return out}
+/* ===== 연락처: 선생님마다 '연락처 코드'로 따로 잠금 — 그 선생님 반(지금 시간표·특강) 학생 것만, 코드를 아는 선생님 폰에서만 풀림 =====
+   (폰용 파일 전체는 선생님용 번호로 한 번 더 잠김) · 같은 내용이면 같은 암호문을 다시 써서 '내용 같으면 안 올림'이 그대로 동작 */
+const CT_IT=200000,CTK={},CTC={};
+function ctKey(code,br,tid){const salt=crypto.createHash('sha256').update('ymath-ct\0'+br+'\0'+tid).digest().subarray(0,16);const k=code+'|'+salt.toString('hex');
+  return CTK[k]||(CTK[k]=crypto.pbkdf2Sync(String(code),salt,CT_IT,32,'sha256'))}
+function ctPack(b,v){const out={};const digits=x=>String(x||'').replace(/\D/g,'');
+  (b.teachers||[]).forEach(t=>{if(!t.ck)return;const ids=new Set();(v.classes||[]).forEach(c=>((c.members||{})[t.id]||[]).forEach(id=>ids.add(id)));(b.specials||[]).filter(x=>x.t===t.id).forEach(x=>(x.members||[]).forEach(id=>ids.add(id)));
+    const m={};(b.students||[]).forEach(st=>{if(!ids.has(st.id))return;const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));if(ph||pa.length)m[st.id]={...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}});
+    const pt=JSON.stringify(m);const ck=b.id+'|'+t.id+'|'+t.ck;const h=crypto.createHash('sha256').update(pt).digest('hex');
+    if(CTC[ck]&&CTC[ck].h===h){out[t.id]=CTC[ck].o;return}
+    const iv=crypto.randomBytes(12);const c=crypto.createCipheriv('aes-256-gcm',ctKey(t.ck,b.id,t.id),iv);const ct=Buffer.concat([c.update(Buffer.from(pt,'utf8')),c.final(),c.getAuthTag()]);
+    const o={it:CT_IT,iv:iv.toString('base64'),ct:ct.toString('base64'),n:Object.keys(m).length};CTC[ck]={h,o};out[t.id]=o});
+  return out}
 function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){return null}
   const at=Math.max(0,...(db.branches||[]).map(b=>(b._sync&&b._sync.at)||0))||fs.statSync(FILE).mtimeMs; // 적용 시각: 연동 중엔 모든 PC가 같은 값
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
@@ -64,6 +77,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
       classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
       sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p})),
+      ct:ctPack(b,v),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
       // 예정 시간표: 날짜가 되면 폰이 스스로 이걸로 바꿔 보여 줌 · pub이면 그 전에도 미리 보기
@@ -340,7 +354,7 @@ ipcMain.handle('updCheck',async(e,ver)=>{const c=syCfg();if(!syReady()||!c.pub||
       const b=await syRaw(`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/app/${f}`);if(sha256(b)!==m.files[f])return {ok:false,err:`업데이트 파일(${f})이 목록과 달라 받지 않았어요`};got[f]=b}
     const restart=!!(got['main.js']||got['preload.js']||got['package.json']);
     for(const f of UPD_FILES.filter(x=>x!=='index.html'))if(got[f]){fs.writeFileSync(path.join(__dirname,f+'.new'),got[f]);fs.renameSync(path.join(__dirname,f+'.new'),path.join(__dirname,f))}
-    if(got['index.html']&&!restart){fs.writeFileSync(path.join(__dirname,'index.html.new'),got['index.html']);fs.renameSync(path.join(__dirname,'index.html.new'),path.join(__dirname,'index.html'))}
+    if(got['index.html']&&!restart){UPD_PENDING=null; /* 다시 시작 기다리던 예전 화면 파일이 나중에 최신을 덮어쓰지 않게 */fs.writeFileSync(path.join(__dirname,'index.html.new'),got['index.html']);fs.renameSync(path.join(__dirname,'index.html.new'),path.join(__dirname,'index.html'))}
     else if(got['index.html'])UPD_PENDING=got['index.html'];
     return {ok:true,updated:m.ver,restart}}catch(err){return {ok:false,err:err.message}}finally{updBusy=false}});
 let UPD_PENDING=null;
@@ -367,7 +381,9 @@ app.whenReady().then(()=>{
   // 업데이트 파일(index.html)이 바뀌면 껐다 켜지 않아도 자동 새로고침
   let rt=null,last=0;try{last=fs.statSync(path.join(__dirname,'index.html')).mtimeMs}catch(e){}
   fs.watch(__dirname,(ev,f)=>{if(!f||!/^index\.html$/i.test(f))return;clearTimeout(rt);rt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'index.html')).mtimeMs;if(m===last)return;last=m}catch(e){return}
-    if(win&&!win.isDestroyed()){win.webContents.send('updated');setTimeout(()=>win.webContents.reloadIgnoringCache(),300)}},800)});
+    /* 바로 새로고침하지 않고 화면에 알림 — 수정 중이거나 창이 열려 있으면 끝난 뒤에 화면이 스스로 바꿈(작업이 끊기지 않게) */
+    if(win&&!win.isDestroyed())win.webContents.send('updated')},800)});
+ipcMain.handle('reloadNow',()=>{if(win&&!win.isDestroyed())win.webContents.reloadIgnoringCache();return true});
   // 폰 화면(mobile.html)이 바뀌면 GitHub·NAS에도 바로 다시 올림
   let mt=null,mlast=0;try{mlast=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs}catch(e){}
   fs.watch(__dirname,(ev,f)=>{if(!f||!/^mobile\.html$/i.test(f))return;clearTimeout(mt);mt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs;if(m===mlast)return;mlast=m}catch(e){return}
