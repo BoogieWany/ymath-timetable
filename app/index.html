@@ -3014,7 +3014,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.47.2', APPDATE='2026-10-17';
+const APPVER='3.47.3', APPDATE='2026-10-17';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3732,13 +3732,15 @@ function parseRoster(buf){
   const PH=/연락처|전화|휴대|핸드폰|HP|폰/i,PAR=/학부모|보호자|부모|어머니|엄마|아버지|아빠|모친|부친|\(모\)|\(부\)|^모|^부/;
   const phCols=hd.map((h,i)=>({h:String(h||'').trim(),i})).filter(x=>PH.test(x.h)&&x.i!==I.name);
   const parCols=phCols.filter(x=>PAR.test(x.h)).map(x=>({i:x.i,l:(x.h.replace(PH,'').replace(/[()\s·_-]|번호|연락/g,'').trim()||'학부모').replace(/^부$/,'아버지').replace(/^모$/,'어머니')}));
-  const stuCol=(phCols.find(x=>!PAR.test(x.h))||{}).i;
+  /* 학생 번호 칸: 핸드폰·휴대폰을 먼저, 없으면 연락처·전화번호 (집 전화가 '--'로 비어 있어도 핸드폰 칸에서 읽음) */
+  const pri=h=>/핸드폰|휴대|HP|폰/i.test(h)?0:/연락처/.test(h)?1:2;
+  const stuCols=phCols.filter(x=>!PAR.test(x.h)).sort((a,z)=>pri(a.h)-pri(z.h)).map(x=>x.i);
   const phN=v=>{const d=String(v||'').replace(/\D/g,'');return /^0\d{8,10}$/.test(d)?d:''};
   const out=new Map();
   grid.slice(hdrRow+1).forEach(l=>{const name=(l[I.name]||'').trim();if(!name||name==='학생')return;const key=(l[I.no]||'')+'|'+name;
     if(!out.has(key))out.set(key,{name,school:shortSchool(l[I.school]||''),grade:(l[I.grade]||'').trim(),classes:new Set(),ph:'',pa:[]});
     const r=out.get(key);const c=(l[I.cls]||'').trim();if(c)r.classes.add(c);
-    if(stuCol!==undefined&&!r.ph)r.ph=phN(l[stuCol]);
+    if(!r.ph)for(const ci of stuCols){const n=phN(l[ci]);if(n){r.ph=n;break}}
     parCols.forEach(pc=>{const n=phN(l[pc.i]);if(n&&!r.pa.some(x=>x.n===n)&&n!==r.ph)r.pa.push({l:pc.l,n})})});
   return [...out.values()].map(x=>({...x,classes:[...x.classes].sort(),pa:x.pa.slice(0,3)}));
 }
