@@ -226,6 +226,7 @@ html{touch-action:pan-x pan-y;overscroll-behavior-y:contain}
 body.wide,html:has(body.wide){touch-action:auto}
 .fz button.rs{font-size:17px}
 .hdx,#hdShow{display:none}
+.foot .cheer{font-size:calc(13.5px*var(--mz,1));color:var(--fg);opacity:.72;margin:0 auto 10px;max-width:320px;line-height:1.55;word-break:keep-all;letter-spacing:-.1px}
 .foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
 /* 가로 모드 */
 body.land .hd{display:flex;align-items:center;gap:10px;padding:calc(4px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))}
@@ -920,8 +921,28 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const pn=e.target.closest('.gnote.pend.my');if(pn){rqPendSheet(pn.dataset.rqn);return true}
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
+/* ===== 하루 한 줄: 때(수업 전·중·뒤·없는 날)·요일·시기(시험 기간·방학)에 맞는 문장을 하루에 한 번, 선생님마다 다르게 ===== */
+const CHEER={
+ pre:['오늘 한 문제가 누군가의 자신감이 될 거예요.','준비한 만큼, 오늘도 잘 전해질 거예요.','좋은 하루의 시작은 선생님의 웃음에서부터예요.','오늘 수업도 잘 부탁드려요.','오늘 만날 아이들, 오늘도 잘 부탁드려요.','준비해 두신 만큼 오늘도 잘 흘러갈 거예요.','차근차근, 늘 하던 대로면 충분해요.'],
+ mid:['목 아끼면서 천천히 하세요.','설명 한 번 더 해 주신 그 마음, 아이들도 알아요.','오늘 설명이 누군가에겐 처음으로 이해된 순간일 거예요.','끝까지 들어 주는 것도 수업이에요.','질문이 많은 날은 수업이 잘 되고 있는 날이에요.'],
+ post:['오늘도 수고 많으셨어요. 푹 쉬세요.','오늘 하루, 정말 고생 많으셨어요.','오늘도 끝까지 함께해 주셔서 고마워요.','오늘 일정은 여기까지예요. 수고 많으셨어요.','오늘도 고생하셨어요. 조심히 들어가세요.','오늘 수업, 잘 마무리됐어요.','오늘 쓴 시간이 아이들 실력이 돼요.','늦은 시간까지 수고 많으셨어요.'],
+ off:['오늘은 쉬는 날이에요. 좋은 하루 보내세요.','쉬는 것도 수업 준비예요. 푹 쉬세요.','좋아하는 일로 하루를 채워 보세요.','잘 쉬어야 잘 가르칠 수 있어요.','오늘은 수업이 없어요. 편하게 보내세요.','쉬는 날엔 시간표는 잠시 잊으셔도 돼요.','쉬고 오면 수업이 더 잘 돼요.'],
+ mon:['이번 주도 잘 부탁드려요.'],fri:['한 주 마무리, 고생 많으셨어요.'],sat:['주말에도 함께해 주셔서 고마워요.'],wkoff:['이번 주도 고생 많으셨어요. 잘 쉬세요.'],
+ exam:['시험 기간이에요. 선생님도 아이들도 조금만 더 힘내요.','지금 쏟는 시간이 성적표에 그대로 남을 거예요.','시험 기간엔 선생님이 가장 바빠요. 고생 많으세요.','지금 준비가 시험지에서 보일 거예요.'],
+ examEnd:['시험 기간 동안 고생 많으셨어요.'],
+ vac:['방학 특강도 함께해 주셔서 든든해요.','방학에도 아이들 곁을 지켜 주셔서 고맙습니다.','방학 동안 쌓은 게 새 학기에 보일 거예요.'],
+ all:['선생님 덕분에 오늘도 와이매쓰가 따뜻해요.','아이들은 선생님의 말투까지 기억해요.','오늘도 누군가에게는 최고의 선생님이에요.','작은 칭찬 하나가 아이의 하루를 바꿔요.','함께해 주셔서 늘 고맙습니다.','수학을 좋아하게 되는 순간, 그 옆엔 늘 선생님이 있어요.','서두르지 않아도 괜찮아요. 꾸준함이 이겨요.','선생님의 하루도 응원하고 있어요.','와이매쓰는 선생님과 함께라서 든든해요.','선생님 수업을 기다리는 아이들이 있어요.','꾸준히 해 오신 게 아이들 성적에 남아요.','아이들은 설명보다 태도를 먼저 배워요.','오늘도 함께해 주셔서 고맙습니다.','한 명 한 명 챙겨 주시는 거, 다 보여요.','잘 가르치는 건 결국 잘 기다려 주는 거예요.','오늘 수업이 아이들의 다음 시험을 바꿔요.','선생님 한 분 한 분이 와이매쓰예요.','아이들이 수학을 덜 무서워하게 된 건 선생님 덕분이에요.','매일 같은 자리에 있어 주셔서 든든합니다.','오늘도 묵묵히, 고맙습니다.','좋은 수업은 티 나지 않게 쌓여요.','아이들 이름을 불러 주는 것만으로도 수업이 달라져요.','오늘 하루도 응원합니다.']};
+function cheerCtx(b){const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;const d=todayD();const its=todayItems(b,d).filter(x=>!myT||x.t===myT);const nm=nowMin();const dw=new Date().getDay();
+  const ctx=!its.length?'off':nm<its[0].s?'pre':nm>=Math.max(...its.map(x=>x.e))?'post':'mid';const td=tdStr();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;
+  const pools=[[CHEER[ctx],3]];
+  if(dw===1&&ctx!=='post')pools.push([CHEER.mon,2]);if(dw===5&&ctx==='post')pools.push([CHEER.fri,3]);if(dw===6&&ctx!=='off')pools.push([CHEER.sat,2]);if((dw===6||dw===0)&&ctx==='off')pools.push([CHEER.wkoff,3]);
+  if(ex&&td>=ex.from&&td<=ex.to)pools.push([CHEER.exam,4]);else if(ex&&td>ex.to&&td<=plusD(ex.to,3))pools.push([CHEER.examEnd,5]);
+  if(sps(b).length&&ctx!=='off')pools.push([CHEER.vac,2]);pools.push([CHEER.all,1]);return {ctx,pools,myT}}
+function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forEach(([a,w])=>a.forEach(x=>{for(let i=0;i<w;i++)list.push(x)}));
+  const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
+  const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.48.1</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.49.0</div></div>`};
 document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
