@@ -506,6 +506,14 @@ table.g td{position:relative}
 .newl{display:flex;flex-direction:column;gap:10px}
 .ann.nwa::before{background:#4f9a6b}.ann.nwa .annk{color:#1d5a37;background:#dff3e7}.ann.nwa p+p{margin-top:4px}
 @media (prefers-color-scheme:dark){.ann.nwa .annk{color:#8fd8ac;background:#173b28}}
+
+/* 꾹 창 이름 고르기 · 학생 카드 창 */
+#pk.on .pkc{pointer-events:auto}
+.pkn span{transition:transform .14s ease,background .14s ease,box-shadow .14s ease}
+.pkn span.hov{transform:scale(1.12);background:var(--acc);color:var(--panel);box-shadow:0 4px 12px rgba(10,20,40,.22)}
+.pkn span.hov small{color:inherit;opacity:.8}
+.pkc .pkhint{margin-top:10px;font-size:11.5px;color:var(--muted);text-align:center}
+.sh.stsh .grab{display:none}.sh.stsh .shp{padding-top:18px}.sh.stsh .sinfo{border:0;box-shadow:none;padding:4px 2px 0;animation:none}
 </style>
 </head>
 <body>
@@ -745,9 +753,9 @@ function vStu(b,parts){const q=ST.q.trim();const sb=`<div class="search"><input 
 function txtColor(hex){const h=(hex||'#999999').replace('#','');if(h.length<6)return'#151a26';const [r,g,bb]=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(c=>c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4));return (0.2126*r+0.7152*g+0.0722*bb)>0.36?'#151a26':'#ffffff'}
 function names(b,ids,hl){return true?`<div class="gnw"><div><div class="gn">${ids.map(id=>{const s=S(b,id);if(!s)return'';const n=esc(s.name);return `<span${id===hl?' style="font-weight:700;text-decoration:underline"':''}>${s.away?`<s>${n}</s>`:n+nMark(s)}</span>`}).join('')}</div></div></div>`:''}
 function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>actS(S(b,id)));const bg=c.color||'#9aa3b5';const xt=exTag(b,o);const xc=xt&&exNearV(b,o.id).kind==='cancel';
-  return `<div class="gc${xc?' exc':''}" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-pk="${esc([o.d,o.p,o.t,o.cls,o.id||''].join('|'))}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${nCnt(b,mem)}</i></div>${xt?`<div class="gx">${xt}</div>`:''}${names(b,mem,ST.stu)}</div>`}
+  return `<div class="gc${xc?' exc':''}" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-pk="${esc([o.d,o.p,o.t,o.cls,o.id||''].join('|'))}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${nCnt(b,mem)}</i></div>${xt?`<div class="gx">${xt}</div>`:''}${names(b,mem,null)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>actS(S(b,id)));const bg=s.color||'#9aa3b5';
-  return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-spk="${esc(s.id)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${nCnt(b,mem)}</i></div>${names(b,mem,ST.stu)}</div>`}
+  return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-spk="${esc(s.id)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${nCnt(b,mem)}</i></div>${names(b,mem,null)}</div>`}
 function gzHTML(){const b=D&&B();const nl=b&&((b.notes||[]).length||rqFor(b).length)?`<button class="tg" id="ntTg" role="switch" aria-checked="${ST.nt}"><i></i>메모 보기</button>`:'';return nl+`<button class="tg" id="nmTg" role="switch" aria-checked="${ST.nm}"><i></i>학생 이름 모두 보기</button>${ST.nm?'':'<small class="tgh">반 카드를 누르면 그 반 이름이 보여요</small>'}`}
 function perLabel(b,days,p){const a=((b.days||{})[days[0]]||[])[p];const we=days.find(d=>/[토일]/.test(d)&&d!==days[0]);const w=we&&((b.days||{})[we]||[])[p];
   if(!a)return w?`<b>${esc(pshort(w.name))}</b><span>${we} ${esc(w.time)}</span>`:'';
@@ -840,8 +848,8 @@ let shY=0;function pageLock(on){const h=document.documentElement;if(on){if(h.cla
 window.addEventListener('scroll',()=>{if(document.documentElement.classList.contains('shl')&&Math.abs(window.scrollY-shY)>1)window.scrollTo(0,shY)},{passive:true});
 function kbFit(){const w=$('sh'),vv=window.visualViewport;if(!w||!vv)return;const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);w.style.setProperty('--kb',kb+'px')}
 if(window.visualViewport){visualViewport.addEventListener('resize',kbFit);visualViewport.addEventListener('scroll',kbFit)}
-function shOpen(html){shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.className='sh';w.innerHTML=`<div class="shp" role="dialog" aria-modal="true"><i class="grab" aria-hidden="true"></i>${html}</div>`;document.body.appendChild(w);
-  w.addEventListener('click',e=>{if(e.target===w)shClose()});shDrag(w);requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')))}
+function shOpen(html,opt){opt=opt||{};shClose(true);pageLock(true);const w=document.createElement('div');w.id='sh';w.className='sh'+(opt.cls?' '+opt.cls:'');w.innerHTML=`<div class="shp" role="dialog" aria-modal="true"><i class="grab" aria-hidden="true"></i>${html}</div>`;document.body.appendChild(w);
+  w.addEventListener('click',e=>{if(e.target===w&&!opt.stay)shClose()});if(!opt.stay)shDrag(w);requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')))}
 /* 창을 아래로 끌어 닫기: 손가락을 따라 내려오다 많이 내리거나 빠르게 튕기면 닫히고, 조금이면 고무줄처럼 돌아옴 · 입력칸 안에서 시작한 끌기는 제외 */
 function shDrag(w){if(wide)return;const sp=w.querySelector('.shp');let g=null;
   sp.addEventListener('touchstart',e=>{g=null;if(e.touches.length!==1||GEST)return;if(e.target.closest('textarea,input,select,.rqsug'))return;const t=e.touches[0];g={y:t.clientY,ly:t.clientY,lt:performance.now(),v:0,on:false,dy:0}},{passive:true});
@@ -913,7 +921,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.48.0</div></div>`};
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">보기 전용 · 시간표 관리자가 [적용]한 시간표예요<br>${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.48.1</div></div>`};
 document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
@@ -1058,7 +1066,7 @@ const TG={g:null};
   document.addEventListener('touchstart',e=>{TG.g=null;if(wide||e.touches.length!==1||!D||GEST||!$('tabs').children.length)return;const t=e.touches[0];const inHd=!!(e.target.closest&&e.target.closest('#hd'));
     if(!inHd&&t.clientY<window.innerHeight*0.55)return;if(skip(e.target))return;const inPz=pzV()&&pzV().contains(e.target);if(inPz&&!pzFree())return;
     TG.g={x:t.clientX,y:t.clientY,t:performance.now(),lx:t.clientX,lt:performance.now(),v:0,on:false}},{passive:true});
-  document.addEventListener('touchmove',e=>{const g=TG.g;if(!g)return;if(e.touches.length!==1){TG.g=null;return}const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
+  document.addEventListener('touchmove',e=>{const g=TG.g;if(!g)return;if(PK.on){TG.g=null;return}if(e.touches.length!==1){TG.g=null;return}const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
     if(!g.on){if(GEST||(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx))){TG.g=null;return}if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.3)return;
       g.on=true;GEST='tab';PZ.g=null;pkCancel();const ks=TABS().map(x=>x[0]);const i=ks.indexOf(ST.tab);g.ks=ks;g.i=i;g.W=window.innerWidth;
       const m=main();m.classList.remove('tin-l','tin-r');m.style.transition='none';m.style.willChange='transform,opacity';const ind=$('tind');if(ind)ind.style.transition='none';
@@ -1154,9 +1162,9 @@ function pkBody(el){const b=B();
   const pp=per(b,d,p);const [s0,e0]=pRange(b,d,p);const o=id&&b.sessions.find(x=>x.id===id);const xt=o?exTag(b,o):'';const cnt=nCnt(b,mem);
   const ns=(b.notes||[]).filter(n=>noteLive(n)&&n.cls===cls);
   return `<div class="pkh" style="--c:${esc(c.color||'#9aa3b5')}"><i></i><div><b>${esc(c.name)}</b><span>${esc(T(b,t))}T${t0&&t0!==t?` (원래 ${esc(T(b,t0))}T)`:''} · ${d}요일 ${esc(pshort(pp.name))} · ${fromMin(s0)}–${fromMin(e0)}</span></div><em>${cnt}</em></div>
-    ${xt?`<div class="pkx">${xt}</div>`:''}<div class="pkn">${pkNames(b,mem)}</div>
+    ${xt?`<div class="pkx">${xt}</div>`:''}<div class="pkn">${pkNames(b,mem)}</div>${mem.length?'<div class="pkhint">이름 위로 손가락을 옮겨 떼면 학생 카드</div>':''}
     ${ns.length?`<div class="pkm">${ns.map(n=>`<div><b>${esc(n.k||b.noteLabel||'보강')}</b> ${n.d}요일 ${esc(pshort(per(b,n.d,n.p).name))} · ${esc(T(b,n.t))}T${n.until?` · ${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}`:''}${n.names?`<span>${esc(n.names)}</span>`:''}</div>`).join('')}</div>`:''}`}
-function pkNames(b,ids){return ids.map(id=>{const s=S(b,id);if(!s)return '';return `<span${s.away?' class="aw"':''}>${esc(s.name)}${s.grade?`<small>${esc(s.grade)}</small>`:''}${nMark(s)}</span>`}).join('')||'<span class="none">명단 없음</span>'}
+function pkNames(b,ids){return ids.map(id=>{const s=S(b,id);if(!s)return '';return `<span data-psid="${esc(id)}"${s.away?' class="aw"':''}>${esc(s.name)}${s.grade?`<small>${esc(s.grade)}</small>`:''}${nMark(s)}</span>`}).join('')||'<span class="none">명단 없음</span>'}
 function pkShow(el){PK.tm=0;const h=pkBody(el);if(!h)return;PK.on=true;PZ.g=null;cancelAnimationFrame(PZ.raf);
   let w=$('pk');if(!w){w=document.createElement('div');w.id='pk';w.setAttribute('aria-hidden','true');document.body.appendChild(w)}
   w.innerHTML=`<div class="pkc">${h}</div>`;w.classList.remove('on');const cd=w.firstChild;
@@ -1170,12 +1178,14 @@ function pkFit(cd,maxH){if(cd.offsetHeight<=maxH)return;const box=cd.querySelect
   const more=document.createElement('span');more.className='more';box.appendChild(more);let k=ns.length;
   while(k>1&&cd.offsetHeight>maxH){k--;ns[k].hidden=true;more.textContent=`외 ${ns.length-k}명`}
   if(k===ns.length)more.remove()}
-function pkHide(){PK.on=false;const w=$('pk');if(w)w.classList.remove('on')}
+function pkHide(){PK.on=false;PK.hov='';const w=$('pk');if(w)w.classList.remove('on')}
 function pkCancel(){if(PK.tm){clearTimeout(PK.tm);PK.tm=0}}
 document.addEventListener('touchstart',e=>{pkCancel();if(wide||e.touches.length!==1){if(PK.on)pkHide();return}const el=e.target.closest&&e.target.closest('[data-pk],[data-spk]');if(!el||e.target.closest('#sh'))return;
   const t=e.touches[0];PK.x=t.clientX;PK.y=t.clientY;PK.tm=setTimeout(()=>pkShow(el),420)},{passive:true});
-document.addEventListener('touchmove',e=>{if(!PK.tm)return;const t=e.touches[0];if(e.touches.length>1||Math.hypot(t.clientX-PK.x,t.clientY-PK.y)>8)pkCancel()},{passive:true});
-const pkEnd=()=>{pkCancel();if(PK.on){pkHide();PK.swallow=Date.now()+700}};
+document.addEventListener('touchmove',e=>{if(PK.on){const t=e.touches[0];if(!t)return;const el=document.elementFromPoint(t.clientX,t.clientY);const sp=el&&el.closest&&el.closest('#pk [data-psid]');const id=sp?sp.dataset.psid:'';
+    if(id!==PK.hov){const w=$('pk');if(w)w.querySelectorAll('.hov').forEach(x=>x.classList.remove('hov'));if(sp){sp.classList.add('hov');if(navigator.vibrate)try{navigator.vibrate(5)}catch(err){}}PK.hov=id}return}
+  if(!PK.tm)return;const t=e.touches[0];if(e.touches.length>1||Math.hypot(t.clientX-PK.x,t.clientY-PK.y)>8)pkCancel()},{passive:true});
+const pkEnd=()=>{pkCancel();if(PK.on){const id=PK.hov;PK.hov='';pkHide();PK.swallow=Date.now()+700;if(id)setTimeout(()=>stuSheet(id),120)}};
 document.addEventListener('touchend',pkEnd,{passive:true});document.addEventListener('touchcancel',pkEnd,{passive:true});
 document.addEventListener('click',e=>{if(PK.swallow>Date.now()){PK.swallow=0;e.stopPropagation();e.preventDefault()}},true);
 document.addEventListener('contextmenu',e=>{if(!wide&&!(e.target.closest&&e.target.closest('input,textarea')))e.preventDefault()});
@@ -1185,7 +1195,7 @@ const PTR={g:null,busy:false};
 function ptrEl(){let e=$('ptr');if(!e){e=document.createElement('div');e.id='ptr';e.setAttribute('aria-hidden','true');e.innerHTML='<i></i>';document.body.appendChild(e)}return e}
 document.addEventListener('touchstart',e=>{PTR.g=null;if(wide||!D||PTR.busy||e.touches.length!==1||window.scrollY>0||GEST)return;const t=e.touches[0];
   if(e.target.closest&&e.target.closest('#hd,#sh,#pk,#pv,.dock.ind,textarea,input'))return;PTR.g={x:t.clientX,y:t.clientY,live:false,arm:false}},{passive:true});
-document.addEventListener('touchmove',e=>{const g=PTR.g;if(!g||e.touches.length!==1)return;const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
+document.addEventListener('touchmove',e=>{const g=PTR.g;if(!g||e.touches.length!==1)return;if(PK.on){PTR.g=null;return}const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
   if(!g.live){if(GEST||dy<-6||(Math.abs(dx)>10&&Math.abs(dx)>dy)){PTR.g=null;return}if(dy<12||Math.abs(dx)>dy*.7)return;g.live=true;GEST='ptr';ptrEl().classList.add('drag')}
   const k=Math.min(1,Math.max(0,dy-8)/96);const el=ptrEl();el.style.setProperty('--k',k.toFixed(3));el.style.transform=`translate(-50%,${-46+k*74}px)`;
   if(k>=1&&!g.arm){g.arm=true;if(navigator.vibrate)try{navigator.vibrate(6)}catch(err){}}else if(k<1&&g.arm)g.arm=false},{passive:true});
@@ -1206,6 +1216,9 @@ function stuInfo(b,sid,mine,sp){const s=S(b,sid);if(!s)return '';const grp={};
   return `<div class="sinfo"><div class="sih"><div class="siav">${esc(s.name.slice(-2))}</div><div><b>${esc(s.name)}</b><span>${esc([s.school,s.grade].filter(Boolean).join(' · '))||'&nbsp;'}</span></div>${s.away?'<em class="aw">휴원</em>':isPreS(s)?`<em class="pre">예정 · ${mdd(s.from)}부터</em>`:isNewS(s)?`<em class="nw">신입 · ${mdd(s.from)}~</em>`:''}</div>
     <div class="ctw" data-sid="${esc(sid)}"></div>
     <div class="sis"><div class="sit">듣는 반 <small>${n?`${n}개 · 주 ${wk}회`:''}</small></div>${rows||'<div class="cth">배정된 수업이 없어요</div>'}</div></div>`}
+/* 꾹 창에서 이름 위로 손가락을 옮겨 떼면 뜨는 학생 카드 — [닫기]를 누를 때까지 그대로 */
+function stuSheet(id){const b=B();const s=S(b,id);if(!s)return;const mine=b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(id)});
+  shOpen(`${stuInfo(b,id,mine,sps(b).filter(x=>(x.members||[]).includes(id)))}<div class="sbtn" style="margin-top:12px"><button class="pri" data-act="shClose" style="flex:1">닫기</button></div>`,{stay:true,cls:'stsh'});setTimeout(ctFill,30)}
 function stuUpd(){const P=vStu(B(),true);const l=$('sL'),r=$('sR');if(l)l.innerHTML=P.l;if(r)r.innerHTML=P.r;ctFill()}
 /* 한글 입력 중에는 입력 칸을 다시 그리지 않음(자모가 끊어지지 않게) — 결과만 바꿈 */
 document.addEventListener('input',e=>{if(e.target.id==='q'){ST.q=e.target.value;stuUpd()}});
