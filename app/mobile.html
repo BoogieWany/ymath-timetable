@@ -694,7 +694,8 @@ function meHTML(b){const me=ME();if(me&&D.branches.some(x=>x.id===me.br&&TT(x,me
   return `<div class="note"><p><b>${multi?'② ':''}${multi?esc(b.name)+' · ':''}이름을 고르세요</b><br><small>한 번만 고르면 다음부터 내 수업이 맨 위에 나와요</small></p><div class="me">${ts.map(t=>`<button data-me="${t.id}">${esc(t.name)}</button>`).join('')||'<small style="color:var(--muted)">이 지점엔 아직 수업이 없어요</small>'}${multi?'<button class="skip" data-act="pbrBack">← 지점 다시 고르기</button>':''}${skip}</div></div>`}
 let fzT=0;function fzToast(msg,ms){let t=$('fzt');if(!t){t=document.createElement('div');t.id='fzt';document.body.appendChild(t)}t.textContent=msg||('글씨 '+Math.round(MZ*100)+'%');t.style.opacity=1;clearTimeout(fzT);fzT=setTimeout(()=>t.style.opacity=0,ms||1100)}
 let bip=null;
-const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const DESK=/YMT-Desk/.test(navigator.userAgent);
+const standalone=()=>DESK||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 function instHTML(){if(wide||standalone()||ls.get('m_noinst',''))return'';const ua=navigator.userAgent;
   const x='<button class="x" data-act="noinst" aria-label="닫기">✕</button>';
   if(/KAKAOTALK/i.test(ua))return `<div class="tip"><span>카톡 안에서 열었어요. 오른쪽 아래(또는 위) <b>⋮</b> → <b>다른 브라우저로 열기</b>를 한 뒤 <b>홈 화면에 추가</b>하면 앱처럼 바로 열려요</span>${x}</div>`;
@@ -942,8 +943,8 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const foot=nd=>{const me=ME();const b=D&&B();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.50.2</div></div>`};
-document.addEventListener('click',async e=>{if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
+  return `${nd||!b?'':dockHTML(b,false)}<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">이 기기에서 번호 지우기</button><div class="vv">Y-MATH 시간표 · v3.50.3</div></div>`};
+document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
   if(t.id==='ntTg'){ST.nt=!ST.nt;ls.set('m_nt',ST.nt?'1':'0');render();return}
   if(t.id==='nmTg'){ST.nm=!ST.nm;ls.set('m_nm2',ST.nm?'1':'0');render();return}const ds=t.dataset;
