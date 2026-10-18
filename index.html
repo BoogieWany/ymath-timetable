@@ -229,6 +229,8 @@ body.wide,html:has(body.wide){touch-action:auto}
 .foot .cheer{font-size:calc(13.5px*var(--mz,1));color:var(--fg);opacity:.72;margin:0 auto 10px;max-width:320px;line-height:1.55;word-break:keep-all;letter-spacing:-.1px}
 .dock.ind .foot{margin-top:14px}
 .gpad{height:114px}
+body.nolog .hd-r .fz,body.nolog #brb,body.nolog #rotB{visibility:hidden}
+.pin input.pcode{text-align:center;letter-spacing:10px;font-family:var(--mono);font-size:22px;padding-left:20px}
 .foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
 /* 가로 모드 */
 body.land .hd{display:flex;align-items:center;gap:10px;padding:calc(4px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))}
@@ -554,7 +556,20 @@ let MZ=+ls.get('m_mz','1')||1;
 const GK=()=>wide?'m_gz':'m_pgz',FK=()=>wide?'m_fit':'m_pfit';
 function loadGz(){ST.gz=wide?(+ls.get(GK(),'12.5')||12.5):11;ST.fit=wide?ls.get(FK(),'1')==='1':true}loadGz();
 function applyMz(){document.documentElement.style.setProperty('--mz',wide?1:MZ)}applyMz();
-const ME=()=>{try{return JSON.parse(ls.get('m_me','null'))}catch(e){return null}};
+const ME=()=>{if(D&&D.v2){const m=D.me||[];return m.find(x=>x.br===ST.br)||m[0]||null}try{return JSON.parse(ls.get('m_me','null'))}catch(e){return null}};
+/* ===== 개인 코드 로그인(v2): 코드 → 키(PBKDF2) → 내 '열쇠 묶음'을 찾아 풂 → 내가 볼 수 있는 지점만 풀림 ===== */
+const LK=()=>{try{return JSON.parse(ls.get('m_lk','null'))}catch(e){return null}};
+async function lgDerive(code,j){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveBits']);return new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:b64(j.salt),iterations:j.it,hash:'SHA-256'},km,256))}
+async function lgH(k,s){const key=await crypto.subtle.importKey('raw',k,{name:'HMAC',hash:'SHA-256'},false,['sign']);return new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(s)))}
+async function lgOpen(kRaw,o){const k=await crypto.subtle.importKey('raw',kRaw,'AES-GCM',false,['decrypt']);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(o.iv)},k,b64(o.ct))))}
+async function dec2(j,dk){const id=u8b64((await lgH(dk,'ymath-id')).slice(0,12));const es=(j.u||[]).filter(x=>x.id===id);if(!es.length)throw new Error('nocode');
+  const wk=await lgH(dk,'ymath-wrap');let P=null;for(const e of es){try{P=await lgOpen(wk,e);break}catch(err){}}if(!P)throw new Error('nocode');
+  const com=await lgOpen(b64(P.kc),j.com);const branches=[];
+  for(const id of Object.keys(j.br||{})){const k=(P.kb||{})[id];if(!k)continue;const b=await lgOpen(b64(k),j.br[id]);b.ctm=(P.ct||{})[id]||null;branches.push(b)}
+  if(!branches.length)throw new Error('nobr');
+  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all})}
+/* 예전 방식(공용 번호)으로 저장된 것은 처음 한 번 지움 */
+function legacyWipe(){if(!ls.get('m_pin','')&&!ls.get('m_key',''))return;['m_pin','m_key','m_me','m_noMe','m_cache'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
 async function load(pin){
   const p=pin??ls.get('m_pin','');
   try{const r=await fetch(SRC+'?t='+Date.now(),{headers:{'x-pin':p},cache:'no-store'});
@@ -562,21 +577,29 @@ async function load(pin){
     if(r.status===429){showPin('여러 번 틀려서 30초 뒤에 다시 해 주세요');return}
     if(!r.ok)throw new Error(r.status);
     const raw=await r.text();let j=JSON.parse(raw);
-    if(j.enc){if(!p){showPin('');return}
+    if(j.enc===2){if(!(window.crypto&&crypto.subtle)){ST.mh='';$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
+      if(pin===undefined&&D&&D.v2&&lastCt===j.h){lastOk=Date.now();meta(false);tick();rqFetch();return}
+      const lk=LK();let dk=null;
+      if(pin!==undefined)dk=await lgDerive(pin,j);else if(lk&&lk.salt===j.salt&&lk.it===j.it)dk=b64(lk.k);
+      if(!dk){D=null;showPin(lk?'로그인이 풀렸어요 · 코드를 다시 넣어 주세요':'');return}
+      try{j=await dec2(j,dk)}catch(e){if(pin!==undefined){showPin('코드가 맞지 않아요');return}ls.set('m_lk','');ls.set('m_cache','');D=null;lastCt=null;showPin('코드가 바뀌었거나 없어졌어요 · 부원장님께 새 코드를 받아 주세요');return}
+      const j0=JSON.parse(raw);if(pin!==undefined){ls.set('m_lk',JSON.stringify({salt:j0.salt,it:j0.it,k:u8b64(dk)}));pin=undefined}lastCt=j0.h}
+    else if(j.enc&&D&&D.v2){lastOk=Date.now();meta(true);return}
+    else if(j.enc){if(!p){showPin('');return}
       if(!(window.crypto&&crypto.subtle)){ST.mh='';$('main').innerHTML='<div class="off"><b>https 주소로 열어 주세요</b>보안 때문에 http 주소에서는 시간표를 풀 수 없어요. 주소 앞을 https:// 로 바꿔서 열어 주세요.</div>';return}
       if(D&&lastCt===j.ct){lastOk=Date.now();meta(false);tick();rqFetch();return}
       try{j=await dec(j,p);lastCt=JSON.parse(raw).ct}catch(e){KC.k=null;ls.set('m_pin','');ls.set('m_key','');showPin(pin!==undefined?'번호가 맞지 않아요':'');return}}
     const first=!D;if(!first){nextApply(j);const m=viewDiff(D,j);CHG.m=Object.keys(m).length?m:null;CHG.m0=CHG.m}D=j;if(pin!==undefined)ls.set('m_pin',pin);lastOk=Date.now();ls.set('m_cache',raw);if(first)initBr();render();if(first)fadeIn();else chgToast(CHG.m0||null);rqFetch(true)}
-  catch(e){if(!D){const c=ls.get('m_cache','');if(c&&p){try{let j=JSON.parse(c);if(j.enc)j=await dec(j,p);D=j;initBr();render();fadeIn();meta(true);return}catch(err){}}
+  catch(e){if(!D){const c=ls.get('m_cache','');const lk=LK();if(c&&(p||lk)){try{let j=JSON.parse(c);if(j.enc===2)j=await dec2(j,b64(lk.k));else if(j.enc)j=await dec(j,p);D=j;initBr();render();fadeIn();meta(true);return}catch(err){}}
       ST.mh='';$('main').innerHTML='<div class="off"><b>시간표를 받지 못했어요</b>인터넷 연결을 확인해 주세요. 학원 PC 주소로 연 경우에는 PC 프로그램이 켜져 있고 폰이 학원 와이파이에 있어야 해요.<br><br><button class="btn" onclick="load()">다시 연결</button></div>'}else meta(true)}}
 /* 열자마자: 이 폰에 저장해 둔 시간표를 먼저 그리고(키도 저장해 둬서 바로 풀림), 새 것은 뒤에서 조용히 받아 바뀐 것만 */
-async function boot(){const p=ls.get('m_pin',''),c=ls.get('m_cache','');
-  if(c){try{let j=JSON.parse(c),ct=null;if(j.enc){if(!p||!(window.crypto&&crypto.subtle))throw 0;ct=j.ct;j=await dec(j,p)}
+async function boot(){legacyWipe();const p=ls.get('m_pin',''),c=ls.get('m_cache',''),lk=LK();
+  if(c){try{let j=JSON.parse(c),ct=null;if(j.enc===2){if(!lk||!(window.crypto&&crypto.subtle))throw 0;ct=j.h;j=await dec2(j,b64(lk.k))}else if(j.enc){if(!p||!(window.crypto&&crypto.subtle))throw 0;ct=j.ct;j=await dec(j,p)}
     if(j&&j.branches){D=j;lastCt=ct;initBr();render();fadeIn()}}catch(e){}}
   return load()}
 function fadeIn(){const m=$('main');if(!m)return;m.classList.remove('fin');void m.offsetWidth;m.classList.add('fin');m.addEventListener('animationend',()=>m.classList.remove('fin'),{once:true})}
 /* 처음 열 때: 내 이름을 골라 둔 지점으로 */
-function initBr(){const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
+function initBr(){if(ls.get('m_br','')&&!D.branches.some(b=>b.id===ls.get('m_br','')))ls.set('m_br','');const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
   if(me&&me.br===ST.br&&!ls.get('m_t',''))ST.t=me.t}
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 /* 번호로 키 만들기(60만 회)는 소금·번호가 같으면 한 번만 — 시간표가 바뀔 때마다 1~2초씩 기다리지 않게 */
@@ -594,10 +617,10 @@ async function dec(j,pass){const key=await viewKey(j,pass);
 /* 번호 화면: 틀리면 칸이 살짝 흔들리고(다시 그리지 않음), 4자 이상 넣어야 [열기] */
 function showPin(msg){const old=$('pf');
   if(old){old.querySelector('.err').textContent=msg;const i=$('pi');pinWait(false);if(msg){i.value='';i.classList.remove('shake');void i.offsetWidth;i.classList.add('shake');if(navigator.vibrate)try{navigator.vibrate([30,40,30])}catch(e){}}pinBtn();i.focus();return}
-  $('tabs').innerHTML='';ST.mh='';$('main').innerHTML=`<form class="pin" id="pf" autocomplete="off"><div class="pinic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div><h1>시간표 보기</h1><p>선생님용 번호를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="32" aria-label="번호"><div class="err">${esc(msg)}</div><button id="pgo" disabled>열기</button></form>`;fadeIn();
-  $('pf').onsubmit=e=>{e.preventDefault();const v=$('pi').value.trim();if(v.length<4)return;pinWait(true);load(v)};$('pi').addEventListener('input',pinBtn);setTimeout(()=>$('pi').focus(),50)}
-function pinBtn(){const b=$('pgo'),i=$('pi');if(b&&i&&b.textContent!=='여는 중…')b.disabled=i.value.trim().length<4}
-function pinWait(on){const b=$('pgo');if(b){b.textContent=on?'여는 중…':'열기';b.disabled=on||(($('pi')||{value:''}).value.trim().length<4)}}
+  document.body.classList.add('nolog');$('tabs').innerHTML='';ST.mh='';$('main').innerHTML=`<form class="pin" id="pf" autocomplete="off"><div class="pinic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div><h1>시간표 로그인</h1><p>부원장님께 받은 <b>6자리 개인 코드</b>를 넣어 주세요<br><small>한 번 넣으면 이 기기에서는 다시 묻지 않아요</small></p><input id="pi" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="6" aria-label="개인 코드" class="pcode"><div class="err">${esc(msg)}</div><button id="pgo" disabled>로그인</button></form>`;fadeIn();
+  $('pf').onsubmit=e=>{e.preventDefault();const v=$('pi').value.trim();if(v.length<6)return;pinWait(true);load(v)};$('pi').addEventListener('input',()=>{const i=$('pi');const d=i.value.replace(/\D/g,'').slice(0,6);if(d!==i.value)i.value=d;pinBtn()});setTimeout(()=>$('pi').focus(),50)}
+function pinBtn(){const b=$('pgo'),i=$('pi');if(b&&i&&b.textContent!=='확인 중…')b.disabled=i.value.trim().length<6}
+function pinWait(on){const b=$('pgo');if(b){b.textContent=on?'확인 중…':'로그인';b.disabled=on||(($('pi')||{value:''}).value.trim().length<6)}}
 /* 예정 시간표: 날짜가 되면 그 시간표가 지금 시간표 (PC가 꺼져 있어도) · 공개된 예정은 [미리 보기]로 */
 function nextApply(dd){dd=dd||D;if(!dd)return;const t=tdStr();dd.branches.forEach(b=>{if(b.next&&b.next.from<=t){b.classes=b.next.classes;b.sessions=b.next.sessions;b.version=b.next.version;b.notes=[];delete b.next}})}
 /* 새 시간표가 왔을 때 전과 다른 점: 수업(d|p|t|cls) · 당일 변경 · 메모 · 공지 — 지금 보는 지점이면 한 줄 알리고 바뀐 카드를 2초쯤 빛나게 */
@@ -628,7 +651,7 @@ function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
   $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
 const TABS=()=>wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']];
-function render(){if(!D)return;nextApply();const b=B();ST.br=b.id;
+function render(){if(!D)return;document.body.classList.remove('nolog');nextApply();const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');$('brn').textContent=b.name;$('brb').classList.toggle('one',D.branches.length<2);
   $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
@@ -697,7 +720,7 @@ function todayItems(b,d){const it=[];
   sps(b).filter(x=>(x.days||[]).includes(d)).forEach(x=>{const s=toMin(x.start);it.push({sp:x,s,e:s+(+x.dur||120),t:x.t})});
   return it.sort((x,y)=>x.s-y.s)}
 function marks(items){const nm=nowMin();let nx=false;return items.map(x=>{let st='';if(x.e<=nm)st='done';else if(x.s<=nm)st='now';else if(!nx){st='next';nx=true}return st})}
-function meHTML(b){const me=ME();if(me&&D.branches.some(x=>x.id===me.br&&TT(x,me.t)))return'';if(ls.get('m_noMe',''))return'';
+function meHTML(b){if(D&&D.v2)return'';const me=ME();if(me&&D.branches.some(x=>x.id===me.br&&TT(x,me.t)))return'';if(ls.get('m_noMe',''))return'';
   const multi=D.branches.length>1;const skip='<button class="skip" data-act="noMe">고르지 않기</button>';
   if(multi&&!ST.brPicked)return `<div class="note"><p><b>① 어느 지점 선생님이세요?</b><br><small>지점 → 이름 순서로 한 번만 고르면 다음부터 내 지점·내 수업이 바로 나와요</small></p><div class="me big">${D.branches.map(x=>`<button data-pbr="${x.id}">${esc(x.name)}</button>`).join('')}${skip}</div></div>`;
   const ts=b.teachers.filter(t=>b.sessions.some(o=>o.t===t.id)||sps(b).some(s=>s.t===t.id));
@@ -931,7 +954,7 @@ function rqClick(e){const sh=e.target.closest('#sh');
     if(ds.act==='shClose')shClose();else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.rqn2){rqSetCnt(+ds.rqn2)}
     else if(ds.brpick){shClose();if(ds.brpick!==B().id)setTimeout(()=>{ST.gt='';ST.br=ds.brpick;ST.brPicked=true;ls.set('m_br',ds.brpick);ST.open.clear();if(!wide)ST.fit=true;render();window.scrollTo(0,0)},300)}
     else if(ds.act==='ctGo'){ctGo()}
-    else if(ds.act==='logoutGo'){shClose();setTimeout(()=>{['m_pin','m_cache','m_key'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}KC.k=null;D=null;lastCt=null;showPin('')},340)}
+    else if(ds.act==='logoutGo'){shClose();setTimeout(()=>{['m_pin','m_cache','m_key','m_lk','m_me','m_br','m_t'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}KC.k=null;D=null;lastCt=null;showPin('')},340)}
     else if(ds.rqpick){const i=$('rqIn');i.value=i.value.replace(/([^,\s]*)$/,'')+ds.rqpick+', ';i.focus();rqSug()}return true}
   if(!rqOn())return false;
   const pn=e.target.closest('.gnote.pend.my');if(pn){rqPendSheet(pn.dataset.rqn);return true}
@@ -958,7 +981,7 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.50.6</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.51.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1135,6 +1158,8 @@ const telH=(lab,n)=>{const d=String(n).replace(/\D/g,'');const f=d.length===11?`
   return `<a class="tel" href="tel:${d}"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.4 4.1-2 1.4a12 12 0 0 0 6.4 6.4l1.4-2 4.1 1.4v2.6a2 2 0 0 1-2.2 2A16.6 16.6 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg></i><span>${esc(lab)}</span><b>${f}</b></a>`};
 async function ctFill(){if(!D)return;const ws=[...document.querySelectorAll('.ctw[data-sid]')];if(!ws.length)return;const b=B();const t=ctMe(b);const any=b.ct&&Object.keys(b.ct).length;
   const set=h=>ws.forEach(w=>w.innerHTML=h);
+  if(D.v2){if(b._nx){set('');return}const m=t&&b.ctm;
+    ws.forEach(w=>{const c=m&&m[w.dataset.sid];w.innerHTML=!c?'<div class="cth">담당 학생이 아니어서 연락처는 안 보여요</div>':(c.p||(c.a||[]).length)?`<div class="tels">${c.p?telH('학생',c.p):''}${(c.a||[]).map(x=>telH(x.l,x.n)).join('')}</div>`:'<div class="cth">저장된 연락처가 없어요</div>'});return}
   if(!any||b._nx){set('');return}
   if(!t){set('<div class="cth">연락처는 <b>내 이름</b>을 정한 담당 선생님만 볼 수 있어요</div>');return}
   if(!b.ct[t]){set('<div class="cth">연락처 코드가 아직 없어요 · 부원장님께 말씀해 주세요</div>');return}
