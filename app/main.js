@@ -91,6 +91,12 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     const ct={};rs.forEach(r=>{ct[r.b.id]=Object.assign(ct[r.b.id]||{},ctPlain(r.b,r.ver,r.t,true))});
     const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct};
     for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify(ct)).digest('hex'))}}
+  /* 행정 선생님(지점마다 b.staff): 개인 코드 · 모든 지점 · 학생 전체 연락처 · 내 수업 없음 */
+  const ctAll=b=>{const digits=x=>String(x||'').replace(/\D/g,'');const m={};(b.students||[]).forEach(st=>{const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));m[st.id]=ph||pa.length?{...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}:{}});return m};
+  const sts=[];(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>(b.staff||[]).forEach(a=>{if(/^\d{6}$/.test(String(a.ck||''))&&nm(a.name))sts.push({b,a})}));
+  if(sts.length){const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});const allK=Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')]));const ctH=crypto.createHash('sha256').update(JSON.stringify(ctA)).digest('hex');
+    for(const {b,a} of sts){const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,all:1,ct:ctA};const dk=await lgKey(String(a.ck),salt);
+      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+a.ck+':'+nm(a.name)+':'+b.id+':'+ctH)}}
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
