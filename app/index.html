@@ -765,6 +765,14 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .iqpv{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
 .iqpv span{background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:3px 10px;font-size:12.5px}
 .iqpv small{color:var(--muted)}
+.eogo{display:flex;gap:10px;margin:6px 0 4px}.eogo .btn{flex:1;padding:12px 10px;font-size:14px}
+.eost{font-size:12.5px;color:var(--muted);min-height:20px;padding:4px 2px}
+.eost.busy{color:var(--navy)}.eost.busy::before{content:'';display:inline-block;width:11px;height:11px;margin-right:7px;vertical-align:-1px;border:2px solid color-mix(in srgb,var(--navy) 25%,transparent);border-top-color:var(--navy);border-radius:50%;animation:eospin .8s linear infinite}
+@keyframes eospin{to{transform:rotate(360deg)}}
+.eost.err{color:#b23b3b}
+.eoacc{border-top:1px solid var(--line2);margin-top:6px;padding-top:6px}.eoacc summary{cursor:pointer;font-size:12.5px;color:var(--muted);padding:4px 0}
+.eoacc .row label{width:64px}
+.btn.eokbtn{border-color:color-mix(in srgb,#0f9d8f 45%,var(--line));color:#0b7f74}
 </style>
 </head>
 <body>
@@ -3123,7 +3131,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.59.4', APPDATE='2026-10-18';
+const APPVER='3.60.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3260,7 +3268,7 @@ async function saveNow(){
 }
 function commit(fn,msg){
   if(AUTO.prev&&!/자동 배치 안/.test(msg||'')){toast('자동 배치 미리보기 중이에요. 위쪽에서 [적용] 또는 [취소]를 먼저 누르세요');return}
-  if(!UI.edit&&typeof isStaff==='function'&&isStaff()&&UI.stOK){quickChange(fn,msg);return} // 행정 선생님: 허용된 일만 바로 저장
+  if(!UI.edit&&((typeof isStaff==='function'&&isStaff()&&UI.stOK)||UI.anyOK)){quickChange(fn,msg);return} // 행정 선생님 허용 일 · 에듀OK 명부 반영은 보기 모드에서도 바로 저장 // 행정 선생님: 허용된 일만 바로 저장
   if(!UI.edit){toast(typeof isStaff==='function'&&isStaff()?'행정 선생님 PC에서는 할 수 없는 일이에요':'보기 모드예요. 위쪽 보기·수정 스위치를 켜야 고칠 수 있어요');render();return}
   if(typeof syncGuard==='function'&&!syncGuard())return;
   hist.u.push(dbSnap());if(hist.u.length>80)hist.u.shift();hist.r=[];
@@ -3588,7 +3596,7 @@ function viewStudents(){
   const qm=s=>!f.q||s.name.includes(f.q.trim())||(s.school||'').includes(f.q.trim());
   const list=b.students.filter(s=>(!f.g||s.grade===f.g)&&(f.st?stLabel(s)===f.st:!isOut(s))).sort((a,b)=>GRADE_ORDER(a.grade)-GRADE_ORDER(b.grade)||sortKo(a.name,b.name));
   const nA=b.students.filter(s=>!offS(s)&&!isPre(s)).length;const nO=b.students.filter(isOut).length;const nP=b.students.filter(isPre).length;
-  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
+  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn eokbtn" data-act="eokOpen" title="에듀OK에 로그인해서 재학생명부·입학희망생명부를 받아 바로 불러와요">에듀OK에서 받기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
   if(UI.importRes){const r=UI.importRes;h+=`<div class="sec"><div class="box"><b>명부 가져오기 결과 (${r.total}명)</b>
     <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div><div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
     ${r.missing.length?`<div class="box warn"><span>명부에 없는 재원생 ${r.missing.length}명: ${esc(r.missing.map(id=>sname(id)).join(', '))}</span><div class="row"><button class="btn" data-act="missingAway">모두 휴원으로 바꾸기</button><span class="hint">퇴원생이면 아래 표에서 직접 삭제하세요</span></div></div>`:''}
@@ -4115,6 +4123,11 @@ document.addEventListener('click',async e=>{
     case 'stfAdd':stfAdd();break;
     case 'iqImport':{let i=$('fileInq');if(!i){i=document.createElement('input');i.type='file';i.id='fileInq';i.accept='.xls,.xlsx,.html,.htm';i.hidden=true;document.body.appendChild(i)}i.value='';i.click();break}
     case 'iqAdd':inqAdd();break;
+    case 'eokOpen':eokDlg();break;
+    case 'eokSave':eokSave();break;
+    case 'eokClear':if(!armed(el,'eokc','한 번 더 누르면 지워요'))return;eokClear();break;
+    case 'eokGo':eokGo(el.dataset.kind);break;
+    case 'eokRosterGo':{const L=UI.eokRoster;$('modal').hidden=true;UI.eokRoster=null;if(L){UI.stOK=1;UI.anyOK=1;try{applyRoster(L)}finally{UI.stOK=0;UI.anyOK=0}}break}
     case 'iqRegGo':inqRegGo();break;
     case 'iqGo':{const L=UI.iqPend;$('modal').hidden=true;if(L)inqImport(L,true);break}
     case 'stOne':UI.stAll=false;render();break;
@@ -5593,7 +5606,7 @@ function inqBoxHTML(b){const L=inqLive(b).sort((a,z)=>(a.want||'9').localeCompar
     <div class="iqc">${q.ph?`<span>학생 <b class="mono">${esc(phF(q.ph))}</b></span>`:''}${(q.pa||[]).map(p=>`<span>${esc(p.l||'보호자')}${p.nm?' '+esc(p.nm):''} <b class="mono">${esc(phF(p.n))}</b></span>`).join('')||(q.ph?'':'<span class="hint">연락처 없음</span>')}</div>
     <div class="iqd">${q.want?`<span>희망 <b>${mdS(q.want)}</b></span>`:''}${q.reg?`<span>문의 ${mdS(q.reg)}</span>`:''}${q.src?`<span>${esc(q.src)}</span>`:''}</div>
     <div class="iqo">${q.st==='open'?`<button class="btn sm pri" data-iqreg="${q.id}" title="첫 수업일을 정해 입학 예정 학생으로">입학 예정으로</button><button class="btn sm" data-iqnow="${q.id}" data-label="바로 재원" title="오늘부터 재원 학생으로">바로 재원</button><button class="btn sm" data-iqx="${q.id}" data-label="입학취소">입학취소</button>`:`<span class="hint">${q.cancelAt?mdS(q.cancelAt)+' 취소':''}</span><button class="btn sm" data-iqback="${q.id}">되돌리기</button>`}</div></div>`;
-  return `<div class="sec iqbox"><h3>입학 문의 ${L.length?`<span class="iqcnt">${L.length}명</span>`:''}<span class="hint">입학 희망생 · 지점장·행정 선생님만 봐요(선생님 폰에는 안 나가요)${nDone?` · 학생으로 옮긴 문의 ${nDone}명`:''}</span><span class="sp"></span><button class="btn sm" data-act="iqImport" title="관리 프로그램에서 뽑은 '입학희망생명부' 엑셀(.xls)">입학희망생명부 불러오기</button></h3>
+  return `<div class="sec iqbox"><h3>입학 문의 ${L.length?`<span class="iqcnt">${L.length}명</span>`:''}<span class="hint">입학 희망생 · 지점장·행정 선생님만 봐요(선생님 폰에는 안 나가요)${nDone?` · 학생으로 옮긴 문의 ${nDone}명`:''}</span><span class="sp"></span><button class="btn sm eokbtn" data-act="eokOpen">에듀OK에서 받기</button><button class="btn sm" data-act="iqImport" title="관리 프로그램에서 뽑은 '입학희망생명부' 엑셀(.xls)">입학희망생명부 불러오기</button></h3>
     ${L.length?`<div class="iql">${L.map(row).join('')}</div>`:'<div class="hint">문의 중인 학생이 없어요</div>'}
     <div class="row iqadd"><input id="iqName" placeholder="이름" style="width:90px"><input id="iqSchool" placeholder="학교" style="width:100px"><input id="iqGrade" placeholder="학년(예: 중2)" style="width:100px"><input id="iqPh" placeholder="연락처" inputmode="tel" style="width:130px"><input id="iqWant" type="date" title="입학 희망일" style="width:140px"><button class="btn sm" data-act="iqAdd">문의 추가</button></div>
     ${C0.length?`<details class="iqcx"><summary>취소된 문의 ${C0.length}명</summary><div class="iql">${C0.sort((a,z)=>(z.cancelAt||'').localeCompare(a.cancelAt||'')).map(row).join('')}</div></details>`:''}</div>`}
@@ -5635,6 +5648,30 @@ async function inqReg(id,fd){const q=(B().inq||[]).find(x=>x.id===id);if(!q)retu
   await quickChange(()=>{const b=B();const x=(b.inq||[]).find(y=>y.id===id);if(!x)return;b.students.push({id:sid,name:q.name,school:q.school||'',grade:q.grade||'',status:pre?'예정':'재원',...(fd?{from:fd}:{}),...(q.ph?{ph:q.ph}:{}),...(q.pa&&q.pa.length?{pa:q.pa.map(p=>({l:p.l||'보호자',n:p.n}))}:{}),...(!q.school||!q.grade?{quick:1}:{}),at:todayStr()});x.st='done';x.sid=sid;x.doneAt=todayStr()},
     pre?`${q.name} · 입학 예정(${mdS(fd)}부터)으로 옮겼어요 · 반에 넣어 주세요`:`${q.name} · 오늘부터 재원으로 옮겼어요 · 반에 넣어 주세요`)}
 document.addEventListener('change',async e=>{if(e.target&&e.target.id==='fileInq'){const f=e.target.files[0];if(!f)return;try{const L=parseInq(await f.arrayBuffer());if(!L.length)throw new Error('학생을 한 명도 읽지 못했어요');await inqImport(L)}catch(err){toast('불러오지 못했어요: '+err.message,4500)}}});
+/* ===== 에듀OK에서 받기: 지점마다 이 PC에 아이디·비밀번호 저장 → 버튼 하나로 재학생명부·입학희망생명부를 받아 바로 불러오기 ===== */
+async function eokDlg(msg){if(!bridge||!bridge.eokInfo){toast('프로그램에서만 돼요');return}const b=B();const inf=(await bridge.eokInfo())[b.id]||{};
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg eokdlg" role="dialog" aria-modal="true" aria-labelledby="eoT" style="width:min(500px,100%)"><h2 id="eoT">에듀OK에서 받기 · <span class="iqbr">${esc(b.name)}</span></h2>
+  <div class="eogo"><button class="btn pri" data-act="eokGo" data-kind="roster" ${inf.has?'':'disabled'}>재학생명부 받기</button><button class="btn pri" data-act="eokGo" data-kind="hope" ${inf.has?'':'disabled'}>입학희망생명부 받기</button></div>
+  <div class="eost" id="eoSt">${msg||(inf.has?(inf.at?`마지막으로 받은 때 ${fmtT(inf.at)}`:'버튼을 누르면 에듀OK에 로그인해서 받아 와요 · 10~20초쯤 걸려요'):'아래에 이 지점 에듀OK 아이디·비밀번호를 먼저 넣어 주세요')}</div>
+  <details class="eoacc"${inf.has?'':' open'}><summary>에듀OK 계정 · ${esc(b.name)}${inf.id?` <span class="hint">${esc(inf.id)}</span>`:''}</summary>
+    <div class="row"><label for="eoId">아이디</label><input id="eoId" autocomplete="off" value="${esc(inf.id||'')}" style="flex:1"></div>
+    <div class="row"><label for="eoPw">비밀번호</label><input id="eoPw" type="password" autocomplete="new-password" placeholder="${inf.has?'저장돼 있어요 · 바꿀 때만 넣기':''}" style="flex:1"></div>
+    <div class="row"><span class="hint" style="flex:1">이 PC에만 암호화해서 저장돼요 · 다른 PC로 안 넘어가요</span>${inf.has?'<button class="btn sm" data-act="eokClear" data-label="지우기">지우기</button>':''}<button class="btn sm" data-act="eokSave">저장</button></div></details>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button></div></div>`;
+  if(!inf.has)setTimeout(()=>{const i=$(inf.id?'eoPw':'eoId');if(i)i.focus()},50)}
+async function eokSave(){const id=($('eoId').value||'').trim(),pw=$('eoPw').value||'';if(!id){toast('아이디를 넣어 주세요');return}const inf=(await bridge.eokInfo())[B().id]||{};if(!pw&&!inf.has){toast('비밀번호를 넣어 주세요');return}
+  await bridge.eokSet({branch:B().id,id,pw});eokDlg('저장했어요 · 이제 위 버튼으로 받으면 돼요')}
+async function eokClear(){await bridge.eokSet({branch:B().id,clear:true});eokDlg('계정을 지웠어요')}
+async function eokGo(kind){const st=$('eoSt');document.querySelectorAll('[data-act="eokGo"]').forEach(x=>x.disabled=true);st.className='eost busy';st.textContent=`에듀OK에서 ${kind==='roster'?'재학생명부':'입학희망생명부'}를 받는 중…`;
+  const bid=B().id;const r=await bridge.eokFetch({branch:bid,kind});
+  if(!r.ok){st.className='eost err';st.textContent=r.err+(r.login?'':' · 안 되면 지금처럼 직접 받아서 [가져오기]로 넣어도 돼요');document.querySelectorAll('[data-act="eokGo"]').forEach(x=>x.disabled=false);if(r.login||r.need){const d=document.querySelector('.eoacc');if(d)d.open=true}return}
+  if(B().id!==bid){DB.currentBranch=bid}const buf=Uint8Array.from(atob(r.b64),c=>c.charCodeAt(0)).buffer;
+  try{if(kind==='roster'){const L=parseRoster(buf);if(!L.length)throw new Error('학생을 한 명도 읽지 못했어요');$('modal').hidden=true;eokRosterConfirm(L)}
+    else{const L=parseInq(buf);$('modal').hidden=true;if(!L.length){toast('입학희망생이 없어요');return}await inqImport(L)}}
+  catch(err){st.className='eost err';st.textContent='받은 파일을 읽지 못했어요: '+err.message;document.querySelectorAll('[data-act="eokGo"]').forEach(x=>x.disabled=false)}}
+function eokRosterConfirm(L){UI.eokRoster=L;const b=B();$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="erT" style="width:min(460px,100%)"><h2 id="erT"><span class="iqbr">${esc(b.name)}</span>에 반영할까요?</h2>
+  <div class="hint">에듀OK 재학생명부 <b>${L.length}명</b>을 ${esc(b.name)} 학생 관리에 반영해요(새 학생 추가·학교·학년·연락처 갱신). 명부에 없는 재원생은 결과에서 따로 알려 줘요.</div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="eokRosterGo">${esc(b.name)}에 반영</button></div></div>`}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5674,6 +5711,7 @@ const HELP=[
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
   <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 반에 학생을 넣거나 빼거나 옮기면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요(알림에 '예정 시간표에도 반영'). 예정 시간표에 같은 이름 반이 없으면 알려만 줘요 — 그때는 예정 시간표를 열어 직접 넣어 주세요. 퇴원은 두 시간표 모두에서 빠져요.</li>
+  <li><b>에듀OK에서 받기</b>: [학생 관리]의 [에듀OK에서 받기]를 누르고 처음 한 번 <b>그 지점 에듀OK 아이디·비밀번호</b>를 넣어 저장하세요(이 PC에만 암호화해서 저장 · 다른 PC로 안 넘어가요). 그다음부터 [재학생명부 받기]·[입학희망생명부 받기]를 누르면 프로그램이 에듀OK에 로그인해 [엑셀]을 받아 바로 불러와요(10~20초). 넣기 전에 어느 지점에 넣을지 한 번 물어봐요. 에듀OK 화면이 바뀌면 멈출 수 있어요 — 그때는 지금처럼 직접 받아서 가져오기로 넣으면 돼요.</li>
   <li><b>입학 문의</b>: [학생 관리] 맨 위 칸. 관리 프로그램에서 뽑은 <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기]로 고르면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요(이름·학교·학년·연락처·입학희망일·문의일·등록경로). 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요. <b>[입학 예정으로]</b>는 첫 수업일(오늘 이후)을 골라 입학 예정 학생으로, <b>[바로 재원]</b>은 두 번 눌러 오늘부터 재원 학생으로 옮겨요(연락처 그대로) — 반 넣기는 지점 시간표 카드에서. <b>[입학취소]</b>는 두 번 누르면 '취소된 문의'로 남고 [되돌리기]도 돼요. 지점장·행정 선생님 PC에서만 보이고 선생님 폰에는 안 나가요.</li>
   <li><b>퇴원</b>: 학생 관리에서 상태를 눌러 <b>퇴원</b>을 고르고 퇴원일을 정하면, 지금·예정 시간표의 모든 반과 특강 명단에서 빠지고 학생은 '퇴원'으로 남아요(목록 필터 '퇴원'에서 봐요). 선생님 폰에서는 사라져요. 통계에 이번 달 퇴원·입학 문의 수와 월별 퇴원·입학 문의가 나와요. 다시 다니면 상태를 재원으로 바꾸거나 명부를 불러오면 돼요.</li>
   <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
