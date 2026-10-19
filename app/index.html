@@ -3152,7 +3152,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.62.1', APPDATE='2026-10-20';
+const APPVER='3.62.2', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3636,7 +3636,7 @@ function viewStudents(){
 const accSt=()=>{try{return JSON.parse(localStorage.getItem('ymt_acc')||'{}')}catch(e){return {}}};
 function accSetup(){const root=$('view');if(!root)return;
   root.querySelectorAll(':scope > .sec').forEach(sec=>{const h=sec.querySelector(':scope > h3');
-    const title=sec.id==='syncBox'?'지점 연동':sec.id==='mobBox'?'폰으로 보기':sec.id==='rqBox'?'선생님 보강 등록':sec.id==='ownBox'?'내 폰 관리 모드':(h?(h.childNodes[0].textContent||'').trim():'');if(!title)return;
+    const title=sec.id==='syncBox'?'지점 연동':sec.id==='mobBox'?'폰으로 보기':sec.id==='rqBox'?'선생님 보강 등록':sec.id==='ownBox'?'내 폰 관리 모드':sec.id==='autoBox'?'이 PC':(h?(h.childNodes[0].textContent||'').trim():'');if(!title)return;
     const key=sec.id||title;const det=document.createElement('details');det.className='acc';det.dataset.acc=key;
     const sm=document.createElement('summary');sm.innerHTML=`<b>${esc(title)}</b><span class="accs" data-sum="${esc(key)}"></span>`;
     sec.parentNode.insertBefore(det,sec);det.appendChild(sm);
@@ -3673,6 +3673,7 @@ function viewSettings(){
   <div class="sec" id="syncBox"></div>
   <div class="sec" id="mobBox"><h3>폰으로 보기 <span class="hint">보기 전용</span></h3><div class="hint">불러오는 중…</div></div>
   <div class="sec" id="rqBox"><h3>선생님 보강 등록</h3><div class="hint">불러오는 중…</div></div>${annHTML()}
+  ${autoHTML()}
   <div class="sec"><h3>데이터</h3><div class="hint">모든 변경은 프로그램 폴더의 data\\timetable.json에 자동 저장되고, 30분마다 data\\backup에 백업이 쌓여요.</div>
   <div class="row"><button class="btn" data-act="exportBackup">백업 파일로 저장</button>${bridge?'<button class="btn" data-act="openData">data 폴더 열기</button><button class="btn" data-act="openOut">PDF 폴더 열기</button>':''}</div></div>
   <div class="sec"><h3>화면 크기</h3><div class="row"><button class="btn" data-zoom="-1">작게</button><button class="btn" data-zoom="0">기본</button><button class="btn" data-zoom="1">크게</button><span class="hint">지점 시간표 화면에서는 Ctrl + 휠이 시간표 카드 크기를 바꿔요 (커지면 학생 이름 표시)</span></div></div>`;
@@ -3727,7 +3728,7 @@ function render(){
   $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():UI.view==='admin'?viewAdmin():UI.view==='stats'?viewStats():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
-  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
+  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums);if(UI.view==='settings')autoFill()}fitGrid();renderPop();setTimeout(renderPop,330);
 }
 // 시간표가 화면에 꽉 차고 자동 점검이 항상 아래에 보이도록 높이 맞춤
 function fitGrid(){const sc=$('view').querySelector('.scroll');if(!sc)return;if(sc.id==='gridScroll'){sc.style.maxHeight='none';document.documentElement.style.setProperty('--toph',($('view').closest('.main').previousElementSibling.getBoundingClientRect().height+(document.body.classList.contains('exe')?36:0))+'px');calcBase();stretchLater();return}const side=$('side');
@@ -4125,6 +4126,7 @@ document.addEventListener('click',async e=>{
     case 'ownNew':if(ownCfg()&&!armed(el,'ownnew','한 번 더 누르면 바꿔요'))return;ownNew();break;
     case 'ownOff':if(!armed(el,'ownoff','한 번 더 누르면 꺼요'))return;ownOff();break;
     case 'ownShow':ownShow();break;
+    case 'autoTg':autoTg();break;
     case 'ownCopy':{const o=ownCfg();if(!o)break;try{await navigator.clipboard.writeText(o.ck)}catch(e){}toast('복사했어요');break}
     case 'syCopy':{const ta=$('scCode');try{await navigator.clipboard.writeText(ta.value)}catch(e){ta.select();document.execCommand('copy')}toast('복사했어요 · 카톡 1:1로 보내 주세요');break}
     case 'closeModal':$('modal').hidden=true;UI.spd=null;UI.spListOpen=false;break;
@@ -4974,9 +4976,10 @@ const RQS={list:[],info:null,busy:false,last:0};
 const rqKind=x=>x.k||'보강';
 const rqClsOf=(b,id)=>{if(!b||!id)return null;const v=b.versions.find(i=>i.id===b.current)||b.versions[0];return v&&(v.classes||[]).find(c=>c.id===id)||null};
 const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br);
-async function rqTick(force){if(!bridge||!bridge.rqList||isStaff())return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
+async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
-  const n0=RQS.n|0;const all=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.list=all.filter(x=>!x.kind);csApply();await cnApply();cnxApply();adApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
+  pcHandle((r.list||[]).filter(x=>x.kind==='pc'));if(isStaff())return;
+  const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.list=all.filter(x=>!x.kind);csApply();await cnApply();cnxApply();adApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
 /* 신입 상담 완료(선생님이 강사용에서 누름): 이 PC가 고칠 수 있는 지점이면 원본 학생에 바로 적고 등록 목록에서 정리 (승인 없음) */
 async function csApply(){const L=(RQS.cs||[]).filter(x=>!x.bad);if(!L.length||RQS.csBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.csBusy=true;
@@ -5055,7 +5058,7 @@ async function rqSave(on){const tok=(($('rqTok')&&$('rqTok').value)||'').trim();
   if(on&&!tok&&!i.hasTok){toast('보강 등록 키를 넣어 주세요 · 아래 [보강 등록 키 만들기]를 보세요');return}
   toast(on?'보강 등록 키를 확인하는 중…':'끄는 중…');const r=await bridge.rqSet({on,...(tok?{token:tok}:{})});RQS.info=r;await rqRender();if(typeof accSums==='function')accSums();
   toast(r.err?'켜지 못했어요 · 아래 내용을 확인해 주세요':r.on?'선생님 보강 등록을 받아요 · 1~2분 뒤 선생님 화면에 반영돼요':'선생님 보강 등록 받기를 껐어요',4000);rqTick(true)}
-setTimeout(()=>rqTick(true),6000);setInterval(()=>{if(!document.hidden)rqTick()},120000);window.addEventListener('focus',()=>rqTick());
+setTimeout(()=>rqTick(true),6000);setInterval(()=>rqTick(),45000); /* 창을 내려 둬도(최소화) 폰 요청·PC 확인을 받게 */window.addEventListener('focus',()=>rqTick());
 
 /* ---- 관리자 잠금 화면 ---- */
 function admRender(){const el=$('syncBadge');if(!el||el.hidden)return;if(ADM.open&&SYNC.info.pw&&el.textContent==='연동됨'){el.className='syncb adm';el.textContent='관리자 모드';el.title='설정 맨 위 [관리자 모드 잠그기]로 다시 '+syBName(myBr())+' 모드로'}}
@@ -5884,6 +5887,27 @@ async function adApply(){const L=(RQS.ad||[]);if(!L.length||RQS.adBusy||UI.edit|
         `폰에서 바꾼 것 반영 · ${live.map(x=>x.lb||'요청').slice(0,3).join(' · ')}${live.length>3?` 외 ${live.length-3}건`:''}`,br);if(!done)continue;if(fails.length)setTimeout(()=>toast('폰 요청 중 못 한 것: '+fails.join(' / '),6000),4200)}
       for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
     RQS.ad=[]}finally{RQS.adBusy=false}}
+
+/* ---- PC 상태 확인·원격 다시 시작 (관리자 폰 → kind 'pc', 서명) ----
+   켜져 있는 PC는 요청을 보면 자기 상태(이름·역할·지점·버전·다시 시작 필요·수정 중)를 암호화한 댓글로 남김 · 관리자 PC는 연결된 PC 목록과 보낸 업데이트 버전도
+   [다시 시작]은 그 PC만: 수정 중이면 안 하고 '수정 중'으로 답함 */
+const PCS={done:new Set()};
+function pcMe(){const i=(typeof SYNC!=='undefined'&&SYNC.info)||{};return {dev:i.dev||'',name:i.name||'',role:typeof isStaff==='function'&&isStaff()?'staff':i.on?(i.role||'owner'):'solo',branch:i.branch||'',brName:i.branch?syBName(i.branch):'',ver:APPVER,stale:!!UI.stale,edit:!!UI.edit,at:Date.now()}}
+async function pcHandle(L){if(!bridge||!bridge.rqComment)return;
+  for(const x of L){if(x.adBad||!x.ops){if(typeof isOwner==='function'&&isOwner())try{await bridge.rqClose(x.num,false)}catch(e){}continue}
+    const age=Date.now()-(x.pat||x.at||0);if(age>10*60000){if(typeof isOwner==='function'&&isOwner()&&age>15*60000)try{await bridge.rqClose(x.num,true)}catch(e){}continue}
+    if(PCS.done.has(x.num))continue;const o=x.ops[0]||{};const me=pcMe();
+    if(o.op==='pcPing'){PCS.done.add(x.num);if(me.role==='owner'){try{const d=await bridge.syncDevices();me.devs=((d&&d.list)||[]).map(v=>({dev:v.dev,name:v.name||'',role:v.role||'',branch:v.branch||'',brName:v.branch?syBName(v.branch):'',ver:v.ver||'',day:v.day||'',stale:!!v.stale}))}catch(e){}try{me.pub=await bridge.updRemoteVer()}catch(e){}}
+      try{await bridge.rqComment(x.num,me)}catch(e){}}
+    else if(o.op==='pcPub'){PCS.done.add(x.num);if(!bridge.ghNow)continue;let r=null;try{r=await bridge.ghNow()}catch(e){}const g=r&&r.gh;if(!g||!g.on)continue; /* 올리기를 켠 PC만 */
+      if(typeof MOBI!=='undefined'&&MOBI)MOBI.gh=g;try{await bridge.rqComment(x.num,Object.assign(me,{pub2:g.err?'err':'ok',err:g.err||'',last:g.last||0}))}catch(e){}}
+    else if(o.op==='pcRestart'){if(!me.dev||(o.a||{}).dev!==me.dev)continue;PCS.done.add(x.num);
+      if(UI.edit){try{await bridge.rqComment(x.num,Object.assign(me,{restart:'edit'}))}catch(e){}continue}
+      try{await bridge.rqComment(x.num,Object.assign(me,{restart:'ok'}))}catch(e){}try{clearTimeout(saveTimer);await saveNow()}catch(e){}setTimeout(()=>bridge.relaunch(),600)}}}
+/* 이 PC: 윈도우를 켜면 프로그램 자동 실행 */
+function autoHTML(){return bridge&&bridge.autoStart?`<div class="sec" id="autoBox"><div class="row"><span style="flex:1"><b>윈도우를 켜면 프로그램 자동 실행</b><br><span class="hint">학원 PC가 다시 켜져도 프로그램이 저절로 열려서, 폰에서 바꾼 것·선생님 요청·업데이트를 계속 받아요</span></span><button class="tgl" role="switch" aria-checked="false" id="autoTg" data-act="autoTg" aria-label="자동 실행"><i></i></button></div></div>`:''}
+async function autoFill(){const t=$('autoTg');if(!t||!bridge.autoStart)return;const v=await bridge.autoStart();t.setAttribute('aria-checked',String(!!v));const s=document.querySelector('.accs[data-sum="autoBox"]');if(s)s.textContent=v?'켜짐':'꺼짐'}
+async function autoTg(){const t=$('autoTg');if(!t)return;const on=t.getAttribute('aria-checked')!=='true';const v=await bridge.autoStart(on);if(v===null){toast('이 PC에서는 바꿀 수 없어요');return}autoFill();toast(v?'윈도우를 켜면 프로그램이 저절로 열려요':'자동 실행을 껐어요')}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5927,7 +5951,7 @@ const HELP=[
   <li><b>정기 상담</b>: [학생 관리]의 <b>정기 상담</b> 칸에서 지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더(설정의 시험 기간 시작일 ~ 끝나고 1주). <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요(기본: 다음 기간). 기간이 열리면 선생님 강사용 <b>학생 탭 맨 위</b>(오늘 탭에도 알림)에 담당 학생 중 아직 상담 안 한 학생이 떠요. 한 분이 [상담 완료](메모는 선택)를 누르면 같이 가르치는 선생님 화면에서도 완료로 바뀌고, 지점장용에 승인 없이 기록돼요. [주기] 창에서 시험 기간도 바로 정할 수 있어요. PC에서는 학생 이름을 눌러 상담 완료·잘못 넣은 기록 <b>삭제</b>(두 번)·<b>보류</b>(지점장만 · 보류로 건너뛴 상담 기간 수가 보여요)·<b>선생님께 보내기</b>(지점장·행정 선생님 · 요청 내용과 함께 그 선생님 폰 맨 위에 '지정'으로 떠요)를 해요. 행정 선생님 폰에는 <b>지정 상담</b>만 떠요. [통계] 탭에 분기별 상담 횟수(누른 사람 기준)와 이번 기간 선생님별 완료율이 나와요.</li>
   <li><b>입학 문의</b>: [학생 관리] 맨 위 칸. 관리 프로그램에서 뽑은 <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기]로 고르면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요(이름·학교·학년·연락처·입학희망일·문의일·등록경로). 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요. <b>[입학 예정으로]</b>는 첫 수업일(오늘 이후)을 골라 입학 예정 학생으로, <b>[바로 재원]</b>은 두 번 눌러 오늘부터 재원 학생으로 옮겨요(연락처 그대로) — 반 넣기는 지점 시간표 카드에서. <b>[입학취소]</b>는 두 번 누르면 '취소된 문의'로 남고 [되돌리기]도 돼요. 지점장·행정 선생님 PC에서만 보이고 선생님 폰에는 안 나가요.</li>
   <li><b>퇴원</b>: 학생 관리에서 상태를 눌러 <b>퇴원</b>을 고르고 퇴원일을 정하면, 지금·예정 시간표의 모든 반과 특강 명단에서 빠지고 학생은 '퇴원'으로 남아요(목록 필터 '퇴원'에서 봐요). 선생님 폰에서는 사라져요. 통계에 이번 달 퇴원·입학 문의 수와 월별 퇴원·입학 문의가 나와요. 다시 다니면 상태를 재원으로 바꾸거나 명부를 불러오면 돼요.</li>
-  <li><b>내 폰 관리 모드</b>(프로그램 관리자만): [프로그램 관리 → 내 폰 관리 모드]에서 <b>[폰 코드 만들기]</b>를 누르면 <b>10자리 코드</b>가 나와요. 강사용을 폰에서 열고 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요 — 학생 추가·상태(휴원·예정·퇴원)·정보 고치기, 반 넣기·빼기(예정 시간표의 같은 반도 같이), 정기 상담 주기·시험 기간·지정·보류, 입학 문의(입학 예정으로·바로 재원·입학취소), 공지 올리기·내리기, 통계(재원·환산·학생×타임·월별). 폰에서 누르면 서명된 요청이 가고, 그 지점 PC나 관리자 PC 중 <b>켜져 있는 PC</b>가 서명을 확인한 뒤 바로 반영해요(1~2분). <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 폰 화면을 그대로 볼 수 있어요(보내기는 막힘). 시간표 칸 옮기기·반 구조·버전·에듀OK·엑셀은 PC에서만. 코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기].</li>
+  <li><b>내 폰 관리 모드</b>(프로그램 관리자만): [프로그램 관리 → 내 폰 관리 모드]에서 <b>[폰 코드 만들기]</b>를 누르면 <b>10자리 코드</b>가 나와요. 강사용을 폰에서 열고 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요 — 학생 추가·상태(휴원·예정·퇴원)·정보 고치기, 반 넣기·빼기(예정 시간표의 같은 반도 같이), 정기 상담 주기·시험 기간·지정·보류, 입학 문의(입학 예정으로·바로 재원·입학취소), 공지 올리기·내리기, 통계(재원·환산·학생×타임·월별). 폰에서 누르면 서명된 요청이 가고, 그 지점 PC나 관리자 PC 중 <b>켜져 있는 PC</b>가 서명을 확인한 뒤 바로 반영해요(1~2분). <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 폰 화면을 그대로 볼 수 있어요(보내기는 막힘). 시간표 칸 옮기기·반 구조·버전·에듀OK·엑셀은 PC에서만. 코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기]. <b>[PC·업데이트]</b>에서 켜져 있는 PC와 버전·'다시 시작 필요'를 확인하고 원격으로 <b>[다시 시작]</b>할 수 있어요(수정 중인 PC는 안 함). 꺼진 프로그램은 폰에서 켤 수 없으니 PC마다 [설정 → 이 PC → 윈도우를 켜면 프로그램 자동 실행]을 켜 두세요.</li>
   <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
   <li><b>[통계]</b> 탭: 실적 관리용. 지금 시간표 기준으로 강사마다 <b>학년별 재원 학생 수</b>(휴원·예정은 따로), <b>환산</b>(반마다 타임 비율로 나눈 인원 — 2+2면 0.5명씩, 3+1이면 0.75·0.25명, 혼자 들어가는 반은 1명), <b>학생×타임</b>(주당 내 타임 × 학생 수 합), 주당 타임을 봐요. 표 오른쪽 위 [학년별 재원 / 학년별 환산 / 학년별 학생×타임]으로 학년 칸에 보이는 값을 바꿀 수 있어요. 반 목록에는 반 구조(3+1, 2+2 등, 진한 숫자가 내 타임)가 나오고, <b>특강</b>은 따로 셉니다(주당 타임 = 요일 수). 월별 기록은 [적용]하거나 바로 저장할 때마다 이번 달 값이 덮어써져서, 달이 끝나면 <b>그달 마지막 상태</b>가 남아요(바뀐 게 없는 달은 앞 달 그대로) · 재원/환산/학생×타임/특강 인원/특강 ×타임으로 바꿔 볼 수 있어요. 옆의 학년 고르기로 <b>학년별 월별 기록</b>(예: 고2만)도 봐요 — 학년별 기록은 2026년 10월부터 쌓여요. 명단은 있는데 시간표에 그 선생님 수업이 없는 반은 맨 위에 <b>타임이 없는 반</b>으로 알려 줘요(환산·학생×타임이 0으로 잡히니까요). [엑셀로 저장]하면 시트 여섯 장(실적·학년별 환산·학년별 학생×타임·반 목록·특강·월별)으로 저장돼요. 지점장은 자기 지점만, 프로그램 관리자는 <b>[전 지점 합계]</b>로 같은 이름 강사를 합쳐서 볼 수 있어요.</li>
   <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
