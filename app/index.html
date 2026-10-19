@@ -3038,7 +3038,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.54.0', APPDATE='2026-10-18';
+const APPVER='3.55.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4793,8 +4793,15 @@ const rqClsOf=(b,id)=>{if(!b||!id)return null;const v=b.versions.find(i=>i.id===
 const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br);
 async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
-  const n0=RQS.n|0;RQS.list=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
+  const n0=RQS.n|0;const all=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.list=all.filter(x=>x.kind!=='cs');csApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
+/* 신입 상담 완료(선생님이 강사용에서 누름): 이 PC가 고칠 수 있는 지점이면 원본 학생에 바로 적고 등록 목록에서 정리 (승인 없음) */
+async function csApply(){const L=(RQS.cs||[]).filter(x=>!x.bad);if(!L.length||RQS.csBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.csBusy=true;
+  try{for(const br of [...new Set(L.map(x=>x.br))]){const xs=L.filter(x=>x.br===br);const b=DB.branches.find(i=>i.id===br);if(!b)continue;
+      const live=xs.filter(x=>b.students.some(s=>s.id===x.sid&&!s.cs));
+      if(live.length){const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);live.forEach(x=>{const s=bb.students.find(i=>i.id===x.sid);if(s&&!s.cs){s.cs=new Date(x.at||Date.now()).toISOString().slice(0,10);s.csBy=x.tn||''}})},`신입 상담 완료: ${live.map(x=>`${x.sn||''}(${x.tn||''}T)`).join(', ')}`,br);if(!ok)continue}
+      for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
+    RQS.cs=[]}finally{RQS.csBusy=false}}
 function rqBar(){let el=$('rqBar');const n=RQS.list.filter(x=>!x.bad).length;
   if(!n){if(el&&!el.hidden){el.hidden=true;if(typeof fitGrid==='function')fitGrid()}return}
   if(!el){el=document.createElement('div');el.id='rqBar';el.className='draftbar rqbar';document.querySelector('.top').appendChild(el)}
@@ -5331,7 +5338,7 @@ const HELP=[
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
-  <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 2주 동안 떠 있어요.</li>
+  <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 떠요. <b>상담 전</b>이면 빨간 테두리와 <b>[상담 완료]</b> 버튼이 있어요 — 담당 선생님 중 한 명이 누르면 모두 완료로 바뀌고, 지점장용이 켜져 있으면 원본 학생에도 저절로 적혀요(승인 없음). 상담 완료한 학생만 첫 수업일부터 2주 뒤 사라지고, 상담 전 학생은 2주가 지나도 계속 남아요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
  {id:'cls',t:'반 관리',b:`
   <ul><li>반 이름·색·강사별 <b>주당 횟수</b>·강사별 명단을 고쳐요. 명단은 "반(강사)" 단위로 따로예요.</li>
