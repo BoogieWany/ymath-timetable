@@ -3123,7 +3123,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.59.2', APPDATE='2026-10-18';
+const APPVER='3.59.3', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3810,11 +3810,17 @@ function moveStudent(id,fromSid,toSid,mode){const v=V();const fo=v.sessions.find
   const tTs=(mode==='one'||same)?[to.t]:Object.keys(tc.members).length?Object.keys(tc.members):[to.t];
   if(tTs.every(t=>(tc.members[t]||[]).includes(id))){toast(`${sname(id)}은(는) 이미 ${tc.name}에 있어요`);return}
   commit(()=>{const f=C(fo.cls),k=C(to.cls);
-    if(mode!=='copy'){(mode==='one'?[fo.t]:Object.keys(f.members)).forEach(t=>{f.members[t]=(f.members[t]||[]).filter(x=>x!==id)})}
-    tTs.forEach(t=>{k.members[t]=k.members[t]||[];if(!k.members[t].includes(id))k.members[t].push(id)})},
-    `${sname(id)}: ${mode==='copy'?'':fc.name+(mode==='one'?`(${tn(fo.t)})`:'')+' → '}${tc.name}${mode==='one'?`(${tn(to.t)})`:''}${mode==='copy'?'에 추가 (원래 반에도 남김)':''}`)}
+    if(mode!=='copy'){(mode==='one'?[fo.t]:Object.keys(f.members)).forEach(t=>{f.members[t]=(f.members[t]||[]).filter(x=>x!==id)});if(!same)schedDel(f,id,mode==='one'?fo.t:null)}
+    tTs.forEach(t=>{k.members[t]=k.members[t]||[];if(!k.members[t].includes(id))k.members[t].push(id);schedAdd(k,t,id)})},
+    `${sname(id)}: ${mode==='copy'?'':fc.name+(mode==='one'?`(${tn(fo.t)})`:'')+' → '}${tc.name}${mode==='one'?`(${tn(to.t)})`:''}${mode==='copy'?'에 추가 (원래 반에도 남김)':''}${schedMsg(tc)}`)}
+/* 예정 시간표 같이 고치기: 지금 시간표에서 반에 학생을 넣거나 빼면, 바뀔 예정 시간표의 같은 이름 반에도 똑같이 */
+function schedVer(){const b=B();if(!b.sched||V().id!==b.current)return null;const sv=b.versions.find(x=>x.id===b.sched.ver);return sv&&sv.id!==b.current?sv:null}
+function schedTwin(c){const sv=schedVer();return sv&&c?{sv,tw:sv.classes.find(x=>tnm(x.name)===tnm(c.name))||null}:null}
+function schedAdd(c,t,id){const r=schedTwin(c);if(!r||!r.tw)return;const m=r.tw.members=r.tw.members||{};const key=(m[t]!==undefined||r.sv.sessions.some(o=>o.cls===r.tw.id&&o.t===t))?t:Object.keys(m)[0];if(!key)return;m[key]=m[key]||[];if(!m[key].includes(id))m[key].push(id)}
+function schedDel(c,id,t){const r=schedTwin(c);if(!r||!r.tw)return;Object.keys(r.tw.members||{}).forEach(k=>{if(t&&k!==t&&r.tw.members[t]!==undefined)return;r.tw.members[k]=r.tw.members[k].filter(x=>x!==id)})}
+function schedMsg(c){const r=schedTwin(c);if(!r)return '';return r.tw?` · 예정 시간표(${mdS(B().sched.from)}~)에도 반영`:` · 예정 시간표엔 '${c.name}' 반이 없어요`}
 function removeStudent(id,sid,one){if(String(sid).startsWith('sp:')){spRemoveMember(String(sid).slice(3),id);return}const o=V().sessions.find(x=>x.id===sid);if(!o)return;const c=C(o.cls);
-  commit(()=>{const k=C(o.cls);(one?[o.t]:Object.keys(k.members)).forEach(t=>{k.members[t]=(k.members[t]||[]).filter(x=>x!==id)})},`${sname(id)}을(를) ${c.name}${one?`(${tn(o.t)})`:''}에서 뺐어요`)}
+  commit(()=>{const k=C(o.cls);(one?[o.t]:Object.keys(k.members)).forEach(t=>{k.members[t]=(k.members[t]||[]).filter(x=>x!==id)});schedDel(k,id,one?o.t:null)},`${sname(id)}을(를) ${c.name}${one?`(${tn(o.t)})`:''}에서 뺐어요${schedMsg(c)}`)}
 
 /* ================= 새 반 팝업 ================= */
 // 이 시간표에서 이미 쓰는 색 (exceptId 반은 제외)
@@ -3951,7 +3957,7 @@ function armed(btn,key,txt){if(btn.dataset.armed===key)return true;document.quer
 
 /* ================= 이벤트 ================= */
 document.addEventListener('click',async e=>{
-  const so=e.target.closest&&e.target.closest('[data-stuout]');if(so){const [cid,tid]=so.dataset.stuout.split('|');const sid=UI.student;const STX=!UI.edit&&typeof isStaff==='function'&&isStaff();if(STX&&!armed(so,'so'+so.dataset.stuout,'빼기?'))return;UI.stOK=STX?1:0;try{commit(()=>{const c=C(cid);c.members[tid]=(c.members[tid]||[]).filter(x=>x!==sid)},`${sname(sid)}을(를) ${C(cid).name}(${tn(tid)}T)에서 뺐어요${STX?'':' · 되돌리기 가능'}`)}finally{UI.stOK=0}return}
+  const so=e.target.closest&&e.target.closest('[data-stuout]');if(so){const [cid,tid]=so.dataset.stuout.split('|');const sid=UI.student;const STX=!UI.edit&&typeof isStaff==='function'&&isStaff();if(STX&&!armed(so,'so'+so.dataset.stuout,'빼기?'))return;UI.stOK=STX?1:0;try{commit(()=>{const c=C(cid);c.members[tid]=(c.members[tid]||[]).filter(x=>x!==sid);schedDel(c,sid,tid)},`${sname(sid)}을(를) ${C(cid).name}(${tn(tid)}T)에서 뺐어요${schedMsg(C(cid))}${STX?'':' · 되돌리기 가능'}`)}finally{UI.stOK=0}return}
   const and=e.target.closest&&e.target.closest('[data-anndel]');if(and){if(!armed(and,'ad'+and.dataset.anndel,'한 번 더 누르면 내려요'))return;annDel(and.dataset.anndel);return}
   const syr=e.target.closest&&e.target.closest('[data-syrevoke]');if(syr){syRevokeGo(syr);return}
   const syc=e.target.closest&&e.target.closest('[data-sycode]');if(syc){const id=syc.dataset.sycode;const code=await bridge.syncCode(id);if(!code){toast('코드를 만들 수 없어요');return}syCodeDlg(code,id==='*'?'프로그램 관리자 다른 PC용':syBName(id));return}
@@ -4230,9 +4236,9 @@ function qaSave0(){const q=UI.qa;if(!q)return;const err=$('qaErr');const name=($
   if(!id&&exact.length===1)id=exact[0].id;
   if(id&&members(o).includes(id)){err.textContent='이미 이 반에 있어요';return}
   $('modal').hidden=true;UI.qa=null;
-  if(id){commit(()=>{const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(id);const s=S(id);if(s&&offS(s)){s.status='재원';delete s.out}},`${sname(id)} → ${C(o.cls).name} 추가`);return}
-  const nid=uid('s');commit(()=>{B().students.push({id:nid,name,school,grade,status:fd&&fd>todayStr()?'예정':'재원',...(fd?{from:fd}:{}),quick:(!school||!grade)?1:undefined,at:new Date().toISOString().slice(0,10)});const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(nid)},
-    school&&grade?`신입 ${name}을(를) 등록하고 ${C(o.cls).name}에 넣었어요`:`신입 ${name}을(를) 등록했어요 · 학교·학년은 아래 자동 점검 '신입 정보'에서 나중에 넣어도 돼요`)}
+  if(id){commit(()=>{const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(id);schedAdd(C(o.cls),o.t,id);const s=S(id);if(s&&offS(s)){s.status='재원';delete s.out}},`${sname(id)} → ${C(o.cls).name} 추가${schedMsg(C(o.cls))}`);return}
+  const nid=uid('s');commit(()=>{B().students.push({id:nid,name,school,grade,status:fd&&fd>todayStr()?'예정':'재원',...(fd?{from:fd}:{}),quick:(!school||!grade)?1:undefined,at:new Date().toISOString().slice(0,10)});const m=C(o.cls).members;(m[o.t]=m[o.t]||[]).push(nid);schedAdd(C(o.cls),o.t,nid)},
+    (school&&grade?`신입 ${name}을(를) 등록하고 ${C(o.cls).name}에 넣었어요`:`신입 ${name}을(를) 등록했어요 · 학교·학년은 아래 자동 점검 '신입 정보'에서 나중에 넣어도 돼요`)+schedMsg(C(o.cls)))}
 document.addEventListener('input',e=>{if(e.target.id==='qaName')qaHits()});
 document.addEventListener('compositionend',e=>{if(e.target.id==='qaName')qaHits()});
 document.addEventListener('click',e=>{const g=e.target.closest('[data-qag]');if(g){const on=g.getAttribute('aria-pressed')!=='true';document.querySelectorAll('[data-qag]').forEach(x=>x.setAttribute('aria-pressed','false'));g.setAttribute('aria-pressed',String(on));return}
@@ -5667,6 +5673,7 @@ const HELP=[
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
+  <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 반에 학생을 넣거나 빼거나 옮기면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요(알림에 '예정 시간표에도 반영'). 예정 시간표에 같은 이름 반이 없으면 알려만 줘요 — 그때는 예정 시간표를 열어 직접 넣어 주세요. 퇴원은 두 시간표 모두에서 빠져요.</li>
   <li><b>입학 문의</b>: [학생 관리] 맨 위 칸. 관리 프로그램에서 뽑은 <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기]로 고르면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요(이름·학교·학년·연락처·입학희망일·문의일·등록경로). 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요. <b>[입학 예정으로]</b>는 첫 수업일(오늘 이후)을 골라 입학 예정 학생으로, <b>[바로 재원]</b>은 두 번 눌러 오늘부터 재원 학생으로 옮겨요(연락처 그대로) — 반 넣기는 지점 시간표 카드에서. <b>[입학취소]</b>는 두 번 누르면 '취소된 문의'로 남고 [되돌리기]도 돼요. 지점장·행정 선생님 PC에서만 보이고 선생님 폰에는 안 나가요.</li>
   <li><b>퇴원</b>: 학생 관리에서 상태를 눌러 <b>퇴원</b>을 고르고 퇴원일을 정하면, 지금·예정 시간표의 모든 반과 특강 명단에서 빠지고 학생은 '퇴원'으로 남아요(목록 필터 '퇴원'에서 봐요). 선생님 폰에서는 사라져요. 통계에 이번 달 퇴원·입학 문의 수와 월별 퇴원·입학 문의가 나와요. 다시 다니면 상태를 재원으로 바꾸거나 명부를 불러오면 돼요.</li>
   <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
