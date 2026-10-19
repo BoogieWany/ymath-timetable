@@ -3123,7 +3123,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.59.3', APPDATE='2026-10-18';
+const APPVER='3.59.4', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4013,7 +4013,7 @@ document.addEventListener('click',async e=>{
   if(ds.nccolor){UI.nc.color=ds.nccolor;renderNewClass();return}
   if(ds.ncrm){UI.nc.students=UI.nc.students.filter(x=>x!==ds.ncrm);renderNewClass();return}
   if(ds.color){const id=UI.cls;commit(()=>{C(id).color=ds.color});return}
-  if(ds.rm){const [t,id]=ds.rm.split('|');const c=UI.cls;commit(()=>{const m=C(c).members;m[t]=m[t].filter(x=>x!==id)},`${sname(id)} 뺐어요`);return}
+  if(ds.rm){const [t,id]=ds.rm.split('|');const c=UI.cls;commit(()=>{const m=C(c).members;m[t]=m[t].filter(x=>x!==id);schedDel(C(c),id,t)},`${sname(id)} 뺐어요${schedMsg(C(c))}`);return}
   if(ds.add){addMember(ds.add);return}
   if(ds.deltch){if(!armed(el,'t'+ds.deltch))return;const c=UI.cls,t=ds.deltch;commit(()=>{const k=C(c);delete k.members[t];delete k.rule[t];V().sessions=V().sessions.filter(o=>!(o.cls===c&&o.t===t))},`${tn(t)}T를 이 반에서 뺐어요`);return}
   if(ds.status){stDlg(ds.status);return}
@@ -4248,7 +4248,7 @@ function addMember(t){const inp=$('add_'+t);const val=(inp.value||'').trim();if(
   const b=B();let cand=b.students.filter(s=>sname(s.id)===nm||s.name===nm);if(cand.length>1&&val.includes(' · ')){const g=val.split(' · ')[1].split(' ')[0];cand=cand.filter(s=>s.grade===g)}
   if(cand.length!==1){toast(cand.length?'같은 이름이 여러 명이에요. 목록에서 골라 주세요':'그 이름의 학생이 없어요. 학생 관리에서 먼저 추가하세요');return}
   const id=cand[0].id,c=UI.cls;if((C(c).members[t]||[]).includes(id)){toast('이미 들어 있어요');return}
-  commit(()=>{const m=C(c).members;(m[t]=m[t]||[]).push(id)},`${sname(id)} 추가`);setTimeout(()=>{const i=$('add_'+t);if(i)i.focus()},30)}
+  commit(()=>{const m=C(c).members;(m[t]=m[t]||[]).push(id);schedAdd(C(c),t,id)},`${sname(id)} 추가${schedMsg(C(c))}`);setTimeout(()=>{const i=$('add_'+t);if(i)i.focus()},30)}
 document.addEventListener('keydown',e=>{
   if(e.key==='F1'){e.preventDefault();if(UI.view==='help')helpClose();else{UI.helpFrom=UI.view;UI.view='help';UI.helpQ='';render()}return}
   if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('add_')){addMember(e.target.id.slice(4));return}
@@ -4301,7 +4301,7 @@ document.addEventListener('change',e=>{
   if(t.id==='tSel'){UI.teacher=t.value;render();return}
   if(t.id==='sFind'){const v=t.value.trim();const st=B().students;const x=st.find(y=>`${y.name} · ${y.school||''} ${y.grade||''}`.trim()===v)||(st.filter(y=>y.name===v).length===1?st.find(y=>y.name===v):null);
     if(x){UI.student=x.id;UI.sel={type:'stu',id:x.id};render()}else if(v){const m=st.filter(y=>y.name.includes(v));if(m.length===1){UI.student=m[0].id;render()}else toast(m.length?`${m.length}명이 있어요 · 목록에서 골라 주세요`:'그 이름의 학생이 없어요')}return}
-  if(t.id==='stuIn'&&t.value){const [cid,tid]=t.value.split('|');const sid=UI.student;commit(()=>{const c=C(cid);c.members[tid]=c.members[tid]||[];if(!c.members[tid].includes(sid))c.members[tid].push(sid)},`${sname(sid)} → ${C(cid).name}(${tn(tid)}T)에 넣었어요`);return}
+  if(t.id==='stuIn'&&t.value){const [cid,tid]=t.value.split('|');const sid=UI.student;commit(()=>{const c=C(cid);c.members[tid]=c.members[tid]||[];if(!c.members[tid].includes(sid))c.members[tid].push(sid);schedAdd(c,tid,sid)},`${sname(sid)} → ${C(cid).name}(${tn(tid)}T)에 넣었어요${schedMsg(C(cid))}`);return}
   if(t.id==='sSel'){UI.student=t.value;UI.sel={type:'stu',id:t.value};render();return}
   if(t.id==='cName'){const id=UI.cls,v=t.value.trim()||'이름 없는 반';commit(()=>{C(id).name=v});return}
   if(t.id==='cColor'){const id=UI.cls,v=t.value.toUpperCase();if(usedColors(id).has(v)){toast('다른 반이 이미 쓰는 색이에요. 다른 색을 골라 주세요');render();return}commit(()=>{C(id).color=v});return}
@@ -4372,7 +4372,7 @@ document.addEventListener('drop',async e=>{const X=e.clientX,Y=e.clientY;const s
   if(sdrag){e.preventDefault();const sd=sdrag;sdrag=null;const ch=underChip(e);const nm=sname(sd.id);const fromSp=String(sd.from).startsWith('sp:');
     if(ch&&ch.dataset.spid){spAddMember(ch.dataset.spid,sd.id);return}
     if(fromSp){if(ch){const to=V().sessions.find(x=>x.id===ch.dataset.sid);if(!to)return;const cl=C(to.cls);if((cl.members[to.t]||[]).includes(sd.id)){toast(`${nm}은(는) 이미 ${cl.name}(${tn(to.t)}T)에 있어요`);return}
-        commit(()=>{const c=C(to.cls);c.members[to.t]=c.members[to.t]||[];c.members[to.t].push(sd.id)},`${nm} → ${cl.name}(${tn(to.t)}T)에 넣었어요 (특강 명단은 그대로)`)}
+        commit(()=>{const c=C(to.cls);c.members[to.t]=c.members[to.t]||[];c.members[to.t].push(sd.id);schedAdd(c,to.t,sd.id)},`${nm} → ${cl.name}(${tn(to.t)}T)에 넣었어요 (특강 명단은 그대로)${schedMsg(cl)}`)}
       else if(e.target.closest&&e.target.closest('#trash'))spRemoveMember(sd.from.slice(3),sd.id);return}
     if(ch){const to=V().sessions.find(x=>x.id===ch.dataset.sid),fo=V().sessions.find(x=>x.id===sd.from);if(!to||!fo)return;
       let mode=ctrl?'copy':shift?'one':null;const same=fo.cls===to.cls;
