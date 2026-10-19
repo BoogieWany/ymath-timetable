@@ -735,6 +735,11 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .stnt span{color:var(--muted)}
 .stnt div{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .stnt i{font-style:normal;background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:2px 9px;font-size:12px}
+/* 행정 선생님 PC: 소속 지점 · 학생 관리 위주 */
+html.staff #verBtn,html.staff #modeBox,html.staff #undoRow,html.staff .tab[data-v="settings"],html.staff .tab[data-v="admin"],
+html.staff [data-act="siOpen"],html.staff [data-act="xiOpen"],html.staff [data-act="gradeUp"],html.staff [data-act="gradeUndo"],html.staff [data-act="exOpen"],html.staff #rqBar,html.staff .viewonly,html.staff .stfbox{display:none!important}
+html.staff #brSel{appearance:none;-webkit-appearance:none;background-image:none;padding-right:10px;pointer-events:none}
+.stfbadge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--navy);background:color-mix(in srgb,var(--navy) 8%,transparent);border-radius:999px;padding:3px 10px}
 </style>
 </head>
 <body>
@@ -3093,7 +3098,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.57.2', APPDATE='2026-10-18';
+const APPVER='3.58.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3229,7 +3234,8 @@ async function saveNow(){
 }
 function commit(fn,msg){
   if(AUTO.prev&&!/자동 배치 안/.test(msg||'')){toast('자동 배치 미리보기 중이에요. 위쪽에서 [적용] 또는 [취소]를 먼저 누르세요');return}
-  if(!UI.edit){toast('보기 모드예요. 위쪽 보기·수정 스위치를 켜야 고칠 수 있어요');render();return}
+  if(!UI.edit&&typeof isStaff==='function'&&isStaff()&&UI.stOK){quickChange(fn,msg);return} // 행정 선생님: 허용된 일만 바로 저장
+  if(!UI.edit){toast(typeof isStaff==='function'&&isStaff()?'행정 선생님 PC에서는 할 수 없는 일이에요':'보기 모드예요. 위쪽 보기·수정 스위치를 켜야 고칠 수 있어요');render();return}
   if(typeof syncGuard==='function'&&!syncGuard())return;
   hist.u.push(dbSnap());if(hist.u.length>80)hist.u.shift();hist.r=[];
   fn();DB.updated=new Date().toISOString();markDirty();if(msg)toast(msg);render();
@@ -3239,7 +3245,7 @@ let ORIG=null;
 const hashStr=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
 const baseHashOf=db=>Object.fromEntries((db.branches||[]).map(b=>[b.id,hashStr(JSON.stringify(b))]));
 async function enterEdit(){if(UI.entering)return;UI.entering=true;renderMode();try{await enterEditGo()}finally{UI.entering=false;renderMode()}}
-async function enterEditGo(){if(fmtNew(B())){fmtBlock(B());return}if(typeof syOn==='function'&&syOn()){await syncPull({silent:true,noLocks:false});if(!await syncLockCur())return}
+async function enterEditGo(){if(typeof isStaff==='function'&&isStaff()){toast('행정 선생님 PC에서는 시간표를 고칠 수 없어요 · 반에 학생 넣기는 카드를 눌러서 해요');return}if(fmtNew(B())){fmtBlock(B());return}if(typeof syOn==='function'&&syOn()){await syncPull({silent:true,noLocks:false});if(!await syncLockCur())return}
   ORIG=JSON.stringify(DB);DB._baseHash=baseHashOf(DB);try{if(bridge)await bridge.backupNamed(ORIG,'수정전')}catch(e){}
   UI.edit=true;hist.u=[];hist.r=[];document.body.classList.add('editing');await saveNow();render();toast('수정 모드 · 원본은 백업해 뒀어요')}
 // 초안 보관: 수정 내용은 초안 파일에 그대로 두고 원본 보기로 돌아감 → 며칠 뒤 스위치를 켜면 이어서
@@ -3367,7 +3373,7 @@ function renderPop(){const pe=$('cardPop');if(!pe)return;
   const c=C(o.cls),mem=members(o),act=mem.filter(active),bg=c.color||'#9aa3b5',ed=UI.edit;
   pe.innerHTML=`<div class="cp-h" style="background:${bg};color:${txtColor(bg)}"><b>${esc(c.name)}</b><span>${esc(tn(o.t))}T · ${o.d} ${esc(pname(o.d,o.p).replace(/^(저녁|주말)\s*/,''))} ${esc(ptime(o.d,o.p))} · ${act.length}명</span><button class="cp-x" data-act="closePop" aria-label="닫기">×</button></div>
     <div class="cp-nm">${mem.length?mem.map(id=>{const s0=S(id);const n=(s0&&s0.status==='휴원')?`<s>${esc(sname(id))}</s>`:esc(sname(id))+nameMark(id);return ed?`<span class="snm sn" draggable="true" data-snm="${id}" data-from="${o.id}" title="끌어서 다른 반 카드에 놓기">${n}<i class="sx" data-sx="${id}|${o.id}" title="이 반에서 빼기">×</i></span>`:`<span class="sn">${n}</span>`}).join(''):'<span class="hint">명단이 비어 있어요</span>'}</div>
-    ${ed?`<div class="cp-add"><button data-act="qaOpen" data-o="${o.id}">+ 학생 넣기 · 신입 등록</button></div>`:''}${o.id&&V().id===B().current?`<div class="cp-add"><button data-act="exOpen" data-o="${o.id}">당일 변경 · 휴강 / 대강 / 시간 이동</button></div>`:''}
+    ${ed||(typeof isStaff==='function'&&isStaff()&&V().id===B().current)?`<div class="cp-add"><button data-act="qaOpen" data-o="${o.id}">+ 학생 넣기 · 신입 등록</button></div>`:''}${o.id&&V().id===B().current?`<div class="cp-add"><button data-act="exOpen" data-o="${o.id}">당일 변경 · 휴강 / 대강 / 시간 이동</button></div>`:''}
     <div class="cp-tip">${ed?'이름을 끌어서 다른 반 카드에 놓으면 옮겨요 · × 빼기':'수정 모드에서 학생을 넣거나 신입을 바로 등록할 수 있어요'}</div>`;
   pe.hidden=false;const r=ch.getBoundingClientRect(),w=pe.offsetWidth,h=pe.offsetHeight;
   let x=r.right+8;if(x+w>window.innerWidth-8)x=r.left-w-8;if(x<8)x=Math.min(window.innerWidth-w-8,r.left);
@@ -3645,8 +3651,10 @@ function renderVPanel(){
 let ISS=[];
 function render(){
   _cnt=null;DUP=dupNames();
+  const STF=typeof isStaff==='function'&&isStaff();document.documentElement.classList.toggle('staff',STF);
+  if(STF){const mb=myBr();if(mb&&DB.currentBranch!==mb&&DB.branches.some(x=>x.id===mb))DB.currentBranch=mb;if(['settings','admin'].includes(UI.view))UI.view='grid'}
   const b=B();
-  $('brSel').innerHTML=DB.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
+  $('brSel').disabled=STF;$('brSel').innerHTML=DB.branches.filter(x=>!STF||x.id===b.id).map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');
   $('verSel').innerHTML=b.versions.map(x=>`<option value="${x.id}" ${x.id===V().id?'selected':''}>${esc(x.name)}${x.id===b.current?' (지금)':b.sched&&b.sched.ver===x.id?` (예정 ${ntMd(b.sched.from)})`:''}</option>`).join('');schedBar();
   $('undoBtn').disabled=!hist.u.length;$('redoBtn').disabled=!hist.r.length;
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===UI.view));
@@ -3975,6 +3983,7 @@ document.addEventListener('click',async e=>{
   if(ds.deltch){if(!armed(el,'t'+ds.deltch))return;const c=UI.cls,t=ds.deltch;commit(()=>{const k=C(c);delete k.members[t];delete k.rule[t];V().sessions=V().sessions.filter(o=>!(o.cls===c&&o.t===t))},`${tn(t)}T를 이 반에서 뺐어요`);return}
   if(ds.status){stDlg(ds.status);return}
   if(ds.delstu){if(!armed(el,'s'+ds.delstu))return;const id=ds.delstu,n=sname(id);commit(()=>{const b=B();b.students=b.students.filter(s=>s.id!==id);b.versions.forEach(v=>v.classes.forEach(c=>Object.keys(c.members).forEach(t=>c.members[t]=c.members[t].filter(x=>x!==id))))},`${n} 삭제했어요`);return}
+  if(ds.off&&typeof isStaff==='function'&&isStaff())return;
   if(ds.off){const [t,d]=ds.off.split('|');const f=()=>{const x=B().teachers.find(y=>y.id===t);x.off=x.off||[];x.off=x.off.includes(d)?x.off.filter(y=>y!==d):[...x.off,d]};if(UI.edit)commit(f);else quickChange(f,`${tn(t)}T 휴무 ${d}요일 ${(T(t).off||[]).includes(d)?'뺐어요':'넣었어요'}`);return}
   if(ds.tmove){const [t,dir]=ds.tmove.split('|');commit(()=>{const a=B().teachers;const i=a.findIndex(x=>x.id===t);const j=i+ +dir;[a[i],a[j]]=[a[j],a[i]]});return}
   if(ds.phed){phDlg(ds.phed);return}
@@ -3983,6 +3992,7 @@ document.addEventListener('click',async e=>{
   if(ds.csset){if(ds.csset.endsWith('|0')&&!armed(el,'cs'+ds.csset,'한 번 더 누르면 취소해요'))return;csSet(ds.csset);return}
   if(ds.tall){tAllTg(ds.tall);return}
   if(ds.stm){UI.stM=ds.stm;render();return}
+  if(ds.stfpc){const r=stfById(ds.stfpc);if(!r)return;const code=await bridge.syncCode(r.b.id,{staff:r.a.name});if(!code){toast('코드를 만들 수 없어요 · 프로그램 관리자 PC에서 지점 연동이 켜져 있어야 해요');return}syCodeDlg(code,`${r.a.name} 행정 선생님 PC 연결`);return}
   if(ds.stfnm){stfNmDlg(ds.stfnm);return}
   if(ds.stfck){const a=(B().staff||[]).find(x=>x.id===ds.stfck);if(a&&a.ck&&!armed(el,'sk'+ds.stfck,'한 번 더 누르면 모두 끊어요'))return;stfCkNew(ds.stfck);return}
   if(ds.stfdel){if(!armed(el,'sd'+ds.stfdel,'한 번 더 누르면 빼요'))return;stfDel(ds.stfdel);return}
@@ -4006,6 +4016,7 @@ document.addEventListener('click',async e=>{
   if(ds.vdiff){schedDiffDlg(ds.vdiff);return}
   if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.from=c.id;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);UI.vv=UI.vv||{};UI.vv[b.id]=nv.id},'새 버전을 만들었어요 · 지금 이 버전을 고치는 중이고, 선생님들께는 지금 시간표가 그대로 보여요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
   if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;if(ds.vdel===B().current){toast('지금 시간표는 지울 수 없어요 · 다른 버전을 지금 시간표로 정한 뒤 지워 주세요',4500);return}commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(b.sched&&b.sched.ver===ds.vdel)delete b.sched;if(UI.vv&&UI.vv[b.id]===ds.vdel)delete UI.vv[b.id]},'버전을 삭제했어요');UI.cls=null;return}
+  UI.stOK=['missingAway','addStudent'].includes(ds.act)?1:0;try{
   switch(ds.act){
     case 'avEdit':{if(UI._draft)await resumeDraft(true);else await enterEdit();renderAvail();break}
     case 'avClose':$('modal').hidden=true;UI.avStu=null;break;
@@ -4144,7 +4155,7 @@ document.addEventListener('click',async e=>{
     case 'importBackup':if(!isOwner()){toast('백업 불러오기는 프로그램 관리자만 할 수 있어요 (연동 중에는 자동으로 받아요)');return}$('fileBackup').value='';$('fileBackup').click();break;
     case 'openData':bridge&&bridge.openFolder('data');break;
     case 'openOut':bridge&&bridge.openFolder('out');break;
-  }
+  }}finally{UI.stOK=0}
 });
 function addMin(t,m){const [h,mi]=(t||'17:00').split(':').map(Number);const x=h*60+mi+m;return `${String(Math.floor(x/60)%24).padStart(2,'0')}:${String(x%60).padStart(2,'0')}`}
 /* ===== 카드에서 바로 학생 넣기 · 신입 등록 — 바쁘면 이름만, 학교·학년은 나중에 (자동 점검 '신입 정보'에 떠요) ===== */
@@ -4158,7 +4169,7 @@ function qaDlgHTML(title,sub,s,withName){const b=B();const schools=[...new Set(b
       <label class="qal" for="qaFrom">첫 수업일 <span class="hint">오늘 이후면 입학 예정 · 비우면 바로 재원</span></label><input id="qaFrom" type="date" value="${esc(s&&s.from||'')}">
     <div class="admerr" id="qaErr"></div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" id="qaGo" data-act="qaSave">${withName?'넣기':'저장'}</button></div></div>`}
-function qaOpen(sid){if(!UI.edit){toast('수정 모드에서 넣을 수 있어요');return}const o=V().sessions.find(x=>x.id===sid);if(!o)return;
+function qaOpen(sid){if(!UI.edit&&!(typeof isStaff==='function'&&isStaff())){toast('수정 모드에서 넣을 수 있어요');return}const o=V().sessions.find(x=>x.id===sid);if(!o)return;
   UI.qa={mode:'add',sid};$('modal').hidden=false;$('modal').innerHTML=qaDlgHTML(`${esc(C(o.cls).name)} · ${esc(tn(o.t))}T에 학생 넣기`,'있는 학생은 이름을 고르면 바로 들어가고, 처음 보는 이름이면 신입으로 등록해요',null,true);
   setTimeout(()=>{const i=$('qaName');if(i)i.focus()},50)}
 function qaEdit(id){const s=S(id);if(!s)return;UI.qa={mode:'edit',id};$('modal').hidden=false;
@@ -4171,7 +4182,8 @@ function qaHits(){if(!UI.qa||UI.qa.mode!=='add')return;const box=$('qaHit'),more
   const exact=qaMatch();if(UI.qa.pick&&!exact.some(s=>s.id===UI.qa.pick))UI.qa.pick=null;
   const isNew=v&&!exact.length;more.classList.toggle('off',!isNew);go.textContent=isNew?'신입 등록하고 넣기':'넣기';
   if(exact.length===1&&!UI.qa.pick)UI.qa.pick=exact[0].id}
-function qaSave(){const q=UI.qa;if(!q)return;const err=$('qaErr');const name=($('qaName').value||'').trim();if(!name){err.textContent='이름을 넣어 주세요';return}
+function qaSave(){UI.stOK=1;try{qaSave0()}finally{UI.stOK=0}}
+function qaSave0(){const q=UI.qa;if(!q)return;const err=$('qaErr');const name=($('qaName').value||'').trim();if(!name){err.textContent='이름을 넣어 주세요';return}
   const fd=(($('qaFrom')||{}).value||'');const school=(($('qaSchool')||{}).value||'').trim();const gb=document.querySelector('[data-qag][aria-pressed="true"]');const grade=gb?gb.dataset.qag:'';
   if(q.mode==='edit'){const s=S(q.id);$('modal').hidden=true;UI.qa=null;commit(()=>{const x=S(s.id);x.name=name;x.school=school;x.grade=grade;if(fd){x.from=fd;if(fd>todayStr())x.status='예정'}if(school&&grade)delete x.quick},school&&grade?`${name} 정보를 넣었어요`:`${name} 정보를 저장했어요 · 빈 칸은 나중에 넣어도 돼요`);return}
   const o=V().sessions.find(x=>x.id===q.sid);if(!o){$('modal').hidden=true;return}const exact=qaMatch();
@@ -4270,7 +4282,7 @@ document.addEventListener('input',e=>{if(e.target.id==='ntIn'){ntSug();return}if
   if(e.target.id==='spStart'&&UI.spd){UI.spd.start=e.target.value;const e2=$('spEnd');if(e2)e2.textContent=spTimeLabel(UI.spd)}});
 $('fileSheet').addEventListener('change',async e=>{if(e.target.files[0])await siFile(e.target.files[0]);e.target.value=''});
 $('fileWeekly').addEventListener('change',async e=>{if(e.target.files.length)await xiFiles([...e.target.files]);e.target.value=''});
-$('fileRoster').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const list=parseRoster(await f.arrayBuffer());if(!list.length)throw new Error('학생을 한 명도 읽지 못했어요');applyRoster(list)}catch(err){toast('명부를 읽지 못했어요: '+err.message)}});
+$('fileRoster').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const list=parseRoster(await f.arrayBuffer());if(!list.length)throw new Error('학생을 한 명도 읽지 못했어요');UI.stOK=1;try{applyRoster(list)}finally{UI.stOK=0}}catch(err){toast('명부를 읽지 못했어요: '+err.message)}});
 $('fileBackup').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.app!=='ymath-timetable'||!Array.isArray(d.branches))throw new Error('시간표 백업 파일이 아니에요');histAdopt(d);commit(()=>{DB=d},'백업을 불러왔어요 (되돌리기 가능)');UI.picked=null;UI.sel=null;UI.cls=null;render()}catch(err){toast('불러오지 못했어요: '+err.message)}});
 $('undoBtn').onclick=undo;$('redoBtn').onclick=redo;
 $('verBtn').onclick=()=>{const p=$('vpanel');p.hidden=!p.hidden;$('verBtn').setAttribute('aria-expanded',!p.hidden);renderVPanel()};
@@ -4688,6 +4700,7 @@ const ADM={open:false};
 const realOwner=()=>!syOn()||SYNC.info.role==='owner';
 const admLocked=()=>syOn()&&SYNC.info.role==='owner'&&!!SYNC.info.pw&&!ADM.open;
 const isOwner=()=>realOwner()&&!admLocked();
+const isStaff=()=>syOn()&&SYNC.info.role==='staff'; // 행정 선생님 PC: 소속 지점만 · 학생 관리·명부·반에 학생 넣기만
 const myBr=()=>!syOn()?'':SYNC.info.role==='owner'?(SYNC.info.home&&DB.branches.some(b=>b.id===SYNC.info.home)?SYNC.info.home:(DB.branches[0]||{}).id):SYNC.info.branch;
 const canEditB=id=>!syOn()||isOwner()||id===myBr();
 const syBName=id=>{const b=DB.branches.find(x=>x.id===id);return b?b.name:'지점'};
@@ -4770,7 +4783,7 @@ function renderSyncState(){const el=$('syncBadge');if(!el)return;if(!syOn()){el.
   const b=B();const l=SYNC.locks[b.id];const mine=SYNC.mine.has(b.id);
   el.className='syncb'+(SYNC.err?' err':'')+(l&&!mine?' lock':'');
   if(syPend().length)el.className='syncb lock';
-  el.textContent=SYNC.err?'연동 오류':syPend().length?'⏳ 올리기 대기':(!canEditB(b.id)?'보기 전용 지점':l&&!mine?`🔒 ${l.by} 수정 중`:mine?'🔒 내가 수정 중':'연동됨');
+  el.textContent=SYNC.err?'연동 오류':syPend().length?'⏳ 올리기 대기':isStaff()?'행정 선생님 PC':(!canEditB(b.id)?'보기 전용 지점':l&&!mine?`🔒 ${l.by} 수정 중`:mine?'🔒 내가 수정 중':'연동됨');
   admRender();el.title=SYNC.err||(isOwner()?'프로그램 관리자':`${admLocked()?'내 지점 모드':'지점 관리자'} · ${syBName(myBr())}`)+(SYNC.info.name?` · ${SYNC.info.name}`:'');
   if(UI.view==='settings'||UI.view==='admin')syncRender()}
 /* ---- 설정 화면 ---- */
@@ -4805,7 +4818,7 @@ function syJoinDlg(first){$('modal').hidden=false;$('modal').innerHTML=`<div cla
   <div class="row" style="justify-content:flex-end">${first?'<span class="hint" style="margin-right:auto">코드가 없으면 [나중에] · 설정 → 지점 연동에서 언제든 넣을 수 있어요</span>':''}<button class="btn" data-act="closeModal">${first?'나중에':'취소'}</button><button class="btn pri" data-act="syJoin">연결</button></div></div>`;setTimeout(()=>$('sjCode').focus(),50)}
 async function syJoin(){const code=$('sjCode').value.trim(),name=$('sjName').value.trim();if(!code){toast('코드를 붙여넣어 주세요');return}if(!name){toast('이름을 넣어 주세요');return}
   if(UI.edit){toast('수정 모드를 먼저 끝내 주세요');return}toast('연결하는 중…');
-  const r=await bridge.syncJoin(code,name);if(!r.ok){toast(r.err,5000);return}SYNC.info=r.info;
+  const r=await bridge.syncJoin(code,name);if(!r.ok){toast(r.err,5000);return}SYNC.info=r.info;if(isStaff())DB.currentBranch=myBr();
   try{await bridge.backupNamed(JSON.stringify(DB),'연동전')}catch(e){}
   const p=await bridge.syncPull({});if(!p.ok){toast('받지 못했어요: '+p.err,5000);return}
   const bs=p.changed.filter(c=>!c.err&&c.data).map(c=>c.data);if(!bs.length){toast('저장소에 지점이 없어요 · 프로그램 관리자 PC에서 연동을 먼저 켜야 해요',5000);return}
@@ -4814,7 +4827,7 @@ async function syJoin(){const code=$('sjCode').value.trim(),name=$('sjName').val
   // 이 PC에서 따로 해 둔 수정 초안은 학원 시간표와 섞이지 않게 정리 (백업 '연동전'에 남아 있음)
   UI._draft=null;try{await bridge.clearDraft()}catch(e){}const db=$('draftBar');if(db)db.hidden=true;
   await bridge.save(JSON.stringify(DB),{quiet:true});$('modal').hidden=true;syncStartTimer();render();
-  toast(SYNC.info.role==='owner'?'프로그램 관리자로 연결했어요':`${syBName(SYNC.info.branch)} 관리자로 연결했어요`,4000)}
+  toast(SYNC.info.role==='owner'?'프로그램 관리자로 연결했어요':SYNC.info.role==='staff'?`${syBName(SYNC.info.branch)} 행정 선생님 PC로 연결했어요`:`${syBName(SYNC.info.branch)} 관리자로 연결했어요`,4000)}
 async function syEnable(){const name=($('syName')&&$('syName').value.trim())||'부원장';const r=await bridge.syncEnable({name});if(!r.ok){toast(r.err,5000);return}SYNC.info=r.info;
   toast('연동을 켜는 중… 지점을 올려요');const p=await bridge.syncPull({});if(!p.ok){toast(p.err,5000);return}
   const known=DB.syncKnown=DB.syncKnown||{};const present=new Set(p.present.map(x=>x.id));
@@ -4823,7 +4836,7 @@ async function syEnable(){const name=($('syName')&&$('syName').value.trim())||'�
   if(items.length){const r2=await bridge.syncPush(items);Object.assign(known,r2.shas||{});if(!r2.ok){toast(r2.err,5000)}}
   await bridge.save(JSON.stringify(DB),{quiet:true});syncStartTimer();render();toast('지점 연동을 켰어요 · 지점 코드를 만들 수 있어요')}
 function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInterval(()=>{if(!document.hidden)syncPull({silent:false});updTick()},120000)}
-async function syncInit(){if(!bridge||!bridge.syncInfo)return;try{SYNC.info=await bridge.syncInfo()}catch(e){return}if(!syOn())return;if(admLocked()){DB.currentBranch=myBr();render()}
+async function syncInit(){if(!bridge||!bridge.syncInfo)return;try{SYNC.info=await bridge.syncInfo()}catch(e){return}if(!syOn())return;if(admLocked()||isStaff()){DB.currentBranch=myBr();render()}
   await syncPull({silent:true});try{if(bridge.ghLater)bridge.ghLater()}catch(e){} // 받은 뒤에 올림 — 옛 시간표가 먼저 올라가지 않게
   syncStartTimer();window.addEventListener('focus',()=>{syncPull()});renderSyncState();setTimeout(updTick,3000)}
 setTimeout(()=>keyExpCheck(),5000);setInterval(()=>keyExpCheck(),6*3600*1000);
@@ -4865,7 +4878,7 @@ const RQS={list:[],info:null,busy:false,last:0};
 const rqKind=x=>x.k||'보강';
 const rqClsOf=(b,id)=>{if(!b||!id)return null;const v=b.versions.find(i=>i.id===b.current)||b.versions[0];return v&&(v.classes||[]).find(c=>c.id===id)||null};
 const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br);
-async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
+async function rqTick(force){if(!bridge||!bridge.rqList||isStaff())return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
   const n0=RQS.n|0;const all=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.list=all.filter(x=>x.kind!=='cs');csApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
@@ -4986,7 +4999,7 @@ async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if
   const L=(r.list||[]).sort((a,b)=>(b.me?1:0)-(a.me?1:0)||(a.role==='owner'?0:1)-(b.role==='owner'?0:1)||String(a.name).localeCompare(String(b.name),'ko'));
   const md=d=>{if(!d.day)return '';const [y,m,dd]=d.day.split('-');const age=Math.floor((Date.now()-new Date(+y,+m-1,+dd).getTime())/86400000);return `${+m}/${+dd}${age>=30?` <span class="rqw">· ${age}일째 안 켜짐</span>`:''}`};
   box.innerHTML=`<b>연결된 PC</b><span class="hint">각 PC가 켜질 때 여기에 나와요 · [연결 끊기]하면 그 PC는 다음 동기화(2분 안) 때 연동이 꺼지고 키가 지워져요. 시간표 파일은 그 PC에 남아요</span>
-    ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+' 관리자'}</td><td class="mono">${esc(d.ver||'')}${d.stale?' <span class="rqw" title="새 버전을 받았지만 다시 시작하지 않았어요 · 그 PC에서 프로그램을 껐다 켜 주세요">· 다시 켜야 함</span>':''}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
+    ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+(d.role==='staff'?' 행정 선생님':' 관리자')}</td><td class="mono">${esc(d.ver||'')}${d.stale?' <span class="rqw" title="새 버전을 받았지만 다시 시작하지 않았어요 · 그 PC에서 프로그램을 껐다 켜 주세요">· 다시 켜야 함</span>':''}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
 async function syRevokeGo(btn){if(!armed(btn,'rv'+btn.dataset.syrevoke,'한 번 더 누르면 끊어요'))return;btn.disabled=true;const r=await bridge.syncRevoke(btn.dataset.syrevoke);
   if(!r.ok){btn.disabled=false;toast('끊지 못했어요 · '+(r.err||''),4000);return}toast(`${btn.dataset.n||'그 PC'}의 연결을 끊었어요 · 그 PC가 켜져 있으면 2분 안에 연동이 꺼져요`,5000);syDevsLoad()}
 function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYNC.info,{on:false});SYNC.mine.clear();SYNC.offline.clear();ADM.open=false;
@@ -5316,7 +5329,7 @@ async function phSave(){const dlg=document.querySelector('[data-ph]');if(!dlg)re
 const tnm=x=>String(x||'').replace(/\s+/g,'');
 const sameT=name=>DB.branches.flatMap(b=>(b.teachers||[]).filter(t=>tnm(t.name)===tnm(name)).map(t=>({b,t})));
 const sameTEd=name=>sameT(name).filter(x=>!(typeof syOn==='function'&&syOn())||canEditB(x.b.id)); // 이 PC가 고칠 수 있는 지점만
-function ckCell(t){const ed=!(typeof syOn==='function'&&syOn())||canEditB(B().id);const diff=t.ck&&sameT(t.name).some(x=>x.t.ck&&x.t.ck!==t.ck);
+function ckCell(t){if(typeof isStaff==='function'&&isStaff())return '<span class="hint">—</span>';const ed=!(typeof syOn==='function'&&syOn())||canEditB(B().id);const diff=t.ck&&sameT(t.name).some(x=>x.t.ck&&x.t.ck!==t.ck);
   return t.ck?`<span class="ckc mono">${esc(t.ck)}</span>${diff?'<span class="hint" title="같은 이름 선생님인데 지점마다 코드가 달라요 · [바꾸기]를 누르면 전 지점이 같은 코드가 돼요"> · 지점마다 달라요</span>':''} <button class="btn sm" data-ckcopy="${t.id}" title="주소와 이 선생님 개인 코드를 복사 · 카톡 1:1로 보내 주세요">복사</button>${ed?` <button class="btn sm" data-cknew="${t.id}" data-label="바꾸기" title="새 코드로 바꾸면 그 선생님은 새 코드로 다시 로그인해야 해요">바꾸기</button>`:''}`:(ed?`<button class="btn sm" data-cknew="${t.id}" data-label="만들기">만들기</button>`:'<span class="hint">없음</span>')}
 /* 로그인 코드: 6자리 · 전 지점에서 겹치지 않게 · 다른 지점에 같은 이름 선생님 코드가 있으면 처음 만들 땐 그 코드를 그대로(한 사람 = 한 코드) */
 async function ckNew(tid){const t0=B().teachers.find(x=>x.id===tid);if(!t0)return;const me=sameT(t0.name),ed=sameTEd(t0.name);
@@ -5356,7 +5369,7 @@ async function examSave(){const f=$('exFrom').value,t=$('exTo').value;if((f&&!t)
 function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id===b.sched.ver);const td=todayStr(),wk=dPlus(td,7);const dn=['일','월','화','수','목','금','토'][new Date().getDay()];
   const inV=(x,t)=>!!x&&(x.sessions.some(o=>o.t===t)||x.classes.some(c=>(c.members[t]||[]).length));
   const used=t=>inV(v,t)||inV(sch,t)||(b.specials||[]).some(x=>x.t===t);const usedOld=t=>!used(t)&&b.versions.some(x=>x!==v&&x!==sch&&inV(x,t));
-  const ed=!(typeof syOn==='function'&&syOn())||canEditB(b.id);const E=UI.edit;
+  const ed=(!(typeof syOn==='function'&&syOn())||canEditB(b.id))&&!(typeof isStaff==='function'&&isStaff());const E=UI.edit;
   const rq=t=>(typeof RQS!=='undefined'&&RQS.list||[]).filter(x=>!x.bad&&x.br===b.id&&x.t===t).length;
   const nt=t=>(b.notes||[]).filter(n=>n.t===t&&(!n.until||n.until>=td)).length;
   const exn=t=>(b.ex||[]).filter(x=>x.date>=td&&x.date<wk&&(x.t===t||((v.sessions.find(o=>o.id===x.sid)||{}).t===t))).length;
@@ -5369,12 +5382,12 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
     <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
     <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
   h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
-  h+=staffHTML(b,ed);
+  if(!(typeof isStaff==='function'&&isStaff()))h+=staffHTML(b,ed);
   return h}
 /* ===== 행정 선생님: 개인 로그인 코드로 강사용 — 모든 지점 · 학생 전체 연락처 · 내 수업 없음 (보기 모드에서도 바로 저장) ===== */
 function staffHTML(b,ed){const L=b.staff||[];
   return `<div class="sec stfbox"><h3>행정 선생님 <span class="hint">개인 로그인 코드로 강사용을 봐요 · 모든 지점 시간표 · 학생·학부모 연락처 전체 · 신입 [상담 완료] 가능 · 내 수업 화면은 없어요 · 여러 지점에 같은 이름이면 한 사람(코드 하나)</span></h3>
-  ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>{const o=stfSame(a.name).filter(x=>x.b.id!==b.id).map(x=>x.b.name);return `<tr><td><button class="stfnm" data-stfnm="${a.id}" ${ed?'':'disabled'} title="${ed?'이름 고치기 (코드는 그대로)':''}"><b>${esc(a.name)}</b></button> <span class="hint">행정${o.length?' · '+esc(o.join('·'))+'에도':''}</span></td><td>${stfCk(a,ed)}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
+  ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>{const o=stfSame(a.name).filter(x=>x.b.id!==b.id).map(x=>x.b.name);return `<tr><td><button class="stfnm" data-stfnm="${a.id}" ${ed?'':'disabled'} title="${ed?'이름 고치기 (코드는 그대로)':''}"><b>${esc(a.name)}</b></button> <span class="hint">행정${o.length?' · '+esc(o.join('·'))+'에도':''}</span></td><td>${stfCk(a,ed)}${typeof isOwner==='function'&&isOwner()&&typeof syOn==='function'&&syOn()?` <button class="btn sm" data-stfpc="${a.id}" title="행정 선생님 PC에 지점장용 프로그램을 깔고 이 코드로 연결하면 소속 지점만 보이는 행정 모드가 돼요">PC 연결 코드</button>`:''}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
   ${ed?'<div class="row" style="margin-top:8px"><input id="newStf" placeholder="행정 선생님 이름" style="width:160px"><button class="btn" data-act="stfAdd">추가</button></div>':''}</div>`}
 const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button>${ed?` <button class="btn sm" data-stfck="${a.id}" data-label="기기 끊기" title="이 코드로 로그인한 폰·PC를 모두 끊고 새 코드를 만들어요 (폰을 잃어버렸을 때)">기기 끊기</button>`:''}`:(ed?`<button class="btn sm" data-stfck="${a.id}">코드 만들기</button>`:'<span class="hint">코드 없음</span>');
 const stfSame=name=>DB.branches.flatMap(b=>(b.staff||[]).filter(a=>tnm(a.name)===tnm(name)).map(a=>({b,a})));
@@ -5550,6 +5563,7 @@ const HELP=[
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
+  <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>(바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
   <li><b>[통계]</b> 탭: 실적 관리용. 지금 시간표 기준으로 강사마다 <b>학년별 재원 학생 수</b>(휴원·예정은 따로), <b>환산</b>(반마다 타임 비율로 나눈 인원 — 2+2면 0.5명씩, 3+1이면 0.75·0.25명, 혼자 들어가는 반은 1명), <b>학생×타임</b>(주당 내 타임 × 학생 수 합), 주당 타임을 봐요. 반 목록에는 반 구조(3+1, 2+2 등, 진한 숫자가 내 타임)가 나오고, <b>특강</b>은 따로 셉니다(주당 타임 = 요일 수). 월별 기록은 [적용]하거나 바로 저장할 때마다 이번 달 값이 덮어써져서, 달이 끝나면 <b>그달 마지막 상태</b>가 남아요(바뀐 게 없는 달은 앞 달 그대로) · 재원/환산/학생×타임/특강 인원/특강 ×타임으로 바꿔 볼 수 있어요. 명단은 있는데 시간표에 그 선생님 수업이 없는 반은 맨 위에 <b>타임이 없는 반</b>으로 알려 줘요(환산·학생×타임이 0으로 잡히니까요). [엑셀로 저장]하면 시트 네 장(실적·반 목록·특강·월별)으로 저장돼요. 지점장은 자기 지점만, 프로그램 관리자는 <b>[전 지점 합계]</b>로 같은 이름 강사를 합쳐서 볼 수 있어요.</li>
   <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
