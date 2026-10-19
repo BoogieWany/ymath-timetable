@@ -349,7 +349,7 @@ body.land .note{padding:10px}
 .rqk{display:flex;gap:6px;margin:0 0 10px}.rqk.rqn{flex-wrap:wrap;gap:5px}.rqk.rqn button{flex:1 0 calc(25% - 5px);padding:8px 0}.gnote i small{font-weight:500;opacity:.85;margin-left:2px}.rqk button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:9px 0;font-size:14px;font-weight:600;transition:background .2s,color .2s,border-color .2s}.rqk button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--panel)}
 .slab{display:block;font-size:12.5px;font-weight:600;margin:2px 0 5px;color:var(--muted)}
 #rqClsRow{margin:0 0 10px}#rqClsRow select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:11px 12px;font-size:15px}
-/* 선생님 요청: 내 시간표 빈 칸 → 요청 → 승인 대기 */
+/* 선생님 보강 등록: 내 시간표 빈 칸 → 요청 → 승인 대기 */
 table.g td.free{cursor:pointer;transition:background .2s}
 body.wide table.g td.free:hover{background:color-mix(in srgb,var(--acc) 5%,var(--panel))}
 .fadd{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:2.2em;border-radius:.45em;color:var(--muted);opacity:.5;font-size:.85em;font-weight:600;letter-spacing:.02em;transition:opacity .2s}
@@ -810,7 +810,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const tRow=`<span class="seg tch" role="group" aria-label="강사">${[['','모든 강사']].concat(myT?[[myT,'내 시간표']]:[]).concat(tchList(b).filter(t=>t.id!==myT).map(t=>[t.id,t.name])).map(([id,l])=>`<button data-gt="${id}" aria-pressed="${(ST.gt||'')===id}"${id===myT&&id?' class="mine"':''}>${esc(l)}</button>`).join('')}</span>`;
   const gmB=([k,l])=>`<button data-gm="${k}" aria-pressed="${ST.gm===k}">${l}</button>`;const MODES=[['week','전체'],['mwf','월수금'],['tts','화목토']];
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
-  const mine=!!(gT&&gT.id===myT&&rqOn()&&!b._nx);const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 요청</small>`:'';
+  const mine=!!(gT&&gT.id===myT&&rqOn()&&!b._nx);const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 등록</small>`:'';
   const nk=n=>esc(n.k||b.noteLabel||'보강')+(n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:'');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);return `<div class="gnote${c?' lnk':''}${extra||''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}${pre?'':` data-nk="${n.d}|${n.p}|${n.t}"`}><i>${pre||''}${nk(n)}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${esc(n.names)}</span>`:''}</div>`};
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${gzHTML()}<span class="sp"></span><button class="btn sm" data-act="print">인쇄</button></div>`
     :`<div class="gt">${brSeg}${tRow}<span class="pr">${gzHTML()}${rqH2}</span></div>`;
@@ -832,8 +832,8 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
         if(tl(c)){const pp=((b.days||{})[c.d]||[])[p];h+=`<th class="tl">${pp?`<b>${esc(pshort(pp.name))}</b><span>${esc(pp.time)}</span>`:''}</th>`}
         if(p>=((b.days||{})[c.d]||[]).length){h+=`<td class="none${e}"></td>`;return}
         const os=b.sessions.filter(o=>o.d===c.d&&o.p===p&&o.t===c.t.id);const free=mine&&!os.length;const shw=!os.length&&(ST.nt||free);
-        const ns=shw?(b.notes||[]).filter(n=>n.d===c.d&&n.p===p&&n.t===c.t.id&&noteLive(n)):[];const ok=shw?rqOkAt(b,c.d,p,c.t.id):[];const pd=shw?rqAt(b,c.d,p,c.t.id):[];
-        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${exGhostV(b,c.d,p,c.t.id)}${ns.concat(ok).map(n=>gn(n,'','')).join('')}${pd.map(x=>gn(x,'승인 대기 · ',' pend'+(x.t===myT?' my':''))).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ 요청</span>`:''}</div></td>`});
+        const ns=shw?(b.notes||[]).filter(n=>n.d===c.d&&n.p===p&&n.t===c.t.id&&noteLive(n)):[];const ok=shw?rqOkAt(b,c.d,p,c.t.id):[];const pd=shw?rqAt(b,c.d,p,c.t.id).filter(x=>x.t===myT):[]; // 등록한 보강은 확인 전엔 등록한 선생님 표에만
+        h+=`<td class="${(c.t.off||[]).includes(c.d)?'offd':''}${e}${free?' free':''}"${free?` data-free="${c.d}|${p}"`:''}><div class="cw">${os.map(o=>gChip(b,o,'')).join('')}${exGhostV(b,c.d,p,c.t.id)}${ns.concat(ok).map(n=>gn(n,'','')).join('')}${pd.map(x=>gn(x,'등록 · ',' pend'+(x.t===myT?' my':''))).join('')}${free&&!ns.length&&!pd.length&&!ok.length?`<span class="fadd">+ 보강 등록</span>`:''}</div></td>`});
       h+='</tr>'}
     h+='</tbody></table></div>'});
   if(!wide)h+='</div></div>'+dockHTML(b,true)+'</div>';
@@ -856,8 +856,8 @@ function pGrid(b,fo,fs,sub,tsub){const mp=Math.max(0,...DAYS.map(d=>((b.days||{}
       h+=`<td class="w end${off?' offd':''}${d===td?' tdc':''}"><div class="cw"><span class="tm">${esc(per(b,d,p).time)}</span>${os.map(o=>gChip(b,o,sub(o))).join('')}${ST.tab==='tch'?exGhostV(b,d,p,ST.t):''}</div></td>`});
     h+='</tr>'}
   return h+'</tbody></table></div>'}
-/* ===== 선생님 요청: '내 시간표' 빈 칸을 누르면 명단을 적어 보냄 → 부원장 승인 후 시간표에 들어감 =====
-   요청은 저장소 이슈로 남고 내용은 요청 키로 암호화 (키는 번호로 잠긴 view.json 안에만 있음) */
+/* ===== 선생님 보강 등록: '내 시간표' 빈 칸을 누르면 명단을 적어 보냄 → 부원장 승인 후 시간표에 들어감 =====
+   요청은 저장소 이슈로 남고 내용은 보강 등록 키로 암호화 (키는 번호로 잠긴 view.json 안에만 있음) */
 const RQ={list:[],ok:[],last:0,k:null,kraw:'',sig:''};
 const GHA='https://api.github.com';
 const rqOn=()=>!!(D&&D.rq&&D.rq.t&&D.rq.k&&window.crypto&&crypto.subtle);
@@ -878,7 +878,7 @@ async function rqFetch(force){if(!rqOn()){if(RQ.list.length||RQ.ok.length){RQ.li
 /* 내가 보낸 요청이 목록에서 사라지면: 승인됐는지·거절됐는지 알려 줌 */
 function rqNotify(list,closed){const me=ME();if(!me||!RQ.seen)return;const gone=RQ.list.filter(x=>x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(!gone.length)return;
   const lab=gone[0].k||'보강';const w=x=>{const c=closed.find(y=>y.num===x.num);return c&&c.reason==='completed'?'승인':c&&c.reason==='not_planned'?'거절':'처리'};
-  const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';fzToast(`${lab} 요청이 ${w(g)}됐어요 · ${g.names||(g.cls&&(C(D.branches.find(b=>b.id===me.br)||{classes:[]},g.cls)||{}).name)||''}${more}`,3600)}
+  const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';fzToast(`등록한 ${lab}이(가) ${w(g)}됐어요 · ${g.names||(g.cls&&(C(D.branches.find(b=>b.id===me.br)||{classes:[]},g.cls)||{}).name)||''}${more}`,3600)}
 const noteLive=n=>!n.until||n.until>=tdStr(); // 횟수가 끝난 메모는 안 보임
 const rqFor=b=>RQ.list.filter(x=>x.br===b.id);
 const rqAt=(b,d,p,t)=>RQ.list.filter(x=>x.br===b.id&&x.d===d&&+x.p===p&&x.t===t);
@@ -907,7 +907,7 @@ function shDrag(w){if(wide)return;const sp=w.querySelector('.shp');let g=null;
   sp.addEventListener('touchend',end,{passive:true});sp.addEventListener('touchcancel',end,{passive:true})}
 function shClose(now){const w=$('sh');if(!w)return;w.id='';if(document.activeElement&&w.contains(document.activeElement))document.activeElement.blur();if(now){w.remove();return}w.classList.remove('on');setTimeout(()=>{w.remove();if(!$('sh'))pageLock(false)},360)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sh'))shClose()});
-/* 선생님 요청은 보강만 · 횟수(1~8회) — 3회면 첫 수업일부터 3주 동안 보이고 지나면 저절로 사라짐 */
+/* 선생님 보강 등록은 보강만 · 횟수(1~8회) — 3회면 첫 수업일부터 3주 동안 보이고 지나면 저절로 사라짐 */
 function rqCntSel(){const b=document.querySelector('[data-rqn2][aria-pressed="true"]');return b?+b.dataset.rqn2:1}
 function rqSetCnt(n){document.querySelectorAll('[data-rqn2]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.rqn2===n)));const h=$('rqRange');if(h&&h.dataset.d)h.textContent=rangeTxt(h.dataset.d,h.dataset.tm,n)+' · 지나면 저절로 지워져요'}
 const ymd=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
@@ -918,13 +918,13 @@ function rangeTxt(d,tm,n){const f=firstDate(d,tm),u=plusWeeks(f,n-1);return n===
 function rqSheet(d,p){const b=B(),me=ME();const t=TT(b,me.t);const pp=per(b,d,p);
   const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>(n.k||'보강')+(n.cls&&C(b,n.cls)?' '+C(b,n.cls).name:'')+(n.names?' '+n.names:'')).join(' / ');
   const mine=b.classes.filter(c=>(c.members||{})[me.t]!==undefined);const others=b.classes.filter(c=>(c.members||{})[me.t]===undefined);const opt=c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`;
-  shOpen(`<h3>보강 요청</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${ex?`<p class="sex">지금 적힌 메모: ${esc(ex)}</p>`:''}
+  shOpen(`<h3>보강 등록</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${ex?`<p class="sex">지금 적힌 메모: ${esc(ex)}</p>`:''}
     <label class="slab">보강 횟수</label><div class="rqk rqn" role="group" aria-label="보강 횟수">${[1,2,3,4,5,6,7,8].map(x=>`<button data-rqn2="${x}" aria-pressed="${x===1}">${x}회</button>`).join('')}</div>
     <p class="sex" id="rqRange" data-d="${d}" data-tm="${esc(pp.time)}">${rangeTxt(d,pp.time,1)} · 지나면 저절로 지워져요</p>
     <div id="rqClsRow"><label class="slab" for="rqCls">연결할 수업 <small>(선택)</small></label><select id="rqCls"><option value="">(연결 안 함)</option>${mine.length?`<optgroup label="내 수업">${mine.map(opt).join('')}</optgroup>`:''}${others.length?`<optgroup label="다른 수업">${others.map(opt).join('')}</optgroup>`:''}</select></div>
     <input id="rqIn" placeholder="학생 이름 (쉼표나 띄어쓰기로 여러 명)" autocomplete="off" autocapitalize="off" enterkeyhint="send" aria-label="학생 이름"><div id="rqSug" class="rqsug"></div>
-    <p class="snote" id="rqMsg">보내면 '승인 대기'로 보이고, 부원장님이 승인하면 시간표에 들어가요</p>
-    <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="rqGo" data-act="rqSend" data-rd="${d}" data-rp="${p}">요청 보내기</button></div>`);
+    <p class="snote" id="rqMsg">등록하면 내 시간표에 바로 보여요 · 부원장님이 확인하면 학원 시간표에도 들어가요</p>
+    <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="rqGo" data-act="rqSend" data-rd="${d}" data-rp="${p}">등록하기</button></div>`);
   if(wide)setTimeout(()=>{const i=$('rqIn');if(i)i.focus()},60)}
 function rqTok(){const v=($('rqIn')||{}).value||'';const m=/([^,\s]*)$/.exec(v);return m?m[1]:''}
 function rqSug(){const box=$('rqSug');if(!box)return;const q=rqTok().trim();if(!q){box.innerHTML='';return}const b=B();
@@ -939,17 +939,17 @@ async function rqSend(d,p){const b=B(),me=ME();const i=$('rqIn'),g=$('rqGo'),msg
   g.disabled=true;g.textContent='보내는 중…';
   try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),k,cls,cnt,from,until:plusWeeks(from,cnt-1),names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 요청',body})});
-    if(r.status!==201)throw new Error(r.status===401||r.status===403?'요청 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':r.status===410?'요청 받기가 꺼져 있어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
-    const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';shClose();render();fzToast('요청을 보냈어요 · 승인되면 시간표에 들어가요',2600)}
+    if(r.status!==201)throw new Error(r.status===401||r.status===403?'보강 등록 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':r.status===410?'보강 등록이 꺼져 있어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
+    const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';shClose();render();fzToast('보강을 등록했어요 · 내 시간표에 바로 보여요',2600)}
   catch(err){g.disabled=false;g.textContent='다시 보내기';msg.textContent=err.message&&/[가-힣]/.test(err.message)?err.message:'인터넷 연결을 확인하고 다시 보내 주세요';msg.classList.add('err')}}
 function rqPendSheet(num){const x=RQ.list.find(i=>i.num===+num);if(!x)return;const b=B();const pp=per(b,x.d,+x.p);const lab=esc(x.k||'보강');const xc=x.cls&&C(b,x.cls);
-  shOpen(`<h3>승인 대기 중인 ${lab} 요청</h3><p class="ssub">${x.d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(x.tn||'')}T${xc?' · '+esc(xc.name):''}${x.cnt?` · ${x.cnt===1?mdd(x.from)+' 한 번':mdd(x.from)+'~'+mdd(x.until)+' '+x.cnt+'회'}`:''}</p><div class="names">${esc(x.names||(xc?'수업만 연결':''))}</div>
-    <p class="snote" id="rqMsg">부원장님이 승인하면 시간표에 들어가요. 잘못 보냈으면 취소할 수 있어요</p>
-    <div class="sbtn"><button data-act="shClose">닫기</button><button class="dan" id="rqGo" data-act="rqCancel" data-rn="${x.num}">요청 취소</button></div>`)}
+  shOpen(`<h3>내가 등록한 ${lab} (부원장님 확인 전)</h3><p class="ssub">${x.d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(x.tn||'')}T${xc?' · '+esc(xc.name):''}${x.cnt?` · ${x.cnt===1?mdd(x.from)+' 한 번':mdd(x.from)+'~'+mdd(x.until)+' '+x.cnt+'회'}`:''}</p><div class="names">${esc(x.names||(xc?'수업만 연결':''))}</div>
+    <p class="snote" id="rqMsg">내 시간표에만 보이고 있어요 · 부원장님이 확인하면 학원 시간표에도 들어가요. 잘못 넣었으면 취소할 수 있어요</p>
+    <div class="sbtn"><button data-act="shClose">닫기</button><button class="dan" id="rqGo" data-act="rqCancel" data-rn="${x.num}">등록 취소</button></div>`)}
 async function rqCancel(num){const g=$('rqGo'),msg=$('rqMsg');if(g){g.disabled=true;g.textContent='취소하는 중…'}
   try{const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues/${+num}`,{method:'PATCH',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({state:'closed',state_reason:'not_planned'})});
-    if(!r.ok)throw 0;RQ.list=RQ.list.filter(i=>i.num!==+num);RQ.sig='';shClose();render();fzToast('요청을 취소했어요',2000)}
-  catch(e){if(g){g.disabled=false;g.textContent='요청 취소'}if(msg){msg.textContent='취소하지 못했어요 · 인터넷 연결을 확인해 주세요';msg.classList.add('err')}}}
+    if(!r.ok)throw 0;RQ.list=RQ.list.filter(i=>i.num!==+num);RQ.sig='';shClose();render();fzToast('등록을 취소했어요',2000)}
+  catch(e){if(g){g.disabled=false;g.textContent='등록 취소'}if(msg){msg.textContent='취소하지 못했어요 · 인터넷 연결을 확인해 주세요';msg.classList.add('err')}}}
 function brSheet(){const b=B();const bt=$('brb');bt.classList.add('open');
   shOpen(`<h3>지점</h3><div class="brl">${D.branches.map(x=>`<button data-brpick="${x.id}" aria-pressed="${x.id===b.id}"><span>${esc(x.name)}</span>${x.id===b.id?'<i></i>':''}</button>`).join('')}</div>`);
   const w=$('sh');const ob=new MutationObserver(()=>{if(!document.contains(w)){bt.classList.remove('open');ob.disconnect()}});ob.observe(document.body,{childList:true})}
@@ -985,7 +985,7 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.53.1</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.54.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1142,11 +1142,11 @@ const TG={g:null};
   document.addEventListener('touchmove',e=>{const g=TG.g;if(!g)return;if(PK.on){TG.g=null;return}if(e.touches.length!==1){TG.g=null;return}const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
     if(!g.on){if(GEST||(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx))){TG.g=null;return}if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.3)return;
       g.on=true;GEST='tab';PZ.g=null;pkCancel();const ks=TABS().map(x=>x[0]);const i=ks.indexOf(ST.tab);g.ks=ks;g.i=i;g.W=window.innerWidth;
-      const m=main();m.classList.remove('tin-l','tin-r');m.style.transition='none';m.style.willChange='transform,opacity';const ind=$('tind');if(ind)ind.style.transition='none';
+      const m=main();/* 앞 탭이 아직 스르륵 들어오는 중에 또 밀면: 그 순간의 투명도·위치에서 이어 감 (애니메이션을 끊으면 확 밝아져 번쩍임) */const cs=getComputedStyle(m);g.op0=Math.min(1,+cs.opacity||1);g.tx0=(()=>{try{return new DOMMatrixReadOnly(cs.transform==='none'?undefined:cs.transform).m41||0}catch(_){return 0}})();m.style.opacity=String(g.op0);m.style.transform=`translate3d(${g.tx0}px,0,0)`;m.classList.remove('tin-l','tin-r');m.style.transition='none';m.style.willChange='transform,opacity';const ind=$('tind');if(ind)ind.style.transition='none';
       const cb=tabBtn(ST.tab);g.c={x:cb.offsetLeft,w:cb.offsetWidth};const pb=tabBtn(ks[i-1]),nb=tabBtn(ks[i+1]);g.p=pb?{x:pb.offsetLeft,w:pb.offsetWidth}:null;g.n=nb?{x:nb.offsetLeft,w:nb.offsetWidth}:null}
     const now=performance.now(),dt=Math.max(1,now-g.lt);g.v=g.v*.4+((t.clientX-g.lx)/dt)*.6;g.lx=t.clientX;g.lt=now;
     const tgt=dx<0?g.n:g.p;const off=tgt?dx:dx*.28;g.off=off;const k=Math.min(1,Math.abs(off)/g.W);
-    if(!g.fr)g.fr=requestAnimationFrame(()=>{g.fr=0;if(!g.on)return;const m=main();m.style.transform=`translate3d(${off}px,0,0)`;m.style.opacity=String(1-k*.45);
+    if(!g.fr)g.fr=requestAnimationFrame(()=>{g.fr=0;if(!g.on)return;const m=main();m.style.transform=`translate3d(${off+(g.tx0||0)*(1-Math.min(1,Math.abs(off)/40))}px,0,0)`;m.style.opacity=String((g.op0||1)+(1-(g.op0||1))*Math.min(1,Math.abs(off)/120)-k*.45);
       const ind=$('tind');if(ind){const to=tgt||g.c;const kk=tgt?Math.min(1,Math.abs(off)/g.W*1.15):0;const x=g.c.x+(to.x-g.c.x)*kk,w=g.c.w+(to.w-g.c.w)*kk;ind.style.transform=`translateX(${x}px)`;ind.style.width=w+'px'}})},{passive:true});
   function end(e){const g=TG.g;if(!g)return;TG.g=null;if(!g.on)return;if(GEST==='tab')GEST=null;cancelAnimationFrame(g.fr);const m=main();const ind=$('tind');
     const off=g.off||0;const tgt=off<0?g.ks[g.i+1]:g.ks[g.i-1];const v=performance.now()-g.lt>80?0:g.v;const fast=Math.abs(v)>.5&&Math.sign(v)===Math.sign(off); /* 멈췄다 놓으면 튕김 아님 */
