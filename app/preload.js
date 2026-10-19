@@ -29,7 +29,7 @@ contextBridge.exposeInMainWorld('api',{
   syncLock:id=>ipcRenderer.invoke('syncLock',id),
   syncUnlock:(ids,f)=>ipcRenderer.invoke('syncUnlock',ids,f),
   syncEnable:o=>ipcRenderer.invoke('syncEnable',o),
-  syncCode:b=>ipcRenderer.invoke('syncCode',b),
+  syncCode:(b,o)=>ipcRenderer.invoke('syncCode',b,o),
   syncJoin:(c,n)=>ipcRenderer.invoke('syncJoin',c,n),
   syncOff:()=>ipcRenderer.invoke('syncOff'),
   syncName:n=>ipcRenderer.invoke('syncName',n),
