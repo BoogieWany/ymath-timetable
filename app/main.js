@@ -443,13 +443,20 @@ ipcMain.handle('eokSet',(e,o)=>{const c=eokRead();const b=String(o&&o.branch||''
   if(o.clear){delete c[b]}else{const x=c[b]||{};x.id=String(o.id||'').trim().slice(0,60);if(o.pw){if(safeStorage.isEncryptionAvailable()){x.pwEnc=safeStorage.encryptString(String(o.pw)).toString('base64');delete x.pwPlain}else{x.pwPlain=String(o.pw)}}c[b]=x}
   fs.writeFileSync(EOKF,JSON.stringify(c));return {ok:true}});
 let EOKBUSY=false;
+// 직접 로그인 창: 자동 로그인이 안 될 때 이 창에서 한 번 로그인하면(같은 저장소) 그 뒤 [받기]는 로그인 없이 됨
+ipcMain.handle('eokOpen',()=>{const {session}=require('electron');const w=new BrowserWindow({width:1280,height:900,title:'에듀OK 로그인',autoHideMenuBar:true,webPreferences:{session:session.fromPartition('persist:eok')}});w.loadURL(EOK_BASE+EOK_HOPE).catch(()=>{});return true});
 ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 받는 중이에요'};const c=eokRead()[String(o&&o.branch||'')];
-  if(!c||!c.id||!eokPw(c))return {ok:false,need:true,err:'에듀OK 아이디·비밀번호를 먼저 넣어 주세요'};
+  const hasC=!!(c&&c.id&&eokPw(c)); // 계정이 없어도 [직접 로그인 창]에서 로그인해 둔 상태면 받을 수 있음
   EOKBUSY=true;const kind=o.kind==='roster'?'roster':'hope';const {session}=require('electron');const ses=session.fromPartition('persist:eok');
   const w=new BrowserWindow({show:!!process.env.YMT_EOK_SHOW,width:1280,height:900,webPreferences:{session:ses,contextIsolation:true,nodeIntegration:false}});
   const wc=w.webContents;const kill=()=>{try{w.destroy()}catch(err){}};
-  const noDlg="window.alert=function(){};window.confirm=function(){return true};window.print=function(){};";
-  wc.on('dom-ready',()=>{wc.executeJavaScript(noDlg).catch(()=>{})});
+  // 알림창은 띄우지 않고 기록만(무슨 말을 했는지 eok_log.txt에 남겨 어디서 막혔는지 알 수 있게)
+  const LOG=[];const lg=m=>{LOG.push(new Date().toTimeString().slice(0,8)+' '+m)};
+  const noDlg="window.alert=function(m){console.log('[ALERT] '+m)};window.confirm=function(m){console.log('[CONFIRM] '+m);return true};window.print=function(){};";
+  wc.on('dom-ready',()=>{wc.executeJavaScript(noDlg).catch(()=>{});lg('열림 '+wc.getURL().replace(/[?#].*/,''))});
+  wc.on('console-message',(ev,lv,msg)=>{if(/^\[(ALERT|CONFIRM)\]/.test(String(msg)))lg(String(msg).slice(0,200))});
+  wc.on('did-fail-load',(ev,code,desc,url)=>{if(code!==-3)lg('못 엶 '+code+' '+desc+' '+String(url).replace(/[?#].*/,''))});
+  const dom=async()=>{try{return await wc.executeJavaScript(`(function(){const q=s=>[...document.querySelectorAll(s)];return 'URL '+location.href.replace(/[?#].*/,'')+'\\n폼 '+q('form').map(f=>(f.name||f.id||'?')+'→'+(f.getAttribute('action')||'')+' '+(f.method||'')).join(' | ')+'\\n입력 '+q('input').filter(i=>i.type!=='hidden'||i.name).map(i=>i.type+':'+(i.name||i.id||'')+(i.offsetParent===null?'(숨김)':'')).join(', ')+'\\n버튼 '+q('button,input[type=submit],input[type=button],input[type=image],a[onclick],img[onclick]').map(b=>((b.innerText||b.value||b.alt||'').trim().slice(0,12)||b.tagName)+'{'+String(b.getAttribute('onclick')||'').slice(0,60)+'}').slice(0,25).join(', ')+'\\n프레임 '+q('iframe,frame').map(f=>f.src.replace(/[?#].*/,'')).join(', ')})()`)}catch(e){return 'DOM 못 읽음 '+e.message}};
   wc.setWindowOpenHandler(()=>({action:'allow',overrideBrowserWindowOptions:{show:false,webPreferences:{session:ses}}}));
   let dlRes=null;const dlP=new Promise(res=>{dlRes=res});
   const onDl=(ev,item)=>{const fp=path.join(app.getPath('temp'),'ymt_eok_'+Date.now()+'_'+item.getFilename().replace(/[^\w.\-가-힣]/g,'_'));item.setSavePath(fp);
@@ -463,13 +470,14 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
     const either=hasPw+"||[...document.querySelectorAll('a,button,input')].some(b=>/엑셀/.test(b.innerText||b.value||''))";
     await load(EOK_BASE+EOK_HOPE);await until(either,10000); // 스크립트로 로그인 화면에 보내는 경우까지 기다림
     if(await wc.executeJavaScript(hasPw).catch(()=>false)){
+      if(!hasC){const e0=new Error('에듀OK 아이디·비밀번호를 먼저 넣어 주세요');e0.login=true;throw e0}
       const js=`(function(id,pw){const p=document.querySelector('input[type=password]');const f=p.form||document;const t=[...f.querySelectorAll('input')].find(i=>i!==p&&/^(text|email|tel|)$/.test(i.type)&&i.offsetParent!==null)||[...document.querySelectorAll('input[type=text]')][0];
         const set=(el,v)=>{el.focus();el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};if(!t)return 'noid';set(t,id);set(p,pw);
         const btn=[...document.querySelectorAll('button,input[type=submit],input[type=button],input[type=image],a,img')].find(b=>/로그인/.test((b.innerText||b.value||b.alt||'').trim())&&!/자동/.test(b.innerText||b.value||''));
         if(btn){btn.click();return 'click'}if(p.form){p.form.submit();return 'submit'}p.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:13,bubbles:true}));return 'enter'})(${JSON.stringify(c.id)},${JSON.stringify(eokPw(c))})`;
-      const r=await wc.executeJavaScript(js).catch(err=>'err');if(r==='noid')throw new Error('로그인 칸을 찾지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요');
+      lg('로그인 화면\n'+await dom());const r=await wc.executeJavaScript(js).catch(err=>'err');lg('로그인 시도: '+r);if(r==='noid')throw new Error('로그인 칸을 찾지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요');
       await wait(2500);await load(EOK_BASE+EOK_HOPE);await until(either,10000);
-      if(await wc.executeJavaScript(hasPw).catch(()=>false)){const e2=new Error('에듀OK 로그인이 안 됐어요 · 아이디·비밀번호를 확인해 주세요');e2.login=true;throw e2}}
+      if(await wc.executeJavaScript(hasPw).catch(()=>false)){lg('로그인 뒤에도 로그인 화면\n'+await dom());const e2=new Error('에듀OK 로그인이 안 됐어요 · 아이디·비밀번호를 확인해 주세요');e2.login=true;throw e2}}
     if(!await until("[...document.querySelectorAll('a,button,input')].some(b=>/엑셀/.test(b.innerText||b.value||''))",8000))throw new Error('입학희망생 화면을 열지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요');
     if(kind==='roster'){
       const ok=await wc.executeJavaScript("(function(){const a=[...document.querySelectorAll('a')].find(x=>(x.innerText||'').replace(/\\s/g,'')==='재학생');if(!a)return false;a.click();return true})()").catch(()=>false);
@@ -481,5 +489,5 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
     if(!got||!got.buf||!got.buf.length)throw new Error('엑셀 파일을 받지 못했어요 · 잠시 뒤 다시 해 주세요');
     const cc=eokRead();if(cc[o.branch]){cc[o.branch].at=Date.now();fs.writeFileSync(EOKF,JSON.stringify(cc))}
     return {ok:true,b64:got.buf.toString('base64'),name:got.name}
-  }catch(err){return {ok:false,err:err.message||String(err),login:!!err.login}}
+  }catch(err){lg('실패: '+(err.message||err));if(!err.login)lg(await dom());try{fs.writeFileSync(path.join(DATA,'eok_log.txt'),LOG.join('\n'))}catch(e){}return {ok:false,err:err.message||String(err),login:!!err.login}}
   finally{ses.removeListener('will-download',onDl);if(!process.env.YMT_EOK_SHOW)kill();EOKBUSY=false}});
