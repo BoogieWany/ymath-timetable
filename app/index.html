@@ -3123,7 +3123,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.59.1', APPDATE='2026-10-18';
+const APPVER='3.59.2', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3330,8 +3330,11 @@ function analyze(){
   Object.entries(by).forEach(([id,os])=>DAYS.forEach(d=>{const ps=[...new Set(os.filter(o=>o.d===d).map(o=>o.p))].sort((a,b)=>a-b);
     if(ps.length>1&&ps[ps.length-1]-ps[0]!==ps.length-1)out.push({lv:'warn',k:'연강 아님',m:`${sname(id)} · ${d}요일 ${ps.map(p=>pname(d,p)).join(', ')} 사이 빈 시간`,ids:os.filter(o=>o.d===d).map(o=>o.id),stu:id})}));
   v.sessions.forEach(o=>{if(!members(o).length)out.push({lv:'warn',k:'명단 없음',m:`${C(o.cls).name} · ${tn(o.t)}T 수업에 학생 명단이 없어요`,ids:[o.id],cls:o.cls})});
-  const none=B().students.filter(s=>!offS(s)&&!by[s.id]);
+  const inAny=new Set();v.sessions.forEach(o=>members(o).forEach(id=>inAny.add(id)));
+  const none=B().students.filter(s=>!offS(s)&&!isPre(s)&&!by[s.id]);
   if(none.length)out.push({lv:'warn',k:'시간표 없는 학생',m:`${none.map(s=>sname(s.id)).join(', ')} · 재원생인데 들어간 수업이 없어요`,ids:[]});
+  const preNone=B().students.filter(s=>isPre(s)&&!inAny.has(s.id)); // 입학 예정: 반에 넣었으면 경고 없음 · 아직 반이 없으면 알려 주기만
+  if(preNone.length)out.push({lv:'info',k:'입학 예정 · 반 없음',m:`${preNone.map(s=>`${sname(s.id)}(${mdS(s.from)}~)`).join(', ')} · 아직 반에 안 넣었어요`,ids:[]});
   const away=B().students.filter(s=>s.status==='휴원'&&v.classes.some(c=>Object.values(c.members).some(a=>a.includes(s.id))));
   if(away.length)out.push({lv:'info',k:'휴원생',m:`${away.map(s=>s.name).join(', ')} · 휴원 중이라 점검·인원에서 빠짐 (명단엔 남아 있음)`,ids:v.sessions.filter(o=>members(o).some(id=>away.some(s=>s.id===id))).map(o=>o.id)});
   B().students.filter(s=>s.quick&&!offS(s)&&(!s.school||!s.grade)).forEach(s=>out.push({lv:'info',k:'신입 정보',m:`${s.name} · ${!s.school&&!s.grade?'학교·학년':!s.school?'학교':'학년'}을 아직 안 넣었어요 (눌러서 입력)`,ids:v.sessions.filter(o=>members(o).includes(s.id)).map(o=>o.id),stu:s.id,qa:s.id}));
