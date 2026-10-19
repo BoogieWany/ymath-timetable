@@ -690,8 +690,11 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .csrow .cst{margin-right:4px}
 .nbi.csno{border-color:color-mix(in srgb,#d64545 55%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,#d64545 8%,transparent)}
 .stfbox{margin-top:22px}
-.stftbl{width:auto}
+.tbl.stftbl{width:max-content;min-width:520px;align-self:flex-start}
 .stftbl td{padding:8px 10px}
+.stfnm{background:none;border:0;padding:2px 6px;margin:-2px -6px;border-radius:6px;font:inherit;color:inherit;cursor:pointer;transition:background .18s}
+.stfnm:not(:disabled):hover{background:var(--hov,rgba(23,36,63,.06))}
+.stfnm:disabled{cursor:default}
 </style>
 </head>
 <body>
@@ -3049,7 +3052,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.56.0', APPDATE='2026-10-18';
+const APPVER='3.56.1', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3937,7 +3940,8 @@ document.addEventListener('click',async e=>{
   if(ds.tgo){UI.view='grid';UI.gteach=ds.tgo;UI.mode='week';render();return}
   if(ds.csset){if(ds.csset.endsWith('|0')&&!armed(el,'cs'+ds.csset,'한 번 더 누르면 취소해요'))return;csSet(ds.csset);return}
   if(ds.tall){tAllTg(ds.tall);return}
-  if(ds.stfck){const a=(B().staff||[]).find(x=>x.id===ds.stfck);if(a&&a.ck&&!armed(el,'sk'+ds.stfck,'한 번 더 누르면 바꿔요'))return;stfCkNew(ds.stfck);return}
+  if(ds.stfnm){stfNmDlg(ds.stfnm);return}
+  if(ds.stfck){const a=(B().staff||[]).find(x=>x.id===ds.stfck);if(a&&a.ck&&!armed(el,'sk'+ds.stfck,'한 번 더 누르면 모두 끊어요'))return;stfCkNew(ds.stfck);return}
   if(ds.stfdel){if(!armed(el,'sd'+ds.stfdel,'한 번 더 누르면 빼요'))return;stfDel(ds.stfdel);return}
   if(ds.stfcopy){const a=(B().staff||[]).find(x=>x.id===ds.stfcopy);if(!a||!a.ck)return;let u='';try{const mi=MOBI||(bridge&&bridge.mobileGet?await bridge.mobileGet():null);u=(mi&&mi.gh&&mi.gh.url)||''}catch(e){}
     const txt=`[와이매쓰 시간표] ${a.name} 행정 선생님\n${u?`주소: ${u}\n`:''}개인 로그인 코드: ${a.ck}\n\n· 처음 한 번 이 코드로 로그인하면 그 기기에서는 다시 안 물어요\n· 모든 지점 시간표와 학생·학부모 연락처를 볼 수 있어요\n· 선생님만 쓰는 코드예요 · 다른 사람에게 알려 주지 마세요`;
@@ -4015,6 +4019,7 @@ document.addEventListener('click',async e=>{
     case 'qaSave':qaSave();break;
     case 'helpClose':helpClose();break;
     case 'stfAdd':stfAdd();break;
+    case 'stfNmSave':stfNmSave();break;
     case 'admTabGo':UI.view='admin';UI._keepScroll=false;render();window.scrollTo(0,0);break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
     case 'admGo':admGo();break;
@@ -4211,6 +4216,7 @@ document.addEventListener('change',e=>{
 // 한글 입력 중에 화면을 다시 그리면 글자가 끊겨서, 표를 다시 그리지 않고 줄만 숨김
 function filterStuRows(){const q=(UI.stuFilter.q||'').trim();let n=0;document.querySelectorAll('#view tr[data-q]').forEach(tr=>{const ok=!q||tr.dataset.q.includes(q);tr.hidden=!ok;if(ok)n++});const em=$('fqEmpty');if(em)em.hidden=n>0}
 document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='ntIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();ntSave(false)}});
+document.addEventListener('keydown',e=>{if(e.target&&(e.target.id==='sfIn'||e.target.id==='newStf')&&e.key==='Enter'&&!e.isComposing){e.preventDefault();e.target.id==='sfIn'?stfNmSave():stfAdd()}});
 document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='admPw'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();admGo()}});
 document.addEventListener('input',e=>{if(e.target.id==='ntIn'){ntSug();return}if(e.target.id==='fq'){UI.stuFilter.q=e.target.value;filterStuRows()}
   if(e.target.id==='helpQ'){UI.helpQ=e.target.value;const q=UI.helpQ.trim();const list=helpVisible().filter(x=>!q||(x.t+x.b.replace(/<[^>]+>/g,'')).includes(q));$('helpBody').innerHTML=list.length?list.map(x=>`<section id="help-${x.id}"><h3>${esc(x.t)}</h3>${x.b}</section>`).join(''):'<div class="empty">찾는 내용이 없어요</div>'}
@@ -5321,16 +5327,31 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
   return h}
 /* ===== 행정 선생님: 개인 로그인 코드로 강사용 — 모든 지점 · 학생 전체 연락처 · 내 수업 없음 (보기 모드에서도 바로 저장) ===== */
 function staffHTML(b,ed){const L=b.staff||[];
-  return `<div class="sec stfbox"><h3>행정 선생님 <span class="hint">개인 로그인 코드로 강사용을 봐요 · 모든 지점 시간표 · 학생·학부모 연락처 전체 · 신입 [상담 완료] 가능 · 내 수업 화면은 없어요</span></h3>
-  ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>`<tr><td><b>${esc(a.name)}</b> <span class="hint">행정</span></td><td>${stfCk(a,ed)}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
+  return `<div class="sec stfbox"><h3>행정 선생님 <span class="hint">개인 로그인 코드로 강사용을 봐요 · 모든 지점 시간표 · 학생·학부모 연락처 전체 · 신입 [상담 완료] 가능 · 내 수업 화면은 없어요 · 여러 지점에 같은 이름이면 한 사람(코드 하나)</span></h3>
+  ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>{const o=stfSame(a.name).filter(x=>x.b.id!==b.id).map(x=>x.b.name);return `<tr><td><button class="stfnm" data-stfnm="${a.id}" ${ed?'':'disabled'} title="${ed?'이름 고치기 (코드는 그대로)':''}"><b>${esc(a.name)}</b></button> <span class="hint">행정${o.length?' · '+esc(o.join('·'))+'에도':''}</span></td><td>${stfCk(a,ed)}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
   ${ed?'<div class="row" style="margin-top:8px"><input id="newStf" placeholder="행정 선생님 이름" style="width:160px"><button class="btn" data-act="stfAdd">추가</button></div>':''}</div>`}
-const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button>${ed?` <button class="btn sm" data-stfck="${a.id}" data-label="바꾸기" title="바꾸면 예전 코드로 로그인한 기기는 다시 로그인해야 해요">바꾸기</button>`:''}`:(ed?`<button class="btn sm" data-stfck="${a.id}">코드 만들기</button>`:'<span class="hint">코드 없음</span>');
+const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button>${ed?` <button class="btn sm" data-stfck="${a.id}" data-label="기기 끊기" title="이 코드로 로그인한 폰·PC를 모두 끊고 새 코드를 만들어요 (폰을 잃어버렸을 때)">기기 끊기</button>`:''}`:(ed?`<button class="btn sm" data-stfck="${a.id}">코드 만들기</button>`:'<span class="hint">코드 없음</span>');
+const stfSame=name=>DB.branches.flatMap(b=>(b.staff||[]).filter(a=>tnm(a.name)===tnm(name)).map(a=>({b,a})));
+const stfSameEd=name=>stfSame(name).filter(x=>!(typeof syOn==='function'&&syOn())||canEditB(x.b.id));
+const stfById=id=>{for(const b of DB.branches){const a=(b.staff||[]).find(x=>x.id===id);if(a)return {b,a}}return null};
 function newCode(){const used=new Set(DB.branches.flatMap(b=>(b.teachers||[]).concat(b.staff||[])).map(x=>x.ck).filter(Boolean));let c='';while(!c||used.has(c))c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);return c}
 async function stfAdd(){const i=$('newStf');const n=(i&&i.value||'').trim().replace(/\s+/g,' ');if(!n){toast('이름을 넣어 주세요');i&&i.focus();return}
-  if((B().staff||[]).some(a=>a.name===n)){toast('이미 있는 이름이에요');return}const c=newCode();
-  await quickChange(()=>{const b=B();b.staff=b.staff||[];b.staff.push({id:uid('a'),name:n,ck:c})},`행정 선생님 ${n} 추가 · 로그인 코드 ${c} · [복사]로 1:1로 보내 주세요`)}
-async function stfCkNew(id){const a=(B().staff||[]).find(x=>x.id===id);if(!a)return;const c=newCode();await quickChange(()=>{const x=(B().staff||[]).find(y=>y.id===id);if(x)x.ck=c},`${a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`)}
-async function stfDel(id){const a=(B().staff||[]).find(x=>x.id===id);if(!a)return;await quickChange(()=>{const b=B();b.staff=(b.staff||[]).filter(x=>x.id!==id)},`${a.name} 행정 선생님을 뺐어요 · 그 코드로는 더 못 들어와요`)}
+  if((B().staff||[]).some(a=>tnm(a.name)===tnm(n))){toast('이미 있는 이름이에요');return}
+  if(sameT(n).length){toast('같은 이름의 강사가 있어요 · 다른 이름(예: 이름 뒤에 행정)으로 넣어 주세요',3200);return}
+  const o=stfSame(n).find(x=>x.a.ck);const c=o?o.a.ck:newCode(); // 다른 지점에 같은 이름 = 같은 사람 → 같은 코드
+  await quickChange(()=>{const b=B();b.staff=b.staff||[];b.staff.push({id:uid('a'),name:o?o.a.name:n,ck:c})},o?`행정 선생님 ${n} 추가 · ${o.b.name}과 같은 사람이라 코드도 같아요(${c})`:`행정 선생님 ${n} 추가 · 로그인 코드 ${c} · [복사]로 1:1로 보내 주세요`)}
+async function stfCkNew(id){const r=stfById(id);if(!r)return;const L=stfSameEd(r.a.name);const bids=[...new Set(L.map(x=>x.b.id))];const had=!!r.a.ck;const c=newCode();
+  await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c})},had?`${r.a.name} 행정 선생님: 예전 코드로 로그인한 기기는 1~2분 뒤 모두 끊겨요 · 새 코드 ${c} · [복사]로 1:1로 보내 주세요`:`${r.a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`,bids)}
+async function stfDel(id){const r=stfById(id);if(!r)return;await quickChange(()=>{const b=DB.branches.find(x=>x.id===r.b.id);b.staff=(b.staff||[]).filter(x=>x.id!==id)},`${r.a.name} 행정 선생님을 ${r.b.name}에서 뺐어요${stfSame(r.a.name).length>1?' · 다른 지점에는 남아 있어요':' · 그 코드로는 더 못 들어와요'}`,r.b.id)}
+function stfNmDlg(id){const r=stfById(id);if(!r)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="sfT" style="width:min(400px,100%)" data-stfnmd="${id}"><h2 id="sfT">이름 고치기 · 행정 선생님</h2>
+  <div class="hint">로그인 코드는 그대로예요. 다시 로그인하지 않아도 1~2분 뒤 새 이름으로 보여요.${stfSame(r.a.name).length>1?' 다른 지점에 같은 이름도 같이 바뀌어요.':''}</div>
+  <div class="row"><label for="sfIn">이름</label><input id="sfIn" value="${esc(r.a.name)}" style="flex:1" autocomplete="off"></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="stfNmSave">저장</button></div></div>`;setTimeout(()=>{const i=$('sfIn');if(i){i.focus();i.select()}},50)}
+async function stfNmSave(){const d=document.querySelector('[data-stfnmd]');if(!d)return;const r=stfById(d.dataset.stfnmd);if(!r)return;const n=String($('sfIn').value||'').trim().replace(/\s+/g,' ');
+  if(!n){toast('이름을 넣어 주세요');return}if(n===r.a.name){$('modal').hidden=true;return}
+  if(tnm(n)!==tnm(r.a.name)&&stfSame(n).length){toast('이미 있는 행정 선생님 이름이에요');return}if(sameT(n).length){toast('같은 이름의 강사가 있어요');return}
+  const old=r.a.name;const bids=[...new Set(stfSameEd(old).map(x=>x.b.id))];$('modal').hidden=true;
+  await quickChange(()=>{stfSameEd(old).forEach(x=>{x.a.name=n})},`행정 선생님 이름: ${old} → ${n} · 코드는 그대로예요`,bids)}
 function tphDlg(id){const t=T(id);if(!t)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="tpT" style="width:min(400px,100%)" data-tph="${id}"><h2 id="tpT">연락처 · ${esc(t.name)}T</h2>
   <div class="hint">부원장님이 급히 연락할 때 보는 번호예요. 선생님 폰 시간표에는 나오지 않아요.</div>
   <div class="row"><label for="tpIn">휴대폰</label><input id="tpIn" inputmode="tel" placeholder="010-0000-0000" value="${esc(phFmt(t.ph||''))}" style="flex:1"></div>
@@ -5376,7 +5397,7 @@ const HELP=[
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
-  <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. [바꾸기]·[삭제]는 두 번 눌러야 돼요.</li>
+  <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
   <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 떠요. <b>상담 전</b>이면 빨간 테두리와 <b>[상담 완료]</b> 버튼이 있어요 — 담당 선생님 중 한 명이 누르면 모두 완료로 바뀌고, 지점장용이 켜져 있으면 원본 학생에도 저절로 적혀요(승인 없음). 상담 완료한 학생만 첫 수업일부터 2주 뒤 사라지고, 상담 전 학생은 2주가 지나도 계속 남아요. 지점장용 [학생 관리] 맨 위 신입 칸에도 '상담 전'(빨간 테두리)·'상담 ✓ 날짜 선생님'이 보이고, [상태] 창에서 상담 완료로 표시하거나 잘못 누른 걸 [상담 취소]할 수 있어요. 강사용 PC 프로그램·PC 브라우저의 학생 탭에도 같은 신입 목록이 떠요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
