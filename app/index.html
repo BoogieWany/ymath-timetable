@@ -785,6 +785,15 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .cndlg .cnneed{color:#b23b3b}
 .cnasg{display:flex;flex-direction:column;gap:6px;margin:8px 0}.cnasg>div{background:color-mix(in srgb,#e08a3c 8%,var(--panel));border-radius:10px;padding:7px 10px;font-size:12.5px}.cnasg i{font-style:normal;font-weight:700;color:#b4572a;margin-right:4px}.cnasg small{color:var(--muted)}
 .cnh{margin-top:12px;border-top:1px solid var(--line2);padding-top:8px;font-size:12.5px}.cnh>div{display:grid;grid-template-columns:48px 110px 1fr;gap:8px;padding:3px 0}
+.cnh>div{grid-template-columns:48px 110px 1fr auto!important;align-items:center}.cnrx{padding:2px 8px;font-size:11px}
+/* 내 폰 관리 모드 */
+.ownbox .ownon{display:inline-flex;align-items:center;gap:6px;color:var(--ok);font-weight:600;font-size:13px}
+.ownbox .ownon::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.owncode{font-size:30px;letter-spacing:.12em;text-align:center;padding:18px 0 14px;margin:6px 0 10px;border-radius:12px;background:var(--navy-soft);color:var(--navy);font-weight:600}
+.cnag{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 2px}
+.cnagh{font-size:12.5px;font-weight:700;color:var(--muted);margin-right:4px}
+.cnagi{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line,#dde1ea);border-radius:10px;padding:4px 4px 4px 10px;font-size:13px}
+.cnagi small{color:var(--muted);font-size:12px}.cnagi .btn.sm{padding:3px 9px;min-height:0}
 </style>
 </head>
 <body>
@@ -3143,7 +3152,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.61.1', APPDATE='2026-10-18';
+const APPVER='3.62.1', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3627,7 +3636,7 @@ function viewStudents(){
 const accSt=()=>{try{return JSON.parse(localStorage.getItem('ymt_acc')||'{}')}catch(e){return {}}};
 function accSetup(){const root=$('view');if(!root)return;
   root.querySelectorAll(':scope > .sec').forEach(sec=>{const h=sec.querySelector(':scope > h3');
-    const title=sec.id==='syncBox'?'지점 연동':sec.id==='mobBox'?'폰으로 보기':sec.id==='rqBox'?'선생님 보강 등록':(h?(h.childNodes[0].textContent||'').trim():'');if(!title)return;
+    const title=sec.id==='syncBox'?'지점 연동':sec.id==='mobBox'?'폰으로 보기':sec.id==='rqBox'?'선생님 보강 등록':sec.id==='ownBox'?'내 폰 관리 모드':(h?(h.childNodes[0].textContent||'').trim():'');if(!title)return;
     const key=sec.id||title;const det=document.createElement('details');det.className='acc';det.dataset.acc=key;
     const sm=document.createElement('summary');sm.innerHTML=`<b>${esc(title)}</b><span class="accs" data-sum="${esc(key)}"></span>`;
     sec.parentNode.insertBefore(det,sec);det.appendChild(sm);
@@ -3644,6 +3653,7 @@ function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-
   set('지점',b.name);
   const grp={};DAYS.forEach(d=>{const ps=per(d);const k=ps.length+'교시'+(ps[0]?` (${ps[0].time}~)`:'');(grp[k]=grp[k]||[]).push(d)});
   set('요일별 교시와 시작 시간',Object.entries(grp).map(([k,ds])=>{const j=ds.join('');return (j==='월화수목금'?'월~금':j)+' '+k}).join('  /  '));
+  set('ownBox',typeof ownCfg==='function'&&ownCfg()?'켜짐':'꺼짐');
   const i=SYNC&&SYNC.info;set('syncBox',i&&i.on?(isOwner()?'켜짐 · 프로그램 관리자':'켜짐 · 지점 관리자'):'꺼짐');
   const g=MOBI&&MOBI.gh;set('mobBox',g&&g.on?'켜짐 · GitHub'+(g.url?' · '+g.url.replace(/^https?:\/\//,''):''):'꺼짐');
   {const n=annLive(b).length;set('선생님 공지',n?`올라간 공지 ${n}개`:'없음')}
@@ -3677,6 +3687,7 @@ function viewAdmin(){const b=B();
   return `<div class="card-h"><h2>프로그램 관리</h2><span class="hint">프로그램 관리자만 쓰는 설정이에요 · 지점장 PC에는 이 탭이 없어요</span>${admBtnHTML()}</div>
   <div class="sec"><h3>지점</h3><div class="row"><span class="hint">지금 보는 지점: <b>${esc(b.name)}</b></span><span class="sp"></span><button class="btn" data-act="newBranch">새 지점 만들기</button><button class="btn danger" data-act="delBranch" ${DB.branches.length<2?'disabled':''}>이 지점 삭제</button></div><div class="hint">새 지점은 지금 지점의 강사·교시 설정을 복사해서 시작해요. 학생과 반은 비어 있어요. 지점 이름은 [설정 → 지점]에서 바꿔요.</div></div>
   <div class="sec"><h3>강사용 모든 지점 보기</h3><div class="hint" style="margin-bottom:10px">켠 선생님은 강사용에서 이름이 없는 지점까지 모두 볼 수 있어요 · 끈 선생님은 이름이 있는 지점만 보여요 · 같은 이름은 한 사람으로 보고 전 지점에 같이 적혀요 · 바로 저장돼요</div>${all}</div>
+  ${ownHTML()}
   <div class="sec" id="syncBox"></div>
   <div class="sec" id="mobBox"><h3>폰으로 보기</h3><div class="hint">불러오는 중…</div></div>
   <div class="sec" id="rqBox"><h3>선생님 보강 등록</h3><div class="hint">불러오는 중…</div></div>
@@ -4049,6 +4060,7 @@ document.addEventListener('click',async e=>{
   if(ds.stm){UI.stM=ds.stm;render();return}
   if(ds.stg){UI.stG=ds.stg;render();return}
   if(ds.stfpc){const r=stfById(ds.stfpc);if(!r)return;const code=await bridge.syncCode(r.b.id,{staff:r.a.name});if(!code){toast('코드를 만들 수 없어요 · 프로그램 관리자 PC에서 지점 연동이 켜져 있어야 해요');return}syCodeDlg(code,`${r.a.name} 행정 선생님 PC 연결`);return}
+  if(ds.cnrdel){if(!armed(el,'cr'+ds.cnrdel,'한 번 더'))return;cnRecDel(ds.cnrdel);return}
   if(ds.cn){cnDlg(ds.cn);return}
   if(ds.cnasg!==undefined){cnAsgDlg(ds.cnasg);return}
   if(ds.cnasgx){if(!armed(el,'cx'+ds.cnasgx,'취소할까요?'))return;$('modal').hidden=true;cnAsgX(ds.cnasgx);return}
@@ -4110,6 +4122,10 @@ document.addEventListener('click',async e=>{
       const txt=ds.act==='mobCopy'?u:`[와이매쓰 시간표 보기]\n주소: ${u}\n\n· 처음 한 번 부원장님께 1:1로 받은 6자리 개인 코드로 로그인하면 그 기기에서는 다시 안 물어요\n· 오늘 내 수업이 맨 위에 나오고, 담당 학생 연락처도 볼 수 있어요\n· 홈 화면에 추가하면 앱처럼 열려요 (카톡에서 열었으면 '다른 브라우저로 열기' 먼저)\n· PC에서 열면 전체 시간표 표로 보여요`;
       try{await navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
       toast(ds.act==='mobCopy'?'주소를 복사했어요':'안내문을 복사했어요 · 코드는 들어 있지 않아 단톡방에 올려도 돼요',3500);break}
+    case 'ownNew':if(ownCfg()&&!armed(el,'ownnew','한 번 더 누르면 바꿔요'))return;ownNew();break;
+    case 'ownOff':if(!armed(el,'ownoff','한 번 더 누르면 꺼요'))return;ownOff();break;
+    case 'ownShow':ownShow();break;
+    case 'ownCopy':{const o=ownCfg();if(!o)break;try{await navigator.clipboard.writeText(o.ck)}catch(e){}toast('복사했어요');break}
     case 'syCopy':{const ta=$('scCode');try{await navigator.clipboard.writeText(ta.value)}catch(e){ta.select();document.execCommand('copy')}toast('복사했어요 · 카톡 1:1로 보내 주세요');break}
     case 'closeModal':$('modal').hidden=true;UI.spd=null;UI.spListOpen=false;break;
     case 'spList':spListDlg();break;
@@ -4960,13 +4976,13 @@ const rqClsOf=(b,id)=>{if(!b||!id)return null;const v=b.versions.find(i=>i.id===
 const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br);
 async function rqTick(force){if(!bridge||!bridge.rqList||isStaff())return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
-  const n0=RQS.n|0;const all=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.list=all.filter(x=>!x.kind);csApply();cnApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
+  const n0=RQS.n|0;const all=(r.list||[]).filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.list=all.filter(x=>!x.kind);csApply();await cnApply();cnxApply();adApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
 /* 신입 상담 완료(선생님이 강사용에서 누름): 이 PC가 고칠 수 있는 지점이면 원본 학생에 바로 적고 등록 목록에서 정리 (승인 없음) */
 async function csApply(){const L=(RQS.cs||[]).filter(x=>!x.bad);if(!L.length||RQS.csBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.csBusy=true;
   try{for(const br of [...new Set(L.map(x=>x.br))]){const xs=L.filter(x=>x.br===br);const b=DB.branches.find(i=>i.id===br);if(!b)continue;
       const live=xs.filter(x=>b.students.some(s=>s.id===x.sid&&!s.cs));
-      if(live.length){const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);live.forEach(x=>{const s=bb.students.find(i=>i.id===x.sid);if(s&&!s.cs){s.cs=new Date(x.at||Date.now()).toISOString().slice(0,10);s.csBy=x.tn||''}})},`신입 상담 완료: ${live.map(x=>`${x.sn||''}(${x.tn||''}T)`).join(', ')}`,br);if(!ok)continue}
+      if(live.length){const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);live.forEach(x=>{const s=bb.students.find(i=>i.id===x.sid);if(s&&!s.cs){s.cs=new Date(x.at||Date.now()).toISOString().slice(0,10);s.csBy=x.tn||'';s.csIss=x.num;s.csTs=x.at||Date.now()}})},`신입 상담 완료: ${live.map(x=>`${x.sn||''}(${x.tn||''}T)`).join(', ')}`,br);if(!ok)continue}
       for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
     RQS.cs=[]}finally{RQS.csBusy=false}}
 /* 정기 상담 완료(선생님 강사용) → 승인 없이 상담 기록에 적고 지정 상담은 닫음 */
@@ -4974,9 +4990,18 @@ async function cnApply(){const L=(RQS.cn||[]).filter(x=>!x.bad);if(!L.length||RQ
   try{for(const br of [...new Set(L.map(x=>x.br))]){const xs=L.filter(x=>x.br===br);const b=DB.branches.find(i=>i.id===br);if(!b)continue;const have=new Set(((b.cns||{}).recs||[]).map(r=>r.iss).filter(Boolean));
       const live=xs.filter(x=>!have.has(x.num)&&b.students.some(s=>s.id===x.sid));
       if(live.length){const day=t=>{const d=new Date(t+9*3600e3);return d.toISOString().slice(0,10)};
-        const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);const c=bb.cns=bb.cns||{};c.recs=c.recs||[];live.forEach(x=>{c.recs.push({id:uid('r'),sid:x.sid,at:day(x.at||Date.now()),by:x.tn||'',t:x.t||'',memo:String(x.memo||'').slice(0,200),via:'phone',iss:x.num});(c.asg||[]).forEach(a=>{if(!a.done&&a.sid===x.sid){a.done=day(x.at||Date.now());a.doneBy=x.tn||''}})})},`상담 완료: ${live.map(x=>`${x.sn||''}(${x.tn||''})`).join(', ')}`,br);if(!ok)continue}
+        const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);const c=bb.cns=bb.cns||{};c.recs=c.recs||[];live.forEach(x=>{const ga=[];(c.asg||[]).forEach(a=>{if(!a.done&&a.sid===x.sid){a.done=day(x.at||Date.now());a.doneBy=x.tn||'';ga.push(a.id)}});c.recs.push({id:uid('r'),sid:x.sid,at:day(x.at||Date.now()),by:x.tn||'',t:x.t||'',memo:String(x.memo||'').slice(0,200),via:'phone',iss:x.num,ts:x.at||Date.now(),...(ga.length?{ga}:{})})})},`상담 완료: ${live.map(x=>`${x.sn||''}(${x.tn||''})`).join(', ')}`,br);if(!ok)continue}
       for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
     RQS.cn=[]}finally{RQS.cnBusy=false}}
+/* 폰에서 [되돌리기](상담 완료 10분 안): 그 요청으로 적은 기록만 지우고, 같이 닫았던 지정 상담은 다시 열기 · 15분 넘었으면 안 지움 */
+async function cnxApply(){const L=(RQS.cnx||[]).filter(x=>!x.bad);if(!L.length||RQS.cnxBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.cnxBusy=true;
+  try{for(const br of [...new Set(L.map(x=>x.br))]){const xs=L.filter(x=>x.br===br);const b=DB.branches.find(i=>i.id===br);if(!b)continue;const recs=(b.cns||{}).recs||[];
+      const xc=xs.filter(x=>x.kind==='csx').map(x=>({x,s:b.students.find(q=>q.id===x.sid&&q.csIss===+x.num0&&q.csTs&&(x.at||0)-q.csTs<=15*60000)})).filter(h=>h.s);
+      const hit=xs.filter(x=>x.kind==='cnx').map(x=>({x,r:recs.find(r=>r.iss===+x.num0&&r.sid===x.sid&&r.ts&&(x.at||0)-r.ts<=15*60000)})).filter(h=>h.r);
+      if(xc.length){const ok=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);xc.forEach(({s})=>{const q=bb.students.find(i=>i.id===s.id);if(q){delete q.cs;delete q.csBy;delete q.csIss;delete q.csTs}})},`신입 상담 완료 되돌림: ${xc.map(h=>`${h.x.sn||''}(${h.x.tn||''})`).join(', ')}`,br);if(!ok)continue}
+      if(hit.length){const ok=await quickChange(()=>{const c=DB.branches.find(i=>i.id===br).cns;hit.forEach(({r})=>{c.recs=c.recs.filter(q=>q.id!==r.id);(c.asg||[]).forEach(a=>{if((r.ga||[]).includes(a.id)){delete a.done;delete a.doneBy}})})},`상담 완료 되돌림: ${hit.map(h=>`${h.x.sn||''}(${h.x.tn||''})`).join(', ')}`,br);if(!ok)continue}
+      for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
+    RQS.cnx=[]}finally{RQS.cnxBusy=false}}
 function rqBar(){let el=$('rqBar');const n=RQS.list.filter(x=>!x.bad).length;
   if(!n){if(el&&!el.hidden){el.hidden=true;if(typeof fitGrid==='function')fitGrid()}return}
   if(!el){el=document.createElement('div');el.id='rqBar';el.className='draftbar rqbar';document.querySelector('.top').appendChild(el)}
@@ -5730,31 +5755,34 @@ function cnBoxHTML(b){const c=cnCfg(b);const ed=!(typeof syOn==='function'&&syOn
   const chip=x=>`<button class="cnc${x.n.asg.length?' asg':''}" data-cn="${x.s.id}" title="${esc(x.n.asg.map(a=>(a.by?a.by+': ':'')+(a.note||'상담 요청')).join(' / '))}"><b>${esc(x.s.name)}</b><small>${esc(x.s.grade||'')}</small>${x.n.asg.length?'<i>지정</i>':''}</button>`;
   return `<div class="sec cnbox"><h3>정기 상담 <span class="cnlab">${esc(lab)}</span><span class="hint">완료 ${done} / ${tot}명${held.length?` · 보류 ${held.length}`:''} · 선생님 강사용 학생 탭에 떠요</span><span class="sp"></span>${ed?'<button class="btn sm" data-act="cnAsgOpen">상담 지정해서 보내기</button>':''}${ed&&cnMayHold()?'<button class="btn sm" data-act="cnSet">주기</button>':''}</h3>
     ${wins.length||pend.length?(pend.length?`<div class="cnl">${pend.map(chip).join('')}</div>`:'<div class="hint">이번 기간 상담을 모두 마쳤어요</div>'):''}
-    ${held.length?`<details class="iqcx"><summary>보류 ${held.length}명</summary><div class="cnl">${held.map(x=>`<button class="cnc held" data-cn="${x.s.id}"><b>${esc(x.s.name)}</b><small>${esc(((c.hold||{})[x.s.id]||{}).why||'보류')}</small></button>`).join('')}</div></details>`:''}</div>`}
+    ${(()=>{const ag=(c.asg||[]).filter(a=>!a.done&&b.students.some(s=>s.id===a.sid));return ag.length?`<div class="cnag"><span class="cnagh">지정 대기 ${ag.length}건</span>${ag.map(a=>`<span class="cnagi"><b>${esc(sname(a.sid))}</b> → ${esc(a.t?tn(a.t)+'T':'담당 선생님')}<small>${esc(a.note||'상담 요청')}${a.by?' · '+esc(a.by):''} · ${mdS(a.at)}</small>${ed?`<button class="btn sm" data-cnasgx="${a.id}" data-label="취소">취소</button>`:''}</span>`).join('')}</div>`:''})()}
+    ${held.length?`<details class="iqcx"><summary>보류 ${held.length}명</summary><div class="cnl">${held.map(x=>{const k=cnSkip(b,x.s.id);return `<button class="cnc held" data-cn="${x.s.id}"><b>${esc(x.s.name)}</b><small>${esc(((c.hold||{})[x.s.id]||{}).why||'보류')}${k?` · ${k}기간째`:''}</small></button>`}).join('')}</div></details>`:''}</div>`}
 function cnDlg(sid){const b=B(),s=S(sid);if(!s)return;const c=cnCfg(b);const wins=cnWins(c,b.exam,todayStr());const n=cnNeed(b,s,wins)||{open:[],asg:[]};const ed=!(typeof syOn==='function'&&syOn())||canEditB(b.id);
   const rs=cnRecs(b,sid).slice(0,6);const ts=cnTeachers(b,sid);const hd=(c.hold||{})[sid];
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg cndlg" role="dialog" aria-modal="true" aria-labelledby="cnT" style="width:min(520px,100%)" data-cnd="${sid}"><h2 id="cnT">상담 · ${esc(s.name)} <span class="hint">${esc([s.school,s.grade].filter(Boolean).join(' '))}</span></h2>
     <div class="hint">담당: ${ts.map(t=>esc(tn(t))+'T').join(', ')||'반 없음'}${n.open.length?` · <b class="cnneed">${esc(n.open.map(w=>w.lab).join('·'))} 상담 전</b>`:''}${hd?` · <b>보류</b>${hd.why?' ('+esc(hd.why)+')':''}`:''}</div>
     ${n.asg.length?`<div class="cnasg">${n.asg.map(a=>`<div><i>지정</i> ${esc(a.t?tn(a.t)+'T께':'담당 선생님께')} · ${esc(a.note||'상담 요청')} <small>${esc(a.by||'')} ${mdS(a.at)}</small>${ed?` <button class="btn sm" data-cnasgx="${a.id}" data-label="취소">취소</button>`:''}</div>`).join('')}</div>`:''}
     ${ed?`<label class="qal" for="cnMemo">상담 메모 <span class="hint">안 적어도 돼요</span></label><input id="cnMemo" autocomplete="off" placeholder="예: 학부모 통화 · 진도 안내"><div class="row"><button class="btn pri" data-act="cnDone">상담 완료</button><span class="sp"></span><button class="btn sm" data-cnasg="${sid}">선생님께 보내기</button>${cnMayHold()?`<button class="btn sm" data-act="cnHold">${hd?'보류 풀기':'보류'}</button>`:''}</div>`:''}
-    <div class="cnh"><b>최근 상담</b>${rs.length?rs.map(r=>`<div><span>${mdS(r.at)}</span><span>${esc(r.by||'')}</span><span class="hint">${esc(r.memo||'')}</span></div>`).join(''):'<div class="hint">기록이 없어요</div>'}</div>
+    ${cnSkip(b,sid)?`<div class="hint" style="margin-top:6px">보류로 건너뛴 상담 기간: <b>${cnSkip(b,sid)}번</b></div>`:''}
+    <div class="cnh"><b>최근 상담</b>${rs.length?rs.map(r=>`<div><span>${mdS(r.at)}</span><span>${esc(r.by||'')}</span><span class="hint">${esc(r.memo||'')}</span>${ed?`<button class="btn sm cnrx" data-cnrdel="${r.id}" data-label="삭제" title="잘못 넣은 상담 기록 지우기">삭제</button>`:''}</div>`).join(''):'<div class="hint">기록이 없어요</div>'}</div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button></div></div>`}
 const cnMe=()=>(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'부원장';
 async function cnDone(){const d=document.querySelector('[data-cnd]');if(!d)return;const sid=d.dataset.cnd;const memo=($('cnMemo').value||'').trim().slice(0,200);const by=cnMe()+((typeof isStaff==='function'&&isStaff())?'(행정)':'');$('modal').hidden=true;
   await quickChange(()=>{const b=B();const c=b.cns=b.cns||{};c.recs=c.recs||[];c.recs.push({id:uid('r'),sid,at:todayStr(),by,t:'',memo,via:'pc'});(c.asg||[]).forEach(a=>{if(!a.done&&a.sid===sid){a.done=todayStr();a.doneBy=by}})},`${sname(sid)} · 상담 완료로 적었어요`)}
 async function cnHoldTg(){const d=document.querySelector('[data-cnd]');if(!d)return;const sid=d.dataset.cnd;const on=!((cnCfg(B()).hold||{})[sid]);const why=on?($('cnMemo').value||'').trim().slice(0,40):'';$('modal').hidden=true;
-  await quickChange(()=>{const b=B();const c=b.cns=b.cns||{};c.hold=c.hold||{};if(on)c.hold[sid]={by:cnMe(),at:todayStr(),why};else delete c.hold[sid]},on?`${sname(sid)} · 정기 상담 보류${why?' ('+why+')':''}`:`${sname(sid)} · 보류를 풀었어요`)}
+  await quickChange(()=>{const b=B();const c=b.cns=b.cns||{};c.hold=c.hold||{};c.holdLog=c.holdLog||[];const td=todayStr();if(on){c.hold[sid]={by:cnMe(),at:td,why};c.holdLog.push({sid,from:td,why,by:cnMe()})}else{const h=c.hold[sid];const L=c.holdLog.filter(x=>x.sid===sid&&!x.to);if(L.length)L.forEach(x=>x.to=td);else if(h)c.holdLog.push({sid,from:h.at||td,to:td,why:h.why||'',by:h.by||''});delete c.hold[sid]}},on?`${sname(sid)} · 정기 상담 보류${why?' ('+why+')':''}`:`${sname(sid)} · 보류를 풀었어요`)}
 async function cnAsgX(id){await quickChange(()=>{const c=cnCfg(B());c.asg=(c.asg||[]).filter(a=>a.id!==id)},'상담 지정을 취소했어요')}
 function cnSetDlg(){const c=cnCfg(B());$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="cnsT" style="width:min(460px,100%)"><h2 id="cnsT">정기 상담 주기 · ${esc(B().name)}</h2>
   <label class="qal">기본 주기</label><div class="seg" role="group" id="cnPer">${[[0,'없음'],[1,'매달'],[2,'두 달마다']].map(([v,l])=>`<button data-cnper="${v}" aria-pressed="${(c.per||0)===v}">${l}</button>`).join('')}</div>
   <label class="chk" style="margin-top:12px"><input type="checkbox" id="cnEx" ${c.exam?'checked':''}> 시험 기간마다 한 번 더 <span class="hint">(설정의 시험 기간 시작일 ~ 끝나고 1주)</span></label>
+  <div class="row" style="margin-top:6px"><label>시험 기간</label><input type="date" id="cnExF" value="${esc((B().exam||{}).from||'')}"><span>~</span><input type="date" id="cnExT" value="${esc((B().exam||{}).to||'')}"><span class="hint">[설정 → 선생님 공지]의 시험 기간과 같아요</span></div>
   <div class="row" style="margin-top:10px"><label for="cnStart">시작</label><input type="month" id="cnStart" value="${esc(c.start||cnNextStart(c.per||2))}"><span class="hint">이 달부터 상담 기간이 열려요(그 전 기간은 안 셈)</span></div>
   <div class="hint" style="margin-top:8px">두 달마다는 1~2월, 3~4월 … 단위예요. 기간 안에 한 번 상담하면 완료 · 같이 가르치는 선생님 모두 완료로 보여요.</div>
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="cnSetGo">저장</button></div></div>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cnper]');if(!b)return;document.querySelectorAll('[data-cnper]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
 const cnNextStart=per=>{const t=todayStr();let y=+t.slice(0,4),m=+t.slice(5,7)+1;if(per===2&&m%2===0)m++;if(m>12){m-=12;y++}return `${y}-${String(m).padStart(2,'0')}`};
-async function cnSetGo(){const per=+((document.querySelector('[data-cnper][aria-pressed="true"]')||{}).dataset||{}).cnper||0;const ex=$('cnEx').checked;const st=($('cnStart')||{}).value||'';$('modal').hidden=true;
-  await quickChange(()=>{const b=B();const c=b.cns=b.cns||{};c.per=per;c.exam=ex;if(st)c.start=st;else delete c.start},per||ex?`정기 상담: ${per===1?'매달':per===2?'두 달마다':''}${per&&ex?' + ':''}${ex?'시험 기간마다':''} · 선생님 강사용에 1~2분 뒤 떠요`:'정기 상담을 껐어요')}
+async function cnSetGo(){const per=+((document.querySelector('[data-cnper][aria-pressed="true"]')||{}).dataset||{}).cnper||0;const ex=$('cnEx').checked;const st=($('cnStart')||{}).value||'';const ef=$('cnExF').value,et=$('cnExT').value;if((ef&&!et)||(!ef&&et)||(ef&&et&&et<ef)){toast('시험 기간을 시작·끝 날짜로 정해 주세요');return}$('modal').hidden=true;
+  await quickChange(()=>{const b=B();const c=b.cns=b.cns||{};c.per=per;c.exam=ex;if(st)c.start=st;else delete c.start;if(ef&&et)b.exam={from:ef,to:et};else delete b.exam},per||ex?`정기 상담: ${per===1?'매달':per===2?'두 달마다':''}${per&&ex?' + ':''}${ex?'시험 기간마다':''} · 선생님 강사용에 1~2분 뒤 떠요`:'정기 상담을 껐어요')}
 function cnAsgDlg(sid){const b=B();const L=b.students.filter(s=>!offS(s)).sort((a,z)=>sortKo(a.name,z.name));
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="caT" style="width:min(480px,100%)"><h2 id="caT">상담 지정해서 보내기</h2>
   <label class="qal" for="caS">학생</label><input id="caS" list="caSl" autocomplete="off" placeholder="이름" value="${esc(sid?S(sid).name:'')}"><datalist id="caSl">${L.map(s=>`<option value="${esc(s.name)}">${esc([s.school,s.grade].filter(Boolean).join(' '))}</option>`).join('')}</datalist>
@@ -5775,6 +5803,87 @@ function cnStatsHTML(brs){const y=todayStr().slice(0,4);const by={};const qn=d=>
   return `<div class="sec"><h3>정기 상담 <span class="hint">${y}년 분기별 상담 횟수 · [상담 완료]를 누른 사람 기준</span></h3><div class="stw"><table class="tbl sttbl"><thead><tr><th class="l">누가</th>${[1,2,3,4].map(q=>`<th${q-1===cq?' class="cur"':''}>${q}분기${q-1===cq?'<small>지금</small>':''}</th>`).join('')}<th class="tt">합계</th></tr></thead><tbody>
     ${names.map(k=>`<tr><td class="l"><b>${esc(k)}</b></td>${by[k].map(v=>`<td class="${v?'':'z'}">${v||'·'}</td>`).join('')}<td class="tt">${by[k].reduce((p,q)=>p+q,0)}</td></tr>`).join('')||'<tr><td colspan="6" class="hint">기록 없음</td></tr>'}</tbody></table></div>
     ${R.length?`<div class="stw"><table class="tbl sttbl"><thead><tr><th class="l">선생님 · 이번 기간</th><th>담당 학생</th><th>완료</th><th class="tt">완료율</th></tr></thead><tbody>${R.map(o=>`<tr><td class="l"><b>${esc(o.name)}</b></td><td>${o.a}</td><td>${o.d}</td><td class="tt"><span class="stbar"><i style="width:${Math.round(o.d/o.a*100)}%"></i></span>${Math.round(o.d/o.a*100)}%</td></tr>`).join('')}</tbody></table></div><div class="hint">완료율은 담당 학생 중 이번 기간 상담을 마친 비율이에요(누가 했든) · 보류 학생은 빼고 세요</div>`:''}</div>`}
+
+/* 보류로 건너뛴 상담 기간 수: 시작 달부터 지금까지의 기본 기간(+지금 시험 기간) 중, 보류 중이던 때가 겹치고 그 기간 상담 기록이 없는 기간 */
+function cnSkip(b,sid){const c=cnCfg(b);const td=todayStr();const iv=(c.holdLog||[]).filter(x=>x.sid===sid).map(x=>[x.from,x.to||td]);const h=(c.hold||{})[sid];
+  if(h&&!iv.some(x=>x[1]===td))iv.push([h.at||td,td]);if(!iv.length)return 0;const rs=cnRecs(b,sid);
+  const W=[];const st=(c.start||iv.map(x=>x[0]).sort()[0].slice(0,7))+'-01';const f=(y,m)=>`${y}-${String(m).padStart(2,'0')}`;const ld=(y,m)=>new Date(y,m,0).getDate();
+  if(c.per){let y=+st.slice(0,4),m=+st.slice(5,7);if(c.per===2&&m%2===0)m--;for(let i=0;i<120;i++){const m2=m+c.per-1;const from=f(y,m)+'-01',to=f(y,m2)+'-'+String(ld(y,m2)).padStart(2,'0');if(from>td)break;if(from>=st)W.push([from,to]);m+=c.per;if(m>12){m-=12;y++}}}
+  if(c.exam&&b.exam&&b.exam.from&&b.exam.from<=td&&b.exam.from>=st)W.push([b.exam.from,dPlus(b.exam.to,7)]);
+  return W.filter(([a,z])=>iv.some(([p,q])=>p<=z&&q>=a)&&!rs.some(r=>r.at>=a&&r.at<=z)).length}
+async function cnRecDel(id){const r=(cnCfg(B()).recs||[]).find(x=>x.id===id);if(!r)return;$('modal').hidden=true;
+  await quickChange(()=>{const c=cnCfg(B());c.recs=(c.recs||[]).filter(x=>x.id!==id)},`${sname(r.sid)} · ${mdS(r.at)} 상담 기록을 지웠어요`)}
+</script>
+<script>/* ===== 내 폰 관리 모드 (프로그램 관리자 전용) =====
+   b.own={ck:10자리 코드, ak:서명 키, nm, at} — 모든 지점에 같은 값으로 둠(어느 PC가 시간표를 올려도 같은 묶음이 나가게)
+   강사용에서 이 코드로 로그인하면 '관리' 탭 · 폰에서 바꾼 것은 서명된 요청(kind 'ad')으로 오고,
+   그 지점을 고칠 수 있는 PC(지점장·관리자)가 서명을 확인한 뒤 바로 반영 */
+function ownCfg(){const b=DB.branches.find(x=>x.own&&x.own.ck);return b?b.own:null}
+function ownHTML(){const o=ownCfg();
+  return `<div class="sec ownbox" id="ownBox">
+  <div class="hint">강사용(폰)에서 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요. 학생 추가·상태, 반 넣기·빼기, 정기 상담 주기·지정·보류, 입학 문의, 공지를 폰에서 바꾸고, 통계도 볼 수 있어요. <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 화면도 미리 볼 수 있어요.<br>폰에서 바꾼 것은 그 지점 PC나 이 PC 중 켜져 있는 PC가 받아서 1~2분 안에 반영해요. 이 코드는 다른 사람에게 주지 마세요.</div>
+  <div class="row" style="margin-top:8px">${o?`<span class="ownon">켜져 있어요${o.at?' · '+esc(mdS(o.at))+' 만듦':''}</span><span class="sp"></span><button class="btn" data-act="ownShow">코드 보기</button><button class="btn" data-act="ownNew" data-label="새 코드로 바꾸기" title="지금 코드로 로그인한 폰은 끊겨요">새 코드로 바꾸기</button><button class="btn danger" data-act="ownOff" data-label="끄기">끄기</button>`:`<span class="sp"></span><button class="btn pri" data-act="ownNew">폰 코드 만들기</button>`}</div></div>`}
+function ownCode(){const a=crypto.getRandomValues(new Uint32Array(10));return Array.from(a,x=>x%10).join('').replace(/^0/,'1')}
+function ownKey(){const a=crypto.getRandomValues(new Uint8Array(32));return btoa(String.fromCharCode(...a))}
+async function ownNew(){if(!isOwner())return;const ck=ownCode(),ak=ownKey();const nm=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'';const had=!!ownCfg();
+  const ok=await quickChange(()=>{DB.branches.forEach(b=>{b.own={ck,ak,nm,at:todayStr()}})},had?'새 폰 코드로 바꿨어요 · 예전 코드로 로그인한 폰은 끊겨요':'폰 코드를 만들었어요',DB.branches.map(b=>b.id));if(ok)ownShow()}
+async function ownOff(){if(!isOwner())return;await quickChange(()=>{DB.branches.forEach(b=>{delete b.own})},'폰 관리 모드를 껐어요 · 그 코드로 로그인한 폰은 끊겨요',DB.branches.map(b=>b.id))}
+function ownShow(){const o=ownCfg();if(!o)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="owT" style="width:min(420px,100%)"><h2 id="owT">내 폰 관리 코드</h2>
+  <div class="owncode mono" id="ownCk">${esc(o.ck.slice(0,5))} ${esc(o.ck.slice(5))}</div>
+  <div class="hint">강사용 주소를 폰에서 열고 로그인 화면에 이 <b>10자리</b>를 넣어요. 지금 선생님 코드로 로그인돼 있으면 맨 아래 [로그아웃] 뒤에 넣으면 돼요.<br>시간표가 올라간 뒤(1~2분) 로그인돼요.</div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="ownCopy">복사</button></div></div>`}
+
+/* ---- 폰에서 온 관리 요청 반영 ---- */
+function adCur(b){return (b.versions||[]).find(v=>v.id===b.current)||(b.versions||[])[0]}
+function adSV(b){const sv=b.sched&&(b.versions||[]).find(v=>v.id===b.sched.ver);return sv&&sv.id!==b.current?sv:null}
+function adTwin(b,c){const sv=adSV(b);return sv&&c?{sv,tw:sv.classes.find(x=>tnm(x.name)===tnm(c.name))||null}:null}
+const adS=v=>String(v==null?'':v).trim();
+const adD=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''))?String(v):'';
+/* 한 요청(ops 여러 개)을 지점 b에 적용 · 못 한 것은 이유를 돌려줌 */
+function adOps(b,x){const out=[];const td=todayStr();const by=(ownCfg()||{}).nm||'관리자';
+  const stu=id=>(b.students||[]).find(s=>s.id===id);let lastSid=null;
+  for(const o of (x.ops||[]).slice(0,12)){const a=o.a||{};try{switch(o.op){
+    case 'stAdd':{const name=adS(a.name).replace(/\s+/g,'').slice(0,20);if(!name)throw '이름 없음';const school=adS(a.school).slice(0,20),grade=adS(a.grade).slice(0,10);
+      const dup=(b.students||[]).find(s=>!isOut(s)&&tnm(s.name)===tnm(name)&&tnm(s.school)===tnm(school));if(dup){lastSid=dup.id;out.push(name+' 이미 있음');break}
+      const fd=adD(a.from);const pre=a.st==='예정'&&fd>td;const id=uid('s');b.students.push({id,name,school,grade,status:pre?'예정':'재원',...(fd?{from:fd}:{}),...(!school||!grade?{quick:1}:{}),at:td});lastSid=id;break}
+    case 'stEd':{const s=stu(a.sid);if(!s)throw '학생 없음';const n=adS(a.name).replace(/\s+/g,'').slice(0,20);if(n)s.name=n;if(a.school!=null)s.school=adS(a.school).slice(0,20);if(a.grade!=null)s.grade=adS(a.grade).slice(0,10);if(s.school&&s.grade)delete s.quick;break}
+    case 'stCt':{const s=stu(a.sid);if(!s)throw '학생 없음';const dg=v=>String(v||'').replace(/\D/g,'');const ok=v=>/^0\d{8,10}$/.test(v);const ph=dg(a.ph);
+      if(ph&&!ok(ph))throw '번호 확인';if(ph)s.ph=ph;else delete s.ph;const pa=(Array.isArray(a.pa)?a.pa:[]).slice(0,4).map(x=>({l:adS(x.l).slice(0,10)||'보호자',n:dg(x.n)})).filter(x=>ok(x.n));if(pa.length)s.pa=pa;else delete s.pa;break}
+    case 'stSt':{const s=stu(a.sid);if(!s)throw '학생 없음';const st=a.st;const d=adD(a.date);
+      if(st==='퇴원'){s.status='퇴원';s.out=d||td;stOutApply(b,s.id)}
+      else if(st==='예정'){if(!(d&&d>td))throw '첫 수업일 필요';s.status='예정';s.from=d;delete s.out}
+      else if(st==='재원'||st==='휴원'){s.status=st;delete s.out;if(d&&st==='재원')s.from=d}
+      else throw '상태 모름';break}
+    case 'mAdd':{const sid=a.sid==='$new'?lastSid:a.sid;const s=stu(sid);if(!s)throw '학생 없음';const v=adCur(b);const c=v&&v.classes.find(i=>i.id===a.cls);if(!c)throw '반 없음';
+      const t=a.t;if(!(b.teachers||[]).some(i=>i.id===t))throw '선생님 없음';const m=c.members=c.members||{};m[t]=m[t]||[];if(!m[t].includes(sid))m[t].push(sid);
+      const r=adTwin(b,c);if(r&&r.tw){const mm=r.tw.members=r.tw.members||{};const key=(mm[t]!==undefined||r.sv.sessions.some(q=>q.cls===r.tw.id&&q.t===t))?t:Object.keys(mm)[0];if(key){mm[key]=mm[key]||[];if(!mm[key].includes(sid))mm[key].push(sid)}}break}
+    case 'mDel':{const v=adCur(b);const c=v&&v.classes.find(i=>i.id===a.cls);if(!c)throw '반 없음';const sid=a.sid;Object.keys(c.members||{}).forEach(k=>{if(a.t&&k!==a.t)return;c.members[k]=c.members[k].filter(i=>i!==sid)});
+      const r=adTwin(b,c);if(r&&r.tw)Object.keys(r.tw.members||{}).forEach(k=>{if(a.t&&k!==a.t&&r.tw.members[a.t]!==undefined)return;r.tw.members[k]=r.tw.members[k].filter(i=>i!==sid)});break}
+    case 'cnSet':{const c=b.cns=b.cns||{};const per=+a.per;c.per=[0,1,2].includes(per)?per:0;c.exam=!!a.exam;if(/^\d{4}-\d{2}$/.test(a.start||''))c.start=a.start;else delete c.start;
+      const ef=adD(a.ef),et=adD(a.et);if(ef&&et&&et>=ef)b.exam={from:ef,to:et};else if(a.exClear)delete b.exam;break}
+    case 'cnAsg':{const s=stu(a.sid);if(!s)throw '학생 없음';const c=b.cns=b.cns||{};c.asg=c.asg||[];c.asg.push({id:uid('g'),sid:s.id,t:(b.teachers||[]).some(i=>i.id===a.t)?a.t:'',note:adS(a.note).slice(0,120),by,at:td});break}
+    case 'cnAsgX':{const c=b.cns||{};c.asg=(c.asg||[]).filter(g=>g.id!==a.id);break}
+    case 'cnHold':{const s=stu(a.sid);if(!s)throw '학생 없음';const c=b.cns=b.cns||{};c.hold=c.hold||{};c.holdLog=c.holdLog||[];
+      if(a.on){if(!c.hold[s.id]){const why=adS(a.why).slice(0,40);c.hold[s.id]={by,at:td,why};c.holdLog.push({sid:s.id,from:td,why,by})}}
+      else if(c.hold[s.id]){const h=c.hold[s.id];const L=c.holdLog.filter(q=>q.sid===s.id&&!q.to);if(L.length)L.forEach(q=>q.to=td);else c.holdLog.push({sid:s.id,from:h.at||td,to:td,why:h.why||'',by:h.by||''});delete c.hold[s.id]}break}
+    case 'iqAdd':{const n=adS(a.name).replace(/\s+/g,'').slice(0,20);if(!n)throw '이름 없음';const ph=String(a.ph||'').replace(/\D/g,'');
+      b.inq=(b.inq||[]).concat([{id:uid('q'),st:'open',at:td,reg:td,name:n,school:adS(a.school).slice(0,20),grade:adS(a.grade).slice(0,10),ph:'',pa:/^0\d{8,10}$/.test(ph)?[{l:'보호자',n:ph}]:[],want:adD(a.want),src:'폰에서 입력'}]);break}
+    case 'iqReg':{const q=(b.inq||[]).find(i=>i.id===a.id);if(!q||q.st!=='open')throw '문의 없음';const fd=adD(a.from);const pre=fd&&fd>td;const sid=uid('s');
+      b.students.push({id:sid,name:q.name,school:q.school||'',grade:q.grade||'',status:pre?'예정':'재원',...(fd?{from:fd}:{}),...(q.ph?{ph:q.ph}:{}),...(q.pa&&q.pa.length?{pa:q.pa.map(p=>({l:p.l||'보호자',n:p.n}))}:{}),...(!q.school||!q.grade?{quick:1}:{}),at:td});q.st='done';q.sid=sid;q.doneAt=td;lastSid=sid;break}
+    case 'iqX':{const q=(b.inq||[]).find(i=>i.id===a.id);if(!q)throw '문의 없음';if(a.back){q.st='open';delete q.cancelAt}else{q.st='cancel';q.cancelAt=td}break}
+    case 'anAdd':{const tx=adS(a.tx).slice(0,300);if(!tx)throw '내용 없음';b.ann=annLive(b);b.ann.push({id:uid('a'),tx,until:adD(a.until),at:Date.now()});break}
+    case 'anDel':{b.ann=annLive(b).filter(i=>i.id!==a.id);break}
+    default:throw '모르는 요청'}}catch(e){out.push(typeof e==='string'?e:'오류')}}
+  return out}
+async function adApply(){const L=(RQS.ad||[]);if(!L.length||RQS.adBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.adBusy=true;
+  try{const bad=L.filter(x=>x.adBad||!x.ops);for(const x of bad){try{await bridge.rqClose(x.num,false)}catch(e){}}
+    const ok=L.filter(x=>!x.adBad&&x.ops).sort((a,z)=>(a.pat||a.at)-(z.pat||z.at));
+    for(const br of [...new Set(ok.map(x=>x.br))]){const b0=DB.branches.find(i=>i.id===br);if(!b0)continue;const xs=ok.filter(x=>x.br===br);
+      const seen=new Set(b0.adLog||[]);const old=Date.now()-7*864e5;const live=xs.filter(x=>!seen.has(x.n)&&(x.pat||x.at)>=old);
+      if(live.length){let fails=[];const done=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);fails=[];live.forEach(x=>{const f=adOps(bb,x);if(f.length)fails.push((x.lb||'요청')+': '+f.join(', '))});bb.adLog=(bb.adLog||[]).concat(live.map(x=>x.n)).slice(-300)},
+        `폰에서 바꾼 것 반영 · ${live.map(x=>x.lb||'요청').slice(0,3).join(' · ')}${live.length>3?` 외 ${live.length-3}건`:''}`,br);if(!done)continue;if(fails.length)setTimeout(()=>toast('폰 요청 중 못 한 것: '+fails.join(' / '),6000),4200)}
+      for(const x of xs){try{await bridge.rqClose(x.num,true)}catch(e){}}}
+    RQS.ad=[]}finally{RQS.adBusy=false}}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5815,9 +5924,10 @@ const HELP=[
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
   <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 반에 학생을 넣거나 빼거나 옮기면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요(알림에 '예정 시간표에도 반영'). 예정 시간표에 같은 이름 반이 없으면 알려만 줘요 — 그때는 예정 시간표를 열어 직접 넣어 주세요. 퇴원은 두 시간표 모두에서 빠져요.</li>
   <li><b>에듀OK에서 받기</b>: [학생 관리]의 [에듀OK에서 받기]를 누르고 처음 한 번 <b>그 지점 에듀OK 아이디·비밀번호</b>를 넣어 저장하세요(이 PC에만 암호화해서 저장 · 다른 PC로 안 넘어가요). 그다음부터 [재학생명부 받기]·[입학희망생명부 받기]를 누르면 프로그램이 에듀OK에 로그인해 [엑셀]을 받아 바로 불러와요(10~20초). 넣기 전에 어느 지점에 넣을지 한 번 물어봐요. 에듀OK 화면이 바뀌면 멈출 수 있어요 — 그때는 지금처럼 직접 받아서 가져오기로 넣으면 돼요.</li>
-  <li><b>정기 상담</b>: [학생 관리]의 <b>정기 상담</b> 칸에서 지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더(설정의 시험 기간 시작일 ~ 끝나고 1주). <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요(기본: 다음 기간). 기간이 열리면 선생님 강사용 <b>학생 탭 맨 위</b>(오늘 탭에도 알림)에 담당 학생 중 아직 상담 안 한 학생이 떠요. 한 분이 [상담 완료](메모는 선택)를 누르면 같이 가르치는 선생님 화면에서도 완료로 바뀌고, 지점장용에 승인 없이 기록돼요. PC에서는 학생 이름을 눌러 상담 완료·<b>보류</b>(지점장만)·<b>선생님께 보내기</b>(지점장·행정 선생님 · 요청 내용과 함께 그 선생님 폰 맨 위에 '지정'으로 떠요)를 해요. 행정 선생님 폰에는 <b>지정 상담</b>만 떠요. [통계] 탭에 분기별 상담 횟수(누른 사람 기준)와 이번 기간 선생님별 완료율이 나와요.</li>
+  <li><b>정기 상담</b>: [학생 관리]의 <b>정기 상담</b> 칸에서 지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더(설정의 시험 기간 시작일 ~ 끝나고 1주). <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요(기본: 다음 기간). 기간이 열리면 선생님 강사용 <b>학생 탭 맨 위</b>(오늘 탭에도 알림)에 담당 학생 중 아직 상담 안 한 학생이 떠요. 한 분이 [상담 완료](메모는 선택)를 누르면 같이 가르치는 선생님 화면에서도 완료로 바뀌고, 지점장용에 승인 없이 기록돼요. [주기] 창에서 시험 기간도 바로 정할 수 있어요. PC에서는 학생 이름을 눌러 상담 완료·잘못 넣은 기록 <b>삭제</b>(두 번)·<b>보류</b>(지점장만 · 보류로 건너뛴 상담 기간 수가 보여요)·<b>선생님께 보내기</b>(지점장·행정 선생님 · 요청 내용과 함께 그 선생님 폰 맨 위에 '지정'으로 떠요)를 해요. 행정 선생님 폰에는 <b>지정 상담</b>만 떠요. [통계] 탭에 분기별 상담 횟수(누른 사람 기준)와 이번 기간 선생님별 완료율이 나와요.</li>
   <li><b>입학 문의</b>: [학생 관리] 맨 위 칸. 관리 프로그램에서 뽑은 <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기]로 고르면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요(이름·학교·학년·연락처·입학희망일·문의일·등록경로). 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요. <b>[입학 예정으로]</b>는 첫 수업일(오늘 이후)을 골라 입학 예정 학생으로, <b>[바로 재원]</b>은 두 번 눌러 오늘부터 재원 학생으로 옮겨요(연락처 그대로) — 반 넣기는 지점 시간표 카드에서. <b>[입학취소]</b>는 두 번 누르면 '취소된 문의'로 남고 [되돌리기]도 돼요. 지점장·행정 선생님 PC에서만 보이고 선생님 폰에는 안 나가요.</li>
   <li><b>퇴원</b>: 학생 관리에서 상태를 눌러 <b>퇴원</b>을 고르고 퇴원일을 정하면, 지금·예정 시간표의 모든 반과 특강 명단에서 빠지고 학생은 '퇴원'으로 남아요(목록 필터 '퇴원'에서 봐요). 선생님 폰에서는 사라져요. 통계에 이번 달 퇴원·입학 문의 수와 월별 퇴원·입학 문의가 나와요. 다시 다니면 상태를 재원으로 바꾸거나 명부를 불러오면 돼요.</li>
+  <li><b>내 폰 관리 모드</b>(프로그램 관리자만): [프로그램 관리 → 내 폰 관리 모드]에서 <b>[폰 코드 만들기]</b>를 누르면 <b>10자리 코드</b>가 나와요. 강사용을 폰에서 열고 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요 — 학생 추가·상태(휴원·예정·퇴원)·정보 고치기, 반 넣기·빼기(예정 시간표의 같은 반도 같이), 정기 상담 주기·시험 기간·지정·보류, 입학 문의(입학 예정으로·바로 재원·입학취소), 공지 올리기·내리기, 통계(재원·환산·학생×타임·월별). 폰에서 누르면 서명된 요청이 가고, 그 지점 PC나 관리자 PC 중 <b>켜져 있는 PC</b>가 서명을 확인한 뒤 바로 반영해요(1~2분). <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 폰 화면을 그대로 볼 수 있어요(보내기는 막힘). 시간표 칸 옮기기·반 구조·버전·에듀OK·엑셀은 PC에서만. 코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기].</li>
   <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
   <li><b>[통계]</b> 탭: 실적 관리용. 지금 시간표 기준으로 강사마다 <b>학년별 재원 학생 수</b>(휴원·예정은 따로), <b>환산</b>(반마다 타임 비율로 나눈 인원 — 2+2면 0.5명씩, 3+1이면 0.75·0.25명, 혼자 들어가는 반은 1명), <b>학생×타임</b>(주당 내 타임 × 학생 수 합), 주당 타임을 봐요. 표 오른쪽 위 [학년별 재원 / 학년별 환산 / 학년별 학생×타임]으로 학년 칸에 보이는 값을 바꿀 수 있어요. 반 목록에는 반 구조(3+1, 2+2 등, 진한 숫자가 내 타임)가 나오고, <b>특강</b>은 따로 셉니다(주당 타임 = 요일 수). 월별 기록은 [적용]하거나 바로 저장할 때마다 이번 달 값이 덮어써져서, 달이 끝나면 <b>그달 마지막 상태</b>가 남아요(바뀐 게 없는 달은 앞 달 그대로) · 재원/환산/학생×타임/특강 인원/특강 ×타임으로 바꿔 볼 수 있어요. 옆의 학년 고르기로 <b>학년별 월별 기록</b>(예: 고2만)도 봐요 — 학년별 기록은 2026년 10월부터 쌓여요. 명단은 있는데 시간표에 그 선생님 수업이 없는 반은 맨 위에 <b>타임이 없는 반</b>으로 알려 줘요(환산·학생×타임이 0으로 잡히니까요). [엑셀로 저장]하면 시트 여섯 장(실적·학년별 환산·학년별 학생×타임·반 목록·특강·월별)으로 저장돼요. 지점장은 자기 지점만, 프로그램 관리자는 <b>[전 지점 합계]</b>로 같은 이름 강사를 합쳐서 볼 수 있어요.</li>
   <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
