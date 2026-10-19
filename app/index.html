@@ -3131,7 +3131,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.60.0', APPDATE='2026-10-18';
+const APPVER='3.60.1', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4125,6 +4125,7 @@ document.addEventListener('click',async e=>{
     case 'iqAdd':inqAdd();break;
     case 'eokOpen':eokDlg();break;
     case 'eokSave':eokSave();break;
+    case 'eokMan':bridge&&bridge.eokOpen&&bridge.eokOpen();break;
     case 'eokClear':if(!armed(el,'eokc','한 번 더 누르면 지워요'))return;eokClear();break;
     case 'eokGo':eokGo(el.dataset.kind);break;
     case 'eokRosterGo':{const L=UI.eokRoster;$('modal').hidden=true;UI.eokRoster=null;if(L){UI.stOK=1;UI.anyOK=1;try{applyRoster(L)}finally{UI.stOK=0;UI.anyOK=0}}break}
@@ -5651,12 +5652,13 @@ document.addEventListener('change',async e=>{if(e.target&&e.target.id==='fileInq
 /* ===== 에듀OK에서 받기: 지점마다 이 PC에 아이디·비밀번호 저장 → 버튼 하나로 재학생명부·입학희망생명부를 받아 바로 불러오기 ===== */
 async function eokDlg(msg){if(!bridge||!bridge.eokInfo){toast('프로그램에서만 돼요');return}const b=B();const inf=(await bridge.eokInfo())[b.id]||{};
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg eokdlg" role="dialog" aria-modal="true" aria-labelledby="eoT" style="width:min(500px,100%)"><h2 id="eoT">에듀OK에서 받기 · <span class="iqbr">${esc(b.name)}</span></h2>
-  <div class="eogo"><button class="btn pri" data-act="eokGo" data-kind="roster" ${inf.has?'':'disabled'}>재학생명부 받기</button><button class="btn pri" data-act="eokGo" data-kind="hope" ${inf.has?'':'disabled'}>입학희망생명부 받기</button></div>
-  <div class="eost" id="eoSt">${msg||(inf.has?(inf.at?`마지막으로 받은 때 ${fmtT(inf.at)}`:'버튼을 누르면 에듀OK에 로그인해서 받아 와요 · 10~20초쯤 걸려요'):'아래에 이 지점 에듀OK 아이디·비밀번호를 먼저 넣어 주세요')}</div>
+  <div class="eogo"><button class="btn pri" data-act="eokGo" data-kind="roster">재학생명부 받기</button><button class="btn pri" data-act="eokGo" data-kind="hope">입학희망생명부 받기</button></div>
+  <div class="eost" id="eoSt">${msg||(inf.has?(inf.at?`마지막으로 받은 때 ${fmtT(inf.at)}`:'버튼을 누르면 에듀OK에 로그인해서 받아 와요 · 10~20초쯤 걸려요'):'아래에 이 지점 에듀OK 아이디·비밀번호를 넣어 주세요 · 또는 맨 아래 [에듀OK 창 열기]로 직접 로그인')}</div>
   <details class="eoacc"${inf.has?'':' open'}><summary>에듀OK 계정 · ${esc(b.name)}${inf.id?` <span class="hint">${esc(inf.id)}</span>`:''}</summary>
     <div class="row"><label for="eoId">아이디</label><input id="eoId" autocomplete="off" value="${esc(inf.id||'')}" style="flex:1"></div>
     <div class="row"><label for="eoPw">비밀번호</label><input id="eoPw" type="password" autocomplete="new-password" placeholder="${inf.has?'저장돼 있어요 · 바꿀 때만 넣기':''}" style="flex:1"></div>
     <div class="row"><span class="hint" style="flex:1">이 PC에만 암호화해서 저장돼요 · 다른 PC로 안 넘어가요</span>${inf.has?'<button class="btn sm" data-act="eokClear" data-label="지우기">지우기</button>':''}<button class="btn sm" data-act="eokSave">저장</button></div></details>
+  <div class="row eoman"><span class="hint" style="flex:1">자동 로그인이 안 되면 에듀OK 창을 열어 직접 한 번 로그인하세요 · 창을 닫고 [받기]를 누르면 돼요(프로그램을 끌 때까지 유지)</span><button class="btn sm" data-act="eokMan">에듀OK 창 열기</button></div>
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button></div></div>`;
   if(!inf.has)setTimeout(()=>{const i=$(inf.id?'eoPw':'eoId');if(i)i.focus()},50)}
 async function eokSave(){const id=($('eoId').value||'').trim(),pw=$('eoPw').value||'';if(!id){toast('아이디를 넣어 주세요');return}const inf=(await bridge.eokInfo())[B().id]||{};if(!pw&&!inf.has){toast('비밀번호를 넣어 주세요');return}
