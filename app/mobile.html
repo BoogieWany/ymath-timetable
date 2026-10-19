@@ -736,9 +736,9 @@ const dayOf=t=>{const d=new Date(t);return `${d.getFullYear()}-${String(d.getMon
 function cnWinsM(c,exam){const td=tdStr();const w=[];const y=+td.slice(0,4),m=+td.slice(5,7);const ld=(y,m)=>new Date(y,m,0).getDate();const f=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
   if(c.per===1)w.push({from:f(y,m,1),to:f(y,m,ld(y,m)),lab:`${m}월`});
   if(c.per===2){const s=m%2?m:m-1;w.push({from:f(y,s,1),to:f(y,s+1,ld(y,s+1)),lab:`${s}~${s+1}월`})}
-  if(c.exam&&exam&&exam.from&&exam.to){const to2=plusD(exam.to,7);if(td>=exam.from&&td<=to2)w.push({from:exam.from,to:to2,lab:'시험 기간'})}return w}
+  if(c.exam&&exam&&exam.from&&exam.to){const to2=plusD(exam.to,7);if(td>=exam.from&&td<=to2)w.push({from:exam.from,to:to2,lab:'시험 기간'})}return c.start?w.filter(x=>x.from>=c.start+'-01'):w}
 function cnState(b){const c=b&&b.cns;if(!c)return null;const me=ME(),adm=isAdm();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;if(!adm&&!myT)return null;
-  const wins=cnWinsM(c,b.exam);const loc=RQ.list.concat(RQ.ok||[]).filter(x=>x.kind==='cn'&&x.br===b.id);const recs=(c.rec||[]).concat(loc.map(x=>[x.sid,dayOf(x.at),x.tn]));
+  const wins=adm?[]:cnWinsM(c,b.exam); /* 행정 선생님 폰은 지정 상담만 */const loc=RQ.list.concat(RQ.ok||[]).filter(x=>x.kind==='cn'&&x.br===b.id);const recs=(c.rec||[]).concat(loc.map(x=>[x.sid,dayOf(x.at),x.tn]));
   const hold=new Set(c.hold||[]);const mine=adm?null:new Set(b.classes.flatMap(cl=>((cl.members||{})[myT]||[])));
   const P=[],Dn=[];b.students.forEach(s=>{if(s.away||isPreS(s))return;
     const asg=(c.asg||[]).filter(a=>a.sid===s.id&&(adm||!a.t||a.t===myT)&&!recs.some(r=>r[0]===s.id&&r[1]>=a.at));
@@ -747,9 +747,9 @@ function cnState(b){const c=b&&b.cns;if(!c)return null;const me=ME(),adm=isAdm()
     if(open.length||asg.length)P.push({s,open,asg});else if(inScope&&!hold.has(s.id)&&wins.length){const r=recs.filter(r=>r[0]===s.id).sort((a,z)=>z[1].localeCompare(a[1]))[0];Dn.push({s,r})}});
   P.sort((a,z)=>(z.asg.length?1:0)-(a.asg.length?1:0)||String(a.s.grade).localeCompare(String(z.s.grade))||a.s.name.localeCompare(z.s.name));
   return {wins,P,Dn,lab:wins.map(w=>w.lab).join(' · ')}}
-function cnHTML(b){const st=cnState(b);if(!st||(!st.wins.length&&!st.P.length))return '';
+function cnHTML(b){const st=cnState(b);if(!st||(!st.wins.length&&!st.P.length))return '';const adm=isAdm();
   const row=x=>`<div class="cnr${x.asg.length?' asg':''}"><div class="cni"><b>${esc(x.s.name)}</b><small>${esc([x.s.grade,x.s.school].filter(Boolean).join(' · '))}${x.open.length?' · '+esc(x.open.map(w=>w.lab).join('·')):''}</small>${x.asg.map(a=>`<span class="cna"><i>지정</i>${esc(a.note||'상담 요청')}${a.by?` <small>${esc(a.by)}</small>`:''}</span>`).join('')}</div><button class="csbtn cnb" data-act="cnGo" data-sid="${esc(x.s.id)}">상담 완료</button></div>`;
-  return `<div class="sec">정기 상담 <small>${st.lab?esc(st.lab)+' · ':''}${st.P.length?`<b class="csn">${st.P.length}명 남음</b>`:'모두 완료'}${st.Dn.length?` · 완료 ${st.Dn.length}명`:''}</small></div>
+  return `<div class="sec">${adm?'지정 상담':'정기 상담'} <small>${st.lab?esc(st.lab)+' · ':''}${st.P.length?`<b class="csn">${st.P.length}명 남음</b>`:'모두 완료'}${st.Dn.length?` · 완료 ${st.Dn.length}명`:''}</small></div>
     ${st.P.length?`<div class="cnl">${st.P.map(row).join('')}</div>`:''}
     ${st.Dn.length?`<details class="cnd"><summary>완료한 학생 ${st.Dn.length}명</summary><div>${st.Dn.map(x=>`<span><b>${esc(x.s.name)}</b> <small>${x.r?esc(x.r[1].slice(5).replace('-','/'))+' '+esc(x.r[2]||''):''}</small></span>`).join('')}</div></details>`:''}`}
 async function cnSend(sid){const b=B(),me=ME(),st=S(b,sid);const g=$('cnOk'),msg=$('cnMsg');if(!st||(!me&&!isAdm())||!rqOn())return;g.disabled=true;g.textContent='보내는 중…';
@@ -803,7 +803,7 @@ function instHTML(){if(wide||standalone()||ls.get('m_noinst',''))return'';const 
   return `<div class="tip"><span>브라우저 메뉴 <b>⋮</b> → <b>홈 화면에 추가</b>를 누르면 앱처럼 바로 열려요</span>${x}</div>`}
 function vToday(b){const d=todayD();const dt=new Date();const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;
   let h=`<div class="${wide?'narrow':''}">`+instHTML()+meHTML(b)+`<div class="today-hd">${dt.getMonth()+1}월 ${dt.getDate()}일 ${d}요일</div>`;
-  {const cs=cnState(b);if(cs&&cs.P.length)h+=`<button class="cnban" data-act="goCn"><span>정기 상담 · <b>${cs.P.length}명</b> 남았어요${cs.P.some(x=>x.asg.length)?' <i>지정 있음</i>':''}</span><em>›</em></button>`}
+  {const cs=cnState(b);if(cs&&cs.P.length)h+=`<button class="cnban" data-act="goCn"><span>${isAdm()?'지정 상담':'정기 상담'} · <b>${cs.P.length}명</b> 남았어요${cs.P.some(x=>x.asg.length)?' <i>지정 있음</i>':''}</span><em>›</em></button>`}
   if(myT){const mine=todayItems(b,d).filter(x=>x.t===myT);const mk=marks(mine);
     h+=`<div class="sec">${esc(T(b,myT))} 선생님 오늘 수업 <small>${mine.length?mine.length+'개':''}</small></div>`;
     if(mine.length)h+=`<div class="list">${mine.map((x,i)=>x.sp?spCard(b,x.sp,`${spTime(x.sp)}${spD(x.sp)}`,mk[i],x):card(b,x.o,`${esc(pshort(per(b,d,x.o.p).name))} · ${fromMin(x.s)}–${fromMin(x.e)}`,false,mk[i],x)).join('')}</div>`;
@@ -1059,7 +1059,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.61.0</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.61.1</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
