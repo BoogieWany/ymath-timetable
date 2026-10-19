@@ -689,6 +689,9 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .csnB{font-size:12px;font-weight:700;color:#b23b3b;margin:0 6px}
 .csrow .cst{margin-right:4px}
 .nbi.csno{border-color:color-mix(in srgb,#d64545 55%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,#d64545 8%,transparent)}
+.stfbox{margin-top:22px}
+.stftbl{width:auto}
+.stftbl td{padding:8px 10px}
 </style>
 </head>
 <body>
@@ -3046,7 +3049,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.55.1', APPDATE='2026-10-18';
+const APPVER='3.56.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3934,6 +3937,12 @@ document.addEventListener('click',async e=>{
   if(ds.tgo){UI.view='grid';UI.gteach=ds.tgo;UI.mode='week';render();return}
   if(ds.csset){if(ds.csset.endsWith('|0')&&!armed(el,'cs'+ds.csset,'한 번 더 누르면 취소해요'))return;csSet(ds.csset);return}
   if(ds.tall){tAllTg(ds.tall);return}
+  if(ds.stfck){const a=(B().staff||[]).find(x=>x.id===ds.stfck);if(a&&a.ck&&!armed(el,'sk'+ds.stfck,'한 번 더 누르면 바꿔요'))return;stfCkNew(ds.stfck);return}
+  if(ds.stfdel){if(!armed(el,'sd'+ds.stfdel,'한 번 더 누르면 빼요'))return;stfDel(ds.stfdel);return}
+  if(ds.stfcopy){const a=(B().staff||[]).find(x=>x.id===ds.stfcopy);if(!a||!a.ck)return;let u='';try{const mi=MOBI||(bridge&&bridge.mobileGet?await bridge.mobileGet():null);u=(mi&&mi.gh&&mi.gh.url)||''}catch(e){}
+    const txt=`[와이매쓰 시간표] ${a.name} 행정 선생님\n${u?`주소: ${u}\n`:''}개인 로그인 코드: ${a.ck}\n\n· 처음 한 번 이 코드로 로그인하면 그 기기에서는 다시 안 물어요\n· 모든 지점 시간표와 학생·학부모 연락처를 볼 수 있어요\n· 선생님만 쓰는 코드예요 · 다른 사람에게 알려 주지 마세요`;
+    try{await navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
+    toast(`${a.name} 행정 선생님 코드 안내를 복사했어요 · 카톡 1:1로 보내 주세요`,3500);return}
   if(ds.ckcopy){const t=B().teachers.find(x=>x.id===ds.ckcopy);if(!t||!t.ck)return;let u='';try{const mi=MOBI||(bridge&&bridge.mobileGet?await bridge.mobileGet():null);u=(mi&&mi.gh&&mi.gh.url)||''}catch(e){}
     const txt=`[와이매쓰 시간표] ${t.name} 선생님\n${u?`주소: ${u}\n`:''}개인 로그인 코드: ${t.ck}\n\n· 처음 한 번 이 코드로 로그인하면 그 기기에서는 다시 안 물어요\n· 선생님만 쓰는 코드예요 · 다른 사람에게 알려 주지 마세요`;
     try{await navigator.clipboard.writeText(txt)}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
@@ -4005,6 +4014,7 @@ document.addEventListener('click',async e=>{
     case 'ntFill':ntFill();break;
     case 'qaSave':qaSave();break;
     case 'helpClose':helpClose();break;
+    case 'stfAdd':stfAdd();break;
     case 'admTabGo':UI.view='admin';UI._keepScroll=false;render();window.scrollTo(0,0);break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
     case 'admGo':admGo();break;
@@ -5259,7 +5269,7 @@ function ckCell(t){const ed=!(typeof syOn==='function'&&syOn())||canEditB(B().id
 /* 로그인 코드: 6자리 · 전 지점에서 겹치지 않게 · 다른 지점에 같은 이름 선생님 코드가 있으면 처음 만들 땐 그 코드를 그대로(한 사람 = 한 코드) */
 async function ckNew(tid){const t0=B().teachers.find(x=>x.id===tid);if(!t0)return;const me=sameT(t0.name),ed=sameTEd(t0.name);
   if(me.length>ed.length&&t0.ck){toast('다른 지점에도 등록된 선생님이에요 · 코드 바꾸기는 관리자 모드에서 해 주세요 (전 지점이 같은 코드여야 해요)',5000);return}
-  const mine=new Set(me.map(x=>x.t));const used=new Set(DB.branches.flatMap(b=>b.teachers||[]).filter(x=>!mine.has(x)&&x.ck).map(x=>x.ck));
+  const mine=new Set(me.map(x=>x.t));const used=new Set(DB.branches.flatMap(b=>(b.teachers||[]).concat(b.staff||[])).filter(x=>!mine.has(x)&&x.ck).map(x=>x.ck));
   const have=!t0.ck&&me.find(x=>x.t.ck);let c=have?have.t.ck:'';   // 처음 만들 땐 다른 지점에 이미 있는 그 사람 코드를 그대로
   while(!c||used.has(c))c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);
   const bids=[...new Set(ed.map(x=>x.b.id))];
@@ -5273,9 +5283,10 @@ function stDlg(id){const s=S(id);if(!s)return;const cur=stLabel(s);
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="stT" style="width:min(440px,100%)" data-stid="${id}"><h2 id="stT">상태 · ${esc(sname(id))}</h2>
   <div class="seg stseg" role="group" aria-label="상태">${['재원','휴원','예정'].map(x=>`<button data-stv="${x}" aria-pressed="${cur===x}">${x==='예정'?'입학 예정':x}</button>`).join('')}</div>
   <div class="row"><label for="stFrom">첫 수업일</label><input id="stFrom" type="date" value="${esc(s.from||'')}"><span class="hint">예정이면 꼭 · 이 날부터 저절로 재원, 2주 동안 '신입'으로 보여요</span></div>
-  ${csTgt(s)?`<div class="row csrow"><label>신입 상담</label>${s.cs?`<span class="cst ok">상담 완료 · ${mdS(s.cs)}${s.csBy?' · '+esc(s.csBy)+'T':''}</span><button class="btn sm" data-csset="${id}|0" data-label="상담 취소">상담 취소</button>`:`<span class="cst no">상담 전</span><button class="btn sm" data-csset="${id}|1">상담 완료로 표시</button>`}<span class="hint">선생님이 강사용에서 누르면 저절로 바뀌어요 · 바로 저장</span></div>`:''}
+  ${csTgt(s)?`<div class="row csrow"><label>신입 상담</label>${s.cs?`<span class="cst ok">상담 완료 · ${mdS(s.cs)}${s.csBy?' · '+esc(csByT(s.csBy)):''}</span><button class="btn sm" data-csset="${id}|0" data-label="상담 취소">상담 취소</button>`:`<span class="cst no">상담 전</span><button class="btn sm" data-csset="${id}|1">상담 완료로 표시</button>`}<span class="hint">선생님이 강사용에서 누르면 저절로 바뀌어요 · 바로 저장</span></div>`:''}
   <div class="row" style="justify-content:flex-end"><span class="hint" style="flex:1">수정 모드가 아니어도 바로 저장돼요</span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="stSave">저장</button></div></div>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-stv]');if(!b)return;b.parentElement.querySelectorAll('[data-stv]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));if(b.dataset.stv==='예정'){const i=$('stFrom');if(i&&!i.value)i.focus()}});
+const csByT=n=>/\)$/.test(n)?n:n+'T';
 async function csSet(v){const [id,on]=v.split('|');const s=S(id);if(!s)return;$('modal').hidden=true;
   await quickChange(()=>{const x=B().students.find(i=>i.id===id);if(!x)return;if(on==='1'){x.cs=todayStr();x.csBy=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||''}else{delete x.cs;delete x.csBy}},on==='1'?`${sname(id)} · 상담 완료로 표시했어요`:`${sname(id)} · 상담 완료를 취소했어요 (다시 상담 전)`)}
 async function stSave(){const d=document.querySelector('[data-stid]');if(!d)return;const id=d.dataset.stid;const v=(document.querySelector('[data-stv][aria-pressed="true"]')||{}).dataset.stv||'재원';const fd=$('stFrom').value||'';
@@ -5284,7 +5295,7 @@ async function stSave(){const d=document.querySelector('[data-stid]');if(!d)retu
 /* 학생 관리 맨 위: 입학 예정 · 신입(첫 수업일부터 2주) */
 function newBoxHTML(b){const L=b.students.filter(s=>isPre(s)||isNewS(s)||(csTgt(s)&&!s.cs)).sort((a,z)=>(a.cs?1:0)-(z.cs?1:0)||(a.from||'').localeCompare(z.from||''));if(!L.length)return '';const nd=L.filter(s=>csTgt(s)&&!s.cs).length;
   const cls=id=>V().classes.filter(c=>Object.values(c.members).some(a=>a.includes(id))).map(c=>c.name);
-  return `<div class="sec newbox"><h3>신입 · 입학 예정 ${nd?`<span class="csnB">상담 전 ${nd}명</span>`:''}<span class="hint">예정은 첫 수업일까지 선생님 폰 공지에 떠요 · 상담 완료한 학생은 첫 수업일부터 2주 뒤 빠지고, 상담 전은 계속 남아요</span></h3><div class="nbl">${L.map(s=>`<div class="nbi${csTgt(s)&&!s.cs?' csno':''}"><span class="nbt ${isPre(s)?'pre':'nw'}">${isPre(s)?'예정':'신입'}</span><b>${esc(s.name)}</b>${csTgt(s)?(s.cs?`<span class="cst ok" title="${esc(s.csBy?s.csBy+'T가 ':'')}${esc(s.cs)} 상담 완료">상담 ✓ ${mdS(s.cs)}${s.csBy?' '+esc(s.csBy)+'T':''}</span>`:'<span class="cst no">상담 전</span>'):''}<span class="hint">${esc([s.school,s.grade].filter(Boolean).join(' · '))}</span><span class="nbd">${mdS(s.from)}${isPre(s)?'부터':' 시작'}</span><span class="hint nbc">${esc(cls(s.id).join(', ')||'반 없음')}</span>${phCell(s)}<button class="btn sm" data-status="${s.id}">상태</button></div>`).join('')}</div></div>`}
+  return `<div class="sec newbox"><h3>신입 · 입학 예정 ${nd?`<span class="csnB">상담 전 ${nd}명</span>`:''}<span class="hint">예정은 첫 수업일까지 선생님 폰 공지에 떠요 · 상담 완료한 학생은 첫 수업일부터 2주 뒤 빠지고, 상담 전은 계속 남아요</span></h3><div class="nbl">${L.map(s=>`<div class="nbi${csTgt(s)&&!s.cs?' csno':''}"><span class="nbt ${isPre(s)?'pre':'nw'}">${isPre(s)?'예정':'신입'}</span><b>${esc(s.name)}</b>${csTgt(s)?(s.cs?`<span class="cst ok" title="${esc(s.csBy?csByT(s.csBy)+'가 ':'')}${esc(s.cs)} 상담 완료">상담 ✓ ${mdS(s.cs)}${s.csBy?' '+esc(csByT(s.csBy)):''}</span>`:'<span class="cst no">상담 전</span>'):''}<span class="hint">${esc([s.school,s.grade].filter(Boolean).join(' · '))}</span><span class="nbd">${mdS(s.from)}${isPre(s)?'부터':' 시작'}</span><span class="hint nbc">${esc(cls(s.id).join(', ')||'반 없음')}</span>${phCell(s)}<button class="btn sm" data-status="${s.id}">상태</button></div>`).join('')}</div></div>`}
 
 async function examSave(){const f=$('exFrom').value,t=$('exTo').value;if((f&&!t)||(!f&&t)||(f&&t&&t<f)){toast('시험 기간을 시작·끝 날짜로 정해 주세요');return}
   await quickChange(()=>{const b=B();if(f&&t)b.exam={from:f,to:t};else delete b.exam},f?`시험 기간 ${annMD(f)}~${annMD(t)} 저장했어요`:'시험 기간을 해제했어요')}
@@ -5306,7 +5317,20 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
     <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
     <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
   h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
+  h+=staffHTML(b,ed);
   return h}
+/* ===== 행정 선생님: 개인 로그인 코드로 강사용 — 모든 지점 · 학생 전체 연락처 · 내 수업 없음 (보기 모드에서도 바로 저장) ===== */
+function staffHTML(b,ed){const L=b.staff||[];
+  return `<div class="sec stfbox"><h3>행정 선생님 <span class="hint">개인 로그인 코드로 강사용을 봐요 · 모든 지점 시간표 · 학생·학부모 연락처 전체 · 신입 [상담 완료] 가능 · 내 수업 화면은 없어요</span></h3>
+  ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>`<tr><td><b>${esc(a.name)}</b> <span class="hint">행정</span></td><td>${stfCk(a,ed)}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
+  ${ed?'<div class="row" style="margin-top:8px"><input id="newStf" placeholder="행정 선생님 이름" style="width:160px"><button class="btn" data-act="stfAdd">추가</button></div>':''}</div>`}
+const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button>${ed?` <button class="btn sm" data-stfck="${a.id}" data-label="바꾸기" title="바꾸면 예전 코드로 로그인한 기기는 다시 로그인해야 해요">바꾸기</button>`:''}`:(ed?`<button class="btn sm" data-stfck="${a.id}">코드 만들기</button>`:'<span class="hint">코드 없음</span>');
+function newCode(){const used=new Set(DB.branches.flatMap(b=>(b.teachers||[]).concat(b.staff||[])).map(x=>x.ck).filter(Boolean));let c='';while(!c||used.has(c))c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);return c}
+async function stfAdd(){const i=$('newStf');const n=(i&&i.value||'').trim().replace(/\s+/g,' ');if(!n){toast('이름을 넣어 주세요');i&&i.focus();return}
+  if((B().staff||[]).some(a=>a.name===n)){toast('이미 있는 이름이에요');return}const c=newCode();
+  await quickChange(()=>{const b=B();b.staff=b.staff||[];b.staff.push({id:uid('a'),name:n,ck:c})},`행정 선생님 ${n} 추가 · 로그인 코드 ${c} · [복사]로 1:1로 보내 주세요`)}
+async function stfCkNew(id){const a=(B().staff||[]).find(x=>x.id===id);if(!a)return;const c=newCode();await quickChange(()=>{const x=(B().staff||[]).find(y=>y.id===id);if(x)x.ck=c},`${a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`)}
+async function stfDel(id){const a=(B().staff||[]).find(x=>x.id===id);if(!a)return;await quickChange(()=>{const b=B();b.staff=(b.staff||[]).filter(x=>x.id!==id)},`${a.name} 행정 선생님을 뺐어요 · 그 코드로는 더 못 들어와요`)}
 function tphDlg(id){const t=T(id);if(!t)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="tpT" style="width:min(400px,100%)" data-tph="${id}"><h2 id="tpT">연락처 · ${esc(t.name)}T</h2>
   <div class="hint">부원장님이 급히 연락할 때 보는 번호예요. 선생님 폰 시간표에는 나오지 않아요.</div>
   <div class="row"><label for="tpIn">휴대폰</label><input id="tpIn" inputmode="tel" placeholder="010-0000-0000" value="${esc(phFmt(t.ph||''))}" style="flex:1"></div>
@@ -5352,6 +5376,7 @@ const HELP=[
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
+  <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. [바꾸기]·[삭제]는 두 번 눌러야 돼요.</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
   <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 떠요. <b>상담 전</b>이면 빨간 테두리와 <b>[상담 완료]</b> 버튼이 있어요 — 담당 선생님 중 한 명이 누르면 모두 완료로 바뀌고, 지점장용이 켜져 있으면 원본 학생에도 저절로 적혀요(승인 없음). 상담 완료한 학생만 첫 수업일부터 2주 뒤 사라지고, 상담 전 학생은 2주가 지나도 계속 남아요. 지점장용 [학생 관리] 맨 위 신입 칸에도 '상담 전'(빨간 테두리)·'상담 ✓ 날짜 선생님'이 보이고, [상태] 창에서 상담 완료로 표시하거나 잘못 누른 걸 [상담 취소]할 수 있어요. 강사용 PC 프로그램·PC 브라우저의 학생 탭에도 같은 신입 목록이 떠요.</li>
   <li><b>[학생 관리 → 학년 올리기]</b>: 새 학년이 되는 때에 한 번 누르면 이 지점 학생 전체가 한 학년씩 올라가요(초6→중1, 중3→고1, 고3→졸업 · 빈 학년·'재수' 같은 표기는 그대로). 누르면 먼저 <b>몇 명이 어떻게 바뀌는지 표</b>로 보여 주고, 고3을 졸업으로 표시할지·휴원생도 올릴지 고를 수 있어요. 보기 모드에서도 바로 저장되고 폰에도 전달돼요. 실수했으면 <b>[학년 되돌리기]</b>(두 번)로 올리기 전으로 돌아가요. 지점마다 따로 눌러요.</li></ul>`},
