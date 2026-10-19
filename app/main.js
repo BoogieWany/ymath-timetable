@@ -98,6 +98,18 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     const byC={};for(const {b,a} of sts){const c=String(a.ck);if(!byC[c])byC[c]={b,a}} // 같은 사람(여러 지점·같은 코드)은 묶음 하나 · 소속은 앞 지점
     for(const [c,{b,a}] of Object.entries(byC)){const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,all:1,ct:ctA};const dk=await lgKey(c,salt);
       u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+b.id+':'+ctH)}}
+  /* 프로그램 관리자 폰(b.own · 10자리 코드): 전 지점 · 학생 전체 연락처 · 관리용 추가 자료(ox) · 폰 요청 서명 키(ak) */
+  {const ob=(db.branches||[]).find(b=>kb[b.id]&&b.own&&/^\d{10}$/.test(String(b.own.ck||''))&&b.own.ak);
+    if(ob){const own=ob.own;const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});
+      const ox={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const c=b.cns||{};
+        ox[b.id]={inq:(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||''})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||''})),
+          out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
+          cns:{per:c.per||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
+          exam:b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null,
+          mstat:Object.fromEntries(Object.keys(b.mstat||{}).sort().slice(-13).map(k=>[k,b.mstat[k]]))}});
+      const mine=ppl[nm(own.nm)]||[];const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:mine.map(r=>({br:r.b.id,t:r.t.id})),nm:own.nm||'',role:'owner',home:(mine[0]&&mine[0].b.id)||ob.id,all:1,ct:ctA,ak:own.ak,ox};
+      const dk=await lgKey(String(own.ck),salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});
+      sig.push('O'+own.ck+':'+crypto.createHash('sha256').update(JSON.stringify([P.me,P.nm,P.home,own.ak,ctA,ox])).digest('hex'))}}
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
@@ -359,9 +371,15 @@ ipcMain.handle('rqSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')re
   if(r.on){if(!rqTok()){r.on=false;RQ.err='요청 키를 넣어 주세요'}
     else{try{if(!mob.ghOwner)await ghConnect();const t=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues?per_page=1`);if(t.status!==200){RQ.err=rqErr(t);r.on=false;if(o.token){if(old)rqSetTok(old);else{delete r.tokEnc;delete r.tokPlain}}}}catch(err){RQ.err=err.message;r.on=false}}}
   sySave();await rqPublish();if(mob.ghOn)await publishGh();return rqInfo()});
+/* 관리자 폰 요청: 서명(HMAC · b.own.ak)이 맞아야 x.ops를 믿음 · 아니면 adBad(받은 PC가 닫기만) */
+function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){db={branches:[]}}const ob=(db.branches||[]).find(b=>b.own&&b.own.ak);
+    if(!ob||typeof x.p!=='string'||typeof x.sg!=='string')throw 0;const h=crypto.createHmac('sha256',Buffer.from(ob.own.ak,'base64')).update(x.p,'utf8').digest();const g=Buffer.from(x.sg,'base64');
+    if(g.length!==h.length||!crypto.timingSafeEqual(g,h))throw 0;const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;
+    x.ops=d.ops;x.n=String(d.n);x.lb=String(d.lb||'').slice(0,200);x.pat=+d.at||0;delete x.p;delete x.sg}
+  catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
   try{const out=[];for(let pg=1;pg<=3;pg++){const r=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues?state=open&per_page=100&page=${pg}`);if(r.status!==200){RQ.err=rqErr(r);return {ok:false,err:RQ.err,list:out}}
-      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
+      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&x.kind==='ad')adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||(x.kind==='ad'&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
       if((r.j||[]).length<100)break}
     RQ.err='';return {ok:true,list:out}}catch(err){RQ.err=err.message;return {ok:false,err:err.message,list:[]}}});
 ipcMain.handle('rqClose',async(e,num,ok)=>{if(!rqOn())return {ok:false,err:'꺼져 있어요'};try{const r=await rqApi('PATCH',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}`,{state:'closed',state_reason:ok?'completed':'not_planned'});return r.status===200?{ok:true}:{ok:false,err:rqErr(r)}}catch(err){return {ok:false,err:err.message}}});
