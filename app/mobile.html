@@ -241,6 +241,7 @@ main.zm{--mz:1;zoom:var(--mzz,1)}
 .csn{color:#c94040;font-weight:700}
 @media (prefers-color-scheme:dark){.csneed{color:#f08a8a}.csn{color:#f08a8a}}
 body.wide .newl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+.admt{font-size:.85em;font-weight:700;color:var(--acc);background:var(--chip);border-radius:999px;padding:1px 7px}
 .pin input.pcode{text-align:center;letter-spacing:10px;font-family:var(--mono);font-size:22px;padding-left:20px}
 .foot .vv{margin-top:10px;font-family:var(--f);font-size:11.5px;letter-spacing:.2px;opacity:.7}
 /* 가로 모드 */
@@ -580,7 +581,8 @@ async function dec2(j,dk){const id=u8b64((await lgH(dk,'ymath-id')).slice(0,12))
   const com=await lgOpen(b64(P.kc),j.com);const branches=[];
   for(const id of Object.keys(j.br||{})){const k=(P.kb||{})[id];if(!k)continue;const b=await lgOpen(b64(k),j.br[id]);b.ctm=(P.ct||{})[id]||null;branches.push(b)}
   if(!branches.length)throw new Error('nobr');
-  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all})}
+  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all,role:P.role||'',home:P.home||''})}
+const isAdm=()=>!!(D&&D.v2&&D.role==='admin'); // 행정 선생님: 내 수업 없음 · 전 지점 · 학생 전체 연락처
 /* 예전 방식(공용 번호)으로 저장된 것은 처음 한 번 지움 */
 function legacyWipe(){if(!ls.get('m_pin','')&&!ls.get('m_key',''))return;['m_pin','m_key','m_me','m_noMe','m_cache'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
 async function load(pin){
@@ -613,7 +615,7 @@ async function boot(){legacyWipe();const p=ls.get('m_pin',''),c=ls.get('m_cache'
   return load()}
 function fadeIn(){const m=$('main');if(!m)return;m.classList.remove('fin');void m.offsetWidth;m.classList.add('fin');m.addEventListener('animationend',()=>m.classList.remove('fin'),{once:true})}
 /* 처음 열 때: 내 이름을 골라 둔 지점으로 */
-function initBr(){if(ls.get('m_br','')&&!D.branches.some(b=>b.id===ls.get('m_br','')))ls.set('m_br','');const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
+function initBr(){if(ls.get('m_br','')&&!D.branches.some(b=>b.id===ls.get('m_br','')))ls.set('m_br','');if(isAdm()&&!ls.get('m_br','')&&D.home&&D.branches.some(b=>b.id===D.home))ST.br=D.home;const me=ME();if(me&&D.branches.some(b=>b.id===me.br)&&!ls.get('m_br',''))ST.br=me.br;
   if(me&&me.br===ST.br&&!ls.get('m_t',''))ST.t=me.t}
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 /* 번호로 키 만들기(60만 회)는 소금·번호가 같으면 한 번만 — 시간표가 바뀔 때마다 1~2초씩 기다리지 않게 */
@@ -701,7 +703,7 @@ const csDone=(b,s)=>!!s&&(!!s.cs||RQ.list.concat(RQ.ok).some(x=>x.kind==='cs'&&x
 const csWho=(b,s)=>{if(s.cs)return {d:s.cs,n:s.csBy||''};const x=RQ.list.concat(RQ.ok).find(x=>x.kind==='cs'&&x.br===b.id&&x.sid===s.id);return x?{d:new Date(x.at).toISOString().slice(0,10),n:x.tn||''}:null};
 const csTgt=s=>!!s&&!!s.from&&!s.away&&s.from>=CS_FROM;          // 상담 대상(첫 수업일이 있는 신입·예정)
 const csShow=(b,s)=>csTgt(s)&&(isPreS(s)||isNewS(s)||!csDone(b,s)); // 학생 탭 맨 위에 보일지
-const csMine=(b,s)=>{const t=ctMe(b);if(!t||!s)return false;return b.classes.some(c=>((c.members||{})[t]||[]).includes(s.id))||sps(b).some(x=>x.t===t&&(x.members||[]).includes(s.id))};
+const csMine=(b,s)=>{if(isAdm())return !!s;const t=ctMe(b);if(!t||!s)return false;return b.classes.some(c=>((c.members||{})[t]||[]).includes(s.id))||sps(b).some(x=>x.t===t&&(x.members||[]).includes(s.id))};
 const actS=s=>!!s&&!s.away&&!isPreS(s);
 const nMark=s=>isPreS(s)?`<em class="smk pre">예정 ${mdd(s.from)}</em>`:isNewS(s)?'<em class="smk nw">신입</em>':'';
 const nCnt=(b,ids)=>{const a=ids.map(id=>S(b,id)).filter(Boolean);const n=a.filter(actS).length,p=a.filter(isPreS).length;return `${n}명${p?` <span class="np">+${p} 예정</span>`:''}`};
@@ -984,6 +986,16 @@ function rqClick(e){const sh=e.target.closest('#sh');
   const fr=e.target.closest('td[data-free]');if(fr&&!e.target.closest('.gc')){const [d,p]=fr.dataset.free.split('|');rqSheet(d,+p);return true}
   return false}
 /* ===== 하루 한 줄: 때(수업 전·중·뒤·없는 날)·요일·시기(시험 기간·방학)에 맞는 문장을 하루에 한 번, 선생님마다 다르게 ===== */
+/* 행정 선생님용 응원 문구 */
+const CHEER_ADM={
+ day:['오늘도 학원이 매끄럽게 돌아가는 건 선생님 덕분이에요.','전화 한 통, 안내 한 줄이 학원의 첫인상이에요.','보이지 않는 곳에서 챙겨 주셔서 고맙습니다.','수업이 제시간에 시작되는 건 선생님 준비 덕분이에요.','꼼꼼한 확인 하나가 큰 실수를 막아요.','선생님 덕분에 다른 선생님들이 수업에만 집중할 수 있어요.','학부모님의 신뢰는 작은 응대에서 쌓여요.','정확한 안내가 가장 좋은 서비스예요.','일이 몰리는 날엔 하나씩만 해도 충분해요.','바쁜 시간 사이에 잠깐 숨 돌리고 가세요.','오늘 하루도 학원의 중심을 잡아 주셔서 고마워요.','아이들이 편하게 드나드는 학원, 선생님이 만들고 있어요.','오늘 들어올 상담이 좋은 인연으로 이어지길 바라요.','차분한 목소리 하나가 학원 분위기를 바꿔요.'],
+ off:['오늘은 수업이 없어요. 여유 있게 정리하는 하루 되세요.','조용한 날엔 미뤄 둔 일을 천천히 해도 괜찮아요.','오늘은 쉬어 가는 날이에요. 좋은 하루 보내세요.'],
+ mon:['한 주의 시작, 이번 주도 잘 부탁드려요.','월요일은 문의가 많죠. 천천히 하나씩 해요.'],
+ exam:['시험 기간이라 문의가 많죠. 오늘도 힘내세요.','시험 기간 보강 일정 챙겨 주셔서 고맙습니다.','시험 끝날 때까지 학원이 흔들리지 않게 잡아 주셔서 고마워요.'],
+ examEnd:['시험 기간 동안 정말 수고 많으셨어요.','긴 시험 기간, 뒤에서 챙겨 주셔서 고마웠어요.'],
+ vac:['특강 일정 챙기느라 고생 많으세요.','방학 시간표가 잘 돌아가는 건 선생님 덕분이에요.'],
+ newS:['새로 오는 학생의 첫날이 편안하도록 챙겨 주셔서 고마워요.','신입 상담, 첫인상을 잘 부탁드려요.'],
+ all:['오늘 하루도 든든하게 지켜 주셔서 고맙습니다.','오늘도 수고 많으세요.','선생님이 있어 학원이 학원다워요.','따뜻한 차 한잔의 여유 잊지 마세요.']};
 const CHEER={
  pre:['오늘 한 문제가 누군가의 자신감이 될 거예요.','준비한 만큼, 오늘도 잘 전해질 거예요.','좋은 하루의 시작은 선생님의 웃음에서부터예요.','오늘 수업도 잘 부탁드려요.','오늘 만날 아이들, 오늘도 잘 부탁드려요.','준비해 두신 만큼 오늘도 잘 흘러갈 거예요.','차근차근, 늘 하던 대로면 충분해요.'],
  mid:['목 아끼면서 천천히 하세요.','설명 한 번 더 해 주신 그 마음, 아이들도 알아요.','오늘 설명이 누군가에겐 처음으로 이해된 순간일 거예요.','끝까지 들어 주는 것도 수업이에요.','질문이 많은 날은 수업이 잘 되고 있는 날이에요.'],
@@ -994,17 +1006,20 @@ const CHEER={
  examEnd:['시험 기간 동안 고생 많으셨어요.'],
  vac:['방학 특강도 함께해 주셔서 든든해요.','방학에도 아이들 곁을 지켜 주셔서 고맙습니다.','방학 동안 쌓은 게 새 학기에 보일 거예요.'],
  all:['선생님 덕분에 오늘도 와이매쓰가 따뜻해요.','아이들은 선생님의 말투까지 기억해요.','오늘도 누군가에게는 최고의 선생님이에요.','작은 칭찬 하나가 아이의 하루를 바꿔요.','함께해 주셔서 늘 고맙습니다.','수학을 좋아하게 되는 순간, 그 옆엔 늘 선생님이 있어요.','서두르지 않아도 괜찮아요. 꾸준함이 이겨요.','선생님의 하루도 응원하고 있어요.','와이매쓰는 선생님과 함께라서 든든해요.','선생님 수업을 기다리는 아이들이 있어요.','꾸준히 해 오신 게 아이들 성적에 남아요.','아이들은 설명보다 태도를 먼저 배워요.','오늘도 함께해 주셔서 고맙습니다.','한 명 한 명 챙겨 주시는 거, 다 보여요.','잘 가르치는 건 결국 잘 기다려 주는 거예요.','오늘 수업이 아이들의 다음 시험을 바꿔요.','선생님 한 분 한 분이 와이매쓰예요.','아이들이 수학을 덜 무서워하게 된 건 선생님 덕분이에요.','매일 같은 자리에 있어 주셔서 든든합니다.','오늘도 묵묵히, 고맙습니다.','좋은 수업은 티 나지 않게 쌓여요.','아이들 이름을 불러 주는 것만으로도 수업이 달라져요.','오늘 하루도 응원합니다.']};
-function cheerCtx(b){const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;const d=todayD();const its=todayItems(b,d).filter(x=>!myT||x.t===myT);const nm=nowMin();const dw=new Date().getDay();
+function cheerCtx(b){if(isAdm()){const td=tdStr(),dw=new Date().getDay();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;const its=todayItems(b,todayD());const ctx=!its.length?'off':'on';const pools=[[CHEER_ADM[ctx==='off'?'off':'day'],3],[CHEER_ADM.all,1]];
+    if(dw===1&&ctx!=='off')pools.push([CHEER_ADM.mon,2]);if(ex&&td>=ex.from&&td<=ex.to)pools.push([CHEER_ADM.exam,4]);else if(ex&&td>ex.to&&td<=plusD(ex.to,3))pools.push([CHEER_ADM.examEnd,5]);if(sps(b).length&&ctx!=='off')pools.push([CHEER_ADM.vac,2]);
+    if(b.students.some(s=>csTgt(s)&&!csDone(b,s)))pools.push([CHEER_ADM.newS,2]);return {ctx,pools,myT:null,adm:1}}
+  const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;const d=todayD();const its=todayItems(b,d).filter(x=>!myT||x.t===myT);const nm=nowMin();const dw=new Date().getDay();
   const ctx=!its.length?'off':nm<its[0].s?'pre':nm>=Math.max(...its.map(x=>x.e))?'post':'mid';const td=tdStr();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;
   const pools=[[CHEER[ctx],3]];
   if(dw===1&&ctx!=='post')pools.push([CHEER.mon,2]);if(dw===5&&ctx==='post')pools.push([CHEER.fri,3]);if(dw===6&&ctx!=='off')pools.push([CHEER.sat,2]);if((dw===6||dw===0)&&ctx==='off')pools.push([CHEER.wkoff,3]);
   if(ex&&td>=ex.from&&td<=ex.to)pools.push([CHEER.exam,4]);else if(ex&&td>ex.to&&td<=plusD(ex.to,3))pools.push([CHEER.examEnd,5]);
   if(sps(b).length&&ctx!=='off')pools.push([CHEER.vac,2]);pools.push([CHEER.all,1]);return {ctx,pools,myT}}
-function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forEach(([a,w])=>a.forEach(x=>{for(let i=0;i<w;i++)list.push(x)}));
-  const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
-  const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
+function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.forEach(([a,w])=>a.forEach(x=>{for(let i=0;i<w;i++)list.push(x)}));
+  const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
+  const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.55.1</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.56.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1190,7 +1205,7 @@ const telH=(lab,n)=>{const d=String(n).replace(/\D/g,'');const f=d.length===11?`
   return `<a class="tel" href="tel:${d}"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.4 4.1-2 1.4a12 12 0 0 0 6.4 6.4l1.4-2 4.1 1.4v2.6a2 2 0 0 1-2.2 2A16.6 16.6 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg></i><span>${esc(lab)}</span><b>${f}</b></a>`};
 async function ctFill(){if(!D)return;const ws=[...document.querySelectorAll('.ctw[data-sid]')];if(!ws.length)return;const b=B();const t=ctMe(b);const any=b.ct&&Object.keys(b.ct).length;
   const set=h=>ws.forEach(w=>w.innerHTML=h);
-  if(D.v2){if(b._nx){set('');return}const m=t&&b.ctm;
+  if(D.v2){if(b._nx){set('');return}const m=(isAdm()||t)&&b.ctm;
     ws.forEach(w=>{const c=m&&m[w.dataset.sid];w.innerHTML=!c?'<div class="cth">담당 학생이 아니어서 연락처는 안 보여요</div>':(c.p||(c.a||[]).length)?`<div class="tels">${c.p?telH('학생',c.p):''}${(c.a||[]).map(x=>telH(x.l,x.n)).join('')}</div>`:'<div class="cth">저장된 연락처가 없어요</div>'});return}
   if(!any||b._nx){set('');return}
   if(!t){set('<div class="cth">연락처는 <b>내 이름</b>을 정한 담당 선생님만 볼 수 있어요</div>');return}
@@ -1303,8 +1318,8 @@ function ptrHide(){const el=ptrEl();el.classList.remove('spin','drag');el.style.
 document.addEventListener('touchend',ptrEnd,{passive:true});document.addEventListener('touchcancel',ptrEnd,{passive:true});
 document.addEventListener('change',e=>{if(e.target.id==='nmChk'){ST.nm=e.target.checked;ls.set('m_nm',ST.nm?'1':'0');render()}});
 /* 폰 학생 검색: 시간표 대신 학생 정보 — 이름·학교·학년·상태 · 연락처(담당 선생님) · 듣는 반(반·선생님·요일·교시 한 줄씩) */
-async function csSend(sid){const b=B(),me=ME(),st=S(b,sid);const g=$('csOk'),msg=$('csMsg');if(!st||!me||!rqOn())return;g.disabled=true;g.textContent='보내는 중…';
-  try{const x={v:1,kind:'cs',br:b.id,sid,t:me.t,tn:T(b,me.t),sn:st.name,at:Date.now()};const body=await rqEnc(x);
+async function csSend(sid){const b=B(),me=ME(),st=S(b,sid);const g=$('csOk'),msg=$('csMsg');if(!st||(!me&&!isAdm())||!rqOn())return;g.disabled=true;g.textContent='보내는 중…';
+  try{const x={v:1,kind:'cs',br:b.id,sid,t:isAdm()?'':me.t,tn:isAdm()?(D.myName||'')+'(행정)':T(b,me.t),sn:st.name,at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 상담',body})});
     if(r.status!==201)throw new Error(r.status===401||r.status===403?'보강 등록 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
     const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';ST.mh='';shClose();render();fzToast(`${st.name} 상담 완료로 표시했어요`,2400)}
@@ -1316,7 +1331,7 @@ function stuInfo(b,sid,mine,sp){const s=S(b,sid);if(!s)return '';const grp={};
     +sp.map(x=>`<div class="sir"><i style="background:${esc(x.color||'#9aa3b5')}"></i><b>${esc(x.name)} <small>특강</small></b><span>${esc(T(b,x.t))}T · ${esc((x.days||[]).join(''))} ${spTime(x)}</span></div>`).join('');
   const n=Object.keys(grp).length+sp.length,wk=mine.length;
   const cst=csTgt(s)&&(isPreS(s)||isNewS(s)||!csDone(b,s));const cdn=cst&&csDone(b,s);const cw=cdn&&csWho(b,s);
-  const csH=!cst?'':cdn?`<div class="csok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>상담 완료${cw?` · ${mdd(cw.d)}${cw.n?' '+esc(cw.n)+'T':''}`:''}</div>`
+  const csH=!cst?'':cdn?`<div class="csok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>상담 완료${cw?` · ${mdd(cw.d)}${cw.n?' '+esc(cw.n)+(/\)$/.test(cw.n)?'':'T'):''}`:''}</div>`
     :`<div class="csneed"><span>아직 상담 전이에요</span>${csMine(b,s)&&rqOn()?`<button class="csbtn" data-act="csGo" data-sid="${esc(sid)}">상담 완료</button>`:''}</div>`;
   return `<div class="sinfo${cst&&!cdn?' cs-need':''}">${csH}<div class="sih"><div class="siav">${esc(s.name.slice(-2))}</div><div><b>${esc(s.name)}</b><span>${esc([s.school,s.grade].filter(Boolean).join(' · '))||'&nbsp;'}</span></div>${s.away?'<em class="aw">휴원</em>':isPreS(s)?`<em class="pre">예정 · ${mdd(s.from)}부터</em>`:isNewS(s)?`<em class="nw">신입 · ${mdd(s.from)}~</em>`:''}</div>
     <div class="ctw" data-sid="${esc(sid)}"></div>
