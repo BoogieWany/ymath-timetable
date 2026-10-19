@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('api',{
   updPublish:v=>ipcRenderer.invoke('updPublish',v),
   updCheck:v=>ipcRenderer.invoke('updCheck',v),
   relaunch:()=>ipcRenderer.invoke('relaunch'),
+  appStale:()=>ipcRenderer.invoke('appStale'),
   reloadNow:()=>ipcRenderer.invoke('reloadNow'),
   syncInfo:()=>ipcRenderer.invoke('syncInfo'),
   syncPull:(k,o)=>ipcRenderer.invoke('syncPull',k,o),
