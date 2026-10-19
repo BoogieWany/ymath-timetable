@@ -695,6 +695,35 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
 .stfnm{background:none;border:0;padding:2px 6px;margin:-2px -6px;border-radius:6px;font:inherit;color:inherit;cursor:pointer;transition:background .18s}
 .stfnm:not(:disabled):hover{background:var(--hov,rgba(23,36,63,.06))}
 .stfnm:disabled{cursor:default}
+/* 통계 */
+.stk{display:flex;gap:10px;padding:14px 18px 4px;flex-wrap:wrap}
+.stk>div{flex:1;min-width:110px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.stk b{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--navy)}
+.stk span{font-size:12px;color:var(--muted)}
+.stw{overflow:auto;max-width:100%}
+.tbl.sttbl{width:max-content;min-width:min(100%,560px)}
+.sttbl th,.sttbl td{text-align:right;padding:7px 12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sttbl th.l,.sttbl td.l{text-align:left}
+.sttbl td.l small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}
+.sttbl td.z{color:var(--line)}
+.sttbl .tt{font-weight:700}
+.sttbl .stbar{display:inline-block;vertical-align:middle;width:56px;height:6px;margin-right:10px;border-radius:3px;background:color-mix(in srgb,var(--navy) 8%,transparent);overflow:hidden}
+.sttbl .stbar i{display:block;height:100%;border-radius:3px;background:color-mix(in srgb,var(--navy) 55%,transparent)}
+.sttbl tfoot td{border-top:1.5px solid var(--line);font-weight:700;background:color-mix(in srgb,var(--navy) 4%,transparent)}
+.sttbl th small{display:block;font-size:10px;font-weight:400;color:var(--muted)}
+.sttbl th.cur{color:var(--navy)}
+.stm small.up{color:#2f7d4f;font-size:10.5px;margin-left:4px}
+.stm small.dn{color:#b23b3b;font-size:10.5px;margin-left:4px}
+.stcl{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.stc{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;background:var(--panel)}
+.stch{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-bottom:6px;margin-bottom:4px;border-bottom:1px solid var(--line2)}
+.stch span{font-size:12px;color:var(--muted)}
+.stcr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;padding:4px 0;font-size:12.5px}
+.stcr .g{color:var(--muted);font-size:11.5px}
+.stcr .c{font-weight:700;font-variant-numeric:tabular-nums;min-width:28px;text-align:right}
+.stcr small{font-weight:400;color:var(--muted);font-size:10.5px}
+.stcr .n small{color:var(--muted);font-size:10.5px}
+.empty-note{color:var(--muted);padding:18px 0}
 </style>
 </head>
 <body>
@@ -724,6 +753,7 @@ button.st.pre{background:#fff3dd;color:#8a5a00;border-color:#f1d7a6}
     <button class="tab" role="tab" data-v="students">학생 관리</button>
     <button class="tab" role="tab" data-v="teacher">강사 관리</button>
     <button class="tab" role="tab" data-v="settings">설정</button>
+    <button class="tab" role="tab" data-v="stats">통계</button>
     <button class="tab" role="tab" data-v="admin" id="admTab" hidden>프로그램 관리</button>
     <button class="tab helptab" role="tab" data-v="help" title="사용 설명서 (F1)">? 도움말</button>
   </nav>
@@ -3052,7 +3082,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.56.1', APPDATE='2026-10-18';
+const APPVER='3.57.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3178,6 +3208,7 @@ function markDirty(){$('saved').textContent='저장 중…';$('saved').className
 async function saveNow(){
   if(UI.peek){$('saved').textContent='지난 시간표 보는 중';return}
   if(AUTO.prev){return}
+  if(!UI.edit&&!(typeof syOn==='function'&&syOn())&&typeof mstatStamp==='function')DB.branches.forEach(mstatStamp); // 월별 기록(이번 달 값)
   const txt=JSON.stringify(DB);
   try{
     if(UI.edit){if(bridge)await bridge.saveDraft(txt);else localStorage.setItem('ymt_draft',txt)}
@@ -3610,11 +3641,11 @@ function render(){
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===UI.view));
   ISS=analyze();
   if(UI.view==='admin'&&!isOwner())UI.view='settings';{const at=$('admTab');if(at)at.hidden=!isOwner()}
-  const wide=['classes','students','settings','help','teacher','admin'].includes(UI.view);
+  const wide=['classes','students','settings','help','teacher','admin','stats'].includes(UI.view);
   $('side').hidden=wide;
   const sc=$('view').querySelector('.scroll');const keep=sc?[sc.scrollLeft,sc.scrollTop]:null;
   {const vw=$('view');if(UI._lastView!==UI.view){UI._lastView=UI.view;vw.classList.remove('vin');void vw.offsetWidth;vw.classList.add('vin')}}
-  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():UI.view==='admin'?viewAdmin():viewSettings());
+  $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():UI.view==='admin'?viewAdmin():UI.view==='stats'?viewStats():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
   renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums)}fitGrid();renderPop();setTimeout(renderPop,330);
@@ -4019,6 +4050,9 @@ document.addEventListener('click',async e=>{
     case 'qaSave':qaSave();break;
     case 'helpClose':helpClose();break;
     case 'stfAdd':stfAdd();break;
+    case 'stOne':UI.stAll=false;render();break;
+    case 'stAll':if(isOwner()){UI.stAll=true;render()}break;
+    case 'stXlsx':stXlsx();break;
     case 'stfNmSave':stfNmSave();break;
     case 'admTabGo':UI.view='admin';UI._keepScroll=false;render();window.scrollTo(0,0);break;
     case 'admToggle':if(ADM.open)admLock();else admDlg();break;
@@ -4711,7 +4745,7 @@ function syncGuard(){if(!syOn())return true;const id=B().id;
 async function syncAfterApply(){if(!syOn())return;const ids=[...new Set([...SYNC.mine,...SYNC.offline])].filter(id=>DB.branches.some(b=>b.id===id)&&canEditB(id));
   const known=DB.syncKnown=DB.syncKnown||{};const me=SYNC.info.name||'';
   const force=SYNC.force||new Set();SYNC.force=null;
-  const items=ids.map(id=>{const b=DB.branches.find(x=>x.id===id);b._sync={by:me,at:Date.now()};return {id,sha:known[id],data:b,force:force.has(id)}});
+  const items=ids.map(id=>{const b=DB.branches.find(x=>x.id===id);if(typeof mstatStamp==='function')mstatStamp(b);b._sync={by:me,at:Date.now()};return {id,sha:known[id],data:b,force:force.has(id)}});
   if(SYNC.deleted.size&&isOwner()){try{await bridge.syncDelete([...SYNC.deleted])}catch(e){}SYNC.deleted.forEach(id=>delete known[id]);SYNC.deleted.clear()}
   let r={ok:true,shas:{}};if(items.length){try{r=await bridge.syncPush(items)}catch(e){r={ok:false,err:e.message,shas:{}}}Object.assign(known,r.shas||{})}
   const done=Object.keys(r.shas||{});const left=ids.filter(id=>!done.includes(id));
@@ -5359,6 +5393,81 @@ function tphDlg(id){const t=T(id);if(!t)return;$('modal').hidden=false;$('modal'
 async function tphSave(){const d=document.querySelector('[data-tph]');if(!d)return;const id=d.dataset.tph;const n=String($('tpIn').value||'').replace(/\D/g,'');if(n&&!/^0\d{8,10}$/.test(n)){toast('번호를 확인해 주세요');return}
   const t0=T(id);const ed=t0?sameTEd(t0.name):[];const bids=[...new Set(ed.map(x=>x.b.id))];if(!bids.includes(B().id))bids.push(B().id);
   $('modal').hidden=true;await quickChange(()=>{(t0?sameT(t0.name):[]).forEach(x=>{if(!bids.includes(x.b.id))return;if(n)x.t.ph=n;else delete x.t.ph})},`${tn(id)}T 연락처를 저장했어요${bids.length>1?` (${bids.length}개 지점 공통)`:''}`,bids)}
+/* ===== 통계(실적 관리): 강사별 재원 학생·학년·반 · 월별 기록(매달 마지막 상태) · 엑셀 저장 =====
+   인원은 '지금 시간표' 반 명단 기준 · 재원만 셈(휴원·예정은 따로) · 특강은 빼고 셈
+   월별 기록: [적용]·바로 저장할 때마다 이번 달 값을 b.mstat[YYYY-MM]에 덮어씀 → 달이 끝나면 마지막 상태가 남음.
+   바뀐 게 없는 달은 앞 달 기록을 그대로 이어서 보여 줌. 전 지점 합계는 프로그램 관리자만. */
+const ymKST=(d=new Date())=>new Date(d.getTime()+9*3600e3).toISOString().slice(0,7);
+const stK=s=>s.status==='휴원'?'away':s.status==='예정'?'pre':'on';
+function stSnap(b){const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[]};const S={};(b.students||[]).forEach(s=>S[s.id]=s);
+  const tally=ids=>{const r={on:0,away:0,pre:0,g:{}};ids.forEach(id=>{const s=S[id];const k=stK(s);r[k]++;if(k==='on'){const g=s.grade||'미정';r.g[g]=(r.g[g]||0)+1}});return r};
+  const T=[];const allIds=new Set();
+  (b.teachers||[]).forEach(t=>{const ids=new Set(),cls=[];
+    (v.classes||[]).forEach(c=>{const m=[...new Set(((c.members||{})[t.id]||[]).filter(id=>S[id]))];if(!m.length)return;m.forEach(id=>{ids.add(id);allIds.add(id)});cls.push(Object.assign({n:c.name,br:b.name},tally(m)))});
+    if(cls.length)T.push(Object.assign({name:t.name,k:tnm(t.name),cls,brs:[b.name]},tally(ids)))});
+  return {T,tot:Object.assign({nc:(v.classes||[]).filter(c=>Object.values(c.members||{}).some(a=>a.length)).length},tally(allIds))}}
+function stMerge(list){const T={};const tot={on:0,away:0,pre:0,g:{},nc:0};
+  list.forEach(s=>{['on','away','pre','nc'].forEach(k=>tot[k]+=s.tot[k]||0);Object.entries(s.tot.g).forEach(([g,n])=>tot.g[g]=(tot.g[g]||0)+n);
+    s.T.forEach(t=>{const x=T[t.k]||(T[t.k]={name:t.name,k:t.k,on:0,away:0,pre:0,g:{},cls:[],brs:[]});['on','away','pre'].forEach(k=>x[k]+=t[k]);Object.entries(t.g).forEach(([g,n])=>x.g[g]=(x.g[g]||0)+n);x.cls.push(...t.cls);t.brs.forEach(n=>{if(!x.brs.includes(n))x.brs.push(n)})})});
+  return {T:Object.values(T),tot}}
+function mstatStamp(b){try{if(!b||!b.versions)return;const s=stSnap(b);const rec={T:Object.fromEntries(s.T.map(t=>[t.name,{on:t.on,g:t.g}])),tot:{on:s.tot.on,away:s.tot.away,pre:s.tot.pre,g:s.tot.g}};
+  const ym=ymKST();const m=b.mstat||{};if(m[ym]&&JSON.stringify(m[ym].T)===JSON.stringify(rec.T)&&JSON.stringify(m[ym].tot)===JSON.stringify(rec.tot))return;
+  rec.at=Date.now();m[ym]=rec;const ks=Object.keys(m).sort();while(ks.length>36)delete m[ks.shift()];b.mstat=m}catch(e){console.warn('mstat',e)}}
+// 월별: 기록이 있는 첫 달부터 이번 달까지(최근 12달) · 빈 달은 앞 달 기록을 이어 씀 · 이번 달은 지금 값
+function stMonths(brs){const cur=ymKST();let first=cur;brs.forEach(b=>Object.keys(b.mstat||{}).forEach(k=>{if(k<first)first=k}));
+  const ms=[];let [y,m]=first.split('-').map(Number);for(let i=0;i<240;i++){const k=`${y}-${String(m).padStart(2,'0')}`;ms.push(k);if(k>=cur)break;m++;if(m>12){m=1;y++}}
+  return ms.slice(-12).map(k=>{const per=brs.map(b=>{if(k===cur){const s=stSnap(b);return {T:Object.fromEntries(s.T.map(t=>[t.name,{on:t.on}])),tot:s.tot}}
+      const ks=Object.keys(b.mstat||{}).filter(x=>x<=k).sort();return ks.length?b.mstat[ks[ks.length-1]]:null});
+    const T={};let tot=null;per.forEach(r=>{if(!r)return;tot=tot||{on:0};tot.on+=r.tot.on||0;Object.entries(r.T||{}).forEach(([n,x])=>{const kk=tnm(n);T[kk]=T[kk]||{name:n,on:0};T[kk].on+=x.on||0})});
+    return {k,cur:k===cur,T,tot}})}
+const stGr=g=>Object.keys(g).sort((a,b)=>GRADE_ORDER(a)-GRADE_ORDER(b)||a.localeCompare(b));
+const stGtxt=g=>stGr(g).map(k=>`${k} ${g[k]}`).join(' · ');
+function stScope(){const b=B();const own=isOwner();const can=own||!(typeof syOn==='function'&&syOn())||canEditB(b.id);
+  const all=own&&UI.stAll&&DB.branches.length>1;return {b,own,can,all,brs:all?DB.branches:[b]}}
+function viewStats(){const {b,own,can,all,brs}=stScope();
+  const seg=own&&DB.branches.length>1?`<span class="seg" role="group" aria-label="범위"><button data-act="stOne" aria-pressed="${!all}">${esc(b.name)}</button><button data-act="stAll" aria-pressed="${all}">전 지점 합계</button></span>`:'';
+  const head=`<div class="card-h"><h2>통계 · ${all?'전 지점':esc(b.name)}</h2><span class="hint">지금 시간표 반 명단 기준 · 재원만 셈(휴원·예정은 따로) · 특강 제외</span><span class="sp"></span>${seg}${can?'<button class="btn" data-act="stXlsx">엑셀로 저장</button>':''}</div>`;
+  if(!can)return head+`<div class="sec"><div class="empty-note">통계는 내 지점만 볼 수 있어요 · 위에서 내 지점(${esc(typeof syBName==='function'?syBName(myBr()):'')})을 골라 주세요</div></div>`;
+  const S=all?stMerge(brs.map(stSnap)):stSnap(b);const T=S.T.sort((x,y)=>y.on-x.on||x.name.localeCompare(y.name));
+  const gs=stGr(Object.assign({},S.tot.g,...T.map(t=>t.g)));const mx=Math.max(1,...T.map(t=>t.on));
+  const kpi=`<div class="stk"><div><b>${S.tot.on}</b><span>재원 학생</span></div><div><b>${S.tot.away}</b><span>휴원</span></div><div><b>${S.tot.pre}</b><span>입학 예정</span></div><div><b>${T.length}</b><span>강사</span></div><div><b>${S.tot.nc}</b><span>반</span></div></div>`;
+  const tbl=`<div class="sec"><h3>강사별 학년 <span class="hint">한 학생이 두 선생님 반에 있으면 두 분 모두에 세요 · 맨 아래 합계는 학생 수(중복 없이)</span></h3><div class="stw"><table class="tbl sttbl"><thead><tr><th class="l">강사</th>${gs.map(g=>`<th>${esc(g)}</th>`).join('')}<th class="tt">재원</th><th>휴원</th><th>예정</th><th>반</th></tr></thead><tbody>
+    ${T.map(t=>`<tr><td class="l"><b>${esc(t.name)}</b>${all&&t.brs.length?`<small>${t.brs.map(esc).join('·')}</small>`:''}</td>${gs.map(g=>`<td class="${t.g[g]?'':'z'}">${t.g[g]||'·'}</td>`).join('')}<td class="tt"><span class="stbar"><i style="width:${Math.max(4,Math.round(t.on/mx*100))}%"></i></span>${t.on}</td><td class="${t.away?'':'z'}">${t.away||'·'}</td><td class="${t.pre?'':'z'}">${t.pre||'·'}</td><td>${t.cls.length}</td></tr>`).join('')||`<tr><td colspan="${gs.length+5}" class="hint">반에 들어간 학생이 없어요</td></tr>`}
+    </tbody><tfoot><tr><td class="l">학생 수 합계</td>${gs.map(g=>`<td>${S.tot.g[g]||'·'}</td>`).join('')}<td class="tt">${S.tot.on}</td><td>${S.tot.away||'·'}</td><td>${S.tot.pre||'·'}</td><td>${S.tot.nc}</td></tr></tfoot></table></div></div>`;
+  const cls=`<div class="sec"><h3>강사별 반 목록</h3><div class="stcl">${T.map(t=>`<div class="stc"><div class="stch"><b>${esc(t.name)}</b><span>재원 ${t.on}명 · 반 ${t.cls.length}개</span></div>${t.cls.slice().sort((a,c)=>c.on-a.on).map(c=>`<div class="stcr"><span class="n">${all?`<small>${esc(c.br)}</small> `:''}${esc(c.n)}</span><span class="g">${esc(stGtxt(c.g))||'—'}</span><span class="c">${c.on}${c.away||c.pre?`<small>${c.away?` 휴${c.away}`:''}${c.pre?` 예${c.pre}`:''}</small>`:''}</span></div>`).join('')}</div>`).join('')}</div></div>`;
+  const M=stMonths(brs);const names=[...new Map([...T.map(t=>[t.k,t.name]),...M.flatMap(m=>Object.entries(m.T).map(([k,x])=>[k,x.name]))]).entries()];
+  const ml=k=>`${+k.slice(5)}월`;const cell=(m,i,get)=>{const v=get(m);if(v==null)return '<td class="z">·</td>';const p=i?get(M[i-1]):null;const d=p==null?0:v-p;return `<td>${v}${d?`<small class="${d>0?'up':'dn'}">${d>0?'+':''}${d}</small>`:''}</td>`};
+  const mon=`<div class="sec"><h3>월별 기록 <span class="hint">매달 마지막 날 상태로 남아요 · 이번 달은 지금 인원 · 바뀐 게 없는 달은 앞 달 그대로${M.length<2?' · 이번 달부터 쌓여요':''}</span></h3><div class="stw"><table class="tbl sttbl stm"><thead><tr><th class="l">강사</th>${M.map(m=>`<th${m.cur?' class="cur"':''}>${m.cur?ml(m.k)+'<small>지금</small>':ml(m.k)+'<small>말</small>'}</th>`).join('')}</tr></thead><tbody>
+    ${names.map(([k,n])=>`<tr><td class="l"><b>${esc(n)}</b></td>${M.map((m,i)=>cell(m,i,x=>x.tot?(x.T[k]?x.T[k].on:0):null)).join('')}</tr>`).join('')}</tbody><tfoot><tr><td class="l">재원 학생</td>${M.map((m,i)=>cell(m,i,x=>x.tot?x.tot.on:null)).join('')}</tr></tfoot></table></div></div>`;
+  return head+kpi+tbl+cls+mon}
+/* 엑셀(.xlsx) 직접 만들기: 압축 없이(store) zip */
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0};
+function zipStore(files){const enc=new TextEncoder();const parts=[],cen=[];let off=0;
+  files.forEach(([name,txt])=>{const nb=enc.encode(name),db=enc.encode(txt),c=crc32(db);const h=new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(8,0,true);h.setUint32(14,c,true);h.setUint32(18,db.length,true);h.setUint32(22,db.length,true);h.setUint16(26,nb.length,true);
+    parts.push(new Uint8Array(h.buffer),nb,db);const e=new DataView(new ArrayBuffer(46));e.setUint32(0,0x02014b50,true);e.setUint16(4,20,true);e.setUint16(6,20,true);e.setUint16(8,0x0800,true);e.setUint32(16,c,true);e.setUint32(20,db.length,true);e.setUint32(24,db.length,true);e.setUint16(28,nb.length,true);e.setUint32(42,off,true);
+    cen.push(new Uint8Array(e.buffer),nb);off+=30+nb.length+db.length});
+  const cl=cen.reduce((a,x)=>a+x.length,0);const end=new DataView(new ArrayBuffer(22));end.setUint32(0,0x06054b50,true);end.setUint16(8,files.length,true);end.setUint16(10,files.length,true);end.setUint32(12,cl,true);end.setUint32(16,off,true);
+  const all=[...parts,...cen,new Uint8Array(end.buffer)];const out=new Uint8Array(all.reduce((a,x)=>a+x.length,0));let p=0;all.forEach(x=>{out.set(x,p);p+=x.length});return out}
+function xlsxMake(sheets){const X=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const col=i=>{let s='';i++;while(i){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
+  const sh=sheets.map(s=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${s.rows[0].map((_,i)=>`<col min="${i+1}" max="${i+1}" width="${(s.w&&s.w[i])||10}" customWidth="1"/>`).join('')}</cols><sheetData>${s.rows.map((r,ri)=>`<row r="${ri+1}">${r.map((v,ci)=>{const ref=col(ci)+(ri+1);const st=ri===0?' s="1"':(s.bold&&s.bold.includes(ri))?' s="2"':'';if(v===''||v==null)return `<c r="${ref}"${st}/>`;return typeof v==='number'?`<c r="${ref}"${st}><v>${v}</v></c>`:`<c r="${ref}" t="inlineStr"${st}><is><t>${X(v)}</t></is></c>`}).join('')}</row>`).join('')}</sheetData></worksheet>`);
+  const files=[['[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`],
+    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+    ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${X(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`],
+    ['xl/_rels/workbook.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`],
+    ['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="3"><font><sz val="11"/><name val="맑은 고딕"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="맑은 고딕"/></font><font><b/><sz val="11"/><name val="맑은 고딕"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF17243F"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']];
+  sh.forEach((x,i)=>files.push([`xl/worksheets/sheet${i+1}.xml`,x]));return zipStore(files)}
+function stXlsxData(){const {b,all,brs}=stScope();const S=all?stMerge(brs.map(stSnap)):stSnap(b);const T=S.T.sort((x,y)=>y.on-x.on||x.name.localeCompare(y.name));const gs=stGr(Object.assign({},S.tot.g,...T.map(t=>t.g)));
+  const r1=[['강사',...(all?['지점']:[]),...gs,'재원','휴원','예정','반']];T.forEach(t=>r1.push([t.name,...(all?[t.brs.join(', ')]:[]),...gs.map(g=>t.g[g]||0),t.on,t.away,t.pre,t.cls.length]));
+  r1.push(['학생 수 합계(중복 없이)',...(all?['']:[]),...gs.map(g=>S.tot.g[g]||0),S.tot.on,S.tot.away,S.tot.pre,S.tot.nc]);
+  const r2=[['강사',...(all?['지점']:[]),'반','학년 구성','재원','휴원','예정']];T.forEach(t=>t.cls.slice().sort((a,c)=>c.on-a.on).forEach(c=>r2.push([t.name,...(all?[c.br]:[]),c.n,stGtxt(c.g),c.on,c.away,c.pre])));
+  const M=stMonths(brs);const names=[...new Map([...T.map(t=>[t.k,t.name]),...M.flatMap(m=>Object.entries(m.T).map(([k,x])=>[k,x.name]))]).entries()];
+  const r3=[['강사',...M.map(m=>`${m.k}${m.cur?' (지금)':' (말)'}`)]];names.forEach(([k,n])=>r3.push([n,...M.map(m=>m.tot?(m.T[k]?m.T[k].on:0):'')]));r3.push(['재원 학생',...M.map(m=>m.tot?m.tot.on:'')]);
+  return [{name:'강사별 학년',rows:r1,bold:[r1.length-1],w:[16,...(all?[18]:[]),...gs.map(()=>7),8,7,7,6]},{name:'반 목록',rows:r2,w:[12,...(all?[12]:[]),18,26,7,7,7]},{name:'월별 기록',rows:r3,bold:[r3.length-1],w:[16,...M.map(()=>14)]}]}
+function stXlsx(){const {b,all}=stScope();const u8=xlsxMake(stXlsxData());const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  a.download=`와이매쓰_통계_${all?'전지점':b.name}_${todayStr()}.xlsx`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);toast('엑셀 파일을 만들었어요 · 저장할 곳을 고르세요')}
 </script>
 <script>/* ================= 도움말 (사용 설명서) ================= */
 const HELP=[
@@ -5397,6 +5506,7 @@ const HELP=[
   <li><b>지점 시간표</b> 위 <b>[전체 | 강사 이름]</b> 버튼으로 한 강사의 주간 시간표만 볼 수 있어요(예전 '강사별' 화면).</li>
   <li><b>연락처</b>: [학생 관리]의 <b>연락처</b> 칸을 누르면 학생·학부모(어머니·아버지 등 3명까지) 번호를 넣어요(보기 모드에서도 바로 저장). <b>재학생명부 가져오기</b>를 하면 명부의 연락처 칸(학생 휴대폰·어머니 연락처 같은 이름)을 알아서 읽어요. 메모 칸은 읽지 않아요.</li>
   <li><b>강사용 로그인</b>: 선생님마다 [강사 관리]의 <b>로그인 코드</b>(6자리)로 로그인해요. [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 1:1로 보내 주세요. 로그인하면 <b>그 선생님 이름이 있는 지점만</b> 보이고, 이름도 저절로 정해져요(바꾸려면 로그아웃). 담당 학생 연락처도 바로 보여요 — 다른 선생님 반 학생 번호는 안 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 같은 이름이 여러 지점에 있으면 그 지점들이 모두 보여요. [프로그램 관리 → 강사용 모든 지점 보기]에서 켠 선생님은 전 지점을 봐요.</li>
+  <li><b>[통계]</b> 탭: 실적 관리용. 지금 시간표 반 명단 기준으로 강사마다 <b>학년별 재원 학생 수</b>(휴원·예정은 따로), <b>반 목록</b>(반 이름·학년 구성·인원), <b>월별 기록</b>을 봐요. 월별 기록은 [적용]하거나 바로 저장할 때마다 이번 달 값이 덮어써져서, 달이 끝나면 <b>그달 마지막 상태</b>가 남아요(바뀐 게 없는 달은 앞 달 그대로). [엑셀로 저장]하면 세 표가 시트 세 장으로 저장돼요. 지점장은 자기 지점만, 프로그램 관리자는 <b>[전 지점 합계]</b>로 같은 이름 강사를 합쳐서 볼 수 있어요. 특강은 빼고 세요.</li>
   <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
   <li>선생님 폰: 예정으로 등록하는 즉시 아래 공지 칸에 <b>'새로 오는 학생'</b>(이름·학년·첫 수업일·반)이 뜨고 첫 수업일이 되면 저절로 빠져요. [학생] 탭 맨 위에 신입·예정 학생 정보 카드(연락처 포함, 담당 선생님만)가 떠요. <b>상담 전</b>이면 빨간 테두리와 <b>[상담 완료]</b> 버튼이 있어요 — 담당 선생님 중 한 명이 누르면 모두 완료로 바뀌고, 지점장용이 켜져 있으면 원본 학생에도 저절로 적혀요(승인 없음). 상담 완료한 학생만 첫 수업일부터 2주 뒤 사라지고, 상담 전 학생은 2주가 지나도 계속 남아요. 지점장용 [학생 관리] 맨 위 신입 칸에도 '상담 전'(빨간 테두리)·'상담 ✓ 날짜 선생님'이 보이고, [상태] 창에서 상담 완료로 표시하거나 잘못 누른 걸 [상담 취소]할 수 있어요. 강사용 PC 프로그램·PC 브라우저의 학생 탭에도 같은 신입 목록이 떠요.</li>
