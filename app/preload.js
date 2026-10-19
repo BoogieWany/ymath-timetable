@@ -30,7 +30,7 @@ contextBridge.exposeInMainWorld('api',{
   syncUnlock:(ids,f)=>ipcRenderer.invoke('syncUnlock',ids,f),
   syncEnable:o=>ipcRenderer.invoke('syncEnable',o),
   syncCode:(b,o)=>ipcRenderer.invoke('syncCode',b,o),
-  eokInfo:()=>ipcRenderer.invoke('eokInfo'),eokSet:o=>ipcRenderer.invoke('eokSet',o),eokFetch:o=>ipcRenderer.invoke('eokFetch',o),
+  eokInfo:()=>ipcRenderer.invoke('eokInfo'),eokSet:o=>ipcRenderer.invoke('eokSet',o),eokFetch:o=>ipcRenderer.invoke('eokFetch',o),eokOpen:()=>ipcRenderer.invoke('eokOpen'),
   syncJoin:(c,n)=>ipcRenderer.invoke('syncJoin',c,n),
   syncOff:()=>ipcRenderer.invoke('syncOff'),
   syncName:n=>ipcRenderer.invoke('syncName',n),
