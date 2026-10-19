@@ -985,7 +985,7 @@ function cheerLine(b){const {ctx,pools,myT}=cheerCtx(b);const list=[];pools.forE
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||''}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.53.0</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.53.1</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1099,7 +1099,7 @@ document.addEventListener('touchend',e=>{const g=PZ.g;if(!g)return;const c=pzC()
   if(g.k==='pan'&&g.moved&&g.tx!=null&&g.ax!=='y'){/* 확대한 표: 끝에 닿은 채로 한 번 더 밀면 옆 탭으로 (사진 앱처럼)
       표가 화면 폭에 다 들어올 땐(옆으로 움직일 게 없음) 표 위 어디서 옆으로 밀어도 바로 옆 탭 — 화면 아래쪽은 원래의 손가락 따라오는 탭 밀기가 맡음 */
     const b=pzB();const ks=TABS().map(t=>t[0]),i=ks.indexOf(ST.tab);const dx=g.tx-g.x0,dy=(g.ty!=null?g.ty-g.y0:0);
-    const over=g.fx?(g.up&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4?(dx>0?-1:1):0):g.eL&&g.tx-b.x1>70?-1:g.eR&&b.x0-g.tx>70?1:0;const nk=over&&ks[i+over];
+    const over=g.fx?0:g.eL&&g.tx-b.x1>70?-1:g.eR&&b.x0-g.tx>70?1:0;const nk=over&&ks[i+over];
     if(nk){PZ.x=pzRb(g.tx,b.x0,b.x1,PZ.vw);pzDraw();pzBack();setTimeout(()=>goTab(nk),140);return}}
   if(g.k==='pan'&&g.moved){if(g.tx!=null){const b=pzB();PZ.x=b.x0===b.x1?b.x0:pzRb(g.tx,b.x0,b.x1,PZ.vw);PZ.y=b.y0===b.y1?b.y0:pzRb(g.ty,b.y0,b.y1,PZ.vh)}
     let vx=g.ax==='y'?0:PZ.vx,vy=g.ax==='x'?0:PZ.vy;if(performance.now()-g.lt>90)vx=vy=0;const cap=4.5;vx=Math.max(-cap,Math.min(cap,vx));vy=Math.max(-cap,Math.min(cap,vy));
@@ -1129,7 +1129,7 @@ function tabInd(instant){const n=$('tabs'),i=$('tind');if(!n||!i)return;const b=
 function goTab(k){if(!D||k===ST.tab)return;const ks=TABS().map(t=>t[0]);const dir=ks.indexOf(k)>ks.indexOf(ST.tab)?1:-1;ST.tab=k;if(!wide)ST.fit=true;
   render();window.scrollTo(0,0);const m=$('main');m.classList.remove('tin-l','tin-r');void m.offsetWidth;m.classList.add(dir>0?'tin-r':'tin-l')}
 window.addEventListener('resize',()=>tabInd(true));
-/* ===== 탭 밀기: 위쪽 바에서, 또는 화면 아래쪽(아래 45%)에서 옆으로 밀면 내용이 손가락을 따라오고 노란 밑줄도 같이 미끄러짐.
+/* ===== 탭 밀기: 화면 어디서나 옆으로 밀면 내용이 손가락을 따라오고 노란 밑줄도 같이 미끄러짐.
    놓으면 많이 밀었거나 빠르게 튕겼으면 옆 탭으로, 아니면 제자리로. 끝 탭에선 고무줄처럼 조금만 밀림.
    가로로 밀리는 칩 줄·입력칸·창은 제외, 전체 표는 확대해서 옆으로 움직일 수 있을 땐 표 이동이 먼저 — 표 끝에 닿은 채로 한 번 더 밀면 옆 탭(위 pz touchend) */
 const TG={g:null};
@@ -1137,7 +1137,7 @@ const TG={g:null};
   const pzFree=()=>{const v=pzV();return !v||PZ.W*PZ.s<=PZ.vw+2};const main=()=>$('main');
   const tabBtn=k=>document.querySelector(`#tabs [data-tab="${k}"]`);
   document.addEventListener('touchstart',e=>{TG.g=null;if(wide||e.touches.length!==1||!D||GEST||!$('tabs').children.length)return;const t=e.touches[0];const inHd=!!(e.target.closest&&e.target.closest('#hd'));
-    if(!inHd&&t.clientY<window.innerHeight*0.55)return;if(skip(e.target))return;const inPz=pzV()&&pzV().contains(e.target);if(inPz&&!pzFree())return;
+    if(skip(e.target))return;const inPz=pzV()&&pzV().contains(e.target);if(inPz&&!pzFree())return;
     TG.g={x:t.clientX,y:t.clientY,t:performance.now(),lx:t.clientX,lt:performance.now(),v:0,on:false}},{passive:true});
   document.addEventListener('touchmove',e=>{const g=TG.g;if(!g)return;if(PK.on){TG.g=null;return}if(e.touches.length!==1){TG.g=null;return}const t=e.touches[0];const dx=t.clientX-g.x,dy=t.clientY-g.y;
     if(!g.on){if(GEST||(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx))){TG.g=null;return}if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.3)return;
