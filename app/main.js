@@ -135,6 +135,11 @@ ipcMain.handle('mobileSet',async(e,o)=>{mob.on=!!o.on;{const np=String(o.pin||''
    [적용]으로 timetable.json이 저장될 때마다 NAS의 웹 폴더(예: Z:\web\ymt-xxxxxxxx)에 index.html(=mobile.html)·view.json·글꼴을 복사.
    view.json은 선생님용 번호로 잠금(AES-256-GCM, 키 = PBKDF2-SHA256 20만 회) → 폰에서 번호를 넣어야 풀림. PC가 꺼져 있어도 마지막 적용본을 볼 수 있음. */
 const crypto=require('crypto');
+/* 다시 시작 필요 감지: 켤 때 읽은 main.js·preload.js와 지금 디스크의 파일이 다르면(자동 업데이트로 바뀜) 아직 옛 엔진으로 도는 중
+   → 이 상태에선 선생님 화면(view.json)을 올리지 않고, 화면에선 [적용]·바로 저장을 막고 다시 시작하라고 안내 (예전 방식으로 덮어쓰는 사고 방지) */
+const BOOT_SHA=(()=>{try{return ['main.js','preload.js'].map(f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,f))).digest('hex')).join('|')}catch(e){return ''}})();
+function appStale(){if(!BOOT_SHA)return false;try{return ['main.js','preload.js'].map(f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,f))).digest('hex')).join('|')!==BOOT_SHA}catch(e){return false}}
+const STALE_MSG='새 버전을 받았어요 · 프로그램을 다시 시작해야 선생님 화면에 올라가요';
 const NAS={last:0,err:''};let nasT=null;
 function nasDir(){return mob.nasOn&&mob.nasBase&&mob.nasSub?path.join(mob.nasBase,mob.nasSub):null}
 /* 폰용 파일 암호화. 키 = PBKDF2(번호, 소금, 60만 회) — 소금은 번호에서 정해져 모든 PC·폰이 같음 → 키는 한 번만 만들어 두고 다시 씀(PC는 메모리, 폰도 캐시).
@@ -148,7 +153,7 @@ async function encView(obj,pass){const {salt,key}=await viewKey(pass);const iv=c
   const c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);
   return {app:'ymath-view',enc:1,kdf:'pbkdf2-sha256',it:VIEW_IT,salt:salt.toString('base64'),iv:iv.toString('base64'),ct:ct.toString('base64'),h:viewHash(obj)}}
 function wr(f,data){const t=f+'.tmp';fs.writeFileSync(t,data);try{fs.renameSync(t,f)}catch(e){fs.copyFileSync(t,f);fs.unlinkSync(t)}}
-async function publishNas(){const d=nasDir();if(!d)return;NAS.err='';
+async function publishNas(){const d=nasDir();if(!d)return;NAS.err='';if(appStale()){NAS.err=STALE_MSG;return}
   try{if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
     fs.mkdirSync(path.join(d,'fonts'),{recursive:true});const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
     wr(path.join(d,'view.json'),JSON.stringify(await encV2(v)));
@@ -193,7 +198,7 @@ async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)t
 async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;const g=await gh('GET',u);if(g.status===200){GH.url=g.j.html_url||'';return true}
   const c=await gh('POST',u,{source:{branch:GH.branch||'main',path:'/'}});if(c.status===201||c.status===200){GH.url=(c.j&&c.j.html_url)||'';return true}
   GH.url='';GH.pagesOff=true;return false}
-async function publishGh(){if(!mob.ghOn)return;if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
+async function publishGh(){if(!mob.ghOn)return;if(appStale()){GH.err=STALE_MSG;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}return}if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
   try{if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
     await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');const rqv=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
@@ -290,7 +295,7 @@ ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave(
 async function syRevoked(){try{const r=await fetch(API()+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/revoke.json?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'}});
   if(!r.ok)return false;const o=syDec(Buffer.from(await r.arrayBuffer()));const c=syCfg();return !!(o&&o[c.dev])}catch(e){return false}}
 function syWipe(){const c=syCfg();c.on=false;['keyEnc','keyPlain','signEnc','signPlain','admPw','beat','home'].forEach(k=>delete c[k]);c.revoked=Date.now();delete mob.ghTok;delete mob.ghTokPlain;mob.ghOn=false;mob.rq={};sySave()}
-ipcMain.handle('syncBeat',async(e,ver)=>{const c=syCfg();if(!syReady())return false;const d={name:c.name||'',role:c.role||'owner',branch:c.branch||'',ver:String(ver||''),day:new Date().toISOString().slice(0,10)};const sig=JSON.stringify(d);
+ipcMain.handle('syncBeat',async(e,ver)=>{const c=syCfg();if(!syReady())return false;const d={name:c.name||'',role:c.role||'owner',branch:c.branch||'',ver:String(ver||''),day:new Date().toISOString().slice(0,10),...(appStale()?{stale:1}:{})};const sig=JSON.stringify(d);
   if(c.beat===sig)return false;try{if(!mob.ghOwner)await ghConnect();await ghPut(`sync/devices/${c.dev}.json`,syEnc(d),'PC 확인 · '+(c.name||''));c.beat=sig;sySave();return true}catch(err){return false}});
 ipcMain.handle('syncDevices',async()=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false,list:[]};
   try{if(!mob.ghOwner)await ghConnect();const out=[];for(const f of await syDir('devices')){try{out.push(Object.assign(syDec(await syRaw(`${syBase()}/devices/${f.id}.json`)),{dev:f.id,me:f.id===c.dev}))}catch(err){}}return {ok:true,list:out}}catch(err){return {ok:false,err:err.message,list:[]}}});
@@ -409,6 +414,7 @@ app.whenReady().then(()=>{
   fs.watch(__dirname,(ev,f)=>{if(!f||!/^index\.html$/i.test(f))return;clearTimeout(rt);rt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'index.html')).mtimeMs;if(m===last)return;last=m}catch(e){return}
     /* 바로 새로고침하지 않고 화면에 알림 — 수정 중이거나 창이 열려 있으면 끝난 뒤에 화면이 스스로 바꿈(작업이 끊기지 않게) */
     if(win&&!win.isDestroyed())win.webContents.send('updated')},800)});
+ipcMain.handle('appStale',()=>appStale());
 ipcMain.handle('reloadNow',()=>{if(win&&!win.isDestroyed())win.webContents.reloadIgnoringCache();return true});
   // 폰 화면(mobile.html)이 바뀌면 GitHub·NAS에도 바로 다시 올림
   let mt=null,mlast=0;try{mlast=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs}catch(e){}
