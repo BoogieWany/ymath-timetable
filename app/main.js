@@ -113,7 +113,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p})),
       ct:ctPack(b,v),
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
-      ...(b.cns&&(b.cns.per||b.cns.exam)?{cns:{per:b.cns.per||0,exam:!!b.cns.exam,rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
+      ...(b.cns&&(b.cns.per||b.cns.exam)?{cns:{per:b.cns.per||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
       ...(b.exam&&b.exam.from&&b.exam.to?{exam:{from:b.exam.from,to:b.exam.to}}:{}),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
