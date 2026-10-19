@@ -379,9 +379,14 @@ function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}
   catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
   try{const out=[];for(let pg=1;pg<=3;pg++){const r=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues?state=open&per_page=100&page=${pg}`);if(r.status!==200){RQ.err=rqErr(r);return {ok:false,err:RQ.err,list:out}}
-      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&x.kind==='ad')adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||(x.kind==='ad'&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
+      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&(x.kind==='ad'||x.kind==='pc'))adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||((x.kind==='ad'||x.kind==='pc')&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
       if((r.j||[]).length<100)break}
     RQ.err='';return {ok:true,list:out}}catch(err){RQ.err=err.message;return {ok:false,err:err.message,list:[]}}});
+/* PC 상태 확인(관리자 폰): 그 요청에 이 PC 상태를 암호화한 댓글로 남김 */
+ipcMain.handle('rqComment',async(e,num,obj)=>{if(!rqOn())return {ok:false};try{const key=Buffer.from(rqCfg().k,'base64'),iv=crypto.randomBytes(12),c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);
+  const r=await rqApi('POST',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}/comments`,{body:JSON.stringify({v:1,iv:iv.toString('base64'),ct:ct.toString('base64')})});return {ok:r.status===201}}catch(err){return {ok:false,err:err.message}}});
+ipcMain.handle('autoStart',(e,on)=>{try{if(on!==undefined)app.setLoginItemSettings({openAtLogin:!!on});return !!app.getLoginItemSettings().openAtLogin}catch(err){return null}});
+ipcMain.handle('updRemoteVer',async()=>{try{if(!syReady())return null;if(!mob.ghOwner)await ghConnect();const rv=await updRemote();const m=rv&&JSON.parse(rv.m);return m?{ver:m.ver,at:m.at}:null}catch(err){return null}});
 ipcMain.handle('rqClose',async(e,num,ok)=>{if(!rqOn())return {ok:false,err:'꺼져 있어요'};try{const r=await rqApi('PATCH',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}`,{state:'closed',state_reason:ok?'completed':'not_planned'});return r.status===200?{ok:true}:{ok:false,err:rqErr(r)}}catch(err){return {ok:false,err:err.message}}});
 
 /* ================= 자동 업데이트 (원장님 PC → 지점 PC) =================
