@@ -3038,7 +3038,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.52.3', APPDATE='2026-10-18';
+const APPVER='3.53.0', APPDATE='2026-10-18';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3188,7 +3188,7 @@ async function holdEdit(){await saveNow();UI._draft=JSON.stringify(DB);if(ORIG)D
   hist.u=[];hist.r=[];UI.picked=null;UI.sel=null;render();toast('초안을 보관했어요 · 지금은 원본 시간표예요. 스위치를 켜면 이어서 고칠 수 있어요')}
 function draftAge(){try{const d=JSON.parse(UI._draft||'null');if(!d||!d.updated)return '';const t=new Date(d.updated);return `${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
 async function applyEdit(){if(UI.applying)return;UI.applying=true;renderMode();try{await applyEditGo()}finally{UI.applying=false;renderMode()}}
-async function applyEditGo(){{const nb=DB.branches.find(b=>fmtNew(b)&&canEditB(b.id));if(nb){fmtBlock(nb);return}}if(typeof syOn==='function'&&syOn()){const pre=await syncPreApply();if(pre.conflicts.length){const ch=await syConflictDlg(pre.conflicts);if(ch==='cancel'){render();return}
+async function applyEditGo(){if(UI.stale||await staleCheck()){staleDlg();return}{const nb=DB.branches.find(b=>fmtNew(b)&&canEditB(b.id));if(nb){fmtBlock(nb);return}}if(typeof syOn==='function'&&syOn()){const pre=await syncPreApply();if(pre.conflicts.length){const ch=await syConflictDlg(pre.conflicts);if(ch==='cancel'){render();return}
     if(ch==='theirs'){try{if(bridge)await bridge.backupNamed(JSON.stringify(DB),'내수정_버림')}catch(e){}await discardEdit();await syncPull({full:true});toast('상대 것을 받고 내 수정은 버렸어요 · 버린 것은 백업 폴더에 있어요',5000);return}
     SYNC.force=new Set(pre.conflicts.map(c=>c.id))}}
   delete DB._baseHash;
@@ -4758,9 +4758,16 @@ setTimeout(()=>keyExpCheck(),5000);setInterval(()=>keyExpCheck(),6*3600*1000);
 async function updTick(){if(!syOn()||!bridge.updCheck)return;
   if(SYNC.info.role==='owner'){try{const r=await bridge.updPublish(APPVER);if(r&&r.published)toast(`다른 PC들에 새 버전 ${r.published}을(를) 보냈어요 · 2분 안에 자동으로 바뀌어요`,5000)}catch(e){}}
   try{const r=await bridge.updCheck(APPVER);if(r&&r.updated){if(r.restart){updBanner(r.updated)}else toast(`새 버전 ${r.updated}을(를) 받았어요 · 곧 화면이 새로 바뀌어요`)}
-    else if(r&&r.err)console.warn(r.err)}catch(e){}}
-function updBanner(v){let el=$('updBar');if(!el){el=document.createElement('div');el.id='updBar';el.className='draftbar updbar';document.querySelector('.top').appendChild(el)}
-  el.hidden=false;el.innerHTML=`<b>새 버전 ${esc(v)}을(를) 받았어요</b><span class="hint">프로그램을 다시 시작하면 적용돼요${UI.edit?' · 수정 중인 초안은 그대로 남아요':''}</span><button class="btn pri" data-act="updRestart">지금 다시 시작</button><button class="btn" data-act="updLater">나중에</button>`;fitGrid&&fitGrid()}
+    else if(r&&r.err)console.warn(r.err)}catch(e){}
+  staleCheck()}
+/* 다시 시작해야 하는 PC: 새 엔진을 받았는데 아직 옛 엔진으로 도는 중 → [적용]·바로 저장을 막음 (옛 방식으로 선생님 화면을 덮어쓰지 않게) */
+async function staleCheck(){if(!bridge||!bridge.appStale)return false;let s=false;try{s=!!await bridge.appStale()}catch(e){}
+  if(s&&!UI.stale){UI.stale=true;updBanner('',true)}else if(!s)UI.stale=false;return s}
+function staleDlg(){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="stlT" style="width:min(460px,100%)"><h2 id="stlT">다시 시작해야 저장돼요</h2>
+  <div class="hint" style="line-height:1.7">새 버전을 받았는데 프로그램이 아직 예전 엔진으로 돌고 있어요. 이대로 저장하면 선생님 화면이 예전 방식으로 올라가 로그인이 안 될 수 있어서 막아 뒀어요.<br>다시 시작해도 <b>고친 내용은 그대로 남아요</b>${UI.edit?' (수정 중인 초안도 다시 열 수 있어요)':''}.</div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-act="closeModal">나중에</button><button class="btn pri" data-act="updRestart">지금 다시 시작</button></div></div>`}
+function updBanner(v,st){let el=$('updBar');if(!el){el=document.createElement('div');el.id='updBar';el.className='draftbar updbar';document.querySelector('.top').appendChild(el)}
+  el.hidden=false;el.innerHTML=`<b>${v?`새 버전 ${esc(v)}을(를) 받았어요`:'새 버전을 받았어요'}</b><span class="hint">프로그램을 다시 시작해야 적용돼요${st||UI.stale?' · 그 전까지 [적용]과 바로 저장은 막혀요':''}${UI.edit?' · 수정 중인 초안은 그대로 남아요':''}</span><button class="btn pri" data-act="updRestart">지금 다시 시작</button><button class="btn" data-act="updLater">나중에</button>`;fitGrid&&fitGrid()}
 
 /* ---- 연결 키 만료 알림 (원장님 PC) ---- */
 /* 연결 키·요청 키 만료 알림 (관리자 PC) — 14일 전부터 위쪽 띠 */
@@ -4898,7 +4905,7 @@ async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if
   const L=(r.list||[]).sort((a,b)=>(b.me?1:0)-(a.me?1:0)||(a.role==='owner'?0:1)-(b.role==='owner'?0:1)||String(a.name).localeCompare(String(b.name),'ko'));
   const md=d=>{if(!d.day)return '';const [y,m,dd]=d.day.split('-');const age=Math.floor((Date.now()-new Date(+y,+m-1,+dd).getTime())/86400000);return `${+m}/${+dd}${age>=30?` <span class="rqw">· ${age}일째 안 켜짐</span>`:''}`};
   box.innerHTML=`<b>연결된 PC</b><span class="hint">각 PC가 켜질 때 여기에 나와요 · [연결 끊기]하면 그 PC는 다음 동기화(2분 안) 때 연동이 꺼지고 키가 지워져요. 시간표 파일은 그 PC에 남아요</span>
-    ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+' 관리자'}</td><td class="mono">${esc(d.ver||'')}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
+    ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+' 관리자'}</td><td class="mono">${esc(d.ver||'')}${d.stale?' <span class="rqw" title="새 버전을 받았지만 다시 시작하지 않았어요 · 그 PC에서 프로그램을 껐다 켜 주세요">· 다시 켜야 함</span>':''}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
 async function syRevokeGo(btn){if(!armed(btn,'rv'+btn.dataset.syrevoke,'한 번 더 누르면 끊어요'))return;btn.disabled=true;const r=await bridge.syncRevoke(btn.dataset.syrevoke);
   if(!r.ok){btn.disabled=false;toast('끊지 못했어요 · '+(r.err||''),4000);return}toast(`${btn.dataset.n||'그 PC'}의 연결을 끊었어요 · 그 PC가 켜져 있으면 2분 안에 연동이 꺼져요`,5000);syDevsLoad()}
 function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYNC.info,{on:false});SYNC.mine.clear();SYNC.offline.clear();ADM.open=false;
@@ -5156,7 +5163,7 @@ function exDlg(sid){const b=B(),o=V().sessions.find(x=>x.id===sid);if(!o)return;
   $('modal').dataset.ex=sid}
 document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('[data-exk]');if(!k)return;document.querySelectorAll('[data-exk]').forEach(x=>x.setAttribute('aria-pressed',String(x===k)));document.querySelectorAll('.exopt').forEach(r=>r.hidden=r.dataset.for!==k.dataset.exk)});
 /* bid: 바꾸는 지점(없으면 지금 지점) · 배열이면 여러 지점을 한 번에(같은 이름 선생님 = 한 사람이라 전 지점에 같이 적을 때) */
-async function quickChange(fn,msg,bid){const bids=Array.isArray(bid)?bid:bid?[bid]:[B().id];const BB=()=>DB.branches.find(x=>x.id===bids[0])||B();for(const id of bids){const bb=DB.branches.find(x=>x.id===id);if(bb&&fmtNew(bb)){fmtBlock(bb);return false}}if(UI.edit){commit(fn,msg+' · [적용]하면 반영돼요');return true}
+async function quickChange(fn,msg,bid){if(typeof staleCheck==='function'&&(UI.stale||await staleCheck())){staleDlg();return false}const bids=Array.isArray(bid)?bid:bid?[bid]:[B().id];const BB=()=>DB.branches.find(x=>x.id===bids[0])||B();for(const id of bids){const bb=DB.branches.find(x=>x.id===id);if(bb&&fmtNew(bb)){fmtBlock(bb);return false}}if(UI.edit){commit(fn,msg+' · [적용]하면 반영돼요');return true}
   if(UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)){toast('지금 보고 있는 미리보기를 먼저 닫아 주세요');return false}
   if(typeof syOn==='function'&&syOn()){for(const id of bids)if(!canEditB(id)){toast('다른 지점은 보기만 할 수 있어요');return false}
     await syncPull({silent:true});for(const id of bids){const l=await bridge.syncLock(id);if(!l.ok){const nb=DB.branches.find(x=>x.id===id)||BB();toast(l.offline?'인터넷에 연결되지 않아 저장하지 못했어요':`${l.by||'다른 관리자'} 님이 ${nb.name}을(를) 고치고 있어요 · 끝나면 다시 해 주세요`,5000);return false}SYNC.mine.add(id)}}
