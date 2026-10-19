@@ -465,16 +465,17 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const load=async u=>{try{await wc.loadURL(u)}catch(err){/* 이동 중 다시 이동하면 ERR_ABORTED — 무시 */}await wait(600)};
   const until=async(js,ms)=>{const t0=Date.now();while(Date.now()-t0<ms){try{if(await wc.executeJavaScript(js))return true}catch(err){}await wait(300)}return false};
-  const hasPw="!!document.querySelector('input[type=password]')";
+  // 로그인 화면 = 보이는 비밀번호 칸이 있고 '로그아웃'이 없음 (로그인된 화면에도 숨은 비밀번호 바꾸기 칸이 있어서)
+  const hasPw="(function(){const v=[...document.querySelectorAll('input[type=password]')].some(i=>i.offsetParent!==null);const out=[...document.querySelectorAll('a,button,input')].some(b=>/로그아웃/.test(b.innerText||b.value||''));return v&&!out})()";
   try{
     const either=hasPw+"||[...document.querySelectorAll('a,button,input')].some(b=>/엑셀/.test(b.innerText||b.value||''))";
     await load(EOK_BASE+EOK_HOPE);await until(either,10000); // 스크립트로 로그인 화면에 보내는 경우까지 기다림
     if(await wc.executeJavaScript(hasPw).catch(()=>false)){
       if(!hasC){const e0=new Error('에듀OK 아이디·비밀번호를 먼저 넣어 주세요');e0.login=true;throw e0}
-      const js=`(function(id,pw){const p=document.querySelector('input[type=password]');const f=p.form||document;const t=[...f.querySelectorAll('input')].find(i=>i!==p&&/^(text|email|tel|)$/.test(i.type)&&i.offsetParent!==null)||[...document.querySelectorAll('input[type=text]')][0];
+      const js=`(function(id,pw){const p=[...document.querySelectorAll('input[type=password]')].find(i=>i.offsetParent!==null);if(!p)return 'noid';if(p.form&&/pass|pwd/i.test((p.form.getAttribute('action')||'')+(p.form.name||'')))return 'noid';const f=p.form||document;const t=[...f.querySelectorAll('input')].find(i=>i!==p&&/^(text|email|tel|)$/.test(i.type)&&i.offsetParent!==null);
         const set=(el,v)=>{el.focus();el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};if(!t)return 'noid';set(t,id);set(p,pw);
         const btn=[...document.querySelectorAll('button,input[type=submit],input[type=button],input[type=image],a,img')].find(b=>/로그인/.test((b.innerText||b.value||b.alt||'').trim())&&!/자동/.test(b.innerText||b.value||''));
-        if(btn){btn.click();return 'click'}if(p.form){p.form.submit();return 'submit'}p.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:13,bubbles:true}));return 'enter'})(${JSON.stringify(c.id)},${JSON.stringify(eokPw(c))})`;
+        if(btn){btn.click();return 'click'}if(p.form&&!/pass|pwd/i.test(p.form.getAttribute('action')||'')){p.form.submit();return 'submit'}p.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:13,bubbles:true}));return 'enter'})(${JSON.stringify(c.id)},${JSON.stringify(eokPw(c))})`;
       lg('로그인 화면\n'+await dom());const r=await wc.executeJavaScript(js).catch(err=>'err');lg('로그인 시도: '+r);if(r==='noid')throw new Error('로그인 칸을 찾지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요');
       await wait(2500);await load(EOK_BASE+EOK_HOPE);await until(either,10000);
       if(await wc.executeJavaScript(hasPw).catch(()=>false)){lg('로그인 뒤에도 로그인 화면\n'+await dom());const e2=new Error('에듀OK 로그인이 안 됐어요 · 아이디·비밀번호를 확인해 주세요');e2.login=true;throw e2}}
@@ -488,6 +489,7 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
     const got=await Promise.race([dlP,wait(45000).then(()=>null)]);
     if(!got||!got.buf||!got.buf.length)throw new Error('엑셀 파일을 받지 못했어요 · 잠시 뒤 다시 해 주세요');
     const cc=eokRead();if(cc[o.branch]){cc[o.branch].at=Date.now();fs.writeFileSync(EOKF,JSON.stringify(cc))}
+    lg('받음 '+got.name+' '+got.buf.length+'바이트');try{fs.writeFileSync(path.join(DATA,'eok_log.txt'),LOG.join('\n'))}catch(e){}
     return {ok:true,b64:got.buf.toString('base64'),name:got.name}
   }catch(err){lg('실패: '+(err.message||err));if(!err.login)lg(await dom());try{fs.writeFileSync(path.join(DATA,'eok_log.txt'),LOG.join('\n'))}catch(e){}return {ok:false,err:err.message||String(err),login:!!err.login}}
   finally{ses.removeListener('will-download',onDl);if(!process.env.YMT_EOK_SHOW)kill();EOKBUSY=false}});
