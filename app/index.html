@@ -804,7 +804,7 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
     <span class="brand">Y-MATH 시간표</span>
     <label for="brSel">지점</label><select id="brSel"></select>
     <label for="verSel">시간표</label><select id="verSel"></select>
-    <button class="btn" id="verBtn" aria-expanded="false">버전 관리</button>
+    <button class="btn" id="verBtn" aria-expanded="false">보관함</button>
     <span class="sp"></span>
     <span class="themesel" role="group" aria-label="화면 테마"><button data-theme-set="light">밝게</button><button data-theme-set="dark">어둡게</button><button data-theme-set="auto">자동</button></span>
     <span class="modewrap"><span class="modebox" id="modeBox"></span>
@@ -3153,7 +3153,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.62.4', APPDATE='2026-10-20';
+const APPVER='3.62.6', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3317,7 +3317,7 @@ async function applyEditGo(){if(UI.stale||await staleCheck()){staleDlg();return}
   try{exExpire()}catch(e){}
   try{const o=JSON.parse(ORIG||'null');if(o){HIST.unshift({id:uid('h'),at:new Date().toISOString(),snap:JSON.stringify(o.branches)});if(HIST.length>200)HIST.length=200;histSave()}}catch(e){}
   UI.edit=false;document.body.classList.remove('editing');await saveNow();try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}
-  ORIG=null;hist.u=[];hist.r=[];UI.picked=null;render();toast('수정한 시간표를 적용했어요 · 적용 전 시간표는 [버전 관리 → 적용 기록]에 남아요');if(typeof syOn==='function'&&syOn())await syncAfterApply()}
+  ORIG=null;hist.u=[];hist.r=[];UI.picked=null;render();toast('수정한 시간표를 적용했어요 · 적용 전 시간표는 [보관함 → 적용 기록]에 남아요');if(typeof syOn==='function'&&syOn())await syncAfterApply()}
 async function discardEdit(){if(ORIG)DB=JSON.parse(ORIG);UI.edit=false;document.body.classList.remove('editing');try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}
   ORIG=null;hist.u=[];hist.r=[];UI.picked=null;UI.sel=null;render();toast('초안을 버리고 원래 시간표로 돌아왔어요');if(typeof syOn==='function'&&syOn())await syncAfterDiscard()}
 function renderMode(){const m=$('modeBox');if(!m)return;
@@ -3496,7 +3496,7 @@ function viewGrid(iss){
   let h=`<div class="tools"><h2 class="vt" title="반 카드를 끌어서 다른 칸에 놓으면 이동, 이미 수업이 있으면 서로 바뀌어요. 카드를 누른 뒤 옮길 칸을 눌러도 돼요.">${esc(B().name)} · ${esc(V().name)}</h2>${gTeachSeg()}
   <span class="zm"><button class="btn" data-gz="-1" aria-label="시간표 작게">－</button><b>${Math.round(UI.gs*100)}%</b><button class="btn" data-gz="1" aria-label="시간표 크게">＋</button></span><span class="nmt"><button class="tgl" id="nmTgl" role="switch" aria-checked="${namesOn()}" title="누르면 직접 켜고 끄기 · 보기나 확대를 바꾸면 다시 자동"><i></i></button><span>학생 이름</span><small id="nmHint">${UI.namesOv===null?'자동':'고정'}</small></span>
   <label class="chk"><input type="checkbox" id="optOff" ${UI.showOff?'checked':''}> 휴무 강사 칸도 보기</label>${noteToolbarHTML()}${spToolbarHTML()}
-  <span class="sp"></span><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen" title="학원 관리 프로그램에서 뽑은 강사별 주간 시간표(.xls) 넣기">주간 시간표 가져오기</button>${UI.edit?'<button class="btn" data-act="recolorRand" title="누를 때마다 다른 색 조합 · 붙은 반끼리는 계속 구분되게">색 랜덤</button><button class="btn pri" data-act="autoOpen">자동 배치</button>':''}<button class="btn" data-pdf="branch">지점 시간표 PDF</button></div>
+  <span class="sp"></span><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen" title="학원 관리 프로그램에서 뽑은 강사별 주간 시간표(.xls) 넣기">주간 시간표 가져오기</button>${UI.edit?'<button class="btn" data-act="recolorRand" title="누를 때마다 다른 색 조합 · 붙은 반끼리는 계속 구분되게">색 랜덤</button><button class="btn pri" data-act="autoOpen">자동 배치</button>':''}<button class="btn" data-pdf="branch">지점 시간표 PDF</button></div>
 `;
   if(UI.picked){const c=C(UI.picked.cls);h+=`<div class="pickline"><b>${esc(c.name)} (${esc(tn(UI.picked.t))}T) 선택됨</b><span class="hint">옮기려면 카드를 <b>끌어서</b> 놓으세요 (누르기만 해서는 옮겨지지 않아요) · 끄는 동안 초록 점 = 추천 칸 · Delete = 휴지통</span><button class="btn" data-act="unpick">선택 해제</button>${UI.picked.sid?'<button class="btn" data-act="unplace">시간표에서 빼기</button>':''}</div>`}
   if(!B().teachers.length){return h+`<div class="startbox"><h3>시간표가 비어 있어요 · 이렇게 시작하세요</h3><ol>
@@ -3618,7 +3618,7 @@ function viewStudents(){
   const qm=s=>!f.q||s.name.includes(f.q.trim())||(s.school||'').includes(f.q.trim());
   const list=b.students.filter(s=>(!f.g||s.grade===f.g)&&(f.st?stLabel(s)===f.st:!isOut(s))).sort((a,b)=>GRADE_ORDER(a.grade)-GRADE_ORDER(b.grade)||sortKo(a.name,b.name));
   const nA=b.students.filter(s=>!offS(s)&&!isPre(s)).length;const nO=b.students.filter(isOut).length;const nP=b.students.filter(isPre).length;
-  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 버전 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn eokbtn" data-act="eokOpen" title="에듀OK에 로그인해서 재학생명부·입학희망생명부를 받아 바로 불러와요">에듀OK에서 받기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
+  let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2><span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn eokbtn" data-act="eokOpen" title="에듀OK에 로그인해서 재학생명부·입학희망생명부를 받아 바로 불러와요">에듀OK에서 받기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
   if(UI.importRes){const r=UI.importRes;h+=`<div class="sec"><div class="box"><b>명부 가져오기 결과 (${r.total}명)</b>
     <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div><div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
     ${r.missing.length?`<div class="box warn"><span>명부에 없는 재원생 ${r.missing.length}명: ${esc(r.missing.map(id=>sname(id)).join(', '))}</span><div class="row"><button class="btn" data-act="missingAway">모두 휴원으로 바꾸기</button><span class="hint">퇴원생이면 아래 표에서 직접 삭제하세요</span></div></div>`:''}
@@ -3663,7 +3663,7 @@ function accSums(){const set=(k,t)=>{const e=document.querySelector(`.accs[data-
   set('데이터','백업 저장, 폴더 열기');set('데이터 관리','백업 불러오기, 전체 초기화');{const on=[...new Set(DB.branches.flatMap(x=>(x.teachers||[]).filter(t=>t.all).map(t=>tnm(t.name))))];set('강사용 모든 지점 보기',on.length?on.join(', ')+' 켜짐':'아무도 안 켬')}set('지점',b.name);set('화면 크기','글씨·화면 배율')}
 function viewSettings(){
   const b=B();const cur=V(),sch=b.sched&&b.versions.find(v=>v.id===b.sched.ver);
-  /* 삭제 막는 건 지금 시간표·예정 시간표·특강에 있을 때만. 지난 버전에만 있으면 지울 수 있고 그 버전엔 '(삭제된 강사)'로 남아요 */
+  /* 삭제 막는 건 지금 시간표·예정 시간표·특강에 있을 때만. 지난 버전에만 있으면 지울 수 있고 그 시간표엔 '(삭제된 강사)'로 남아요 */
   const inV=(v,t)=>!!v&&(v.sessions.some(o=>o.t===t)||v.classes.some(c=>(c.members[t]||[]).length));
   const used=t=>inV(cur,t)||inV(sch,t)||(b.specials||[]).some(x=>x.t===t);const usedOld=t=>!used(t)&&b.versions.some(v=>v!==cur&&v!==sch&&inV(v,t));
   let h=`<div class="card-h"><h2>설정</h2><span class="hint">Y-MATH 시간표 ${APPVER} (${APPDATE})</span>${admBtnHTML()}</div>
@@ -3704,9 +3704,9 @@ function histSummary(h){try{const bs=JSON.parse(h.snap);const b=bs.find(x=>x.id=
 function fmtAt(iso){const t=new Date(iso);return `${t.getFullYear()}.${t.getMonth()+1}.${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`}
 function renderVPanel(){
   const p=$('vpanel');if(p.hidden)return;const b=B();
-  p.innerHTML=`<div class="vrow"><b>시간표 버전</b><span class="hint">학기·기간마다 시간표를 따로 보관해요. 복사해서 새 기간 시간표를 만들고 고치면 이전 것은 그대로 남아요.</span></div>`+
-  b.versions.map(v=>{const live=v.id===b.current,sc=b.sched&&b.sched.ver===v.id,open=v.id===V().id;return `<div class="vrow${sc?' vsched':''}"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="버전 이름"><span class="vtag${live?' live':sc?' sc':''}">${live?'지금 시간표':sc?`예정 · ${ntMd(b.sched.from)}부터${b.sched.pub?' · 공개':' · 비공개'}`:'보관'}</span><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${open?'<b class="hint">(이 PC에서 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}${live?'':`<button class="btn" data-vsched="${v.id}">${sc?'예정 바꾸기':'예정으로 정하기'}</button><button class="btn" data-vdiff="${v.id}">바뀌는 점</button><button class="btn" data-vlive="${v.id}" title="바로 지금 시간표로 (수정 모드)">지금 시간표로</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 버전</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2||live?'disabled':''}>삭제</button></div>`}).join('')+
-  `<div class="vrow"><button class="btn" data-act="siOpen">시트 엑셀로 새 버전 만들기</button><span class="hint">구글 시트에서 받은 시간표 .xlsx를 읽어 이 지점의 새 시간표 버전으로</span></div>`+
+  p.innerHTML=`<div class="vrow"><b>시간표 보관함</b><span class="hint">학기·기간마다 시간표를 따로 보관해요. 복사해서 새 기간 시간표를 만들고 고치면 이전 것은 그대로 남아요.</span></div>`+
+  b.versions.map(v=>{const live=v.id===b.current,sc=b.sched&&b.sched.ver===v.id,open=v.id===V().id;return `<div class="vrow${sc?' vsched':''}"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="시간표 이름"><span class="vtag${live?' live':sc?' sc':''}">${live?'지금 시간표':sc?`예정 · ${ntMd(b.sched.from)}부터${b.sched.pub?' · 공개':' · 비공개'}`:'보관'}</span><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${open?'<b class="hint">(이 PC에서 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}${live?'':`<button class="btn" data-vsched="${v.id}">${sc?'예정 바꾸기':'예정으로 정하기'}</button><button class="btn" data-vdiff="${v.id}">바뀌는 점</button><button class="btn" data-vlive="${v.id}" title="바로 지금 시간표로 (수정 모드)">지금 시간표로</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 시간표</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2||live?'disabled':''}>삭제</button></div>`}).join('')+
+  `<div class="vrow"><button class="btn" data-act="siOpen">시트 엑셀로 새 시간표 만들기</button><span class="hint">구글 시트에서 받은 시간표 .xlsx를 읽어 이 지점의 새 시간표로</span></div>`+
   `<div class="vrow" style="margin-top:8px"><b>적용 기록</b><span class="hint">[적용]할 때마다 적용하기 전 시간표가 남아요 · ${HIST.length}개</span><button class="btn" data-act="histOpen" ${HIST.length?'':'disabled'}>적용 기록 열기</button></div>`;
   histRender();
 }
@@ -4094,8 +4094,8 @@ document.addEventListener('click',async e=>{
   if(ds.vlive){const id=ds.vlive;const v=B().versions.find(x=>x.id===id);commit(()=>{const b=B();b.current=id;if(b.sched&&b.sched.ver===id)delete b.sched},`'${v?v.name:''}'을(를) 지금 시간표로 정했어요 · [적용]하면 선생님들께 보여요`);vvSet('');return}
   if(ds.vsched){schedDlg(ds.vsched);return}
   if(ds.vdiff){schedDiffDlg(ds.vdiff);return}
-  if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.from=c.id;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);UI.vv=UI.vv||{};UI.vv[b.id]=nv.id},'새 버전을 만들었어요 · 지금 이 버전을 고치는 중이고, 선생님들께는 지금 시간표가 그대로 보여요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
-  if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;if(ds.vdel===B().current){toast('지금 시간표는 지울 수 없어요 · 다른 버전을 지금 시간표로 정한 뒤 지워 주세요',4500);return}commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(b.sched&&b.sched.ver===ds.vdel)delete b.sched;if(UI.vv&&UI.vv[b.id]===ds.vdel)delete UI.vv[b.id]},'버전을 삭제했어요');UI.cls=null;return}
+  if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.from=c.id;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);UI.vv=UI.vv||{};UI.vv[b.id]=nv.id},'새 시간표를 만들었어요 · 지금 이 시간표을 고치는 중이고, 선생님들께는 지금 시간표가 그대로 보여요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
+  if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;if(ds.vdel===B().current){toast('지금 시간표는 지울 수 없어요 · 다른 시간표를 지금 시간표로 정한 뒤 지워 주세요',4500);return}commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(b.sched&&b.sched.ver===ds.vdel)delete b.sched;if(UI.vv&&UI.vv[b.id]===ds.vdel)delete UI.vv[b.id]},'보관함에서 지웠어요');UI.cls=null;return}
   UI.stOK=['missingAway','addStudent'].includes(ds.act)?1:0;try{
   switch(ds.act){
     case 'avEdit':{if(UI._draft)await resumeDraft(true);else await enterEdit();renderAvail();break}
@@ -4759,20 +4759,20 @@ function siResolve(g){const b=B();const res={g,dup:{},unknown:{},newT:[],choice:
   res.offT=Object.entries(g.off).map(([n,o])=>({n,days:Object.keys(o)}));
   return res}
 function renderSI(){const R=SI.res;let h=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="siTitle" style="width:min(920px,100%)"><h2 id="siTitle">시트 시간표 가져오기 · ${esc(B().name)}</h2>
-  <div class="hint">${esc(SI.fname||'')} · 구글 시트에서 받은 시간표 모양을 읽어 <b>${esc(B().name)}</b>의 새 시간표 버전으로 만들어요. 학생은 이 지점 학생 명단과 이름으로 연결하고, 애매한 것만 아래에서 골라 주세요.</div>
+  <div class="hint">${esc(SI.fname||'')} · 구글 시트에서 받은 시간표 모양을 읽어 <b>${esc(B().name)}</b>의 새 시간표로 만들어요. 학생은 이 지점 학생 명단과 이름으로 연결하고, 애매한 것만 아래에서 골라 주세요.</div>
   <div class="row"><label for="siSheet">탭</label><select id="siSheet">${(SI.sheets||[]).map(s=>`<option value="${esc(s.path)}" ${s.path===SI.sheet?'selected':''}>${esc(s.name)}${s.hidden?' (숨김)':''}</option>`).join('')}</select>${SI.busy?'<span class="hint">읽는 중…</span>':''}</div>`;
   if(R&&R.err)h+=`<div class="box warn">${esc(R.err)}</div>`;
   else if(R){const g=R.g;const cls=new Set(g.sessions.map(s=>s.cname));const nDup=Object.keys(R.dup).length,nUnk=Object.keys(R.unknown).length;
     h+=`<div class="box">강사 ${g.teachers.size}명 · 반 ${cls.size}개 · 수업 ${g.sessions.length}개 · 학생 이름 ${new Set(g.sessions.flatMap(s=>s.names)).size}개를 읽었어요.${R.offT.length?`<br>회색 칸 휴무: ${esc(R.offT.map(o=>o.n+'T '+o.days.join('')).join(' · '))}`:''}</div>`;
     if(!g.sessions.length)h+='<div class="box warn">이 탭에서 수업을 찾지 못했어요. 요일·강사 머리칸이 있는 시간표 탭을 골라 주세요.</div>';
     if(R.newT.length)h+=`<div class="box">새 강사 ${R.newT.length}명을 추가해요: ${esc(R.newT.map(n=>n+'T').join(', '))}</div>`;
-    if(R.extraT.length)h+=`<div class="sec2"><label class="chk"><input type="checkbox" id="siDropT" ${R.dropT?'checked':''}> 시트에 없는 강사 ${R.extraT.length}명(${esc(R.extraT.join(', '))})을 이 지점에서 빼기</label><span class="hint">새로 만든 지점이라면 체크하세요. 다른 시간표 버전에 수업이 있는 강사는 빼지 않아요.</span></div>`;
+    if(R.extraT.length)h+=`<div class="sec2"><label class="chk"><input type="checkbox" id="siDropT" ${R.dropT?'checked':''}> 시트에 없는 강사 ${R.extraT.length}명(${esc(R.extraT.join(', '))})을 이 지점에서 빼기</label><span class="hint">새로 만든 지점이라면 체크하세요. 다른 시간표에 수업이 있는 강사는 빼지 않아요.</span></div>`;
     if(R.periodDiff)h+=`<div class="sec2"><label class="chk"><input type="checkbox" id="siPer" ${R.usePeriods?'checked':''}> 이 지점 교시·시작 시간을 시트대로 바꾸기</label><span class="hint">시트: ${esc(Object.entries(g.periods).map(([d,a])=>d+' '+a.map(x=>x.time).join('/')).slice(0,2).join(' · '))} … · 지금: ${esc(Object.entries(B().days).slice(0,2).map(([d,a])=>d+' '+a.map(x=>x.time).join('/')).join(' · '))} …</span></div>`;
     if(R.merge.length)h+=`<div class="sec2"><b>이름이 비슷한 반 ${R.merge.length}묶음 — 같은 반이면 체크</b><span class="hint">시간이 따로 적힌 반·띄어쓰기만 다른 반·보강 반이에요. 체크하면 첫 이름 하나의 반으로 합쳐요.</span>${R.merge.map((m,i)=>`<label class="chk"><input type="checkbox" data-simerge="${i}" ${m.on?'checked':''}> ${m.names.map(esc).join(' · ')} <span class="hint">→ ${esc(m.base)}</span></label>`).join('')}</div>`;
     if(nDup){const keys=Object.keys(R.choice);h+=`<div class="sec2"><b>동명이인 ${nDup}명 — 반마다 누구인지 골라 주세요</b><span class="hint">같은 이름이라도 반마다 다른 학생을 고를 수 있어요. 한 반에 둘 다 있으면 [둘 다]를 고르세요.</span>${keys.map(k=>{const [n,cn]=k.split('\u0001');const ids=R.dup[n];return `<div class="row"><span style="min-width:70px">${esc(n)}</span><span style="min-width:140px">${esc(cn)}</span><select data-sidup="${esc(k)}"><option value="">고르기…</option>${ids.map(id=>{const st=S(id);return `<option value="${id}" ${R.choice[k]===id?'selected':''}>${esc(st.name)} · ${esc(st.school||'')} ${esc(st.grade||'')}${rcShow(st)?' · '+esc(rcShow(st)):''}</option>`}).join('')}<option value="__both" ${R.choice[k]==='__both'?'selected':''}>둘 다</option><option value="__none" ${R.choice[k]==='__none'?'selected':''}>넣지 않기</option></select></div>`}).join('')}</div>`}
     if(nUnk)h+=`<div class="sec2"><b>학생 명단에 없는 이름 ${nUnk}개</b><span class="hint"> 체크한 것은 새 학생으로 추가해서 넣어요. 이름이 아닌 메모(시간·설명 등)는 체크를 빼세요.</span><div class="unk">${Object.entries(R.unknown).map(([n,c])=>`<label class="chk"><input type="checkbox" data-siunk="${esc(n)}" ${R.keepUnknown[n]?'checked':''}> ${esc(n)} <span class="hint">${esc([...new Set(c)].slice(0,2).join(', '))}</span></label>`).join('')}</div></div>`;
-    h+=`<div class="row"><label for="siVer">새 버전 이름</label><input id="siVer" value="${esc(((SI.sheets||[]).find(s=>s.path===SI.sheet)||{}).name||'시트에서')}" style="width:220px"></div>`}
-  h+=`<div class="row" style="justify-content:flex-end"><button class="btn" data-act="siClose">닫기</button>${R&&!R.err&&R.g.sessions.length?'<button class="btn pri" data-act="siCreate">새 시간표 버전 만들기</button>':''}</div></div>`;$('modal').innerHTML=h}
+    h+=`<div class="row"><label for="siVer">새 시간표 이름</label><input id="siVer" value="${esc(((SI.sheets||[]).find(s=>s.path===SI.sheet)||{}).name||'시트에서')}" style="width:220px"></div>`}
+  h+=`<div class="row" style="justify-content:flex-end"><button class="btn" data-act="siClose">닫기</button>${R&&!R.err&&R.g.sessions.length?'<button class="btn pri" data-act="siCreate">새 시간표 만들기</button>':''}</div></div>`;$('modal').innerHTML=h}
 async function siCreate(){const R=SI.res,g=R.g;const und=[...new Set(Object.entries(R.choice).filter(([k,v])=>!v).map(([k])=>k.replace('\u0001',' ')))];if(und.length){toast(`동명이인을 골라 주세요: ${und.join(', ')}`);return}
   const dropT=$('siDropT')?$('siDropT').checked:false;
   const vname=($('siVer').value||'').trim()||'시트에서';const usePer=$('siPer')?$('siPer').checked:false;
@@ -5305,14 +5305,14 @@ function ntSave(del){const o=JSON.parse($('modal').dataset.nt||'{}');const k=ntK
    pub=true면 선생님 브라우저에서 날짜 전에도 '예정 시간표 미리 보기'가 보임 ===== */
 function schedBar(){const el=$('vvBar');if(!el)return;const b=B(),v=V();const sc=b.sched&&b.sched.ver===v.id;
   if(v.id===b.current){el.hidden=true;return}el.hidden=false;
-  el.innerHTML=`<b>${esc(v.name)} ${sc?`· 예정 (${ntMd(b.sched.from)}부터)`:'· 보관 버전'}을 보는 중</b><span class="hint">이 PC에서만 보여요 · 선생님들께는 지금 시간표(${esc((b.versions.find(x=>x.id===b.current)||{}).name||'')})가 그대로 보여요${sc&&b.sched.pub?' · 예정 미리 보기는 공개 중':''}</span><button class="btn" data-vdiff="${v.id}">바뀌는 점</button>${sc?'':`<button class="btn" data-vsched="${v.id}">예정으로 정하기</button>`}<button class="btn pri" data-act="vvBack">지금 시간표로 돌아가기</button>`}
+  el.innerHTML=`<b>${esc(v.name)} ${sc?`· 예정 (${ntMd(b.sched.from)}부터)`:'· 보관함'}을 보는 중</b><span class="hint">이 PC에서만 보여요 · 선생님들께는 지금 시간표(${esc((b.versions.find(x=>x.id===b.current)||{}).name||'')})가 그대로 보여요${sc&&b.sched.pub?' · 예정 미리 보기는 공개 중':''}</span><button class="btn" data-vdiff="${v.id}">바뀌는 점</button>${sc?'':`<button class="btn" data-vsched="${v.id}">예정으로 정하기</button>`}<button class="btn pri" data-act="vvBack">지금 시간표로 돌아가기</button>`}
 function schedDlg(vid){const b=B(),v=b.versions.find(x=>x.id===vid);if(!v)return;const sc=b.sched&&b.sched.ver===vid?b.sched:null;
   const d=new Date(),def=sc?sc.from:ntYmd(new Date(d.getFullYear(),d.getMonth()+1,1));
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="scT" style="width:min(520px,100%)"><h2 id="scT">예정 시간표 · ${esc(v.name)}</h2>
-    <div class="hint" style="margin:-4px 0 12px">정한 날짜가 되면 이 버전이 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날부터 저절로 바뀌어요(PC가 꺼져 있어도).</div>
+    <div class="hint" style="margin:-4px 0 12px">정한 날짜가 되면 이 시간표가 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날부터 저절로 바뀌어요(PC가 꺼져 있어도).</div>
     <div class="row"><label for="scFrom">시작 날짜</label><input type="date" id="scFrom" value="${esc(def)}" min="${ntToday()}"></div>
     <div class="row"><label class="chk"><input type="checkbox" id="scPub" ${sc&&sc.pub?'checked':''}> 선생님들께 미리 보여 주기 (공개)</label><span class="hint">켜면 브라우저 시간표에 '예정 시간표 미리 보기'가 생겨요</span></div>
-    ${b.sched&&b.sched.ver!==vid?`<div class="box warn"><span>다른 버전(${esc((b.versions.find(x=>x.id===b.sched.ver)||{}).name||'')})이 예정으로 잡혀 있어요 · 저장하면 이 버전으로 바뀌어요</span></div>`:''}
+    ${b.sched&&b.sched.ver!==vid?`<div class="box warn"><span>다른 시간표(${esc((b.versions.find(x=>x.id===b.sched.ver)||{}).name||'')})이 예정으로 잡혀 있어요 · 저장하면 이 시간표로 바뀌어요</span></div>`:''}
     <div class="row" style="justify-content:flex-end;margin-top:12px">${sc?'<button class="btn danger" data-act="schedDel" style="margin-right:auto">예정 취소</button>':''}<button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="schedSave">저장</button></div></div>`;
   $('modal').dataset.sc=vid}
 function schedSave(del){const vid=$('modal').dataset.sc;const from=($('scFrom')||{}).value||'';const pub=!!($('scPub')||{}).checked;
@@ -5503,7 +5503,7 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
     <td class="offs">${DAYS.map(d=>`<button class="dbtn" data-off="${t.id}|${d}" aria-pressed="${(t.off||[]).includes(d)}" ${ed?'':'disabled'}>${d}</button>`).join('')}</td>
     <td><button class="phc${t.ph?'':' none'}" data-tphed="${t.id}" ${ed?'':'disabled'}>${t.ph?`<b class="mono">${esc(phFmt(t.ph))}</b>`:'+ 넣기'}</button></td><td>${ckCell(t)}</td>
     <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
-    <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 버전에만 있어요 · 지우면 그 버전에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
+    <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 시간표에만 있어요 · 지우면 그 시간표에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
   h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
   if(!(typeof isStaff==='function'&&isStaff()))h+=staffHTML(b,ed);
   return h}
@@ -5935,7 +5935,7 @@ const HELP=[
   <li>아래 <b>자동 점검</b>에 겹침·빠진 수업·연강 아님 같은 문제가 떠요. 누르면 해당 카드가 강조돼요. 규칙은 경고일 뿐이라 예외는 그대로 둬도 돼요.</li></ul>`},
  {id:'edit',t:'수정 모드 · 적용 · 보관',b:`
   <ul><li>스위치를 켜면 원본을 자동 백업하고 <b>초안</b>에서 고쳐요. 고치는 동안 다른 PC·폰에는 안 보여요.</li>
-  <li><b>[적용]</b> = 원본에 반영 (적용 전 시간표는 [버전 관리 → 적용 기록]에 남아 언제든 되돌릴 수 있어요)</li>
+  <li><b>[적용]</b> = 원본에 반영 (적용 전 시간표는 [보관함 → 적용 기록]에 남아 언제든 되돌릴 수 있어요)</li>
   <li><b>[보관]</b> = 초안을 그대로 두고 나가기. 며칠 고민하다 스위치를 다시 켜면 이어서 고쳐요.</li>
   <li><b>[버리기]</b> = 초안을 지우고 원본으로.</li>
   <li><b>되돌리기 Ctrl+Z / 다시하기 Ctrl+Y</b></li></ul>`},
@@ -5962,8 +5962,8 @@ const HELP=[
   <li><b>입학 문의</b>: [학생 관리] 맨 위 칸. 관리 프로그램에서 뽑은 <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기]로 고르면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요(이름·학교·학년·연락처·입학희망일·문의일·등록경로). 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요. <b>[입학 예정으로]</b>는 첫 수업일(오늘 이후)을 골라 입학 예정 학생으로, <b>[바로 재원]</b>은 두 번 눌러 오늘부터 재원 학생으로 옮겨요(연락처 그대로) — 반 넣기는 지점 시간표 카드에서. <b>[입학취소]</b>는 두 번 누르면 '취소된 문의'로 남고 [되돌리기]도 돼요. 지점장·행정 선생님 PC에서만 보이고 선생님 폰에는 안 나가요.</li>
   <li><b>퇴원</b>: 학생 관리에서 상태를 눌러 <b>퇴원</b>을 고르고 퇴원일을 정하면, 지금·예정 시간표의 모든 반과 특강 명단에서 빠지고 학생은 '퇴원'으로 남아요(목록 필터 '퇴원'에서 봐요). 선생님 폰에서는 사라져요. 통계에 이번 달 퇴원·입학 문의 수와 월별 퇴원·입학 문의가 나와요. 다시 다니면 상태를 재원으로 바꾸거나 명부를 불러오면 돼요.</li>
   <li><b>지점장 폰에서 상담 보류</b>: [프로그램 관리 → 지점장 (폰에서 상담 보류)]에서 지점마다 지점장 선생님을 켜면, 그 선생님 강사용의 정기 상담 창(학생을 눌러 나오는 [상담 완료] 창)에 <b>[보류]</b>가 생겨요(메모 칸에 적은 게 보류 사유). 보류한 학생은 목록 아래 '보류 n명'에서 [보류 풀기]. 켜져 있는 PC가 받아 1~2분 안에 반영해요. 지점장 폰에는 <b>[입학 문의]</b> 탭도 생겨서 자기 지점 문의를 보고(이름을 누르면 연락처·희망일 등 정보) 입학 예정으로·바로 재원·입학취소·문의 추가를 할 수 있어요. 지점장 키로는 상담 보류와 입학 문의만 돼요.</li>
-  <li><b>내 폰 관리 모드</b>(프로그램 관리자만): [프로그램 관리 → 내 폰 관리 모드]에서 <b>[폰 코드 만들기]</b>를 누르면 <b>10자리 코드</b>가 나와요. 강사용을 폰에서 열고 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요 — 학생 추가·상태(휴원·예정·퇴원)·정보 고치기, 반 넣기·빼기(예정 시간표의 같은 반도 같이), 정기 상담 주기·시험 기간·지정·보류, 입학 문의(입학 예정으로·바로 재원·입학취소), 공지 올리기·내리기, 통계(재원·환산·학생×타임·월별). 폰에서 누르면 서명된 요청이 가고, 그 지점 PC나 관리자 PC 중 <b>켜져 있는 PC</b>가 서명을 확인한 뒤 바로 반영해요(1~2분). <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 폰 화면을 그대로 볼 수 있어요(보내기는 막힘). 시간표 칸 옮기기·반 구조·버전·에듀OK·엑셀은 PC에서만. 코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기]. <b>[PC·업데이트]</b>에서 켜져 있는 PC와 버전·'다시 시작 필요'를 확인하고 원격으로 <b>[다시 시작]</b>할 수 있어요(수정 중인 PC는 안 함). 꺼진 프로그램은 폰에서 켤 수 없으니 PC마다 [설정 → 이 PC → 윈도우를 켜면 프로그램 자동 실행]을 켜 두세요.</li>
-  <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·버전 관리·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
+  <li><b>내 폰 관리 모드</b>(프로그램 관리자만): [프로그램 관리 → 내 폰 관리 모드]에서 <b>[폰 코드 만들기]</b>를 누르면 <b>10자리 코드</b>가 나와요. 강사용을 폰에서 열고 이 코드로 로그인하면 아래쪽에 <b>관리</b> 탭이 생겨요 — 학생 추가·상태(휴원·예정·퇴원)·정보 고치기, 반 넣기·빼기(예정 시간표의 같은 반도 같이), 정기 상담 주기·시험 기간·지정·보류, 입학 문의(입학 예정으로·바로 재원·입학취소), 공지 올리기·내리기, 통계(재원·환산·학생×타임·월별). 폰에서 누르면 서명된 요청이 가고, 그 지점 PC나 관리자 PC 중 <b>켜져 있는 PC</b>가 서명을 확인한 뒤 바로 반영해요(1~2분). <b>다른 사람으로 보기</b>로 아무 선생님이나 행정 선생님 폰 화면을 그대로 볼 수 있어요(보내기는 막힘). 시간표 칸 옮기기·반 구조·보관함·에듀OK·엑셀은 PC에서만. 코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기]. <b>[PC·업데이트]</b>에서 켜져 있는 PC와 버전·'다시 시작 필요'를 확인하고 원격으로 <b>[다시 시작]</b>할 수 있어요(수정 중인 PC는 안 함). 꺼진 프로그램은 폰에서 켤 수 없으니 PC마다 [설정 → 이 PC → 윈도우를 켜면 프로그램 자동 실행]을 켜 두세요.</li>
+  <li><b>행정 선생님 PC</b>: 프로그램 관리자 PC의 [강사 관리 → 행정 선생님] 줄에서 <b>[PC 연결 코드]</b>를 눌러 코드를 받고, 행정 선생님 PC에 같은 프로그램을 설치한 뒤 처음 화면에 붙여넣으면 돼요. 그 PC는 <b>소속 지점만</b> 보이고, 설정·프로그램 관리·보관함·보기/수정 스위치·당일 변경·보강 승인·학년 올리기·시간표 가져오기가 없어요. 강사 관리는 보기만 돼요. 할 수 있는 일: 학생 관리(학생 추가·상태·연락처·상담 완료), <b>재학생 명부 가져오기</b>, 지점 시간표 카드를 눌러 <b>반에 학생 넣기·신입 등록</b>, 이름 옆 ×를 두 번 눌러 <b>반에서 빼기</b>(학생별 화면의 수강 반 ×도 같아요 · 모두 바로 저장·다른 PC에 올라감), 통계 보기, PDF.</li>
   <li><b>[통계]</b> 탭: 실적 관리용. 지금 시간표 기준으로 강사마다 <b>학년별 재원 학생 수</b>(휴원·예정은 따로), <b>환산</b>(반마다 타임 비율로 나눈 인원 — 2+2면 0.5명씩, 3+1이면 0.75·0.25명, 혼자 들어가는 반은 1명), <b>학생×타임</b>(주당 내 타임 × 학생 수 합), 주당 타임을 봐요. 표 오른쪽 위 [학년별 재원 / 학년별 환산 / 학년별 학생×타임]으로 학년 칸에 보이는 값을 바꿀 수 있어요. 반 목록에는 반 구조(3+1, 2+2 등, 진한 숫자가 내 타임)가 나오고, <b>특강</b>은 따로 셉니다(주당 타임 = 요일 수). 월별 기록은 [적용]하거나 바로 저장할 때마다 이번 달 값이 덮어써져서, 달이 끝나면 <b>그달 마지막 상태</b>가 남아요(바뀐 게 없는 달은 앞 달 그대로) · 재원/환산/학생×타임/특강 인원/특강 ×타임으로 바꿔 볼 수 있어요. 옆의 학년 고르기로 <b>학년별 월별 기록</b>(예: 고2만)도 봐요 — 학년별 기록은 2026년 10월부터 쌓여요. 명단은 있는데 시간표에 그 선생님 수업이 없는 반은 맨 위에 <b>타임이 없는 반</b>으로 알려 줘요(환산·학생×타임이 0으로 잡히니까요). [엑셀로 저장]하면 시트 여섯 장(실적·학년별 환산·학년별 학생×타임·반 목록·특강·월별)으로 저장돼요. 지점장은 자기 지점만, 프로그램 관리자는 <b>[전 지점 합계]</b>로 같은 이름 강사를 합쳐서 볼 수 있어요.</li>
   <li><b>행정 선생님</b>: [강사 관리] 아래 <b>행정 선생님</b> 칸에서 이름을 넣고 [추가]하면 로그인 코드가 바로 만들어져요(보기 모드에서도 됨). [복사]로 카톡 1:1로 보내 주세요. 행정 선생님 코드로 들어가면 <b>모든 지점</b> 시간표와 <b>학생·학부모 연락처 전체</b>를 보고, 신입 학생 [상담 완료]도 누를 수 있어요(표시는 '이름(행정)'). 개인 시간표가 없어서 '내 수업'·'내 시간표'는 안 나오고, 응원 문구도 행정 선생님용으로 나와요. 이름을 누르면 이름만 고쳐요(코드 그대로). 여러 지점에 같은 이름으로 넣으면 한 사람이라 코드도 하나예요. 폰을 잃어버렸으면 <b>[기기 끊기]</b>를 두 번 누르세요 — 그 코드로 로그인한 폰·PC가 1~2분 뒤 모두 끊기고 새 코드가 만들어져요. [삭제]도 두 번 눌러야 돼요(그 지점에서만 빠져요).</li>
   <li><b>입학 예정 · 신입</b>: [학생 관리]에서 학생의 <b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>을 고르고 <b>첫 수업일</b>을 정해요(보기 모드에서도 바로 저장). 학생 추가 칸과 카드의 [+ 신입 등록] 창에도 첫 수업일이 있어요 — 오늘 이후면 입학 예정으로 들어가요. 반 명단에 미리 넣어 두면 첫 수업일 전까지 카드 인원에서 빠지고 '+1 예정', 이름 옆에 '예정 10/20'이 보여요. 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요. [학생 관리] 맨 위에 신입·예정 학생이 모여 보여요.</li>
@@ -5974,7 +5974,7 @@ const HELP=[
   <li>주당 횟수를 늘리면 보관함에 대기 카드가 생겨요.</li>
   <li>카드를 더블클릭해도 반 관리로 가요.</li></ul>`},
  {id:'import',t:'가져오기 (시트 · 주간 · 명부)',b:`
-  <ul><li><b>시트 시간표 가져오기</b>: 구글 시트에서 받은 .xlsx를 읽어 새 시간표 버전으로. 동명이인·명단에 없는 이름·비슷한 반 이름은 창에서 골라요.</li>
+  <ul><li><b>시트 시간표 가져오기</b>: 구글 시트에서 받은 .xlsx를 읽어 새 시간표로. 동명이인·명단에 없는 이름·비슷한 반 이름은 창에서 골라요.</li>
   <li><b>주간 시간표 가져오기</b>: 관리 프로그램의 강사별 주간 .xls를 지금 시간표와 비교해서 바뀐 것만 골라 반영해요.</li>
   <li><b>재학생명부 가져오기</b>: 명부 .xls로 학생 추가·학년 갱신. 명부에 없는 재원생은 휴원으로 바꿀지 물어봐요.</li></ul>`},
  {id:'special',t:'방학 특강',b:`
@@ -5989,21 +5989,21 @@ const HELP=[
   <li>적어 둔 메모를 누르면 종류·수업·횟수·이름을 고치거나 <b>[지우기]</b>.</li>
   <li>시간표 위 <b>[메모 보기]</b> 체크로 모든 메모를 보이기/가리기. 폰·브라우저 전체 시간표에도 같은 스위치가 있어요.</li></ul>`},
  {id:'noterq',t:'선생님 보강 등록',b:`<ul><li>선생님이 브라우저 시간표 <b>전체 → 내 시간표</b>에서 빈 칸(공강)을 누르면 <b>보강</b>을 등록할 수 있어요. <b>횟수</b>(1~8회)를 고르면 첫 수업일부터 매주 그 횟수만큼 보이고, 끝나면 저절로 사라져요(예: 수요일 3회 → 3주). 학생 이름과 연결할 수업(선택)을 적어요. 그 칸에는 '승인 대기'로 보여요.</li><li>보강 등록이 오면 프로그램 위쪽에 <b>선생님 보강 등록 ○건</b>이 떠요. [확인하기] → [승인]하면 그 칸의 빈 칸 메모로 들어가고, [거절]하면 사라져요. 수정 모드 중에는 끝낸 뒤 승인해요.</li><li>지점 관리자는 자기 지점 보강 등록을, 프로그램 관리자는 모든 지점 보강 등록을 승인할 수 있어요.</li><li>처음 한 번 프로그램 관리자 PC의 [설정 → 선생님 보강 등록]에 <b>보강 등록 키</b>(Issues 권한만 있는 GitHub 키)를 넣고 켜요. 이 키로는 보강 등록만 남길 수 있고 시간표는 못 바꿔요. 보강 등록 키도 1년이면 만료되는데, 14일 전부터 위쪽 띠로 알려 줘요.</li><li>아래 자동 점검에도 <b>'보강 등록 n건'</b>이 떠요. 누르면 보강 등록 목록이 열려요.</li></ul>`},
- {id:'admlock',t:'관리자 모드 · 잠금',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>지점 관리자(내 지점 모드)가 할 수 있는 것: 내 지점의 시간표·반·학생·강사(추가·삭제·휴무)·특강·메모·당일 변경·예정 시간표·공지·학년 올리기·선생님 보강 등록 승인·<b>적용 기록 되돌리기(내 지점만)</b>·백업 저장. 프로그램 관리자만: 지점 추가·삭제, 전체 초기화, 백업 불러오기(전체), 폰 보기 번호·인터넷 올리기, 연동 코드·연결 끊기, 보강 등록 키.</li><li>강사 삭제는 <b>지금 시간표·예정 시간표·특강</b>에 없으면 돼요. 지난 버전에만 있으면 지울 수 있고 그 버전에선 '(삭제된 강사)'로 보여요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
- {id:'ver',t:'버전 · 적용 기록 · 백업',b:`
-  <ul><li><b>[버전 관리]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
-  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [버전 관리 → 적용 기록 열기]를 누르면 작은 창이 떠요(머리를 끌어 옮기고 Esc·×로 닫기). 줄 끝 <b>×</b>(두 번)로 기록 하나, 아래 <b>[모두 지우기]</b>(두 번)로 전부 지울 수 있어요(이 PC의 기록만). [보기]로 지난 시간표를 보면서 다른 기록으로 바로 바꿔 볼 수 있고, [되돌리기](두 번)로 그 시간표를 초안으로 불러와요.</li>
+ {id:'admlock',t:'관리자 모드 · 잠금',b:`<ul><li>프로그램 관리자 PC에서 [설정 → 지점 연동 → 관리자 잠금]에 비밀번호를 정하면, 평소엔 <b>내 지점 모드</b>로 열려요. 내 지점만 고칠 수 있고 다른 지점은 보기만 돼요.</li><li>[설정] 맨 위 <b>[관리자 모드]</b>에 비밀번호를 넣으면 다른 지점 수정·지점 코드·폰으로 보기 설정 등이 열리고(위쪽 표시가 '관리자 모드'로 바뀜), <b>[관리자 모드 · 잠그기]</b>를 누르거나 프로그램을 다시 켜면 다시 잠겨요.</li><li>지점 PC에서 [관리자 모드]를 누르면 '관리자 코드가 필요해요' 안내가 떠요. 관리자 PC용 코드를 넣으면 그 PC가 관리자 PC가 되고 바로 비밀번호를 정해요.</li><li>잠가 둬도 새 버전 보내기·연결 키 알림은 그대로예요.</li><li>지점 관리자(내 지점 모드)가 할 수 있는 것: 내 지점의 시간표·반·학생·강사(추가·삭제·휴무)·특강·메모·당일 변경·예정 시간표·공지·학년 올리기·선생님 보강 등록 승인·<b>적용 기록 되돌리기(내 지점만)</b>·백업 저장. 프로그램 관리자만: 지점 추가·삭제, 전체 초기화, 백업 불러오기(전체), 폰 보기 번호·인터넷 올리기, 연동 코드·연결 끊기, 보강 등록 키.</li><li>강사 삭제는 <b>지금 시간표·예정 시간표·특강</b>에 없으면 돼요. 지난 시간표에만 있으면 지울 수 있고 그 시간표에선 '(삭제된 강사)'로 보여요.</li><li>관리자 모드의 [설정 → 지점 연동 → 연결된 PC]에서 PC마다 [연결 끊기]를 할 수 있어요. 그 PC는 2분 안에 연동이 꺼지고 키가 지워져요(시간표 파일은 남음). 다시 쓰려면 새 코드로 연결해요. 지점 PC에는 스스로 연결을 끊는 버튼이 없어요.</li></ul>`},
+ {id:'ver',t:'시간표 보관함 · 적용 기록 · 백업',b:`
+  <ul><li><b>[보관함]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 만들어 두고 바꿔 볼 수 있어요.</li>
+  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [보관함 → 적용 기록 열기]를 누르면 작은 창이 떠요(머리를 끌어 옮기고 Esc·×로 닫기). 줄 끝 <b>×</b>(두 번)로 기록 하나, 아래 <b>[모두 지우기]</b>(두 번)로 전부 지울 수 있어요(이 PC의 기록만). [보기]로 지난 시간표를 보면서 다른 기록으로 바로 바꿔 볼 수 있고, [되돌리기](두 번)로 그 시간표를 초안으로 불러와요.</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요. [설정 → 데이터]에서 백업 파일로 저장·불러오기.</li></ul>`},
  {id:'ex',t:'당일 변경 (휴강 · 대강 · 시간 이동)',b:`<ul><li>지점 시간표에서 수업 카드를 누르면 명단 창 아래 <b>[당일 변경 · 휴강 / 대강 / 시간 이동]</b>이 있어요. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 1~2분 뒤 보여요(급한 변경용).</li>
   <li>날짜(그 요일 다음 5번 중)를 고르고 <b>휴강</b> / <b>대강</b>(대신 들어갈 선생님) / <b>시간 이동</b>(같은 날 다른 교시, 강사도 바꿀 수 있음) 중 하나 + 메모(선택).</li>
   <li>원래 시간표는 그대로예요. 카드에 "10/22 휴강"처럼 배지가 붙고, 대강·이동은 들어가는 칸에 점선 카드가 생겨요. 그날이 지나면 저절로 원래대로 돌아와요(지난 기록은 다음 [적용] 때 지워짐).</li>
   <li>선생님 브라우저: <b>오늘</b> 화면엔 그날 바뀐 대로 보여요(휴강은 흐리게, 대강은 대강 선생님의 '오늘 수업'에 들어감). 전체 시간표엔 7일 안의 변경이 배지로 보여요.</li>
   <li>잘못 넣었으면 같은 창 위쪽 목록에서 <b>[취소]</b>.</li></ul>`},
- {id:'sched',t:'예정 시간표 (날짜에 자동으로 바뀜)',b:`<ul><li>[버전 관리]에서 지금 시간표를 <b>[복사해서 새 버전]</b> → 새 버전은 <b>이 PC에서만</b> 열려요. 고치고 [적용]해도 선생님들께는 지금 시간표가 그대로 보여요(위쪽 파란 띠로 알려 줘요).</li>
-  <li>다 고쳤으면 그 버전의 <b>[예정으로 정하기]</b> → 시작 날짜를 고르면, 그날부터 그 버전이 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날 저절로 바뀌어요(PC가 꺼져 있어도).</li>
+ {id:'sched',t:'예정 시간표 (날짜에 자동으로 바뀜)',b:`<ul><li>[보관함]에서 지금 시간표를 <b>[복사해서 새 시간표]</b> → 새 시간표는 <b>이 PC에서만</b> 열려요. 고치고 [적용]해도 선생님들께는 지금 시간표가 그대로 보여요(위쪽 파란 띠로 알려 줘요).</li>
+  <li>다 고쳤으면 그 시간표의 <b>[예정으로 정하기]</b> → 시작 날짜를 고르면, 그날부터 그 시간표가 <b>지금 시간표</b>로 바뀌어요. 선생님 화면도 그날 저절로 바뀌어요(PC가 꺼져 있어도).</li>
   <li><b>선생님들께 미리 보여 주기(공개)</b>를 켜면 브라우저 시간표 위에 "○/○부터 시간표가 바뀌어요 [미리 보기]"가 생겨요. 확정 전엔 꺼 두세요.</li>
   <li><b>[바뀌는 점]</b>을 누르면 지금 시간표와 비교해 새로 생기는 반·없어지는 반·시간이 바뀌는 반·들어오고 빠지는 학생을 보여 줘요.</li>
-  <li>날짜를 기다리지 않고 바로 바꾸려면 <b>[지금 시간표로]</b>(수정 모드) → [적용]. 버전 고르기(위쪽 시간표 칸)는 이 PC에서 보는 것만 바뀌어요.</li></ul>`},
+  <li>날짜를 기다리지 않고 바로 바꾸려면 <b>[지금 시간표로]</b>(수정 모드) → [적용]. 시간표 고르기(위쪽 시간표 칸)는 이 PC에서 보는 것만 바뀌어요.</li></ul>`},
  {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 <b>[지점 시간표 PDF]</b>(A3), 강사 버튼·학생별 탭의 <b>[이 강사/학생 PDF]</b>, <b>[전체 PDF]</b>. PDF 폴더에 저장돼요.</li><li>특강 기간이면 특강도 같이 나와요.</li></ul>`},
  {id:'phone',t:'폰으로 보기 (브라우저 시간표)',b:`
   <ul><li><b>지점 관리자</b>는 [설정 → 폰으로 보기]에서 QR·<b>[주소 복사]</b>·<b>[안내문 복사]</b>로 선생님들께 알려 주면 돼요. 아래 설정은 프로그램 관리자가 해요.</li>
@@ -6044,7 +6044,7 @@ const HELP=[
   <li><b>'이 PC의 연결이 끊겼어요'가 떠요</b> → 프로그램 관리자가 끊은 거예요. 새 지점 코드를 받아 다시 연결하세요.</li>
   <li><b>폰에서 번호가 틀리다고 나와요</b> → 프로그램 관리자가 번호를 바꿨을 수 있어요. 새 번호를 받아 넣으세요.</li>
   <li><b>연동 오류</b>가 떠요 → 인터넷 연결 확인. 계속되면 [설정 → 지점 연동 → 지금 받기]를 눌러 오류 문구를 프로그램 관리자에게 보내 주세요.</li>
-  <li><b>잘못 적용했어요</b> → [버전 관리 → 적용 기록]에서 그 전 시간표로 되돌리기.</li></ul>`}
+  <li><b>잘못 적용했어요</b> → [보관함 → 적용 기록]에서 그 전 시간표로 되돌리기.</li></ul>`}
 ];
 const helpVisible=()=>HELP.filter(s=>!(s.owner&&!isOwner()));
 function helpClose(){UI.view=UI.helpFrom&&UI.helpFrom!=='help'?UI.helpFrom:'grid';UI.helpQ='';render()}
