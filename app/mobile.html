@@ -558,8 +558,12 @@ html.desk.glass .hd{background:rgba(23,36,63,.70)}html.desk.glass.scr .hd{backgr
 .apc>div{flex:1;min-width:0;display:flex;flex-direction:column}.apc b{font-size:15px}.apc small{color:var(--muted);font-size:12.5px}.apc small.rs{color:var(--acc);font-weight:600}.apc small.rs.edit,.apc small.rs.none{color:#b4572a}
 .apc em{font-style:normal;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}.apc em.pk{background:#e1f4e8;color:#1f7a45}.apc em.pw{background:#fdf0d6;color:#8a5a00}.apc em.pe{background:var(--chip);color:var(--acc)}
 .cnsg{display:flex;margin:14px 0 -6px}.cnsg button{flex:1;min-height:36px}
-.cnnm{border:0;background:none;padding:0;margin:0;font:inherit;font-weight:700;font-size:inherit;color:inherit;text-align:left;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 25%,transparent);text-underline-offset:3px;cursor:pointer}
+.cnr[data-stucard]{cursor:pointer;transition:transform .15s ease,box-shadow .2s ease;-webkit-tap-highlight-color:transparent}.cnr[data-stucard]:active:not(:has(button:active)){transform:scale(.99);box-shadow:0 1px 1px rgba(15,25,50,.05)}
 .iqkv{margin:12px 2px 2px;font-size:14px}
+#vbar{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;z-index:60;display:flex;align-items:center;gap:8px;background:#17243F;color:#fff;border-radius:14px;padding:8px 8px 8px 16px;font-size:14px;box-shadow:0 8px 28px rgba(10,20,40,.28);transition:transform .35s cubic-bezier(.22,.61,.36,1),opacity .3s;white-space:nowrap}
+#vbar.on{transform:translate(-50%,0);opacity:1}#vbar button{border:0;border-radius:10px;font-weight:700;font-size:13px;padding:8px 12px}#vbar button[data-act="verGo"]{background:#fff;color:#17243F}#vbar button[data-act="verX"]{background:transparent;color:#fff;opacity:.7;padding:8px 6px;font-size:16px}
+.foot .vv .lnk{font-size:inherit}
+.cnhb{flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:0 11px;min-height:38px;font-weight:600;font-size:13px}
 /* ===== 관리 탭 (프로그램 관리자 폰) ===== */
 .amc{margin-bottom:4px}
 .amh{display:flex;gap:8px;align-items:center;margin:2px 0 10px}.amh .search{flex:1;position:static;padding:0}.amh .amt{flex:1;color:var(--muted);font-size:14px}.amh .amt b{color:var(--fg)}
@@ -848,7 +852,7 @@ function cnState(b,wall){const c=b&&b.cns;if(!c)return null;const me=ME(),adm=ad
   P.sort((a,z)=>(z.asg.length?1:0)-(a.asg.length?1:0)||String(a.s.grade).localeCompare(String(z.s.grade))||a.s.name.localeCompare(z.s.name));
   return {wins,P,Dn,lab:wins.map(w=>w.lab).join(' · ')}}
 function cnHTML(b){const un=cnUndoHTML(b);const mg=isMgr(b);const wall=mg&&ST.cnAll;const st=cnState(b,wall);if(!st||(!st.wins.length&&!st.P.length))return un;const adm=admLike();
-  const row=x=>`<div class="cnr${x.asg.length?' asg':''}"><div class="cni"><button class="cnnm" data-stus="${esc(x.s.id)}">${esc(x.s.name)}</button><small>${esc([x.s.grade,x.s.school].filter(Boolean).join(' · '))}${wall?' · '+esc(cnTs(b,x.s.id)):''}${x.open.length?' · '+esc(x.open.map(w=>w.lab).join('·')):''}</small>${x.asg.map(a=>`<span class="cna"><i>지정</i>${esc(a.note||'상담 요청')}${a.by?` <small>${esc(a.by)}</small>`:''}</span>`).join('')}</div><button class="csbtn cnb" data-act="cnGo" data-sid="${esc(x.s.id)}">상담 완료</button></div>`;
+  const row=x=>`<div class="cnr${x.asg.length?' asg':''}" data-stucard="${esc(x.s.id)}"><div class="cni"><b class="cnnm">${esc(x.s.name)}</b><small>${esc([x.s.grade,x.s.school].filter(Boolean).join(' · '))}${wall?' · '+esc(cnTs(b,x.s.id)):''}${x.open.length?' · '+esc(x.open.map(w=>w.lab).join('·')):''}</small>${x.asg.map(a=>`<span class="cna"><i>지정</i>${esc(a.note||'상담 요청')}${a.by?` <small>${esc(a.by)}</small>`:''}</span>`).join('')}</div>${canHold(b)?`<button class="cnhb" data-act="holdAsk" data-sid="${esc(x.s.id)}">보류</button>`:''}<button class="csbtn cnb" data-act="cnGo" data-sid="${esc(x.s.id)}">상담 완료</button></div>`;
   return un+(mg?`<div class="seg cnsg"><button data-act="cnAll0" aria-pressed="${!wall}">내 학생</button><button data-act="cnAll1" aria-pressed="${wall}">지점 전체</button></div>`:'')+`<div class="sec">${adm?'지정 상담':'정기 상담'} <small>${st.lab?esc(st.lab)+' · ':''}${st.P.length?`<b class="csn">${st.P.length}명 남음</b>`:'모두 완료'}${st.Dn.length?` · 완료 ${st.Dn.length}명`:''}</small></div>
     ${st.P.length?`<div class="cnl">${st.P.map(row).join('')}</div>`:''}
     ${canHold(b)?holdListHTML(b):''}
@@ -1163,7 +1167,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.62.4</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.62.6</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1199,9 +1203,9 @@ document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&
   if(ds.act==='print'){window.print();return}
   if(ds.act==='logout'){shOpen(`<h3>로그아웃</h3><p class="ssub">이 기기에 저장된 번호와 시간표가 지워져요. 다음에 열 때 번호를 다시 넣어야 해요.</p><div class="sbtn"><button data-act="shClose">취소</button><button class="dan" data-act="logoutGo">로그아웃</button></div>`);return}
   if(ds.act==='ctCode'){ctSheet();return}
-  if(ds.act==='cnGo'){const b=B(),st=S(b,ds.sid);if(!st)return;shOpen(`<h3>상담 완료</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} 상담을 마쳤나요?<br>같이 가르치는 선생님 화면에서도 완료로 바뀌어요</p><textarea id="cnMemo" rows="2" maxlength="200" placeholder="메모 (안 적어도 돼요) · 예: 학부모 통화, 진도 안내" class="cnmemo"></textarea><p class="snote" id="cnMsg">&nbsp;</p><div class="sbtn">${canHold(b)?`<button data-act="holdGo" data-sid="${esc(st.id)}" data-on="1" style="margin-right:auto">보류</button>`:''}<button data-act="shClose">취소</button><button class="pri" id="cnOk" data-act="cnSend" data-sid="${esc(st.id)}">상담 완료</button></div>`);return}
+  if(ds.act==='cnGo'){const b=B(),st=S(b,ds.sid);if(!st)return;shOpen(`<h3>상담 완료</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} 상담을 마쳤나요?<br>같이 가르치는 선생님 화면에서도 완료로 바뀌어요</p><textarea id="cnMemo" rows="2" maxlength="200" placeholder="메모 (안 적어도 돼요) · 예: 학부모 통화, 진도 안내" class="cnmemo"></textarea><p class="snote" id="cnMsg">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="cnOk" data-act="cnSend" data-sid="${esc(st.id)}">상담 완료</button></div>`);return}
   if(ds.act==='goCn'){goTab('stu');return}
-  if(ds.stus){stuSheet(ds.stus);return}
+  if(ds.act==='holdAsk'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}const st=S(B0(),ds.sid);if(!st)return;shOpen(`<h3>정기 상담 보류</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} · 보류하면 이번 상담 목록에서 빠져요<br>아래 '보류 n명'에서 언제든 풀 수 있어요</p><input id="cnMemo" maxlength="40" placeholder="사유 (안 적어도 돼요) · 예: 장기 결석" autocomplete="off"><p class="snote">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="holdGo" data-sid="${esc(st.id)}" data-on="1">보류</button></div>`);return}
   if(ds.act==='cnAll0'||ds.act==='cnAll1'){ST.cnAll=ds.act==='cnAll1';ls.set('m_cnall',ST.cnAll?'1':'');ST.mh='';render();return}
   if(ds.act==='holdOff'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}const st=S(B0(),ds.sid);if(!st)return;shOpen(`<h3>보류 풀기</h3><p class="ssub"><b>${esc(st.name)}</b> 보류를 풀까요?<br>다시 정기 상담 목록에 나와요</p><div class="sbtn"><button data-act="shClose">아니요</button><button class="pri" data-act="holdGo" data-sid="${esc(st.id)}" data-on="0">보류 풀기</button></div>`);return}
   if(ds.act==='cnUndo'){const u=CNM.get().find(x=>x.num===+ds.n);if(!u)return;if(Date.now()-u.at>10*60000){fzToast('10분이 지나 되돌릴 수 없어요 · 부원장님께 말씀해 주세요',2600);ST.mh='';render();return}
@@ -1501,7 +1505,24 @@ $('br').addEventListener('change',e=>{ST.br=e.target.value;ST.brPicked=true;ls.s
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();bip=e;if(D&&ST.tab==='today')render()});
 WQ.addEventListener('change',()=>{wide=WQ.matches;applyMz();loadGz();document.body.classList.toggle('wide',wide);ST.tab=wide?'grid':'today';if(D)render()});
 window.addEventListener('resize',sizeHd);
+/* 상담 목록 카드: 버튼 말고 카드 아무 데나 누르면 학생 카드(전화번호) */
+document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('.cnr[data-stucard]');if(!c||e.target.closest('button,a,input'))return;if(GEST)return;stuSheet(c.dataset.stucard)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
+/* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
+   주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
+const MVER='3.62.6';const VC={last:0,nv:''};
+const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
+function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
+async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
+  try{const r=await fetch(location.pathname+'?vc='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const t=await r.text();const m=/Y-MATH 시간표 · v(\d+\.\d+\.\d+)/.exec(t);const v=m&&m[1];
+    if(!v||!vGt(v,MVER)){if(manual)fzToast(`최신 버전이에요 · v${MVER}`,1800);return}
+    let tried='';try{tried=sessionStorage.getItem('m_vgo')||''}catch(e){}
+    if((manual||resume)&&tried!==v&&!$('sh')&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){verGo(v);return}
+    VC.nv=v;verBar()}catch(e){if(manual)fzToast('확인하지 못했어요 · 인터넷 연결을 확인해 주세요',2000)}}
+function verBar(){if(!VC.nv||$('vbar'))return;const d=document.createElement('div');d.id='vbar';d.innerHTML=`<span>새 버전 <b>v${esc(VC.nv)}</b>이 있어요</span><button data-act="verGo">지금 바꾸기</button><button data-act="verX" aria-label="닫기">×</button>`;document.body.appendChild(d);requestAnimationFrame(()=>d.classList.add('on'))}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-act="verChk"],[data-act="verGo"],[data-act="verX"]');if(!t)return;e.stopPropagation();const a=t.dataset.act;
+  if(a==='verChk'){try{sessionStorage.removeItem('m_vgo')}catch(err){}verChk(true)}else if(a==='verGo')verGo(VC.nv);else{const d=$('vbar');if(d)d.remove()}},true);
+
 setInterval(()=>{if(!document.hidden&&D)load()},60000);
 /* ===== 내 폰 관리 모드 (프로그램 관리자 10자리 코드로 로그인) =====
    관리 탭: 학생 · 입학 문의 · 정기 상담 · 공지 · 통계 · 다른 사람으로 보기
@@ -1736,6 +1757,7 @@ function amPc(b){const q=PCQ.q;const L=q?q.list||[]:[];const own=L.find(x=>x.rol
     return `<div class="acard"><div class="acardh"><b>시간표 지금 올리기</b><button class="ambtn sm" data-act="pcPub"${pb&&pb.st==='wait'?' disabled':''}>${pb&&pb.st==='wait'?'올리는 중…':'지금 올리기'}</button></div><div class="hint">${st||'선생님 폰에 시간표가 안 바뀌어 보일 때 · PC의 [폰으로 보기 → 지금 올리기]와 같아요'}</div>${pb&&pb.st!=='wait'?'':''}</div>`})()}
   ${q?`<div class="sec">켜져 있는 PC <small>${L.length}대${wait?' · 더 기다리는 중':' · '+ago(q.t0)+' 확인'}</small></div>${L.length?L.map(row).join(''):`<div class="empty">${wait?'답을 기다리는 중이에요…':'답한 PC가 없어요 · 모두 꺼져 있거나 3.62.2 전 버전이에요'}</div>`}`:''}
   ${gone.length?`<div class="sec">${wait?'아직 답 없음':'응답 없음'} <small>${wait?'1분쯤 더 기다려 보세요':'꺼져 있거나 인터넷이 끊겼어요'}</small></div>${gone.map(d=>`<div class="apc"><i></i><div><b>${esc(d.name||'(이름 없음)')}</b><small>${esc(pcRole(d))}${d.brName?' · '+esc(d.brName):''} · 마지막 v${esc(d.ver)}${d.day?' · '+mdA(d.day):''}</small></div></div>`).join('')}`:''}
+  <div class="acard"><div class="acardh"><b>이 폰 화면</b><button class="ambtn sm" data-act="verChk">새 버전 불러오기</button></div><div class="hint">지금 이 폰은 <b>v${esc(MVER)}</b> · PC에서 업데이트한 뒤 누르면 새 화면으로 바로 바꿔요(선생님 폰은 저절로 바뀌어요)</div></div>
   <div class="hint" style="margin:12px 2px">꺼져 있는 프로그램은 폰에서 켤 수 없어요. 학원 PC마다 [설정 → 이 PC → 윈도우를 켜면 프로그램 자동 실행]을 켜 두면, PC만 켜져 있으면 프로그램도 열려 있어요.</div>`}
 
 boot();
