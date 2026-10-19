@@ -95,8 +95,9 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const ctAll=b=>{const digits=x=>String(x||'').replace(/\D/g,'');const m={};(b.students||[]).forEach(st=>{const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));m[st.id]=ph||pa.length?{...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}:{}});return m};
   const sts=[];(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>(b.staff||[]).forEach(a=>{if(/^\d{6}$/.test(String(a.ck||''))&&nm(a.name))sts.push({b,a})}));
   if(sts.length){const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});const allK=Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')]));const ctH=crypto.createHash('sha256').update(JSON.stringify(ctA)).digest('hex');
-    for(const {b,a} of sts){const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,all:1,ct:ctA};const dk=await lgKey(String(a.ck),salt);
-      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+a.ck+':'+nm(a.name)+':'+b.id+':'+ctH)}}
+    const byC={};for(const {b,a} of sts){const c=String(a.ck);if(!byC[c])byC[c]={b,a}} // 같은 사람(여러 지점·같은 코드)은 묶음 하나 · 소속은 앞 지점
+    for(const [c,{b,a}] of Object.entries(byC)){const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,all:1,ct:ctA};const dk=await lgKey(c,salt);
+      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+b.id+':'+ctH)}}
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
@@ -134,7 +135,7 @@ function startServer(){if(srv){try{srv.close()}catch(e){}srv=null}srvErr='';if(!
   srv.listen(mob.port,'0.0.0.0')}
 function mobInfo(){return {on:mob.on,pin:mob.pin,port:mob.port,running:!!(srv&&srv.listening),err:srvErr,gh:ghInfo(),nas:{on:!!mob.nasOn,base:mob.nasBase||'',sub:mob.nasSub||'',host:mob.nasHost||'',last:NAS.last,err:NAS.err},urls:lanIPs().map(ip=>`http://${ip}:${mob.port}`)}}
 ipcMain.handle('mobileGet',()=>new Promise(r=>setTimeout(()=>r(mobInfo()),150)));
-ipcMain.handle('mobileSet',async(e,o)=>{mob.on=!!o.on;{const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin&&syCfg().role!=='branch'){mob.pin=np;mob.pinAt=Date.now();try{await rqPublish()}catch(err){}}}const pt=+o.port;if(pt>=1024&&pt<=65535)mob.port=pt;
+ipcMain.handle('mobileSet',async(e,o)=>{mob.on=!!o.on;{const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin&&syCfg().role!=='branch'&&syCfg().role!=='staff'){mob.pin=np;mob.pinAt=Date.now();try{await rqPublish()}catch(err){}}}const pt=+o.port;if(pt>=1024&&pt<=65535)mob.port=pt;
   fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');startServer();return new Promise(r=>setTimeout(()=>r(mobInfo()),400))});
 
 /* ================= 학원 서버(시놀로지 NAS)로 올리기 =================
@@ -288,11 +289,12 @@ ipcMain.handle('syncInfo',()=>syInfo());
 ipcMain.handle('syncEnable',async(e,o)=>{const c=syCfg();if(!ghToken()||!mob.ghRepo)return {ok:false,err:'먼저 [폰으로 보기 → 인터넷(GitHub)으로 올리기]를 연결해 주세요'};
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}
   if(!syKey())sySetKey(crypto.randomBytes(32).toString('base64'));c.on=true;c.role='owner';try{updEnsureKeys()}catch(err){}c.name=String(o&&o.name||c.name||'부원장').slice(0,20);c.dev=c.dev||crypto.randomBytes(6).toString('hex');sySave();await tokenPublish();return {ok:true,info:syInfo()}});
-ipcMain.handle('syncCode',(e,branchId)=>{const c=syCfg();if(c.role!=='owner'||!syReady())return null;
+ipcMain.handle('syncCode',(e,branchId,opt)=>{const c=syCfg();if(c.role!=='owner'||!syReady())return null;
   try{updEnsureKeys()}catch(err){}const o={v:1,o:mob.ghOwner,r:mob.ghRepo,t:ghToken(),k:syKey().toString('base64'),p:mob.pin||'',b:branchId||'*',u:c.pub||''};
+  if(opt&&opt.staff){if(!branchId||branchId==='*')return null;o.st={n:String(opt.staff).slice(0,20)}} // 행정 선생님 PC: 소속 지점만 · 학생 관리 위주
   if(!branchId||branchId==='*'){try{const pk=updPriv();if(pk)o.s=pk.export({type:'pkcs8',format:'pem'})}catch(err){}}return 'YMT1.'+Buffer.from(JSON.stringify(o)).toString('base64url')});
 ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.from(String(code).trim().replace(/^YMT1\./,''),'base64url').toString('utf8'));if(!o.t||!o.k||!o.r)throw 0}catch(err){return {ok:false,err:'코드가 올바르지 않아요 · 프로그램 관리자에게 받은 코드를 통째로 붙여넣어 주세요'}}
-  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(c.role==='owner'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
+  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':o.st?'staff':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(o.st&&o.st.n?o.st.n+' 행정':'')||(c.role==='owner'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
 ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo()});
 ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
