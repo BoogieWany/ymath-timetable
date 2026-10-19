@@ -466,6 +466,10 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
   const load=async u=>{try{await wc.loadURL(u)}catch(err){/* 이동 중 다시 이동하면 ERR_ABORTED — 무시 */}await wait(600)};
   const until=async(js,ms)=>{const t0=Date.now();while(Date.now()-t0<ms){try{if(await wc.executeJavaScript(js))return true}catch(err){}await wait(300)}return false};
   // 로그인 화면 = 보이는 비밀번호 칸이 있고 '로그아웃'이 없음 (로그인된 화면에도 숨은 비밀번호 바꾸기 칸이 있어서)
+  const HASX="[...document.querySelectorAll('a,button,input,span')].some(b=>(b.innerText||b.value||'').replace(/\\s/g,'')==='엑셀')";
+  const frames=()=>{try{return wc.mainFrame.framesInSubtree}catch(e){return [wc.mainFrame]}};
+  const inFrames=async js=>{for(const f of frames()){try{const r=await f.executeJavaScript(js);if(r)return r}catch(e){}}return false};
+  const frameDump=async()=>{const out=[];for(const f of frames()){try{out.push(f.url.replace(/[?#].*/,'')+' : '+await f.executeJavaScript("[...document.querySelectorAll('a,button,input[type=button]')].map(b=>(b.innerText||b.value||'').trim()).filter(Boolean).slice(0,30).join(', ')"))}catch(e){out.push(f.url+' : 못 읽음')}}return out.join('\n')};
   const hasPw="(function(){const v=[...document.querySelectorAll('input[type=password]')].some(i=>i.offsetParent!==null);const out=[...document.querySelectorAll('a,button,input')].some(b=>/로그아웃/.test(b.innerText||b.value||''));return v&&!out})()";
   try{
     const either=hasPw+"||[...document.querySelectorAll('a,button,input')].some(b=>/엑셀/.test(b.innerText||b.value||''))";
@@ -483,8 +487,11 @@ ipcMain.handle('eokFetch',async(e,o)=>{if(EOKBUSY)return {ok:false,err:'이미 �
     if(kind==='roster'){
       const ok=await wc.executeJavaScript("(function(){const a=[...document.querySelectorAll('a')].find(x=>(x.innerText||'').replace(/\\s/g,'')==='재학생');if(!a)return false;a.click();return true})()").catch(()=>false);
       if(!ok)throw new Error("'재학생' 메뉴를 찾지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요");
-      await wait(1500);if(!await until("/재학생/.test((document.querySelector('h1,h2,h3,.tit,.title')||document.body).innerText)&&[...document.querySelectorAll('a,button,input')].some(b=>(b.innerText||b.value||'').replace(/\\s/g,'')==='엑셀')",10000))throw new Error('재학생 화면을 열지 못했어요')}
-    const clicked=await wc.executeJavaScript("(function(){const b=[...document.querySelectorAll('a,button,input[type=button],input[type=submit],span,div')].filter(x=>(x.innerText||x.value||'').replace(/\\s/g,'')==='엑셀').pop();if(!b)return false;b.click();return true})()").catch(()=>false);
+      await wait(1500);
+      // 재학생 화면은 명단이 페이지 안 작은 창(iframe)에 들어 있음 → 모든 창에서 [엑셀]을 찾음
+      const t0=Date.now();let okR=false;while(Date.now()-t0<15000){if(!/hope_list/.test(wc.getURL())&&await inFrames(HASX)){okR=true;break}await wait(400)}
+      if(!okR){lg('재학생 화면 창들:\n'+await frameDump());throw new Error('재학생 화면을 열지 못했어요')}}
+    const clicked=await inFrames("(function(){const b=[...document.querySelectorAll('a,button,input[type=button],input[type=submit],span,div')].filter(x=>(x.innerText||x.value||'').replace(/\\s/g,'')==='엑셀').pop();if(!b)return false;b.click();return true})()");
     if(!clicked)throw new Error('[엑셀] 버튼을 찾지 못했어요 · 에듀OK 화면이 바뀌었을 수 있어요');
     const got=await Promise.race([dlP,wait(45000).then(()=>null)]);
     if(!got||!got.buf||!got.buf.length)throw new Error('엑셀 파일을 받지 못했어요 · 잠시 뒤 다시 해 주세요');
