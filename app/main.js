@@ -87,11 +87,15 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     (b.teachers||[]).forEach(t=>{const k=nm(t.name);if(k)(ppl[k]=ppl[k]||[]).push({b,t,ver})})});
   const ctAll=b=>{const digits=x=>String(x||'').replace(/\D/g,'');const m={};(b.students||[]).filter(st=>st.status!=='퇴원').forEach(st=>{const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));m[st.id]=ph||pa.length?{...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}:{}});return m};
   const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||''}));
+  const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
+    out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
+    cns:{per:c.per||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
+    exam:b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null}};
   const u=[],sig=[];
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
     const all=rs.some(r=>r.t.all);const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))];
     const ct={};rs.forEach(r=>{ct[r.b.id]=Object.assign(ct[r.b.id]||{},ctPlain(r.b,r.ver,r.t,true))});
-    const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});mq[id]=inqPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
+    const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});mq[id]=mgPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
     const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct,...(Object.keys(mk).length?{mk,mq}:{})};
     for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify([ct,mk,mq])).digest('hex'))}}
   /* 행정 선생님(지점마다 b.staff): 개인 코드 · 모든 지점 · 학생 전체 연락처 · 내 수업 없음 */
@@ -104,10 +108,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   {const ob=(db.branches||[]).find(b=>kb[b.id]&&b.own&&/^\d{10}$/.test(String(b.own.ck||''))&&b.own.ak);
     if(ob){const own=ob.own;const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});
       const ox={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const c=b.cns||{};
-        ox[b.id]={inq:inqPack(b),
-          out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
-          cns:{per:c.per||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
-          exam:b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null,
+        ox[b.id]={...mgPack(b),
           mstat:Object.fromEntries(Object.keys(b.mstat||{}).sort().slice(-13).map(k=>[k,b.mstat[k]]))}});
       const mine=ppl[nm(own.nm)]||[];const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:mine.map(r=>({br:r.b.id,t:r.t.id})),nm:own.nm||'',role:'owner',home:(mine[0]&&mine[0].b.id)||ob.id,all:1,ct:ctA,ak:own.ak,ox};
       const dk=await lgKey(String(own.ck),salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});
@@ -377,7 +378,7 @@ ipcMain.handle('rqSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')re
 function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){db={branches:[]}}const ob=(db.branches||[]).find(b=>b.own&&b.own.ak);
     if(typeof x.p!=='string'||typeof x.sg!=='string')throw 0;const g=Buffer.from(x.sg,'base64');const eq=k=>{const h=crypto.createHmac('sha256',Buffer.from(k,'base64')).update(x.p,'utf8').digest();return g.length===h.length&&crypto.timingSafeEqual(g,h)};
     let mgr=false;if(!(ob&&eq(ob.own.ak))){const mb=x.kind==='ad'&&(db.branches||[]).find(b=>b.id===x.br&&b.mgk);if(!mb||!eq(mb.mgk))throw 0;mgr=true} /* 지점장 키: 그 지점 · 상담 보류만 */
-    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every((o,i)=>o&&(['cnHold','iqAdd','iqReg','iqX'].includes(o.op)||(o.op==='mAdd'&&o.a&&o.a.sid==='$new'&&i>0&&d.ops[i-1].op==='iqReg'))))throw 0; /* 지점장 키: 상담 보류·입학 문의(+문의에서 옮긴 학생 반 넣기)만 */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
+    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every(o=>o&&['stAdd','stEd','stSt','stCt','mAdd','mDel','cnSet','cnAsg','cnAsgX','cnHold','iqAdd','iqReg','iqX','anAdd','anDel'].includes(o.op)))throw 0; /* 지점장 키: 자기 지점 관리 탭 일만(그 지점 키라 다른 지점은 안 됨) */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
     x.ops=d.ops;x.n=String(d.n);x.lb=String(d.lb||'').slice(0,200);x.pat=+d.at||0;delete x.p;delete x.sg}
   catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
