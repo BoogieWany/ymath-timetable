@@ -86,7 +86,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const ppl={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const ver=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
     (b.teachers||[]).forEach(t=>{const k=nm(t.name);if(k)(ppl[k]=ppl[k]||[]).push({b,t,ver})})});
   const ctAll=b=>{const digits=x=>String(x||'').replace(/\D/g,'');const m={};(b.students||[]).filter(st=>st.status!=='퇴원').forEach(st=>{const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));m[st.id]=ph||pa.length?{...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}:{}});return m};
-  const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||''}));
+  const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
     cns:{per:c.per||0,kper:c.kper||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
@@ -410,7 +410,7 @@ ipcMain.handle('rqSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')re
 function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){db={branches:[]}}const ob=(db.branches||[]).find(b=>b.own&&b.own.ak);
     if(typeof x.p!=='string'||typeof x.sg!=='string')throw 0;const g=Buffer.from(x.sg,'base64');const eq=k=>{const h=crypto.createHmac('sha256',Buffer.from(k,'base64')).update(x.p,'utf8').digest();return g.length===h.length&&crypto.timingSafeEqual(g,h)};
     let mgr=false;if(!(ob&&eq(ob.own.ak))){const mb=x.kind==='ad'&&(db.branches||[]).find(b=>b.id===x.br&&b.mgk);if(!mb||!eq(mb.mgk))throw 0;mgr=true} /* 지점장 키: 그 지점 · 상담 보류만 */
-    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every(o=>o&&['stAdd','stEd','stSt','stCt','mAdd','mDel','cnSet','cnAsg','cnAsgX','cnHold','cnHoldG','cnAsgG','stKey','iqAdd','iqReg','iqX','anAdd','anDel'].includes(o.op)))throw 0; /* 지점장 키: 자기 지점 관리 탭 일만(그 지점 키라 다른 지점은 안 됨) */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
+    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every(o=>o&&['stAdd','stEd','stSt','stCt','mAdd','mDel','cnSet','cnAsg','cnAsgX','cnHold','cnHoldG','cnAsgG','stKey','iqAdd','iqReg','iqX','iqNote','iqNoteDel','anAdd','anDel'].includes(o.op)))throw 0; /* 지점장 키: 자기 지점 관리 탭 일만(그 지점 키라 다른 지점은 안 됨) */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
     x.ops=d.ops;x.n=String(d.n);x.lb=String(d.lb||'').slice(0,200);x.pat=+d.at||0;delete x.p;delete x.sg}
   catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
