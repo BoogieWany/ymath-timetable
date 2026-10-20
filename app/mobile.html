@@ -400,6 +400,10 @@ body.wide .sh.on .shp{transform:none;opacity:1}
 .dock.ind::-webkit-scrollbar{display:none}
 .dock>*{flex-shrink:0} /* 칸 높이가 모자라면 카드를 눌러 찌그러뜨리지 말고 안에서 스크롤 */
 .dock.ind.away{opacity:0;transform:translateY(26px);pointer-events:none}
+.dpill{display:none}.dock.ind.mini>*{display:none}.dock.ind.mini>.dpill{display:flex}.dock.ind.mini{overflow:visible}
+.dpill{align-items:center;gap:10px;width:100%;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:11px 14px;font:inherit;font-size:calc(13.5px*var(--mz,1));color:var(--fg);text-align:left;cursor:pointer;box-shadow:0 1px 2px rgba(20,30,60,.04)}
+.dpill span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dpill em{font-style:normal;color:var(--muted);font-size:12.5px;white-space:nowrap}
+.dsheet{display:flex;flex-direction:column;gap:10px}.dsm{margin-top:10px;font-size:13px}.dsm small{color:var(--muted)}
 .pvw{position:relative}
 .ann{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px 11px 16px;box-shadow:0 1px 2px rgba(20,30,60,.04);overflow:hidden}
 .ann::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#e0a33a}
@@ -1138,7 +1142,7 @@ function brSheet(){const b=B();const bt=$('brb');bt.classList.add('open');
 function rqClick(e){const sh=e.target.closest('#sh');
   if(sh){const t=e.target.closest('button');if(!t)return true;const ds=t.dataset;
     if(ST.pv&&/^(rqSend|rqCancel|csSend|cnSend|cnUndoGo|holdGo|tkDone)$/.test(ds.act||'')){fzToast('미리 보기 중에는 보낼 수 없어요');return true}
-    if(ds.act==='shClose')shClose();else if(ds.act==='stuCopy'){stuCopyM(ds.sid);return}else if(ds.act==='tkOpen'){tkSheet();return}else if(ds.act==='tkDone'){tkDone(ds.id,t);return}else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.rqn2){rqSetCnt(+ds.rqn2)}
+    if(ds.act==='shClose')shClose();else if(ds.act==='stuCopy'){stuCopyM(ds.sid);return}else if(ds.act==='tkOpen'){tkSheet();return}else if(ds.act==='dockToday'){shClose();goTab('today');setTimeout(()=>{const d=$('dock');if(d)d.scrollIntoView({behavior:'smooth',block:'start'})},350);return}else if(ds.act==='tkDone'){tkDone(ds.id,t);return}else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.rqn2){rqSetCnt(+ds.rqn2)}
     else if(ds.brpick){shClose();if(ds.brpick!==B().id)setTimeout(()=>{ST.gt='';ST.br=ds.brpick;ST.brPicked=true;ls.set('m_br',ds.brpick);ST.open.clear();if(!wide)ST.fit=true;render();window.scrollTo(0,0)},300)}
     else if(ds.act==='ctGo'){ctGo()}
     else if(ds.act==='csSend'){csSend(ds.sid)}
@@ -1185,7 +1189,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.66.0</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.66.6</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1224,6 +1228,7 @@ document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&
   if(ds.act==='cnGo'){const b=B(),st=S(b,ds.sid);if(!st)return;shOpen(`<h3>상담 완료</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} 상담을 마쳤나요?<br>같이 가르치는 선생님 화면에서도 완료로 바뀌어요</p><textarea id="cnMemo" rows="2" maxlength="200" placeholder="메모 (안 적어도 돼요) · 예: 학부모 통화, 진도 안내" class="cnmemo"></textarea><p class="snote" id="cnMsg">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="cnOk" data-act="cnSend" data-sid="${esc(st.id)}">상담 완료</button></div>`);return}
   if(ds.act==='goCn'){goTab('stu');return}
   if(ds.act==='tkOpen'){tkSheet();return}
+  if(ds.act==='dockSheet'){dockSheet();return}
   if(ds.act==='holdAsk'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}const st=S(B0(),ds.sid);if(!st)return;shOpen(`<h3>정기 상담 보류</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} · 보류하면 이번 상담 목록에서 빠져요<br>아래 '보류 n명'에서 언제든 풀 수 있어요</p><input id="cnMemo" maxlength="40" placeholder="사유 (안 적어도 돼요) · 예: 장기 결석" autocomplete="off"><p class="snote">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="holdGo" data-sid="${esc(st.id)}" data-on="1">보류</button></div>`);return}
   if(ds.act==='cnAll0'||ds.act==='cnAll1'){ST.cnAll=ds.act==='cnAll1';ls.set('m_cnall',ST.cnAll?'1':'');ST.mh='';render();return}
   if(ds.act==='holdOff'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}const st=S(B0(),ds.sid);if(!st)return;shOpen(`<h3>보류 풀기</h3><p class="ssub"><b>${esc(st.name)}</b> 보류를 풀까요?<br>다시 정기 상담 목록에 나와요</p><div class="sbtn"><button data-act="shClose">아니요</button><button class="pri" data-act="holdGo" data-sid="${esc(st.id)}" data-on="0">보류 풀기</button></div>`);return}
@@ -1265,8 +1270,8 @@ function pzB(){const sw=PZ.W*PZ.s,sh=PZ.H*PZ.s,cx=(PZ.vw-sw)/2;return{x0:sw<=PZ.
 function pzClamp(){const b=pzB();PZ.x=Math.min(b.x1,Math.max(b.x0,PZ.x));PZ.y=Math.min(b.y1,Math.max(b.y0,PZ.y))}
 function pzDraw(){const c=pzC();if(c)c.style.transform=`translate3d(${PZ.x}px,${PZ.y}px,0) scale(${PZ.s})`;pzDockSt()}
 /* 아래 빈 곳(공지·내 메모): 표가 처음 크기일 때만 표 바로 아래에 · 확대하거나 표를 내리면 슬며시 내려가 숨음 */
-function pzDock(){const d=$('dock'),v=pzV();if(!d||!v||!d.classList.contains('ind'))return;const th=PZ.H*PZ.fit;PZ.room=v.clientHeight-th-14;d.style.top=(v.offsetTop+th+12)+'px';d.style.maxHeight=Math.max(0,PZ.room-8)+'px';PZ.away=null;pzDockSt()}
-function pzDockSt(){const d=$('dock');if(!d||!d.classList.contains('ind'))return;const away=PZ.s>PZ.fit*1.03||PZ.y<-8||!(PZ.room>=92);if(away!==PZ.away){PZ.away=away;d.classList.toggle('away',away)}}
+function pzDock(){const d=$('dock'),v=pzV();if(!d||!v||!d.classList.contains('ind'))return;const th=PZ.H*PZ.fit;PZ.room=v.clientHeight-th-14;d.style.top=(v.offsetTop+th+12)+'px';d.classList.remove('mini');d.style.maxHeight='none';const nat=d.scrollHeight;const mini=PZ.room-8<Math.min(nat,260); /* 카드가 다 안 들어가면(또는 260px 미만) 한 줄 버튼 */d.classList.toggle('mini',mini);d.style.maxHeight=Math.max(0,PZ.room-8)+'px';PZ.away=null;pzDockSt()}
+function pzDockSt(){const d=$('dock');if(!d||!d.classList.contains('ind'))return;const away=PZ.s>PZ.fit*1.03||PZ.y<-8||!(PZ.room>=(d.classList.contains('mini')?56:92));if(away!==PZ.away){PZ.away=away;d.classList.toggle('away',away)}}
 function pzApply(){pzClamp();pzDraw()}
 /* 끝에 닿으면 고무줄처럼 살짝 늘어났다가 돌아오게 */
 const pzRub=(o,d)=>(1-1/(o*.55/Math.max(1,d)+1))*d;
@@ -1423,8 +1428,14 @@ function memoOut(ids){const d=$('dock');if(!d)return;ids.forEach(id=>{const li=d
 const dockCheer=(b,g)=>g?footBody(b):'';
 function exStripM(b){const L=(b&&!b._nx&&b.exl)||[];if(!L.length)return '';const td=tdStr();const dd=d=>Math.round((new Date(d+'T00:00:00')-new Date(td+'T00:00:00'))/864e5);
   return `<div class="ann exa"><span class="annk">다가오는 시험</span><div class="exrow">${L.map(x=>{const n=dd(x.from);const on=x.from<=td;const math=(x.dm||[]).find(d=>/수학|공수|대수|미적|확통|기하/.test(d[1]))||(x.dm||[])[0];const prep=!on&&x.mf&&td>=x.mf;return `<span class="exi${on?' on':prep?' prep':n<=7?' soon':''}"><b>${esc(x.nm)}</b><em>${on?'시험 중':'D-'+n}</em><small>${esc(x.lab)} · ${mdd(x.from)}${x.to!==x.from?'~'+mdd(x.to):''}${math?' · 수학 '+mdd(math[0]):''}</small></span>`}).join('')}</div></div>`}
-function dockHTML(b,inGrid){return `<div id="dock" class="dock${inGrid?' ind':''}">${exStripM(b)}${dockIn(b)}${dockCheer(b,inGrid)}</div>`}
-function dockRefresh(){const d=$('dock');if(d){d.innerHTML=dockIn(B())+dockCheer(B(),d.classList.contains('ind'));if(d.classList.contains('ind'))requestAnimationFrame(pzDock)}}
+function dockHTML(b,inGrid){return `<div id="dock" class="dock${inGrid?' ind':''}">${inGrid?dockPill(b):''}${exStripM(b)}${dockIn(b)}${dockCheer(b,inGrid)}</div>`}
+/* 시간표 아래 남은 칸이 좁으면 카드를 찌그러뜨리지 않고 한 줄 버튼으로 → 눌러서 시트로 보기 */
+function dockPill(b){const ex=((b&&!b._nx&&b.exl)||[]).length,P=b&&!b._nx?b.students.filter(isPreS).length:0,A=b&&!b._nx?annL(b).length:0,M=memoL().filter(m=>!m.done).length;
+  const parts=[ex?`다가오는 시험 ${ex}`:'',P?`새로 오는 학생 ${P}`:'',A?`공지 ${A}`:'',M?`메모 ${M}`:''].filter(Boolean);
+  return `<button class="dpill" data-act="dockSheet"><span>${parts.length?parts.map(x=>esc(x)).join(' · '):'공지 · 내 메모'}</span><em>보기 ›</em></button>`}
+function dockSheet(){const b=B();const w=document.createElement('div');w.innerHTML=exStripM(b)+dockIn(b);w.querySelectorAll('.memo').forEach(x=>x.remove());const M=memoL();
+  shOpen(`<h3>공지 · 새로 오는 학생</h3><div class="dsheet">${w.innerHTML||'<div class="cth">지금 보여 줄 공지가 없어요</div>'}</div>${M.length?`<div class="dsm"><b>내 메모</b> ${M.filter(m=>!m.done).length}개 <small>· 메모 쓰기·고치기는 [오늘] 탭 맨 아래에서</small></div>`:''}<div class="sbtn" style="margin-top:12px"><button data-act="dockToday">오늘 탭에서 보기</button><button class="pri" data-act="shClose" style="flex:1">닫기</button></div>`,{stay:true,cls:'stsh'})}
+function dockRefresh(){const d=$('dock');if(d){const ind=d.classList.contains('ind');d.innerHTML=(ind?dockPill(B()):'')+exStripM(B())+dockIn(B())+dockCheer(B(),ind);if(d.classList.contains('ind'))requestAnimationFrame(pzDock)}}
 function memoSheet(id){const m=id?memoL().find(x=>x.id===id):null;
   shOpen(`<h3>${m?'메모 고치기':'메모 추가'}</h3><p class="ssub">${DESK?'이 PC에만':'이 폰에만'} 저장돼요 · 다른 사람은 볼 수 없어요</p>
     <textarea id="memoIn" rows="3" maxlength="300" placeholder="예: 수요일 고2 시험지 챙기기">${m?esc(m.tx):''}</textarea>
@@ -1550,7 +1561,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.66.0';const VC={last:0,nv:''};
+const MVER='3.66.6';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
