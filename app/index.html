@@ -3242,7 +3242,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.67.0', APPDATE='2026-10-20';
+const APPVER='3.67.1', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4043,7 +4043,7 @@ function parseRoster(buf){
     parCols.forEach(pc=>{const n=phN(l[pc.i]);if(n&&!r.pa.some(x=>x.n===n)&&n!==r.ph)r.pa.push({l:pc.l,n})})});
   return [...out.values()].map(x=>({...x,classes:[...x.classes].sort(),pa:x.pa.slice(0,3)}));
 }
-function shortSchool(s){const x=s.trim().replace('여자고등학교','여고').replace('고등학교','고').replace('중학교','중').replace('초등학교','초');return typeof schAlias==='function'?schAlias(x):x}
+function shortSchool(s){const x=s.trim().replace(/\s+/g,'').replace('여자고등학교','여고').replace('여자중학교','여중').replace('고등학교','고').replace('중학교','중').replace('초등학교','초').replace(/여자고$/,'여고').replace(/여자중$/,'여중');return typeof schAlias==='function'?schAlias(x):x}
 function applyRoster(list){
   const b=B();const res={total:list.length,added:[],changed:[],missing:[],ph:list.filter(r=>r.ph||(r.pa&&r.pa.length)).length,from:0,hasFrom:list.some(r=>r.from)};const seen=new Set();
   /* 명부 입학일 → 첫 수업일(s.from): 신입(첫 수업일부터 2주)·입학 예정(오늘 뒤)·신입 상담 대상을 명부 기준으로 다시 */
@@ -6248,7 +6248,9 @@ const SCH=()=>{if(!DB.schools||typeof DB.schools!=='object')DB.schools={list:{},
 const schKind=n=>/여고$|고$|고등$/.test(n||'')?'고':/중$|여중$/.test(n||'')?'중':/초$/.test(n||'')?'초':'';
 const stuKind=s=>{const m=/^(초|중|고)/.exec((s&&s.grade)||'');return m?m[1]:schKind(s&&s.school)};
 /* 다른 이름(별명): '부산중앙고' → '중앙고' — 합치기에서 정함 · 명부·시트·학생 입력 모두 이 이름으로 */
-function schAlias(x){x=String(x||'').replace(/\s+/g,'');if(!x||typeof DB==='undefined'||!DB||!DB.schools)return x;const L=DB.schools.list||{};if(L[x]&&!(L[x].hide&&L[x].hide.v))return x;for(const [k,o] of Object.entries(L)){if(o.base&&(o.base.alias||[]).includes(x))return k}return x}
+/* 늘 같은 학교로 보는 이름 (요청: 부산중앙고 → 중앙고) */
+const SCH_ALIAS0={'부산중앙고':'중앙고'};
+function schAlias(x){x=String(x||'').replace(/\s+/g,'');if(SCH_ALIAS0[x])return SCH_ALIAS0[x];if(!x||typeof DB==='undefined'||!DB||!DB.schools)return x;const L=DB.schools.list||{};if(L[x]&&!(L[x].hide&&L[x].hide.v))return x;for(const [k,o] of Object.entries(L)){if(o.base&&(o.base.alias||[]).includes(x))return k}return x}
 const schNorm=n=>shortSchool(String(n||'')).replace(/\s+/g,'');
 const SUBJ_ALIAS={'공수1':'공통수학1','공통수학1':'공통수학1','공수2':'공통수학2','공통수학2':'공통수학2','대수':'대수','미적1':'미적분Ⅰ','미적분1':'미적분Ⅰ','미적분I':'미적분Ⅰ','미적분Ⅰ':'미적분Ⅰ','확통':'확률과 통계','확률과통계':'확률과 통계','확률과 통계':'확률과 통계','기하':'기하','미적2':'미적분Ⅱ','미적분2':'미적분Ⅱ','미적분II':'미적분Ⅱ','미적분Ⅱ':'미적분Ⅱ','미적':'미적분Ⅰ'};
 const subjNorm=s=>{const k=String(s||'').trim().replace(/\s+/g,'');return SUBJ_ALIAS[k]||SUBJ_ALIAS[String(s||'').trim()]||String(s||'').trim()};
@@ -6269,7 +6271,7 @@ async function shPull(name,opt={}){const H=SH[name];if(!H||!bridge||!bridge.shar
   try{r=await bridge.sharedPull(name,DB[H.sha]||'')}catch(e){r={ok:false,err:e.message}}H.st.busy=false;if(!r||!r.ok){H.st.err=(r&&r.err)||'';return false}H.st.err='';if(r.same||r.none)return true;
   const ch=H.merge(H.get(),r.data);DB[H.sha]=r.sha;if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o[name]=DB[name];o[H.sha]=r.sha;ORIG=JSON.stringify(o)}catch(e){}}
   await schPersist();if(ch&&['school','grid','settings','tasks'].includes(UI.view)&&!(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render();return true}
-const schPull=opt=>shPull('schools',opt);const tkPull=opt=>shPull('tasks',opt);
+const schPull=async opt=>{const r=await shPull('schools',opt);try{await schAliasMigrate()}catch(e){}return r};const tkPull=opt=>shPull('tasks',opt);
 async function schPersist(){try{if(!bridge){localStorage.setItem(UI.edit?'ymt_draft':'ymt_db',JSON.stringify(DB));return}if(UI.edit){await bridge.saveDraft(JSON.stringify(DB));if(ORIG)await bridge.save(ORIG,{quiet:true})}else await bridge.save(JSON.stringify(DB),{quiet:true})}catch(e){}}
 async function shPush(name){const H=SH[name];if(!H||!bridge||!bridge.sharedPush||typeof syOn!=='function'||!syOn())return true;for(let i=0;i<3;i++){let r;try{r=await bridge.sharedPush(name,DB[name],DB[H.sha]||'')}catch(e){r={ok:false,err:e.message}}
     if(r&&r.ok){DB[H.sha]=r.sha;await schPersist();return true}if(!r||!r.conflict){H.st.err=(r&&r.err)||'';toast('공유 자료를 올리지 못했어요 · '+(H.st.err||'인터넷 확인'));return false}
@@ -6296,7 +6298,7 @@ function exCluster(ps){ps=ps.slice().sort((a,z)=>a.from.localeCompare(z.from));c
 /* 시험 관리 기간: 실제 시험일 앞 a일 ~ 뒤 z일 (지점 b.exPad={중:{a,z},고:{a,z}} · 기본 14·7) — 정기 상담 창·폰 응원·띠에 씀 */
 const EXPAD0={a:14,z:7};const exPad=(b,kd)=>Object.assign({},EXPAD0,((b&&b.exPad)||{})[kd]||{});
 const exPadded=(b,kd,p)=>{if(!p||!p.from)return p;const q=exPad(b,kd);return Object.assign({},p,{mf:dPlus(p.from,-q.a),mt:dPlus(p.to,q.z)})};
-function examPeriods(b,td){td=todayStr();const man=b.examAuto===false;const out={중:null,고:null,auto:!man};
+function examPeriods(b,td){td=td||todayStr();const man=b.examAuto===false;const out={중:null,고:null,auto:!man};
   if(man){out.중=b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null;out.고=b.examH&&b.examH.from?{from:b.examH.from,to:b.examH.to}:out.중}
   else ['중','고'].forEach(kd=>{const z=exPad(b,kd).z;const ks=new Set((b.students||[]).filter(s=>!offS(s)&&!isPre(s)&&stuKind(s)===kd).map(s=>schNorm(s.school)).filter(Boolean));const ps=[];ks.forEach(k=>schExams(k).forEach(x=>{if(x.to>=dPlus(td,-z))ps.push(x)}));
     const c=exCluster(ps).find(c=>dPlus(c.to,z)>=td)||null;out[kd]=c?{from:c.from,to:c.to,n:c.n}:(b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to,fb:1}:null)});
@@ -6499,6 +6501,14 @@ async function schImportGo(){const R=UI.schImp,M=UI.schImpM||[];if(!R)return;$('
 /* 정기 상담 창: 학생 자기 학교 시험(관리 기간)이 있으면 그걸로, 없으면 지점 종류별 기간 */
 function cnExamWinsFor(b,s,wins,td){const c=cnCfg(b);if(!c.exam)return wins;const base=wins.filter(w=>!/^E/.test(w.k||''));const x=stuExam(b,s,td);if(!x)return wins;if(td>=x.mf&&td<=x.mt)base.push({k:'E'+x.k+x.from,from:x.mf,to:x.mt,lab:`${x.k} ${x.lab}`,kind:stuKind(s)});return c.start?base.filter(w=>w.to>=c.start+'-01'):base}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-expad]'))exPadSave()});
+
+/* 늘 같은 학교(SCH_ALIAS0)로 바뀐 이름에 이미 적힌 학교 정보는 대상 학교로 옮김(빈 칸만) · 한 번만 */
+let SCH_MIG=false;
+async function schAliasMigrate(){if(SCH_MIG)return;SCH_MIG=true;try{await schAliasMigrate0()}finally{SCH_MIG=false}}
+async function schAliasMigrate0(){const S=SCH();const todo=Object.entries(SCH_ALIAS0).filter(([from])=>S.list[from]&&!(S.list[from].hide&&S.list[from].hide.v));if(!todo.length)return;
+  await shSave('schools',(S,at)=>{todo.forEach(([k,to])=>{const src=S.list[k]||{};const d=S.list[to]=S.list[to]||{};d.base=Object.assign({name:to,kind:schKind(to),pub:''},d.base||{},{at});d.base.alias=[...new Set([...(d.base.alias||[]),k])];if(!d.base.pub&&src.base&&src.base.pub)d.base.pub=src.base.pub;
+    ['cal','rng','books','cuts','got'].forEach(sec=>{if(!src[sec])return;d[sec]=d[sec]||{};Object.entries(src[sec]).forEach(([kk,v])=>{if(!d[sec][kk])d[sec][kk]=Object.assign({},v,{at});else if(sec==='cal'){d[sec][kk]=Object.assign({},v,d[sec][kk],{at})}})});if(!d.memo&&src.memo)d.memo=Object.assign({},src.memo,{at});S.list[k]=Object.assign({},src,{hide:{v:1,at}})})},'')}
+/* 학생 학교 이름도 바꿈(고칠 수 있는 지점 · 수정 중이 아닐 때) */
 
 /* ===== 성적 관리 (PC) — s.grades=[{ek:'연도|학기|중간/기말', subj:'' | 과목, exp, fin, gr(등급), at}] · s.note(특이사항) · s.hist=[{in,out}] 입·퇴원 이력 · s.re 재입학
    등락은 저장하지 않고 '같은 과목의 바로 전 시험 확정 점수'에서 계산 · 퇴원해도 기록은 남음 ===== */
