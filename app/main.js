@@ -144,6 +144,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
       ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
       ...(()=>{const e=exPack(db,b);return {...(e.exam?{exam:e.exam}:{}),exams:e.exams,...(e.exl?{exl:e.exl,rng:e.rng}:{})}})(),
+      tk:(()=>{const W=new Set((b.teachers||[]).map(t=>String(t.name||'').replace(/\s+/g,'').replace(/T$/,'')));return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&!t.done&&String(t.who||'').split(',').some(n=>W.has(n.replace(/\s+/g,'').replace(/T$/,'')))).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').replace(/\s+/g,'').replace(/T$/,''),n:t.n||0,a:t.ans?1:0,d:t.due||'',m:t.memo||''}))})(),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
       // 예정 시간표: 날짜가 되면 폰이 스스로 이걸로 바꿔 보여 줌 · pub이면 그 전에도 미리 보기
@@ -321,7 +322,7 @@ ipcMain.handle('syncLock',async(e,id)=>{if(!syReady())return {ok:true,off:true};
     return {ok:false,err:ghErr(p)}}catch(err){return {ok:false,offline:true,err:err.message}}});
 ipcMain.handle('syncUnlock',async(e,ids,force)=>{const c=syCfg();const res={};
   for(const id of ids){try{const u=`${syBase()}/locks/${id}.json`;const g=await gh('GET',u);if(g.status!==200){res[id]=true;continue}
-    const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev!==c.dev&&!(force&&c.role==='owner')){res[id]=false;continue}
+    const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev!==c.dev&&!(force&&(c.role==='owner'||(c.role==='branch'&&id===c.branch)))){res[id]=false;continue} /* 강제 풀기: 관리자 PC는 모든 지점, 지점장 PC는 자기 지점만 */
     const d=await gh('DELETE',u,{message:'잠금 풀기',sha:g.j.sha});res[id]=d.status===200}catch(err){res[id]=false}}return res});
 // 켜기(원장님) / 코드로 연결(지점 관리자) / 코드 만들기 / 끊기
 ipcMain.handle('syncInfo',()=>syInfo());
@@ -413,7 +414,7 @@ function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}
   catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
   try{const out=[];for(let pg=1;pg<=3;pg++){const r=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues?state=open&per_page=100&page=${pg}`);if(r.status!==200){RQ.err=rqErr(r);return {ok:false,err:RQ.err,list:out}}
-      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&(x.kind==='ad'||x.kind==='pc'))adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||((x.kind==='ad'||x.kind==='pc')&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
+      for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&(x.kind==='ad'||x.kind==='pc'))adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||((x.kind==='ad'||x.kind==='pc')&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)||(x.kind==='tk'&&x.id)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
       if((r.j||[]).length<100)break}
     RQ.err='';return {ok:true,list:out}}catch(err){RQ.err=err.message;return {ok:false,err:err.message,list:[]}}});
 /* PC 상태 확인(관리자 폰): 그 요청에 이 PC 상태를 암호화한 댓글로 남김 */
