@@ -881,6 +881,7 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 /* 3.66.5: 이름이 많은 반 — 이름 칸 높이 제한 없앰(카드·줄 높이가 늘어남) · 신입/예정 표시가 붙은 이름은 한 줄 전체 */
 .grid.withnames .chip .nm{max-height:80em}
 .grid .chip .nm .sn:has(small.nw),.grid .chip .nm .sn:has(small.pre){grid-column:1/-1}
+#gridScroll.zx{overflow:auto;max-height:calc(100vh - 18px);--toph:0px;scrollbar-gutter:stable} /* 수정 모드와 같은 방식: 머리 줄은 시간표 칸 맨 위에 붙음 */
 </style>
 </head>
 <body>
@@ -3241,7 +3242,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.66.6', APPDATE='2026-10-20';
+const APPVER='3.66.7', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3537,7 +3538,7 @@ function perLabel(p){const wd=per('월')[p],we=per('토')[p];return `<b>${esc(wd
 // 시간표 배율 (0.7~2.4). 1.25배 이상이면 학생 이름 표시. 바뀔 때 다시 그리지 않고 크기만 바꿔 부드럽게 이어짐
 const GS_MIN=0.7,GS_MAX=2.4,GS_NAMES=1.25;
 // 가로·세로 같은 비율로 커짐. 단, 가로는 화면 폭(_fit)을 넘지 않아 좌우 스크롤이 생기지 않음
-function gsVars(g){const base=UI._base||96,fit=Math.max(base,UI._fit||base);const cw=Math.min(Math.round(base*g),fit);const ch=Math.round((UI._baseH||40)*g);UI._cwE=cw;UI._chE=ch;
+function gsVars(g){const base=UI._base||96,fit=Math.max(base,UI._fit||base);const cw=Math.max(48,Math.round(base*g)); /* 3.66.7: 확대하면 칸 너비도 같이 커짐(100%는 화면에 꼭 맞고, 넘치면 좌우로 밀어 봄) */const ch=Math.round((UI._baseH||40)*g);UI._cwE=cw;UI._chE=ch;
   return `--cw:${cw}px;--ch:${ch}px;--fs:${Math.max(10.5,Math.min(16,12+(g-1)*3)).toFixed(1)}px`}
 function applyNames(){document.querySelectorAll('#gridScroll table.grid').forEach(t=>t.classList.toggle('withnames',namesOn()));syncNamesToggle();stretchLater()}
 // 카드 높이: 모든 줄을 같은 높이로, 배율에 비례해서 커짐 (이름이 보이면 가장 긴 명단 기준 × 배율)
@@ -3548,7 +3549,9 @@ function stretchChips(){const sc=document.getElementById('gridScroll');if(!sc)re
   nat=Math.ceil(nat);
   const base=(UI._baseH||40)*g;const H=Math.round(namesOn()&&g>=GS_NAMES&&UI.namesOv===null?Math.max(base,(nat+8)*Math.sqrt(g/GS_NAMES)):Math.max(base,nat+8));
   if(tbs.every(t=>t.style.getPropertyValue('--ch')===H+'px'))return;requestAnimationFrame(()=>tbs.forEach(t=>{if(t.style.getPropertyValue('--ch')!==H+'px')t.style.setProperty('--ch',H+'px')}))}
-let _stT=null;function stretchLater(){clearTimeout(_stT);stretchChips();_stT=setTimeout(stretchChips,300)}
+let _stT=null;function stretchLater(){clearTimeout(_stT);stretchChips();zxSync();_stT=setTimeout(()=>{stretchChips();zxSync()},300)}
+/* 확대해서 좌우로 넘치면 시간표 칸 안에서 좌우·위아래로 밀어 봄(머리 줄·교시 칸은 붙어 있음) */
+function zxSync(){const sc=$('gridScroll');if(!sc)return;const was=sc.classList.contains('zx');const tw=Math.max(0,...[...sc.querySelectorAll('table.grid')].map(t=>t.offsetWidth));const on=tw>sc.clientWidth+4;if(on!==was){sc.classList.toggle('zx',on)}}
 // 100% = 휠 없이 한 화면에 들어오는 칸 너비
 function calcBase(){const sc=document.getElementById('gridScroll');if(!sc)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length)return;
   const maxc=Math.max(...tbs.map(t=>+t.dataset.cols||1));const pw=(tbs[0].querySelector('th.per')||{}).offsetWidth||140;
@@ -6755,6 +6758,7 @@ const HELP=[
   <li><b>문자용 복사</b>: [학생별]에서 학생을 고르고 <b>[문자용 복사]</b>를 누르면 이름 없이 <i>월·수 17:00~18:30 중1 A1 (서성완T)</i>처럼 요일·시간·반만 글로 복사돼요 — 문자·카톡에 붙여 넣으면 돼요(예시 시간표로 보낼 때도). 선생님·관리자 폰에서는 학생 카드 아래 <b>[시간표 복사]</b>.</li>
   <li><b>성적 관리</b>(새 탭 · PC만): 위에서 시험(연도·학기·중간/기말)을 고르고 학생마다 <b>예상·확정</b> 점수를 적으면 바로 저장돼요(Enter·↑↓로 아래위 칸 이동). <b>등락</b>은 같은 과목 바로 전 시험 확정 점수와 비교해 저절로, <b>등급</b>은 기말 줄에만. 고2·3은 선택과목마다 한 줄(학교 정보의 선택과목) — <b>[한 줄로]</b>를 누르면 한 학생이 한 줄로 묶여요. 아래 <b>성적 통계</b>는 반별·학교별·선생님별 평균·등락·상승/하락. 이름을 누르면 학생 카드에 <b>성적 흐름</b>과 <b>특이사항</b>(PC에만, 폰엔 안 나가요). 퇴원해도 기록은 남고 <b>[퇴원 포함]</b>으로 볼 수 있어요. <b>[시트 불러오기]</b>에 구글 시트 중등부·고등부 엑셀을 넣으면 25·26년 시험결과 시트를 읽어 이름+학교로 맞춰 들어와요(동명이인은 창에서 고르기, 못 찾은 학생은 목록으로). 위쪽 <b>[자체시험]</b>으로 바꾸면 학원 시험(단원테스트·내신대비 회차)을 학년별로 만들고(<b>[+ 시험 추가]</b>: 이름·학년·날짜·만점·기준 점수) 학생마다 점수와 <b>풀</b>(풀이 완료)·<b>발</b>(학부모 발송) 체크를 적어요 — 기준 아래 점수는 빨갛게, 맨 아래 줄에 평균·통과·체크 수. 열 머리의 ⋯로 시험을 고치거나 지워요.</li>
   <li><b>재입학</b>: 퇴원한 학생과 이름+학교(또는 보호자 번호)가 같은 학생을 직접 추가·반에 신입 넣기·입학 문의 등록·명부 가져오기로 넣으면 새로 만들지 않고 그 학생을 되살려요 — 성적·상담·특이사항이 이어지고 입·퇴원 이력이 남으며 '재' 표시가 붙어요.</li>
+  <li><b>시간표 확대</b>: 지점 시간표 위 <b>[－ ％ ＋]</b>나 Ctrl + 휠로 키우면 칸이 위아래·좌우 모두 커져요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 보고(가로 스크롤 · Shift + 휠), 교시 칸과 요일·선생님 줄은 붙어 있어요.</li>
   <li><b>시간 조건(불가·선호)</b>: [학생별]에서 학생을 고르고 [시간 조건]을 누르면 요일·교시 칸마다 <b>보통 → 선호 → 수업 불가</b>로 바꿀 수 있어요. 행정 선생님 PC에서도 칸을 눌러 고친 뒤 <b>[저장]</b>하면 바로 저장돼요(시간표 바꾸기 전에 학생들 안 되는 시간 받아 두기). 불가 시간에 수업이 있으면 자동 점검에 오류로 떠요.</li>
   <li><b>수정 잠금 풀기</b>: 한 지점은 한 PC만 수정 모드로 고칠 수 있어요(잠금). 다른 PC가 고치다 꺼졌거나 [적용]을 깜빡해 잠겨 있으면, <b>지점장 PC</b>(자기 지점)와 관리자 PC(모든 지점)에서 수정 모드를 켤 때 뜨는 창의 <b>[잠금 풀고 고치기]</b>나 [설정 → 지점 연동]의 [잠금 풀기]로 풀 수 있어요. 그 PC에 남은 초안은 나중에 [적용]하려고 하면 어느 쪽을 남길지 물어봐요.</li>
   <li><b>업무</b>(새 탭): 인강·자료 제작처럼 나눠서 하는 일을 모든 지점이 같이 봐요. <b>[+ 업무 추가]</b>(종류·학년·학교·파일명/단원·과목·담당·문항수·기한·비고) 또는 <b>[시트 불러오기]</b>에 '인강분배' 시트 엑셀. 표에서 <b>답안·완료·점검</b>을 눌러 바꾸고(담당은 강사 목록에서 여러 명도), 완료된 일은 맨 아래 접혀 있어 [펼치기]로 보고 3개월 지나면 자동으로 숨어요. 아래에 <b>담당별 합계</b>(완료·미완·점검·문항수). 담당 선생님 강사용 폰 오늘 탭에 <b>내 업무</b>가 떠서 [완료]를 누르면 PC에 1~2분 뒤 반영돼요.</li>
