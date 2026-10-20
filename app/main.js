@@ -313,6 +313,14 @@ ipcMain.handle('syncCode',(e,branchId,opt)=>{const c=syCfg();if(c.role!=='owner'
 ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.from(String(code).trim().replace(/^YMT1\./,''),'base64url').toString('utf8'));if(!o.t||!o.k||!o.r)throw 0}catch(err){return {ok:false,err:'코드가 올바르지 않아요 · 프로그램 관리자에게 받은 코드를 통째로 붙여넣어 주세요'}}
   const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':o.st?'staff':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(o.st&&o.st.n?o.st.n+' 행정':'')||(c.role==='owner'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
+/* 이 PC에서 로그아웃(지점·행정 PC): 내 잠금 풀고 연결된 PC 목록에서 빠진 뒤 열쇠·키·에듀OK 계정을 지움 · data면 시간표·기록·백업까지 → 다시 시작하면 처음 화면 */
+ipcMain.handle('syncLogout',async(e,o)=>{const c=syCfg();if(c.on&&c.role==='owner')return {ok:false,err:'관리자 PC는 여기서 로그아웃할 수 없어요'};
+  try{if(syReady()){if(!mob.ghOwner)await ghConnect();let ids=[];try{ids=(JSON.parse(fs.readFileSync(FILE,'utf8')).branches||[]).map(b=>b.id)}catch(err){}
+    for(const id of ids){try{const u=`${syBase()}/locks/${id}.json`;const g=await gh('GET',u);if(g.status===200){const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev===c.dev)await gh('DELETE',u,{message:'잠금 풀기(로그아웃)',sha:g.j.sha})}}catch(err){}}
+    try{const u=`${syBase()}/devices/${c.dev}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'PC 로그아웃',sha:g.j.sha})}catch(err){}}}catch(err){}
+  syWipe();delete c.revoked;mob.pin='';try{fs.writeFileSync(MOB,JSON.stringify(mob),'utf8')}catch(err){}try{fs.rmSync(EOKF,{force:true})}catch(err){}
+  if(o&&o.data){for(const f of [FILE,HISTF,DRAFT,path.join(DATA,'eok_log.txt')])try{fs.rmSync(f,{force:true})}catch(err){}try{fs.rmSync(BAK,{recursive:true,force:true})}catch(err){}}
+  setTimeout(()=>{app.relaunch();app.exit(0)},300);return {ok:true}});
 ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo()});
 ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
 /* 연결된 PC 목록·원격 끊기: 각 PC가 sync/devices/<dev>.json(관리자 키 암호화)에 이름·역할·지점·버전·날짜를 남김 (바뀔 때·하루 한 번만 씀)
