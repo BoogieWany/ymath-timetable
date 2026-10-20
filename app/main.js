@@ -98,12 +98,13 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});mq[id]=mgPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
     const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct,...(Object.keys(mk).length?{mk,mq}:{})};
     for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify([ct,mk,mq])).digest('hex'))}}
-  /* 행정 선생님(지점마다 b.staff): 개인 코드 · 모든 지점 · 학생 전체 연락처 · 내 수업 없음 */
+  /* 행정 선생님(지점마다 b.staff): 개인 코드 · 소속 지점은 학생 전체 연락처 · 다른 지점은 시간표만 · 내 수업 없음 */
   const sts=[];(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>(b.staff||[]).forEach(a=>{if(/^\d{6}$/.test(String(a.ck||''))&&nm(a.name))sts.push({b,a})}));
   if(sts.length){const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});const allK=Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')]));const ctH=crypto.createHash('sha256').update(JSON.stringify(ctA)).digest('hex');
-    const byC={};for(const {b,a} of sts){const c=String(a.ck);if(!byC[c])byC[c]={b,a}} // 같은 사람(여러 지점·같은 코드)은 묶음 하나 · 소속은 앞 지점
-    for(const [c,{b,a}] of Object.entries(byC)){const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,all:1,ct:ctA};const dk=await lgKey(c,salt);
-      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+b.id+':'+ctH)}}
+    const byC={};for(const {b,a} of sts){const c=String(a.ck);if(!byC[c])byC[c]={b,a,sb:[]};if(!byC[c].sb.includes(b.id))byC[c].sb.push(b.id)} // 같은 사람(여러 지점·같은 코드)은 묶음 하나 · 소속은 앞 지점
+    /* 행정: 소속 지점(sb)은 학생 전체 연락처 · 다른 지점은 키만(폰에서 전체 시간표만 · 참고용) */
+    for(const [c,{b,a,sb}] of Object.entries(byC)){const ct=Object.fromEntries(sb.filter(id=>ctA[id]).map(id=>[id,ctA[id]]));const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,sb,all:1,ct};const dk=await lgKey(c,salt);
+      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+sb.join('+')+':'+crypto.createHash('sha256').update(JSON.stringify(ct)).digest('hex'))}}
   /* 프로그램 관리자 폰(b.own · 10자리 코드): 전 지점 · 학생 전체 연락처 · 관리용 추가 자료(ox) · 폰 요청 서명 키(ak) */
   {const ob=(db.branches||[]).find(b=>kb[b.id]&&b.own&&/^\d{10}$/.test(String(b.own.ck||''))&&b.own.ak);
     if(ob){const own=ob.own;const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});
