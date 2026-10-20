@@ -48,6 +48,8 @@ contextBridge.exposeInMainWorld('api',{
   rqClose:(n,ok)=>ipcRenderer.invoke('rqClose',n,ok),
   rqComment:(n,o)=>ipcRenderer.invoke('rqComment',n,o),
   syncLogout:o=>ipcRenderer.invoke('syncLogout',o),
+  sharedPull:(n,k)=>ipcRenderer.invoke('sharedPull',n,k),
+  sharedPush:(n,d,sha)=>ipcRenderer.invoke('sharedPush',n,d,sha),
   autoStart:on=>ipcRenderer.invoke('autoStart',on),
   updRemoteVer:()=>ipcRenderer.invoke('updRemoteVer'),
   nasSet:o=>ipcRenderer.invoke('nasSet',o),
