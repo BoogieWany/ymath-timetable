@@ -878,6 +878,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .tkk{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--line2);color:var(--muted)}.tkk.k인강{color:#3d5a99;background:var(--info-bg)}.tkk.k자료{color:#1f8a4c;background:var(--ok-bg)}
 .tkt{border:1px solid var(--line);background:var(--panel);border-radius:999px;min-width:46px;padding:2px 8px;font-size:11.5px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:3px;justify-content:center;transition:all .15s}.tkt span{font-size:11px}.tkt.on{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}.tkt:disabled{cursor:default;opacity:.7}.tkby{display:block;font-size:10.5px}
 .tkfold td{background:color-mix(in srgb,var(--line2) 45%,var(--panel))}.tkfold .btn{margin-right:10px}.tkwho{margin:2px 0 6px}.tkwho .sjb{font-size:12.5px;padding:3px 10px}
+/* 3.66.5: 이름이 많은 반 — 이름 칸 높이 제한 없앰(카드·줄 높이가 늘어남) · 신입/예정 표시가 붙은 이름은 한 줄 전체 */
+.grid.withnames .chip .nm{max-height:80em}
+.grid .chip .nm .sn:has(small.nw),.grid .chip .nm .sn:has(small.pre){grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -3238,7 +3241,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.66.4', APPDATE='2026-10-20';
+const APPVER='3.66.5', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3911,19 +3914,20 @@ function restoreTrash(rid){const it=TR().find(x=>x.id===rid);if(!it)return;let m
 /* ================= 학생 시간 조건 (불가·선호) ================= */
 function availCell(s){const a=s.avail||{};const no=Object.values(a).filter(v=>v==='no').length,pr=Object.values(a).filter(v=>v==='pref').length;
   return `<button class="btn avbtn" data-avail="${s.id}">${no||pr?`${no?`<span class="avn">불가 ${no}</span>`:''}${pr?`<span class="avp">선호 ${pr}</span>`:''}`:'<span class="hint">설정</span>'}</button>`}
-function openAvail(id){UI.avStu=id;$('modal').hidden=false;renderAvail()}
-function renderAvail(){const s=S(UI.avStu);if(!s){$('modal').hidden=true;return}const a=s.avail||{};const mp=maxP();
+function openAvail(id){UI.avStu=id;UI.avDraft=null;$('modal').hidden=false;renderAvail()}
+const avStaff=()=>!UI.edit&&typeof isStaff==='function'&&isStaff()&&V().id===B().current;
+function renderAvail(){const s=S(UI.avStu);if(!s){$('modal').hidden=true;return}if(avStaff()&&!UI.avDraft)UI.avDraft=JSON.parse(JSON.stringify(s.avail||{}));const a=avStaff()?UI.avDraft:(s.avail||{});const mp=maxP();
   const os=V().sessions.filter(o=>members(o).includes(s.id));
   let h=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="avTitle" style="width:min(900px,100%)"><h2 id="avTitle">${esc(sname(s.id))} 시간 조건 <span class="hint">${esc(s.school||'')} ${esc(s.grade||'')}</span></h2>
-  <div class="hint">칸을 누를 때마다 <b>보통 → 선호 → 수업 불가 → 보통</b>으로 바뀌어요. 불가 시간에 수업이 있으면 자동 점검에 오류로, 선호 시간 밖 수업은 확인 항목으로 떠요. 카드를 옮길 때도 반영돼요.</div>${UI.edit?'':'<div class="box warn" style="flex-direction:row;align-items:center;gap:10px"><span style="flex:1"><b>지금은 보기 모드라 칸을 눌러도 바뀌지 않아요.</b></span><button class="btn pri" data-act="avEdit">수정 모드 켜고 바꾸기</button></div>'}
+  <div class="hint">칸을 누를 때마다 <b>보통 → 선호 → 수업 불가 → 보통</b>으로 바뀌어요. 불가 시간에 수업이 있으면 자동 점검에 오류로, 선호 시간 밖 수업은 확인 항목으로 떠요. 카드를 옮길 때도 반영돼요.</div>${UI.edit?'':avStaff()?`<div class="hint">행정 선생님 PC: 칸을 눌러 고친 뒤 <b>[저장]</b>을 누르면 바로 저장돼요${UI.avDraft&&JSON.stringify(UI.avDraft)!==JSON.stringify(s.avail||{})?' · <b class="bad">저장 안 한 변경이 있어요</b>':''}</div>`:'<div class="box warn" style="flex-direction:row;align-items:center;gap:10px"><span style="flex:1"><b>지금은 보기 모드라 칸을 눌러도 바뀌지 않아요.</b></span><button class="btn pri" data-act="avEdit">수정 모드 켜고 바꾸기</button></div>'}
   <div style="overflow:auto"><table class="avt"><thead><tr><th></th>${DAYS.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>`;
   for(let p=0;p<mp;p++){h+=`<tr><th>${esc((per('월')[p]||per('토')[p]||{}).name||'')}</th>`;
     DAYS.forEach(d=>{if(p>=per(d).length){h+='<td class="x"></td>';return}const v=a[d+'|'+p];const cls=os.filter(o=>o.d===d&&o.p===p).map(o=>C(o.cls).name);
       h+=`<td><button class="avc ${v?'av-'+v:''}" data-avset="${d}|${p}"><span class="t">${esc(ptime(d,p))}</span><b>${v==='no'?'불가':v==='pref'?'선호':''}</b>${cls.length?`<small>${esc(cls.join(', '))}</small>`:''}</button></td>`});
     h+='</tr>'}
-  h+=`</tbody></table></div><div class="row" style="justify-content:flex-end">${UI.edit?'<button class="btn danger" data-act="avClear" style="margin-right:auto">모두 지우기</button>':''}<button class="btn pri" data-act="avClose">닫기</button></div></div>`;
+  h+=`</tbody></table></div><div class="row" style="justify-content:flex-end">${UI.edit?'<button class="btn danger" data-act="avClear" style="margin-right:auto">모두 지우기</button>':''}${avStaff()?'<button class="btn danger" data-act="avClear" style="margin-right:auto">모두 지우기</button><button class="btn" data-act="avClose">취소</button><button class="btn pri" data-act="avSave">저장</button>':'<button class="btn pri" data-act="avClose">닫기</button>'}</div></div>`;
   $('modal').innerHTML=h}
-function cycleAvail(key){if(!UI.edit){toast('보기 모드예요. 위의 [수정 모드 켜고 바꾸기]를 눌러 주세요');const b=document.querySelector('[data-act="avEdit"]');if(b){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse')}return}const id=UI.avStu;commit(()=>{const s=S(id);s.avail=s.avail||{};const v=s.avail[key];if(!v)s.avail[key]='pref';else if(v==='pref')s.avail[key]='no';else delete s.avail[key]});renderAvail()}
+function cycleAvail(key){if(avStaff()){const a=UI.avDraft=UI.avDraft||{};const v=a[key];if(!v)a[key]='pref';else if(v==='pref')a[key]='no';else delete a[key];renderAvail();return}if(!UI.edit){toast('보기 모드예요. 위의 [수정 모드 켜고 바꾸기]를 눌러 주세요');const b=document.querySelector('[data-act="avEdit"]');if(b){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse')}return}const id=UI.avStu;commit(()=>{const s=S(id);s.avail=s.avail||{};const v=s.avail[key];if(!v)s.avail[key]='pref';else if(v==='pref')s.avail[key]='no';else delete s.avail[key]});renderAvail()}
 
 /* ================= 적용 기록: 지난 시간표 보기·되돌리기 ================= */
 function peekHistory(id){if(UI.edit){toast('수정 모드를 끈 다음에 볼 수 있어요');return}const h=HIST.find(x=>x.id===id);if(!h)return;
@@ -4207,8 +4211,9 @@ document.addEventListener('click',async e=>{
   UI.stOK=['missingAway','addStudent'].includes(ds.act)?1:0;try{
   switch(ds.act){
     case 'avEdit':{if(UI._draft)await resumeDraft(true);else await enterEdit();renderAvail();break}
-    case 'avClose':$('modal').hidden=true;UI.avStu=null;break;
-    case 'avClear':{const id=UI.avStu;commit(()=>{delete S(id).avail});renderAvail();break}
+    case 'avClose':$('modal').hidden=true;UI.avStu=null;UI.avDraft=null;break;
+    case 'avClear':{if(avStaff()){UI.avDraft={};renderAvail();break}const id=UI.avStu;commit(()=>{delete S(id).avail});renderAvail();break}
+    case 'avSave':{const id=UI.avStu,d=UI.avDraft||{};$('modal').hidden=true;UI.avStu=null;UI.avDraft=null;UI.stOK=1;try{commit(()=>{const s=S(id);if(Object.keys(d).length)s.avail=d;else delete s.avail},`${sname(id)} 시간 조건을 저장했어요 (불가 ${Object.values(d).filter(v=>v==='no').length} · 선호 ${Object.values(d).filter(v=>v==='pref').length})`)}finally{UI.stOK=0}break}
     case 'recolorRand':commit(()=>recolorVersion(V(),true),'반 색을 랜덤으로 다시 배치했어요 · 마음에 안 들면 한 번 더 누르거나 되돌리기');break;
     case 'recolor':commit(()=>recolorVersion(V()),'반 색을 다시 정리했어요 (옆·위아래 반끼리 구분되게)');break;
     case 'endPeek':endPeek();break;
@@ -6316,7 +6321,7 @@ function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI
   return h}
 /* 달력: 이번 달부터 2달 · 시험(중간·기말)만 표시 */
 function schCalHTML(b){const td=todayStr();UI.schM=UI.schM||td.slice(0,7);const [y,m]=UI.schM.split('-').map(Number);const ks=new Set((b.students||[]).filter(s=>!offS(s)).map(s=>schNorm(s.school)).filter(Boolean));const all=UI.schAll;
-  const ev={};schKeys().forEach(k=>{if(!all&&!ks.has(k))return;schExams(k).forEach(x=>{for(let d=x.from;d<=x.to;d=dPlus(d,1)){if(d.slice(0,7)!==UI.schM)continue;(ev[d]=ev[d]||[]).push({k,lab:x.lab,math:x.dm.some(z=>z.d===d),first:d===x.from})}})});
+  const ev={};schKeys().forEach(k=>{if(!all&&!ks.has(k))return;schExams(k).forEach(x=>{let first=true;for(let d=x.from;d<=x.to;d=dPlus(d,1)){const wk=[0,6].includes(new Date(d+'T00:00:00').getDay());const math=x.dm.some(z=>z.d===d);if(wk&&!math)continue; /* 주말은 시험일로 안 보이게(그날 수학 시험을 넣은 경우만 보임) */const f=first;first=false;if(d.slice(0,7)!==UI.schM)continue;(ev[d]=ev[d]||[]).push({k,lab:x.lab,math,first:f})}})});
   const ld=new Date(y,m,0).getDate();const fd=new Date(y,m-1,1).getDay();const cells=[];for(let i=0;i<fd;i++)cells.push('');for(let d=1;d<=ld;d++)cells.push(`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);while(cells.length%7)cells.push('');
   return `<div class="sec schcal"><h3>시험 달력 <span class="hint">${all?'모든 학교':esc(b.name)+' 학생들 학교'} · 수학 시험일은 진하게</span><span class="sp"></span><span class="seg" style="margin-right:8px"><button data-act="schAllTg" aria-pressed="${!all}">우리 지점</button><button data-act="schAllTg" aria-pressed="${!!all}">모든 학교</button></span><button class="btn sm" data-act="schMv" data-n="-1">‹</button><b style="min-width:72px;text-align:center">${y}년 ${m}월</b><button class="btn sm" data-act="schMv" data-n="1">›</button><button class="btn sm" data-act="schMv" data-n="0">이번 달</button></h3>
     <div class="calg">${DAYS.slice(6).concat(DAYS.slice(0,6)).map(d=>`<div class="calh">${d}</div>`).join('')}${cells.map(d=>{if(!d)return '<div class="cald e"></div>';const L=ev[d]||[];return `<div class="cald${d===td?' td':''}${new Date(d+'T00:00:00').getDay()===0?' su':''}"><i>${+d.slice(8)}</i>${L.map(x=>`<button class="calev${x.math?' math':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)}">${esc(schName(x.k))}${x.first?' <small>'+esc(x.lab.replace(/학기 /,''))+'</small>':''}</button>`).join('')}</div>`}).join('')}</div></div>`}
@@ -6750,6 +6755,7 @@ const HELP=[
   <li><b>문자용 복사</b>: [학생별]에서 학생을 고르고 <b>[문자용 복사]</b>를 누르면 이름 없이 <i>월·수 17:00~18:30 중1 A1 (서성완T)</i>처럼 요일·시간·반만 글로 복사돼요 — 문자·카톡에 붙여 넣으면 돼요(예시 시간표로 보낼 때도). 선생님·관리자 폰에서는 학생 카드 아래 <b>[시간표 복사]</b>.</li>
   <li><b>성적 관리</b>(새 탭 · PC만): 위에서 시험(연도·학기·중간/기말)을 고르고 학생마다 <b>예상·확정</b> 점수를 적으면 바로 저장돼요(Enter·↑↓로 아래위 칸 이동). <b>등락</b>은 같은 과목 바로 전 시험 확정 점수와 비교해 저절로, <b>등급</b>은 기말 줄에만. 고2·3은 선택과목마다 한 줄(학교 정보의 선택과목) — <b>[한 줄로]</b>를 누르면 한 학생이 한 줄로 묶여요. 아래 <b>성적 통계</b>는 반별·학교별·선생님별 평균·등락·상승/하락. 이름을 누르면 학생 카드에 <b>성적 흐름</b>과 <b>특이사항</b>(PC에만, 폰엔 안 나가요). 퇴원해도 기록은 남고 <b>[퇴원 포함]</b>으로 볼 수 있어요. <b>[시트 불러오기]</b>에 구글 시트 중등부·고등부 엑셀을 넣으면 25·26년 시험결과 시트를 읽어 이름+학교로 맞춰 들어와요(동명이인은 창에서 고르기, 못 찾은 학생은 목록으로). 위쪽 <b>[자체시험]</b>으로 바꾸면 학원 시험(단원테스트·내신대비 회차)을 학년별로 만들고(<b>[+ 시험 추가]</b>: 이름·학년·날짜·만점·기준 점수) 학생마다 점수와 <b>풀</b>(풀이 완료)·<b>발</b>(학부모 발송) 체크를 적어요 — 기준 아래 점수는 빨갛게, 맨 아래 줄에 평균·통과·체크 수. 열 머리의 ⋯로 시험을 고치거나 지워요.</li>
   <li><b>재입학</b>: 퇴원한 학생과 이름+학교(또는 보호자 번호)가 같은 학생을 직접 추가·반에 신입 넣기·입학 문의 등록·명부 가져오기로 넣으면 새로 만들지 않고 그 학생을 되살려요 — 성적·상담·특이사항이 이어지고 입·퇴원 이력이 남으며 '재' 표시가 붙어요.</li>
+  <li><b>시간 조건(불가·선호)</b>: [학생별]에서 학생을 고르고 [시간 조건]을 누르면 요일·교시 칸마다 <b>보통 → 선호 → 수업 불가</b>로 바꿀 수 있어요. 행정 선생님 PC에서도 칸을 눌러 고친 뒤 <b>[저장]</b>하면 바로 저장돼요(시간표 바꾸기 전에 학생들 안 되는 시간 받아 두기). 불가 시간에 수업이 있으면 자동 점검에 오류로 떠요.</li>
   <li><b>수정 잠금 풀기</b>: 한 지점은 한 PC만 수정 모드로 고칠 수 있어요(잠금). 다른 PC가 고치다 꺼졌거나 [적용]을 깜빡해 잠겨 있으면, <b>지점장 PC</b>(자기 지점)와 관리자 PC(모든 지점)에서 수정 모드를 켤 때 뜨는 창의 <b>[잠금 풀고 고치기]</b>나 [설정 → 지점 연동]의 [잠금 풀기]로 풀 수 있어요. 그 PC에 남은 초안은 나중에 [적용]하려고 하면 어느 쪽을 남길지 물어봐요.</li>
   <li><b>업무</b>(새 탭): 인강·자료 제작처럼 나눠서 하는 일을 모든 지점이 같이 봐요. <b>[+ 업무 추가]</b>(종류·학년·학교·파일명/단원·과목·담당·문항수·기한·비고) 또는 <b>[시트 불러오기]</b>에 '인강분배' 시트 엑셀. 표에서 <b>답안·완료·점검</b>을 눌러 바꾸고(담당은 강사 목록에서 여러 명도), 완료된 일은 맨 아래 접혀 있어 [펼치기]로 보고 3개월 지나면 자동으로 숨어요. 아래에 <b>담당별 합계</b>(완료·미완·점검·문항수). 담당 선생님 강사용 폰 오늘 탭에 <b>내 업무</b>가 떠서 [완료]를 누르면 PC에 1~2분 뒤 반영돼요.</li>
   <li><b>학교 정보</b>(새 탭): 학생들이 다니는 학교가 저절로 목록에 떠요(없으면 [학교 추가]). 학교를 고르면 <b>학사일정</b>(시험·방학·수련회 날짜, 수학 시험일), <b>시험 범위</b>(학년·과목별 · [범위 넣기]에서 22개정 단원을 <b>두 번</b> 눌러 시작~끝, '소단원까지 보기'로 더 잘게, 메모·직접 쓰기 · [단원 목록 고치기]), <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b> 체크, 고등학교는 <b>선택과목</b>(학생마다 학년·학기별 과목 — 범위·성적이 이 과목으로 연결), <b>메모</b>. 위쪽엔 <b>다가오는 시험</b> 띠(지점 시간표 위에도)와 <b>시험 달력</b>. 모든 지점이 같이 쓰는 자료예요(관리자·지점장·행정 선생님 누구나 고침 · 칸마다 마지막에 고친 게 남음). 같은 학교가 두 이름으로 잡히면(예: 부산중앙고·중앙고) 카드의 <b>[합치기]</b> — 그 뒤로는 명부·시트에 어느 이름으로 적혀 있어도 한 학교로 들어와요. <b>[시트 불러오기]</b>에 구글 시트에서 받은 중등부·고등부 엑셀(.xlsx)을 넣으면 학사일정·시험 일정·범위·부교재·등급컷·답지 유무(→ 기출 수거)·선택과목 조사표를 한 번에 읽어요(연도 없는 시트는 위쪽 연도로).</li>
