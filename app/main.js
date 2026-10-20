@@ -90,7 +90,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
     cns:{per:c.per||0,kper:c.kper||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
-    exam:b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null}};
+    exam:exPack(db,b).exam}};
   const u=[],sig=[];
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
     const all=rs.some(r=>r.t.all);const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))];
@@ -117,11 +117,24 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
   return {app:'ymath-view',enc:2,kdf:'pbkdf2-sha256',it:LG_IT,salt:salt.toString('base64'),h,com,br,u}}
+/* 학교 정보(db.schools)에서 지점의 중등·고등 시험 기간 — 렌더러 examPeriods와 같은 규칙 */
+const exTd=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);const exPlus=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
+const exNorm=n=>String(n||'').trim().replace('여자고등학교','여고').replace('고등학교','고').replace('중학교','중').replace('초등학교','초').replace(/\s+/g,'');const exKind=n=>/여고$|고$/.test(n)?'고':/중$/.test(n)?'중':'';const exStuKind=s=>{const m=/^(초|중|고)/.exec(s.grade||'');return m?m[1]:exKind(exNorm(s.school))};
+const EXLAB={m1:'1학기 중간',f1:'1학기 기말',m2:'2학기 중간',f2:'2학기 기말'};
+function exSchool(db,k){const o=((db.schools||{}).list||{})[k];if(!o)return [];const out=[];Object.entries(o.cal||{}).forEach(([y,c])=>['m1','f1','m2','f2'].forEach(mk=>{const r=c[mk];if(r&&r[0]&&r[1])out.push({ek:`${y}|${mk[1]}|${mk[0]==='m'?'중간':'기말'}`,from:r[0],to:r[1],lab:EXLAB[mk],dm:Object.entries(c.dm||{}).filter(([d])=>d>=r[0]&&d<=r[1]).map(([d,t])=>({d,t}))})}));return out.sort((a,z)=>a.from.localeCompare(z.from))}
+function exPeriods(db,b){const td=exTd();const out={};if(b.examAuto===false){out.중=b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null;out.고=b.examH&&b.examH.from?{from:b.examH.from,to:b.examH.to}:out.중;return out}
+  ['중','고'].forEach(kd=>{const ks=new Set((b.students||[]).filter(s=>s.status!=='퇴원'&&s.status!=='휴원'&&s.status!=='예정'&&exStuKind(s)===kd).map(s=>exNorm(s.school)).filter(Boolean));const ps=[];ks.forEach(k=>exSchool(db,k).forEach(x=>{if(x.to>=exPlus(td,-7))ps.push(x)}));ps.sort((a,z)=>a.from.localeCompare(z.from));
+    const C=[];ps.forEach(p=>{const c=C[C.length-1];if(c&&p.from<=exPlus(c.to,7)){if(p.to>c.to)c.to=p.to}else C.push({from:p.from,to:p.to})});const c=C.find(c=>exPlus(c.to,7)>=td)||null;out[kd]=c?{from:c.from,to:c.to}:(b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null)});return out}
+function exPack(db,b){const td=exTd();const P=exPeriods(db,b);const both=[P.중,P.고].filter(x=>x&&x.from&&x.to);const exam=both.length?{from:both.map(x=>x.from).sort()[0],to:both.map(x=>x.to).sort().pop()}:null;
+  const ks=new Set((b.students||[]).filter(s=>s.status!=='퇴원').map(s=>exNorm(s.school)).filter(k=>k&&exKind(k)));const lim=exPlus(td,60);const exl=[],rng={};
+  ks.forEach(k=>{const o=((db.schools||{}).list||{})[k]||{};const x=exSchool(db,k).find(x=>x.to>=td);if(!x||x.from>lim)return;const nm=(o.base&&o.base.name)||k;exl.push({k,nm,kd:exKind(k),lab:x.lab,from:x.from,to:x.to,dm:x.dm.map(d=>[d.d,d.t])});
+    Object.entries(o.rng||{}).forEach(([rk,r])=>{if(!rk.startsWith(x.ek+'|')||!r||(!r.a&&!r.z&&!r.free))return;const un=p=>(p||[]).filter(Boolean).pop()||'';let t=r.free&&!(r.a&&r.a.length)?r.free:(un(r.a)&&un(r.z)?(un(r.a)===un(r.z)?un(r.a):`${un(r.a)} ~ ${un(r.z)}`):(un(r.a)||un(r.z)||''));if(r.memo)t+=` · ${r.memo}`;if(r.free&&(r.a&&r.a.length))t+=` (${r.free})`;rng[`${k}|${rk.split('|').slice(3).join('|')}`]=t})});
+  return {exam,exams:{중:P.중||null,고:P.고||null},...(exl.length?{exl,rng}:{})}}
 function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){return null}
   const at=Math.max(0,...(db.branches||[]).map(b=>(b._sync&&b._sync.at)||0))||fs.statSync(FILE).mtimeMs; // 적용 시각: 연동 중엔 모든 PC가 같은 값
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
     return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),
-      students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{}),...(st.key?{key:1}:{})})),
+      students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{}),...(st.key?{key:1}:{}),...(st.subj&&Object.keys(st.subj).length?{subj:st.subj}:{})})),
       noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
       classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
@@ -129,7 +142,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       ct:ctPack(b,v),
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
       ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
-      ...(b.exam&&b.exam.from&&b.exam.to?{exam:{from:b.exam.from,to:b.exam.to}}:{}),
+      ...(()=>{const e=exPack(db,b);return {...(e.exam?{exam:e.exam}:{}),exams:e.exams,...(e.exl?{exl:e.exl,rng:e.rng}:{})}})(),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
       // 예정 시간표: 날짜가 되면 폰이 스스로 이걸로 바꿔 보여 줌 · pub이면 그 전에도 미리 보기
@@ -288,6 +301,14 @@ ipcMain.handle('syncPush',async(e,items)=>{if(!syReady())return {ok:false,err:'�
       const p=await gh('PUT',u,{message:`${syCfg().name||'관리자'} · ${(it.data&&it.data.name)||it.id}`,content:syEnc(it.data).toString('base64'),...(sha?{sha}:{})});
       if(p.status!==200&&p.status!==201)throw new Error(ghErr(p,it.id));done[it.id]=p.j.content.sha}
     SY.last=Date.now();SY.err='';return {ok:conflicts.length===0,conflicts,shas:done}}catch(err){SY.err=err.message;return {ok:false,err:err.message,shas:done,conflicts}}});
+/* 공유 자료(학교 정보 등): sync/shared/<name>.json — 지점 상관없이 모두 같은 파일 · 관리자 키로 암호화 · 고칠 수 있는 PC 모두 씀
+   잠금 없음: 받아서 항목마다 at(마지막 고친 시각)으로 합친 뒤 sha와 함께 올림 · sha가 다르면(누가 먼저 올림) 다시 받아서 합쳐 올림(syncShared에서 반복) */
+ipcMain.handle('sharedPull',async(e,name,known)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};const u=`${syBase()}/shared/${String(name).replace(/[^a-z0-9_-]/gi,'')}.json`;
+  try{if(!mob.ghOwner)await ghConnect();const g=await gh('GET',u);if(g.status===404)return {ok:true,none:true,sha:'',data:null};if(g.status!==200)throw new Error(ghErr(g,name));
+    if(known&&known===g.j.sha)return {ok:true,same:true,sha:g.j.sha,data:null};return {ok:true,sha:g.j.sha,data:syDec(Buffer.from(String(g.j.content).replace(/\n/g,''),'base64'))}}catch(err){return {ok:false,err:err.message}}});
+ipcMain.handle('sharedPush',async(e,name,data,sha)=>{if(!syReady())return {ok:false,err:'연동이 꺼져 있어요'};const u=`${syBase()}/shared/${String(name).replace(/[^a-z0-9_-]/gi,'')}.json`;
+  try{if(!mob.ghOwner)await ghConnect();const p=await gh('PUT',u,{message:`${syCfg().name||'관리자'} · ${name}`,content:syEnc(data).toString('base64'),...(sha?{sha}:{})});
+    if(p.status===409||p.status===422)return {ok:false,conflict:true};if(p.status!==200&&p.status!==201)throw new Error(ghErr(p,name));return {ok:true,sha:p.j.content.sha}}catch(err){return {ok:false,err:err.message}}});
 ipcMain.handle('syncDelete',async(e,ids)=>{try{for(const id of ids){for(const sub of ['branches','locks']){const u=`${syBase()}/${sub}/${id}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'지점 삭제',sha:g.j.sha})}}return {ok:true}}catch(err){return {ok:false,err:err.message}}});
 // 잠금
 ipcMain.handle('syncLock',async(e,id)=>{if(!syReady())return {ok:true,off:true};const c=syCfg();const u=`${syBase()}/locks/${id}.json`;
