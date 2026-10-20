@@ -3167,7 +3167,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.63.0', APPDATE='2026-10-20';
+const APPVER='3.63.1', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3291,7 +3291,7 @@ if(bridge&&bridge.onNas)bridge.onNas(st=>{if(!MOBI)return;if(st.gh)MOBI.gh=st.gh
 function renderTitle(){const el=$('tbInfo');if(!el)return;const b=B(),v=V();const ls=(typeof syOn==='function'&&syOn()&&b._sync&&b._sync.at)?`<i>·</i><span class="lm">마지막 적용 ${esc(b._sync.by||'')} ${fmtT(b._sync.at)}</span>`:'';el.innerHTML=`<span>${esc(b.name)}</span><i>›</i><span>${esc(v?v.name:'')}</span><i>›</i><span id="tbMode" class="${UI.edit?'ed':''}">${UI.peek?'지난 시간표 보기':UI.edit?'수정 · 초안':'보기'}</span>${ls}`;syncSaved()}
 function syncSaved(){const s=$('saved'),t=$('tbSaved'),d=$('tbDot');if(!t||!s)return;t.textContent=s.textContent;d.className='tb-dot'+(/중|실패/.test(s.textContent)?' busy':'')}
 function markDirty(){$('saved').textContent='저장 중…';$('saved').className='saved dirty';clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,400)}
-async function saveNow(){
+async function saveNow(){if(window.__lgo)return;
   if(UI.peek){$('saved').textContent='지난 시간표 보는 중';return}
   if(AUTO.prev){return}
   if(!UI.edit&&!(typeof syOn==='function'&&syOn())&&typeof mstatStamp==='function')DB.branches.forEach(mstatStamp); // 월별 기록(이번 달 값)
@@ -4155,6 +4155,8 @@ document.addEventListener('click',async e=>{
     case 'syJoin':syJoin();break;
     case 'syName':{SYNC.info=await bridge.syncName($('syName').value.trim());toast('이름을 저장했어요');break}
     case 'syPull':{toast('받는 중…');const ok=await syncPull({full:true});toast(ok?'최신으로 받았어요':'받지 못했어요 · '+SYNC.err);syncRender();break}
+    case 'lgoDlg':lgoDlg();break;
+    case 'lgoGo':await lgoGo(el);break;
     case 'syOff':{if(!armed(el,'syoff'))return;if(UI.edit){toast('수정 모드를 먼저 끝내 주세요');return}SYNC.info=await bridge.syncOff();clearInterval(SYNC.timer);renderSyncState();syncRender();toast('이 PC의 연동을 껐어요 · 시간표는 그대로 남아요');break}
     case 'mobCopy':case 'mobCopyMsg':{const u=ds.u||'';
       const txt=ds.act==='mobCopy'?u:`[와이매쓰 시간표 보기]\n주소: ${u}\n\n· 처음 한 번 부원장님께 1:1로 받은 6자리 개인 코드로 로그인하면 그 기기에서는 다시 안 물어요\n· 오늘 내 수업이 맨 위에 나오고, 담당 학생 연락처도 볼 수 있어요\n· 홈 화면에 추가하면 앱처럼 열려요 (카톡에서 열었으면 '다른 브라우저로 열기' 먼저)\n· PC에서 열면 전체 시간표 표로 보여요`;
@@ -4506,7 +4508,7 @@ async function resumeDraft(yes){const dr=UI._draft;UI._draft=null;$('draftBar').
   else{try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}toast('초안을 버렸어요');render()}}
 // 프로그램 파일이 바뀌면(업데이트) 창이 저절로 새로고침됨 → 직전 화면 상태를 잠시 보관했다가 복구
 function keepState(){try{sessionStorage.setItem('ymt_state',JSON.stringify({edit:UI.edit,view:UI.view,mode:UI.mode,cls:UI.cls,teacher:UI.teacher,student:UI.student,trashOpen:UI.trashOpen,y:window.scrollY}))}catch(e){}}
-window.addEventListener('beforeunload',()=>{keepState();clearTimeout(saveTimer);if(bridge&&bridge.saveSync)bridge.saveSync(JSON.stringify(DB),!!UI.edit)});
+window.addEventListener('beforeunload',()=>{if(window.__lgo)return; /* 로그아웃: 지운 파일을 다시 쓰지 않게 */keepState();clearTimeout(saveTimer);if(bridge&&bridge.saveSync)bridge.saveSync(JSON.stringify(DB),!!UI.edit)});
 /* 새 버전(화면 파일)이 들어오면: 하던 일이 없으면 바로 바꾸고, 수정 중·창이 열려 있으면 위에 조용한 띠만 → 끝나면 저절로 */
 const UPDR={ready:false,t:0};
 function updIdle(){return !UI.edit&&$('modal').hidden&&!UI.pop&&!UI.peek&&!(typeof AUTO!=='undefined'&&AUTO.prev)&&!UI.entering&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))&&![...document.querySelectorAll('.dlg,.mpop')].some(x=>x.offsetParent)}
@@ -4941,7 +4943,7 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
     <div class="hint">코드에는 저장소 연결 키와 시간표 암호 키가 들어 있어요. 카톡 1:1로 해당 관리자에게만 보내고, 받은 쪽에서 연결한 뒤 메시지를 지우게 해 주세요.<br>지점 관리자는 그 지점의 시간표·반·학생·강사·교시·지점 이름을 프로그램 관리자와 같은 권한으로 고칠 수 있고, 다른 지점은 보기만 돼요. 프로그램 설정(지점 추가·삭제, 폰으로 보기, 연동)은 프로그램 관리자만 바꿀 수 있어요.</div>`}
   else if(i.role==='owner'&&!admLocked())h+=`<div class="row"><span class="hint">지점 코드·수정 잠금·연결된 PC·관리자 잠금은 ${admGoTab}에 있어요</span></div>`;
   else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span></div>`;
-  else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정과 PC 연결은 프로그램 관리자가 관리해요</span></div>`;
+  else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정과 PC 연결은 프로그램 관리자가 관리해요</span><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button></div>`;
   if(owner)h+=admSetHTML(i);
   el.innerHTML=h;if(owner)syDevsLoad()}
 function syCodeDlg(code,label){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="scT" style="width:min(640px,100%)"><h2 id="scT">${esc(label)} 코드</h2>
@@ -5162,6 +5164,18 @@ function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYN
   renderSyncState();render();$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rvT" style="width:min(520px,100%)"><h2 id="rvT">이 PC의 연결이 끊겼어요</h2>
   <div class="hint">프로그램 관리자가 이 PC의 지점 연동을 끊었어요. 지금까지의 시간표는 이 PC에 남아 있지만, 더 이상 다른 PC와 주고받지 않아요.<br>다시 쓰려면 프로그램 관리자에게 새 지점 코드를 받아 [설정 → 지점 연동 → 지점 코드로 연결]에 넣어 주세요.</div>
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pri" data-act="closeModal">확인</button></div></div>`}
+
+/* 이 PC에서 로그아웃(지점·행정 PC): 연결 열쇠·GitHub 키·에듀OK 계정을 지우고, 고르면 이 PC의 시간표·연락처·백업까지 지운 뒤 처음 화면으로 · 관리자 PC는 안 됨 */
+function lgoDlg(){if(!bridge||!bridge.syncLogout)return;if(SYNC.info&&SYNC.info.role==='owner'&&syOn()){toast('관리자 PC는 여기서 로그아웃할 수 없어요');return}
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="lgT" style="width:min(460px,100%)"><h2 id="lgT">이 PC에서 로그아웃</h2>
+  <div class="hint" style="line-height:1.7">이 PC에 저장된 <b>연결 열쇠</b>(시간표 암호 키·저장소 키)와 에듀OK 계정을 지우고 연동을 끝내요. 다시 쓰려면 지점 코드를 새로 넣어야 해요.</div>
+  <label class="chk" style="margin:12px 0 4px"><input type="checkbox" id="lgData" checked> 이 PC의 시간표·학생 연락처·백업도 지우기 <span class="hint">(추천 · 처음 화면으로 돌아가요)</span></label>
+  ${UI.edit?'<div class="box warn"><span>수정 중인 초안은 올라가지 않고 사라져요. 먼저 [적용]하는 게 좋아요.</span></div>':''}
+  <div class="hint">다른 PC와 선생님 폰의 시간표는 그대로예요.</div>
+  <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">취소</button><button class="btn danger" data-act="lgoGo">로그아웃</button></div></div>`}
+async function lgoGo(el){if(!armed(el,'lgo','한 번 더 누르면 로그아웃'))return;const data=!!($('lgData')||{}).checked;el.disabled=true;el.textContent='지우는 중…';
+  try{clearTimeout(typeof saveTimer!=='undefined'?saveTimer:0)}catch(e){}window.__lgo=true;const r=await bridge.syncLogout({data});if(!r||!r.ok){el.disabled=false;el.textContent='로그아웃';toast((r&&r.err)||'로그아웃하지 못했어요',4000)}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#syncBadge');if(b&&typeof isStaff==='function'&&isStaff())lgoDlg()});
 </script>
 <script>/* ================= 방학 특강 =================
    특강 = 정규 교시표와 별개로 요일·시작 시간·길이·기간(시작~끝 날짜)을 갖는 수업. 지점(b.specials)에 저장.
@@ -6031,6 +6045,7 @@ const HELP=[
   <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 반에 학생을 넣거나 빼거나 옮기면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요(알림에 '예정 시간표에도 반영'). 예정 시간표에 같은 이름 반이 없으면 알려만 줘요 — 그때는 예정 시간표를 열어 직접 넣어 주세요. 퇴원은 두 시간표 모두에서 빠져요.</li>
   <li><b>에듀OK에서 받기</b>: [학생 관리]의 [에듀OK에서 받기]를 누르고 처음 한 번 <b>그 지점 에듀OK 아이디·비밀번호</b>를 넣어 저장하세요(이 PC에만 암호화해서 저장 · 다른 PC로 안 넘어가요). 그다음부터 [재학생명부 받기]·[입학희망생명부 받기]를 누르면 프로그램이 에듀OK에 로그인해 [엑셀]을 받아 바로 불러와요(10~20초). 넣기 전에 어느 지점에 넣을지 한 번 물어봐요. 에듀OK 화면이 바뀌면 멈출 수 있어요 — 그때는 지금처럼 직접 받아서 가져오기로 넣으면 돼요.</li>
   <li><b>정기 상담</b>: [학생 관리]의 <b>정기 상담</b> 칸에서 지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더(설정의 시험 기간 시작일 ~ 끝나고 1주). <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요(기본: 다음 기간). 기간이 열리면 선생님 강사용 <b>학생 탭 맨 위</b>(오늘 탭에도 알림)에 담당 학생 중 아직 상담 안 한 학생이 떠요. 한 분이 [상담 완료](메모는 선택)를 누르면 같이 가르치는 선생님 화면에서도 완료로 바뀌고, 지점장용에 승인 없이 기록돼요. [주기] 창에서 시험 기간도 바로 정할 수 있어요. PC에서는 학생 이름을 눌러 상담 완료·잘못 넣은 기록 <b>삭제</b>(두 번)·<b>보류</b>(지점장만 · 보류로 건너뛴 상담 기간 수가 보여요)·<b>선생님께 보내기</b>(지점장·행정 선생님 · 요청 내용과 함께 그 선생님 폰 맨 위에 '지정'으로 떠요)를 해요. 행정 선생님 폰에는 <b>지정 상담</b>만 떠요. [통계] 탭에 분기별 상담 횟수(누른 사람 기준)와 이번 기간 선생님별 완료율이 나와요.</li>
+  <li><b>이 PC에서 로그아웃</b>(지점·행정 PC): [설정 → 지점 연동]의 <b>[이 PC에서 로그아웃]</b>(행정 PC는 위쪽 '행정 선생님 PC' 띠를 누르면). 두 번 누르면 이 PC의 연결 열쇠·저장소 키·에듀OK 계정을 지우고, '시간표·연락처·백업도 지우기'를 켜 두면 처음 화면으로 돌아가요. 다시 쓰려면 지점 코드를 새로 넣어요. 관리자 PC는 여기서 로그아웃할 수 없어요. PC가 없을 때는 관리자 PC의 [연결 끊기]로도 돼요.</li>
   <li><b>칸 접기·펼치기</b>: 학생 관리·강사 관리·통계에서 칸 제목(입학 문의, 정기 상담, 학생 목록 등)을 누르면 접히고 다시 누르면 펼쳐져요. 이 PC에서 접어 둔 칸은 다음에도 접힌 채로 열려요.</li>
   <li><b>주요 학생 ★</b>: 학생 관리에서 학생의 [상태]를 눌러 <b>주요 학생</b>을 켜면 이름 앞에 ★이 붙고(선생님 폰에도), 정기 상담 [주기]의 <b>주요 학생 주기</b>(예: 매달)로 따로 챙겨요. [학년 단위]에서 '★ 주요 학생'을 고르면 주요 학생 전체를 한 번에 보류·상담 지정할 수 있어요. 폰 관리 탭 학생 창에서도 켜고 끌 수 있어요.</li>
   <li><b>명부 입학일</b>: 재학생명부(에듀OK 포함)의 <b>입학일</b>이 학생의 첫 수업일로 들어가요. 입학일부터 2주는 '신입', 오늘 뒤면 '입학 예정'으로 다시 계산되고, 가져오기 결과 칸에 몇 명이 바뀌었는지 보여요.</li>
