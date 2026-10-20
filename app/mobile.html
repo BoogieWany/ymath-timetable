@@ -752,7 +752,7 @@ function nxBar(){const b=B0();if(!b.next||!b.next.pub)return '';const f=b.next.f
 function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
   $('meta').innerHTML=`<i class="dot${stale?' old':''}"></i><span>${esc(B().version)} · ${t.getMonth()+1}/${t.getDate()} ${p(t.getHours())}:${p(t.getMinutes())} 적용본</span>${stale?'<span>· 연결 끊김 (마지막 받은 시간표)</span>':''}`}
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
-const TABS=()=>(wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']]).concat(D&&(isOwn()||isMgr(B0()))?[['adm',isOwn()?'관리':'입학 문의']]:[]);
+const TABS=()=>(wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']]).concat(D&&(isOwn()||isMgr(B0()))?[['adm','관리']]:[]);
 function render(){if(!D)return;document.body.classList.remove('nolog');pvApply();nextApply();const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');$('brn').textContent=b.name;$('brb').classList.toggle('one',D.branches.length<2);
@@ -841,19 +841,20 @@ async function holdSend(sid,on,btn){const b=B0();const st=S(b,sid);if(!st||!canH
     const L=HL.get();L.push({br:b.id,sid,on,at:Date.now()});HL.set(L);shClose();ST.mh='';render();fzToast(on?`${st.name} 보류 · 이번 상담 목록에서 빠져요`:`${st.name} 보류를 풀었어요`,2400)}
   catch(e){if(btn){btn.disabled=false;btn.textContent='다시 해 보기'}fzToast('보내지 못했어요 · 인터넷 연결을 확인해 주세요',2400)}}
 const isMgr=b=>!!(D&&b&&D.mk&&D.mk[b.id]&&!ST.pv);
-function cnState(b,wall){const c=b&&b.cns;if(!c)return null;const me=ME(),adm=admLike();const all=!!wall&&isMgr(b);const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;if(!adm&&!myT)return null;
+const cnCanAll=b=>isMgr(b)||(typeof isOwn==='function'&&isOwn()); /* 지점장·관리자: [내 학생 | 지점 전체] */
+function cnState(b,wall){const c=b&&b.cns;if(!c)return null;const me=ME(),adm=admLike();const all=!!wall&&cnCanAll(b);const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;if(!adm&&!myT&&!all)return null;
   const wins=adm?[]:cnWinsM(c,b.exam); /* 행정 선생님 폰은 지정 상담만 */const und=CNM.get().filter(u=>u.k!=='cs'&&u.undo&&Date.now()-u.ut<3600e3);const loc=RQ.list.concat(RQ.ok||[]).filter(x=>x.kind==='cn'&&x.br===b.id&&!und.some(u=>u.num===x.num));const recs=(c.rec||[]).filter(r=>!und.some(u=>u.sid===r[0]&&u.tn===r[2]&&u.d===r[1])).concat(loc.map(x=>[x.sid,dayOf(x.at),x.tn]));
   const hold=holdSet(b);const mine=adm?null:all?new Set(b.students.map(s=>s.id)):new Set(b.classes.flatMap(cl=>((cl.members||{})[myT]||[])));
   const P=[],Dn=[];b.students.forEach(s=>{if(s.away||isPreS(s))return;
-    const asg=(c.asg||[]).filter(a=>a.sid===s.id&&(adm||!a.t||a.t===myT)&&!recs.some(r=>r[0]===s.id&&r[1]>=a.at));
+    const asg=(c.asg||[]).filter(a=>a.sid===s.id&&(adm||all||!a.t||a.t===myT)&&!recs.some(r=>r[0]===s.id&&r[1]>=a.at));
     const inScope=adm||mine.has(s.id);if(!inScope&&!asg.length)return;
     const open=inScope&&!hold.has(s.id)?wins.filter(w=>!recs.some(r=>r[0]===s.id&&r[1]>=w.from&&r[1]<=w.to)):[];
     if(open.length||asg.length)P.push({s,open,asg});else if(inScope&&!hold.has(s.id)&&wins.length){const r=recs.filter(r=>r[0]===s.id).sort((a,z)=>z[1].localeCompare(a[1]))[0];Dn.push({s,r})}});
   P.sort((a,z)=>(z.asg.length?1:0)-(a.asg.length?1:0)||String(a.s.grade).localeCompare(String(z.s.grade))||a.s.name.localeCompare(z.s.name));
   return {wins,P,Dn,lab:wins.map(w=>w.lab).join(' · ')}}
-function cnHTML(b){const un=cnUndoHTML(b);const mg=isMgr(b);const wall=mg&&ST.cnAll;const st=cnState(b,wall);if(!st||(!st.wins.length&&!st.P.length))return un;const adm=admLike();
+function cnHTML(b){const un=cnUndoHTML(b);const mg=cnCanAll(b);const me0=ME();const hasT=!!(me0&&me0.br===b.id&&TT(b,me0.t));const wall=mg&&(ST.cnAll||!hasT);const st=cnState(b,wall);if(!st||(!st.wins.length&&!st.P.length))return un;const adm=admLike();
   const row=x=>`<div class="cnr${x.asg.length?' asg':''}" data-stucard="${esc(x.s.id)}"><div class="cni"><b class="cnnm">${esc(x.s.name)}</b><small>${esc([x.s.grade,x.s.school].filter(Boolean).join(' · '))}${wall?' · '+esc(cnTs(b,x.s.id)):''}${x.open.length?' · '+esc(x.open.map(w=>w.lab).join('·')):''}</small>${x.asg.map(a=>`<span class="cna"><i>지정</i>${esc(a.note||'상담 요청')}${a.by?` <small>${esc(a.by)}</small>`:''}</span>`).join('')}</div>${canHold(b)?`<button class="cnhb" data-act="holdAsk" data-sid="${esc(x.s.id)}">보류</button>`:''}<button class="csbtn cnb" data-act="cnGo" data-sid="${esc(x.s.id)}">상담 완료</button></div>`;
-  return un+(mg?`<div class="seg cnsg"><button data-act="cnAll0" aria-pressed="${!wall}">내 학생</button><button data-act="cnAll1" aria-pressed="${wall}">지점 전체</button></div>`:'')+`<div class="sec">${adm?'지정 상담':'정기 상담'} <small>${st.lab?esc(st.lab)+' · ':''}${st.P.length?`<b class="csn">${st.P.length}명 남음</b>`:'모두 완료'}${st.Dn.length?` · 완료 ${st.Dn.length}명`:''}</small></div>
+  return un+(mg&&hasT?`<div class="seg cnsg"><button data-act="cnAll0" aria-pressed="${!wall}">내 학생</button><button data-act="cnAll1" aria-pressed="${wall}">지점 전체</button></div>`:'')+`<div class="sec">${adm?'지정 상담':'정기 상담'} <small>${st.lab?esc(st.lab)+' · ':''}${st.P.length?`<b class="csn">${st.P.length}명 남음</b>`:'모두 완료'}${st.Dn.length?` · 완료 ${st.Dn.length}명`:''}</small></div>
     ${st.P.length?`<div class="cnl">${st.P.map(row).join('')}</div>`:''}
     ${canHold(b)?holdListHTML(b):''}
     ${st.Dn.length?`<details class="cnd"><summary>완료한 학생 ${st.Dn.length}명</summary><div>${st.Dn.map(x=>`<span><b>${esc(x.s.name)}</b> <small>${x.r?esc(x.r[1].slice(5).replace('-','/'))+' '+esc(x.r[2]||''):''}</small></span>`).join('')}</div></details>`:''}`}
@@ -1167,7 +1168,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.62.6</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.62.7</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1510,7 +1511,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.62.6';const VC={last:0,nv:''};
+const MVER='3.62.7';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
@@ -1530,8 +1531,8 @@ setInterval(()=>{if(!document.hidden&&D)load()},60000);
 const isOwnR=()=>!!(D&&D.v2&&((D._o&&D._o.role)||D.role)==='owner'&&D.ak);
 const isOwn=()=>isOwnR()&&!ST.pv;
 const admLike=()=>isAdm()||(isOwn()&&!(D.me||[]).length);
-const OX=b=>((D&&D.ox)||{})[b.id]||(D&&D.mq&&D.mq[b.id]?{inq:D.mq[b.id]}:{});
-const amMgr=()=>!!(D&&!isOwn()&&typeof isMgr==='function'&&isMgr(B0())); /* 지점장: 자기 지점 입학 문의만 */
+const OX=b=>((D&&D.ox)||{})[b.id]||((D&&D.mq)||{})[b.id]||{};
+const amMgr=()=>!!(D&&!isOwn()&&typeof isMgr==='function'&&isMgr(B0())); /* 지점장: 자기 지점 관리 탭(학생·입학 문의·정기 상담·공지) */
 /* --- 다른 사람으로 보기: D의 역할·내 이름만 잠깐 바꿔서 그 사람 화면 그대로 (보내기는 막음) --- */
 function pvApply(){if(!D||!D.v2)return;const o=D._o||(D._o={role:D.role,me:D.me,myName:D.myName});
   if(o.role!=='owner'){ST.pv=null;return}const pv=ST.pv;
@@ -1573,8 +1574,9 @@ const clsTs=(b,c)=>[...new Set(Object.keys(c.members||{}).concat(b.sessions.filt
 const clsPairs=b=>b.classes.slice().sort((a,z)=>a.name.localeCompare(z.name,'ko')).flatMap(c=>clsTs(b,c).map(t=>({c,t})));
 const pairOpts=b=>clsPairs(b).map(p=>`<option value="${esc(p.c.id+'|'+p.t)}">${esc(p.c.name)} · ${esc(T(b,p.t))}T</option>`).join('');
 const mdA=d=>d?`${+d.slice(5,7)}/${+d.slice(8,10)}`:'';
-function vAdm(b){const mg=amMgr();const am=mg?'iq':(ST.am||'stu');
-  let h=(mg?'':`<div class="chips amc">${AM.map(([k,l])=>`<button data-am="${k}" aria-pressed="${k===am}">${l}</button>`).join('')}</div>`)+adPendHTML();
+const AMG=['stu','iq','cn','an'];
+function vAdm(b){const mg=amMgr();const am=mg&&!AMG.includes(ST.am)?'stu':(ST.am||'stu');
+  let h=(`<div class="chips amc">${(mg?AM.filter(x=>AMG.includes(x[0])):AM).map(([k,l])=>`<button data-am="${k}" aria-pressed="${k===am}">${l}</button>`).join('')}</div>`)+adPendHTML();
   h+=({stu:amStu,iq:amIq,cn:amCn,an:amAn,st:amSt,pc:amPc,pv:amPv}[am]||amStu)(b);return h+foot()}
 function amStu(b){const q=(ST.aq||'').trim();const L=b.students.filter(s=>!q||s.name.includes(q)).sort((a,z)=>a.name.localeCompare(z.name,'ko'));const out=OX(b).out||[];
   return `<div class="amh"><div class="search"><input id="aq" type="search" placeholder="학생 이름" autocomplete="off" value="${esc(q)}"></div><button class="ambtn pri" data-act="amStAdd">＋ 학생</button></div>
@@ -1662,7 +1664,8 @@ function amPv(b){return `<div class="hint" style="margin:4px 2px 12px">고른 �
 function amArm(el,txt){if(el.dataset.arm==='1')return true;document.querySelectorAll('[data-arm="1"]').forEach(x=>{x.dataset.arm='';x.textContent=x.dataset.l0||x.textContent;x.classList.remove('armed')});el.dataset.l0=el.textContent;el.dataset.arm='1';el.classList.add('armed');el.textContent=txt||'한 번 더';setTimeout(()=>{if(el.dataset.arm==='1'){el.dataset.arm='';el.textContent=el.dataset.l0;el.classList.remove('armed')}},3000);return false}
 function amClick(e){const t=e.target.closest&&e.target.closest('button,select');if(!t||t.tagName==='SELECT')return false;const ds=t.dataset;const b=D&&B0();if(!b)return false;
   if(ds.act==='pvOff'){pvGo(null);return true}
-  if(!isOwn()&&!ds.pvt&&!ds.pva&&!(amMgr()&&(ds.iqinfo||ds.iqpre||ds.iqnow||ds.iqx||ds.iqback||/^amIq/.test(ds.act||''))))return false;
+  if(!isOwn()&&!amMgr())return false;
+  if(!isOwn()&&(ds.pvt||ds.pva||ds.pcrs||/^pc/.test(ds.act||'')||(ds.am&&!AMG.includes(ds.am))))return true;
   if(ds.am){ST.am=ds.am;ST.mh='';render();return true}
   if(ds.ast2!==undefined){ST.ast=ds.ast2==='1';ST.mh='';render();return true}
   if(ds.ast){amStuSheet(ds.ast);return true}
@@ -1740,7 +1743,7 @@ async function pcPing(btn){if(ST.pv){fzToast('미리 보기 중에는 보낼 수
 async function pcPub(btn){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}if(!isOwn()||!rqOn())return;if(btn){btn.disabled=true;btn.textContent='보내는 중…'}
   try{const num=await pcPost([{op:'pcPub',a:{}}],'지금 올리기');PCQ.pb={num,st:'wait',t0:Date.now()};pcRedraw();clearTimeout(PCQ.t);PCQ.t=setTimeout(pcPoll,6000)}
   catch(err){fzToast('보내지 못했어요 · 인터넷 연결을 확인해 주세요',2400);pcRedraw()}}
-async function pcRestart(dev,nm,btn){if(ST.pv)return;if(btn){btn.disabled=true;btn.textContent='보내는 중…'}
+async function pcRestart(dev,nm,btn){if(ST.pv||!isOwn())return;if(btn){btn.disabled=true;btn.textContent='보내는 중…'}
   try{const num=await pcPost([{op:'pcRestart',a:{dev}}],`${nm} 다시 시작`);PCQ.rs[dev]={num,st:'wait',t0:Date.now()};pcRedraw();clearTimeout(PCQ.t);PCQ.t=setTimeout(pcPoll,6000);fzToast(`${nm} PC에 보냈어요 · 1분 안에 다시 시작해요`,2400)}
   catch(err){fzToast('보내지 못했어요 · 인터넷 연결을 확인해 주세요',2400);pcRedraw()}}
 const pcRole=x=>x.role==='owner'?'관리자 PC':x.role==='staff'?'행정 PC':x.role==='branch'?'지점 PC':'PC';
