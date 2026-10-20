@@ -3167,7 +3167,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.63.1', APPDATE='2026-10-20';
+const APPVER='3.63.2', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4939,10 +4939,10 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
   ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}`;
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
     <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
-    <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
+    <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
     <div class="hint">코드에는 저장소 연결 키와 시간표 암호 키가 들어 있어요. 카톡 1:1로 해당 관리자에게만 보내고, 받은 쪽에서 연결한 뒤 메시지를 지우게 해 주세요.<br>지점 관리자는 그 지점의 시간표·반·학생·강사·교시·지점 이름을 프로그램 관리자와 같은 권한으로 고칠 수 있고, 다른 지점은 보기만 돼요. 프로그램 설정(지점 추가·삭제, 폰으로 보기, 연동)은 프로그램 관리자만 바꿀 수 있어요.</div>`}
-  else if(i.role==='owner'&&!admLocked())h+=`<div class="row"><span class="hint">지점 코드·수정 잠금·연결된 PC·관리자 잠금은 ${admGoTab}에 있어요</span></div>`;
-  else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span></div>`;
+  else if(i.role==='owner'&&!admLocked())h+=`<div class="row"><span class="hint">지점 코드·수정 잠금·연결된 PC·관리자 잠금은 ${admGoTab}에 있어요</span><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button></div>`;
+  else if(admLocked())h+=`<div class="row"><span class="hint">지금은 <b>${esc(syBName(myBr()))} 모드</b>예요 · 다른 지점은 보기만 돼요. 관리자 설정은 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 보여요</span><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button></div>`;
   else h+=`<div class="row"><span class="hint">다른 지점은 보기만 할 수 있어요 · 프로그램 설정과 PC 연결은 프로그램 관리자가 관리해요</span><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button></div>`;
   if(owner)h+=admSetHTML(i);
   el.innerHTML=h;if(owner)syDevsLoad()}
@@ -5166,7 +5166,11 @@ function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYN
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pri" data-act="closeModal">확인</button></div></div>`}
 
 /* 이 PC에서 로그아웃(지점·행정 PC): 연결 열쇠·GitHub 키·에듀OK 계정을 지우고, 고르면 이 PC의 시간표·연락처·백업까지 지운 뒤 처음 화면으로 · 관리자 PC는 안 됨 */
-function lgoDlg(){if(!bridge||!bridge.syncLogout)return;if(SYNC.info&&SYNC.info.role==='owner'&&syOn()){toast('관리자 PC는 여기서 로그아웃할 수 없어요');return}
+function lgoDlg(){if(!bridge||!bridge.syncLogout)return;
+  if(SYNC.info&&SYNC.info.role==='owner'&&syOn()){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="lgT" style="width:min(480px,100%)"><h2 id="lgT">관리자 PC는 로그아웃할 수 없어요</h2>
+    <div class="box warn"><span>이 PC는 <b>프로그램 관리자 PC</b>예요. 여기 열쇠를 지우면 지점 PC로 <b>업데이트 보내기</b>, <b>지점·행정 PC 코드 만들기</b>, 내 폰 관리 코드가 모두 멈춰서 로그아웃 버튼은 작동하지 않게 막아 뒀어요.</span></div>
+    <div class="hint" style="line-height:1.7;margin-top:10px">관리자 PC를 다른 컴퓨터로 옮기려면: [프로그램 관리 → 지점 연동]의 <b>[프로그램 관리자 다른 PC용 코드]</b>로 새 PC를 먼저 연결하고, 새 PC에서 잘 되는지 확인한 뒤 이 PC는 [이 PC 연동 끄기]로 쉬게 하면 돼요.</div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pri" data-act="closeModal">알겠어요</button></div></div>`;return}
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="lgT" style="width:min(460px,100%)"><h2 id="lgT">이 PC에서 로그아웃</h2>
   <div class="hint" style="line-height:1.7">이 PC에 저장된 <b>연결 열쇠</b>(시간표 암호 키·저장소 키)와 에듀OK 계정을 지우고 연동을 끝내요. 다시 쓰려면 지점 코드를 새로 넣어야 해요.</div>
   <label class="chk" style="margin:12px 0 4px"><input type="checkbox" id="lgData" checked> 이 PC의 시간표·학생 연락처·백업도 지우기 <span class="hint">(추천 · 처음 화면으로 돌아가요)</span></label>
