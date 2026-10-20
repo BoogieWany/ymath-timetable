@@ -89,7 +89,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||''}));
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
-    cns:{per:c.per||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
+    cns:{per:c.per||0,kper:c.kper||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
     exam:b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null}};
   const u=[],sig=[];
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
@@ -121,14 +121,14 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
   const at=Math.max(0,...(db.branches||[]).map(b=>(b._sync&&b._sync.at)||0))||fs.statSync(FILE).mtimeMs; // 적용 시각: 연동 중엔 모든 PC가 같은 값
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
     return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),
-      students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{})})),
+      students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{}),...(st.key?{key:1}:{})})),
       noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
       classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
       sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p})),
       ct:ctPack(b,v),
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
-      ...(b.cns&&(b.cns.per||b.cns.exam)?{cns:{per:b.cns.per||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
+      ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
       ...(b.exam&&b.exam.from&&b.exam.to?{exam:{from:b.exam.from,to:b.exam.to}}:{}),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
@@ -378,7 +378,7 @@ ipcMain.handle('rqSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')re
 function adVerify(x){try{let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){db={branches:[]}}const ob=(db.branches||[]).find(b=>b.own&&b.own.ak);
     if(typeof x.p!=='string'||typeof x.sg!=='string')throw 0;const g=Buffer.from(x.sg,'base64');const eq=k=>{const h=crypto.createHmac('sha256',Buffer.from(k,'base64')).update(x.p,'utf8').digest();return g.length===h.length&&crypto.timingSafeEqual(g,h)};
     let mgr=false;if(!(ob&&eq(ob.own.ak))){const mb=x.kind==='ad'&&(db.branches||[]).find(b=>b.id===x.br&&b.mgk);if(!mb||!eq(mb.mgk))throw 0;mgr=true} /* 지점장 키: 그 지점 · 상담 보류만 */
-    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every(o=>o&&['stAdd','stEd','stSt','stCt','mAdd','mDel','cnSet','cnAsg','cnAsgX','cnHold','iqAdd','iqReg','iqX','anAdd','anDel'].includes(o.op)))throw 0; /* 지점장 키: 자기 지점 관리 탭 일만(그 지점 키라 다른 지점은 안 됨) */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
+    const d=JSON.parse(x.p);if(!d||d.br!==x.br||!Array.isArray(d.ops)||!d.n)throw 0;if(mgr&&!d.ops.every(o=>o&&['stAdd','stEd','stSt','stCt','mAdd','mDel','cnSet','cnAsg','cnAsgX','cnHold','cnHoldG','cnAsgG','stKey','iqAdd','iqReg','iqX','anAdd','anDel'].includes(o.op)))throw 0; /* 지점장 키: 자기 지점 관리 탭 일만(그 지점 키라 다른 지점은 안 됨) */if(mgr){x.mgr=1;x.by=String(d.by||'').slice(0,20)}
     x.ops=d.ops;x.n=String(d.n);x.lb=String(d.lb||'').slice(0,200);x.pat=+d.at||0;delete x.p;delete x.sg}
   catch(e){x.adBad=1;delete x.ops;delete x.p;delete x.sg}}
 ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!mob.ghRepo)return {ok:true,off:true,list:[]};
