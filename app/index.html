@@ -798,6 +798,17 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .cgg{flex-wrap:wrap}.cgg button small{opacity:.6;margin-left:2px;font-weight:500}
 .kst{font-style:normal;color:#d9a441;margin-right:2px;font-size:.9em}
 .sttbl .stn{display:inline-block;min-width:3.4em;text-align:right}
+/* 칸 접기·펼치기 (학생 관리·강사 관리·통계) */
+.sec.foldable>h3{cursor:pointer;user-select:none;position:relative;padding-right:28px;border-radius:8px;transition:background-color .15s}
+.sec.foldable>h3:hover{background:color-mix(in srgb,var(--line2) 45%,transparent)}
+.sec.foldable>h3:focus-visible{outline:2px solid var(--navy-soft)}
+.sec.foldable>h3 .fcv{position:absolute;right:8px;top:50%;width:7px;height:7px;margin-top:-6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-135deg);transition:transform .25s ease}
+.sec.foldable.fold>h3 .fcv{transform:rotate(45deg);margin-top:-5px}
+.sec.foldable>.fb{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s cubic-bezier(.22,.61,.36,1),opacity .25s ease}
+.sec.foldable>.fb>div{min-width:0;min-height:0}
+.sec.foldable.fold>.fb{grid-template-rows:0fr;opacity:0}
+.sec.foldable.fold>.fb>div,.sec.foldable.fanim>.fb>div{overflow:hidden}
+.sec.foldable.fold>h3{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -3156,7 +3167,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.62.9', APPDATE='2026-10-20';
+const APPVER='3.63.0', APPDATE='2026-10-20';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3637,6 +3648,21 @@ function viewStudents(){
 
 /* ================= 화면: 설정 ================= */
 /* ===== 설정 화면: 칸마다 접고 펼치기 (열림 상태는 이 PC에 기억) ===== */
+/* 학생 관리·강사 관리·통계: 칸 제목(h3)을 누르면 접기·펼치기(설정 창처럼) · 버튼은 그대로 · 이 PC에 기억 */
+const FOLD={get(){try{return JSON.parse(localStorage.getItem('ymt_fold')||'{}')}catch(e){return {}}},set(o){try{localStorage.setItem('ymt_fold',JSON.stringify(o))}catch(e){}}};
+function foldSetup(){const root=$('view');if(!root)return;const v=UI.view;
+  const wrap=(els,title,sub)=>{els=els.filter(Boolean);if(!els.length)return;const sec=document.createElement('div');sec.className='sec flist';const h=document.createElement('h3');h.innerHTML=`${esc(title)}${sub?` <span class="hint">${esc(sub)}</span>`:''}`;els[0].parentNode.insertBefore(sec,els[0]);sec.appendChild(h);els.forEach(e=>sec.appendChild(e))};
+  if(v==='students'){const sc=root.querySelector(':scope>.scroll');wrap([root.querySelector(':scope>.tools'),sc],'학생 목록',sc?`${sc.querySelectorAll('tbody tr:not([hidden])').length}명`:'')}
+  if(v==='teacher')wrap([root.querySelector(':scope>.scroll')],'강사 목록','');
+  const st=FOLD.get();
+  root.querySelectorAll(':scope>.sec').forEach(sec=>{const h=sec.querySelector(':scope>h3');if(!h||sec.querySelector(':scope>.fb'))return;const key=v+':'+(h.childNodes[0].textContent||'').trim();
+    const fb=document.createElement('div');fb.className='fb';const inn=document.createElement('div');fb.appendChild(inn);[...sec.childNodes].filter(n=>n!==h).forEach(n=>inn.appendChild(n));sec.appendChild(fb);
+    sec.classList.add('foldable');sec.dataset.fk=key;h.setAttribute('role','button');h.setAttribute('tabindex','0');const cv=document.createElement('i');cv.className='fcv';cv.setAttribute('aria-hidden','true');h.appendChild(cv);
+    if(st[key])sec.classList.add('fold');h.setAttribute('aria-expanded',String(!st[key]))})}
+function foldTg(sec){const on=!sec.classList.contains('fold');const inn=sec.querySelector(':scope>.fb>div');sec.classList.add('fanim');sec.classList.toggle('fold',on);const h=sec.querySelector(':scope>h3');if(h)h.setAttribute('aria-expanded',String(!on));
+  const st=FOLD.get();if(on)st[sec.dataset.fk]=1;else delete st[sec.dataset.fk];FOLD.set(st);clearTimeout(sec._ft);sec._ft=setTimeout(()=>sec.classList.remove('fanim'),320)}
+document.addEventListener('click',e=>{const h=e.target.closest&&e.target.closest('.sec.foldable>h3');if(!h||e.target.closest('button,a,input,select,label,textarea,.seg'))return;foldTg(h.parentElement)});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.sec.foldable>h3')){e.preventDefault();foldTg(e.target.parentElement)}});
 const accSt=()=>{try{return JSON.parse(localStorage.getItem('ymt_acc')||'{}')}catch(e){return {}}};
 function accSetup(){const root=$('view');if(!root)return;
   root.querySelectorAll(':scope > .sec').forEach(sec=>{const h=sec.querySelector(':scope > h3');
@@ -3734,7 +3760,7 @@ function render(){
   $('view').innerHTML=(!UI.edit&&wide&&UI.view!=='help'?'<div class="viewonly">보기 모드예요. 고치려면 위쪽 <b>보기·수정 스위치</b>를 켜세요 (들어갈 때 자동 백업).</div>':'')+(UI.view==='grid'?(UI.gteach&&T(UI.gteach)?viewTeacherIn():viewGrid(ISS)):UI.view==='teacher'?viewTeachers():UI.view==='student'?viewStudent():UI.view==='classes'?viewClasses():UI.view==='students'?viewStudents():UI.view==='help'?viewHelp():UI.view==='admin'?viewAdmin():UI.view==='stats'?viewStats():viewSettings());
   const sc2=$('view').querySelector('.scroll');if(sc2&&keep&&UI._keepScroll!==false){sc2.scrollLeft=keep[0];sc2.scrollTop=keep[1]}UI._keepScroll=true;
   if(!wide){renderIssues();renderDetail()}
-  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums);if(UI.view==='settings')autoFill()}fitGrid();renderPop();setTimeout(renderPop,330);
+  renderVPanel();if(typeof histRender==='function')histRender();renderMode();renderTitle();renderSyncState();if(['students','teacher','stats'].includes(UI.view))foldSetup();if(UI.view==='settings'||UI.view==='admin'){accSetup();Promise.resolve(mobRender()).then(accSums);Promise.resolve(syncRender()).then(accSums);Promise.resolve(rqRender()).then(accSums);if(UI.view==='settings')autoFill()}fitGrid();renderPop();setTimeout(renderPop,330);
 }
 // 시간표가 화면에 꽉 차고 자동 점검이 항상 아래에 보이도록 높이 맞춤
 function fitGrid(){const sc=$('view').querySelector('.scroll');if(!sc)return;if(sc.id==='gridScroll'){sc.style.maxHeight='none';document.documentElement.style.setProperty('--toph',($('view').closest('.main').previousElementSibling.getBoundingClientRect().height+(document.body.classList.contains('exe')?36:0))+'px');calcBase();stretchLater();return}const side=$('side');
@@ -6005,6 +6031,7 @@ const HELP=[
   <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 반에 학생을 넣거나 빼거나 옮기면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요(알림에 '예정 시간표에도 반영'). 예정 시간표에 같은 이름 반이 없으면 알려만 줘요 — 그때는 예정 시간표를 열어 직접 넣어 주세요. 퇴원은 두 시간표 모두에서 빠져요.</li>
   <li><b>에듀OK에서 받기</b>: [학생 관리]의 [에듀OK에서 받기]를 누르고 처음 한 번 <b>그 지점 에듀OK 아이디·비밀번호</b>를 넣어 저장하세요(이 PC에만 암호화해서 저장 · 다른 PC로 안 넘어가요). 그다음부터 [재학생명부 받기]·[입학희망생명부 받기]를 누르면 프로그램이 에듀OK에 로그인해 [엑셀]을 받아 바로 불러와요(10~20초). 넣기 전에 어느 지점에 넣을지 한 번 물어봐요. 에듀OK 화면이 바뀌면 멈출 수 있어요 — 그때는 지금처럼 직접 받아서 가져오기로 넣으면 돼요.</li>
   <li><b>정기 상담</b>: [학생 관리]의 <b>정기 상담</b> 칸에서 지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더(설정의 시험 기간 시작일 ~ 끝나고 1주). <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요(기본: 다음 기간). 기간이 열리면 선생님 강사용 <b>학생 탭 맨 위</b>(오늘 탭에도 알림)에 담당 학생 중 아직 상담 안 한 학생이 떠요. 한 분이 [상담 완료](메모는 선택)를 누르면 같이 가르치는 선생님 화면에서도 완료로 바뀌고, 지점장용에 승인 없이 기록돼요. [주기] 창에서 시험 기간도 바로 정할 수 있어요. PC에서는 학생 이름을 눌러 상담 완료·잘못 넣은 기록 <b>삭제</b>(두 번)·<b>보류</b>(지점장만 · 보류로 건너뛴 상담 기간 수가 보여요)·<b>선생님께 보내기</b>(지점장·행정 선생님 · 요청 내용과 함께 그 선생님 폰 맨 위에 '지정'으로 떠요)를 해요. 행정 선생님 폰에는 <b>지정 상담</b>만 떠요. [통계] 탭에 분기별 상담 횟수(누른 사람 기준)와 이번 기간 선생님별 완료율이 나와요.</li>
+  <li><b>칸 접기·펼치기</b>: 학생 관리·강사 관리·통계에서 칸 제목(입학 문의, 정기 상담, 학생 목록 등)을 누르면 접히고 다시 누르면 펼쳐져요. 이 PC에서 접어 둔 칸은 다음에도 접힌 채로 열려요.</li>
   <li><b>주요 학생 ★</b>: 학생 관리에서 학생의 [상태]를 눌러 <b>주요 학생</b>을 켜면 이름 앞에 ★이 붙고(선생님 폰에도), 정기 상담 [주기]의 <b>주요 학생 주기</b>(예: 매달)로 따로 챙겨요. [학년 단위]에서 '★ 주요 학생'을 고르면 주요 학생 전체를 한 번에 보류·상담 지정할 수 있어요. 폰 관리 탭 학생 창에서도 켜고 끌 수 있어요.</li>
   <li><b>명부 입학일</b>: 재학생명부(에듀OK 포함)의 <b>입학일</b>이 학생의 첫 수업일로 들어가요. 입학일부터 2주는 '신입', 오늘 뒤면 '입학 예정'으로 다시 계산되고, 가져오기 결과 칸에 몇 명이 바뀌었는지 보여요.</li>
   <li><b>정기 상담 · 학년 단위</b>: 정기 상담 칸의 <b>[학년 단위]</b>에서 학년을 고르고 <b>학년 전체 보류</b>(예: 수능 준비) · <b>보류 풀기</b> · <b>학년 전체 상담 지정</b>(예: 수능 끝나고 진로 상담)을 한 번에 해요. 보류는 지점장만. 학년 단위 보류 풀기는 학년으로 건 보류만 풀고, 따로 보류한 학생은 그대로예요. 학년 지정은 '지정 대기'에 한 줄로 묶여서 [모두 취소]로 한꺼번에 취소돼요. 폰 관리 탭 → 정기 상담에도 같은 칸이 있어요.</li>
