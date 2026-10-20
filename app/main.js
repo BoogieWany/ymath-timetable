@@ -434,7 +434,7 @@ ipcMain.handle('rqClose',async(e,num,ok)=>{if(!rqOn())return {ok:false,err:'꺼�
    원장님 PC가 켜질 때 자기 프로그램 파일(index·mobile·main·preload·package)을 저장소 app/에 올리고,
    app/version.json = {m:목록(JSON 글자), sig} 에 원장님 PC만 가진 서명 키(ed25519)로 서명.
    다른 PC는 2분마다 확인 → 서명·파일 해시가 맞고 버전이 더 높을 때만 내려받아 바꿈(index.html은 마지막). 서명 확인용 공개키는 관리자 코드에 들어 있음. */
-const UPD_FILES=['main.js','preload.js','package.json','mobile.html','index.html'];
+const UPD_FILES=['main.js','preload.js','package.json','mobile.html','helpimg.js','index.html']; /* helpimg.js: 도움말 그림 묶음 */
 const vcmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0)}return 0};
 function updPriv(){const c=syCfg();try{if(c.signEnc&&safeStorage.isEncryptionAvailable())return crypto.createPrivateKey(safeStorage.decryptString(Buffer.from(c.signEnc,'base64')));if(c.signPlain)return crypto.createPrivateKey(c.signPlain)}catch(e){}return null}
 function updEnsureKeys(){const c=syCfg();if(c.pub)return;  // 공개키가 이미 있으면(다른 원장님 PC로 연결된 경우 포함) 새로 만들지 않음
@@ -446,7 +446,7 @@ async function updRemote(){try{return JSON.parse((await syRaw(`/repos/${mob.ghOw
 ipcMain.handle('updPublish',async(e,ver)=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false};if(!c.pub)try{updEnsureKeys()}catch(err){}const priv=updPriv();if(!priv)return {ok:false,nokey:true};
   try{if(!mob.ghOwner)await ghConnect();const rv=await updRemote();let cur=null;try{cur=rv&&JSON.parse(rv.m)}catch(err){}
     if(cur&&vcmp(cur.ver,ver)>=0)return {ok:true,skipped:true,remote:cur.ver};
-    const files={};for(const f of UPD_FILES){const b=fs.readFileSync(path.join(__dirname,f));files[f]=sha256(b);await ghPut('app/'+f,b,`프로그램 ${ver} · ${f}`)}
+    const files={};for(const f of UPD_FILES){if(!fs.existsSync(path.join(__dirname,f)))continue;const b=fs.readFileSync(path.join(__dirname,f));files[f]=sha256(b);await ghPut('app/'+f,b,`프로그램 ${ver} · ${f}`)}
     const m=JSON.stringify({ver,at:Date.now(),files});const sig=crypto.sign(null,Buffer.from(m),priv).toString('base64');
     await ghPut('app/version.json',Buffer.from(JSON.stringify({m,sig})),`프로그램 ${ver}`);return {ok:true,published:ver}}catch(err){return {ok:false,err:err.message}}});
 let updBusy=false;
