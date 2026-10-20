@@ -93,7 +93,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     exam:exPack(db,b).exam}};
   const u=[],sig=[];
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
-    const all=rs.some(r=>r.t.all);const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))];
+    const all=rs.some(r=>(r.b.mgr||[]).includes(r.t.id));const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))]; /* 다른 지점: 지점장만(폰에서 전체 시간표만 · 참고용) · 선생님은 이름 있는 지점만 */
     const ct={};rs.forEach(r=>{ct[r.b.id]=Object.assign(ct[r.b.id]||{},ctPlain(r.b,r.ver,r.t,true))});
     const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});mq[id]=mgPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
     const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct,...(Object.keys(mk).length?{mk,mq}:{})};
@@ -135,7 +135,7 @@ function exPack(db,b){EXDB=db;const td=exTd();const P=exPeriods(db,b);const both
 function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(e){return null}
   const at=Math.max(0,...(db.branches||[]).map(b=>(b._sync&&b._sync.at)||0))||fs.statSync(FILE).mtimeMs; // 적용 시각: 연동 중엔 모든 PC가 같은 값
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
-    return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),
+    return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),mgr:(b.mgr||[]).slice(),
       students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{}),...(st.key?{key:1}:{}),...(st.subj&&Object.keys(st.subj).length?{subj:st.subj}:{})})),
       noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
