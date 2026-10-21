@@ -86,6 +86,12 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const ppl={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const ver=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
     (b.teachers||[]).forEach(t=>{const k=nm(t.name);if(k)(ppl[k]=ppl[k]||[]).push({b,t,ver})})});
   const ctAll=b=>{const digits=x=>String(x||'').replace(/\D/g,'');const m={};(b.students||[]).filter(st=>st.status!=='퇴원').forEach(st=>{const ph=digits(st.ph),pa=(st.pa||[]).filter(x=>digits(x.n)).map(x=>({l:String(x.l||'학부모').slice(0,10),n:digits(x.n)}));m[st.id]=ph||pa.length?{...(ph?{p:ph}:{}),...(pa.length?{a:pa}:{})}:{}});return m};
+  /* 3.77.0 자체시험 점수(학원 시험만 · 내신 성적은 안 보냄) — 사람마다 묶음에: 선생님은 담당 학생만 · 지점장은 그 지점 전체 · 행정은 소속 지점 · 관리자 전부 · 다른 지점은 안 보냄
+     학생마다 최근 6회 [시험 이름, 날짜, 점수, 만점, 기준 점수, 풀이완료, 발송완료] */
+  const tsAll=b=>{const G=db.grades||{};const T=Object.values(G.tests||{}).filter(t=>t&&!t.del&&t.br===b.id);const m={};const live=new Set((b.students||[]).filter(st=>st.status!=='퇴원').map(st=>st.id));
+    T.forEach(t=>{const R=(G.tres||{})[t.id]||{};Object.entries(R).forEach(([sid,r])=>{if(!live.has(sid)||!r||(r.sc==null&&!r.d&&!r.s))return;(m[sid]=m[sid]||[]).push([String(t.name||''),String(t.date||''),r.sc==null?null:r.sc,t.max||100,t.cut||0,r.d?1:0,r.s?1:0])})});
+    Object.keys(m).forEach(sid=>{m[sid]=m[sid].sort((a,z)=>z[1].localeCompare(a[1])).slice(0,6)});return m};
+  const tsOf=(b,ids)=>{const A=tsAll(b);const o={};ids.forEach(id=>{if(A[id])o[id]=A[id]});return o};
   const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
@@ -99,25 +105,26 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
     const all=rs.some(r=>(r.b.mgr||[]).includes(r.t.id));const bids=all?v.branches.map(b=>b.id):[...new Set(rs.map(r=>r.b.id))]; /* 다른 지점: 지점장만(폰에서 전체 시간표만 · 참고용) · 선생님은 이름 있는 지점만 */
     const ct={};rs.forEach(r=>{ct[r.b.id]=Object.assign(ct[r.b.id]||{},ctPlain(r.b,r.ver,r.t,true))});
-    const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});mq[id]=mgPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
-    const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct,...(Object.keys(mk).length?{mk,mq,tka:tkA}:{})};
-    for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify([ct,mk,mq])).digest('hex')+(Object.keys(mk).length?':'+tkH:''))}}
+    const ts={};rs.forEach(r=>{ts[r.b.id]=Object.assign(ts[r.b.id]||{},tsOf(r.b,Object.keys(ctPlain(r.b,r.ver,r.t,true))))});
+    const mk={};rs.forEach(r=>{if((r.b.mgr||[]).includes(r.t.id)&&r.b.mgk)mk[r.b.id]=r.b.mgk});const mq={};Object.keys(mk).forEach(id=>{const mb=rs.find(r=>r.b.id===id).b;ct[id]=Object.assign({},ctAll(mb),ct[id]||{});ts[id]=tsAll(mb);mq[id]=mgPack(mb)}); /* 지점장: 그 지점 학생 연락처 전체 */
+    const P={kc:kc.toString('base64'),kb:Object.fromEntries(bids.map(id=>[id,kb[id].toString('base64')])),me:rs.map(r=>({br:r.b.id,t:r.t.id})),nm:rs[0].t.name,all:all?1:0,ct,ts,...(Object.keys(mk).length?{mk,mq,tka:tkA}:{})};
+    for(const c of codes){const dk=await lgKey(c,salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push(c+':'+bids.join('+')+':'+all+':'+crypto.createHash('sha256').update(JSON.stringify([ct,mk,mq,ts])).digest('hex')+(Object.keys(mk).length?':'+tkH:''))}}
   /* 행정 선생님(지점마다 b.staff): 개인 코드 · 소속 지점은 학생 전체 연락처 · 다른 지점은 시간표만 · 내 수업 없음 */
   const sts=[];(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>(b.staff||[]).forEach(a=>{if(/^\d{6}$/.test(String(a.ck||''))&&nm(a.name))sts.push({b,a})}));
   if(sts.length){const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});const allK=Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')]));const ctH=crypto.createHash('sha256').update(JSON.stringify(ctA)).digest('hex');
     const byC={};for(const {b,a} of sts){const c=String(a.ck);if(!byC[c])byC[c]={b,a,sb:[]};if(!byC[c].sb.includes(b.id))byC[c].sb.push(b.id)} // 같은 사람(여러 지점·같은 코드)은 묶음 하나 · 소속은 앞 지점
     /* 행정: 소속 지점(sb)은 학생 전체 연락처 · 다른 지점은 키만(폰에서 전체 시간표만 · 참고용) */
-    for(const [c,{b,a,sb}] of Object.entries(byC)){const ct=Object.fromEntries(sb.filter(id=>ctA[id]).map(id=>[id,ctA[id]]));const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,sb,all:1,ct,tka:tkA};const dk=await lgKey(c,salt);
-      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+sb.join('+')+':'+crypto.createHash('sha256').update(JSON.stringify(ct)).digest('hex')+':'+tkH)}}
+    for(const [c,{b,a,sb}] of Object.entries(byC)){const ct=Object.fromEntries(sb.filter(id=>ctA[id]).map(id=>[id,ctA[id]]));const ts=Object.fromEntries(sb.map(id=>{const bb=(db.branches||[]).find(x=>x.id===id);return [id,bb?tsAll(bb):{}]}));const P={kc:kc.toString('base64'),kb:allK,me:[],nm:a.name,role:'admin',home:b.id,sb,all:1,ct,ts,tka:tkA};const dk=await lgKey(c,salt);
+      u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});sig.push('A'+c+':'+nm(a.name)+':'+sb.join('+')+':'+crypto.createHash('sha256').update(JSON.stringify([ct,ts])).digest('hex')+':'+tkH)}}
   /* 프로그램 관리자 폰(b.own · 10자리 코드): 전 지점 · 학생 전체 연락처 · 관리용 추가 자료(ox) · 폰 요청 서명 키(ak) */
   {const ob=(db.branches||[]).find(b=>kb[b.id]&&b.own&&/^\d{10}$/.test(String(b.own.ck||''))&&b.own.ak);
     if(ob){const own=ob.own;const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});
       const ox={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const c=b.cns||{};
         ox[b.id]={...mgPack(b),
           mstat:Object.fromEntries(Object.keys(b.mstat||{}).sort().slice(-13).map(k=>[k,b.mstat[k]]))}});
-      const mine=ppl[nm(own.nm)]||[];const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:mine.map(r=>({br:r.b.id,t:r.t.id})),nm:own.nm||'',role:'owner',home:(mine[0]&&mine[0].b.id)||ob.id,all:1,ct:ctA,ak:own.ak,ox,tka:tkA};
+      const mine=ppl[nm(own.nm)]||[];const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:mine.map(r=>({br:r.b.id,t:r.t.id})),nm:own.nm||'',role:'owner',home:(mine[0]&&mine[0].b.id)||ob.id,all:1,ct:ctA,ts:Object.fromEntries((db.branches||[]).filter(b=>kb[b.id]).map(b=>[b.id,tsAll(b)])),ak:own.ak,ox,tka:tkA};
       const dk=await lgKey(String(own.ck),salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});
-      sig.push('O'+own.ck+':'+crypto.createHash('sha256').update(JSON.stringify([P.me,P.nm,P.home,own.ak,ctA,ox,tkA])).digest('hex'))}}
+      sig.push('O'+own.ck+':'+crypto.createHash('sha256').update(JSON.stringify([P.me,P.nm,P.home,own.ak,ctA,ox,tkA,P.ts])).digest('hex'))}}
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
