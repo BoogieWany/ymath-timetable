@@ -613,7 +613,7 @@ html.desk.glass .hd{background:rgba(23,36,63,.70)}html.desk.glass.scr .hd{backgr
 .apv{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
 .apv button{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;min-height:38px}
 .aiq{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:12px 14px;margin-bottom:8px}
-.aiqh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.aiqh b{font-size:15.5px}.aiqh small{color:var(--muted)}.aiqh em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:var(--acc)}
+.aiqh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}button.cnnm{appearance:none;-webkit-appearance:none;border:0;background:none;padding:0;margin:0;font:inherit;font-size:15.5px;font-weight:700;color:var(--fg);letter-spacing:-.01em;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:4px;transition:color .15s ease}button.cnnm:active{color:var(--acc)} /* 3.75.3: 이름 네모 테두리 없앰 */.aiqh b{font-size:15.5px}.aiqh small{color:var(--muted)}.aiqh em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:var(--acc)}
 .aiqc a.tel{display:inline-flex;gap:4px;align-items:baseline;padding:0;margin:0;border:0;background:none;box-shadow:none;font-size:13px;min-height:0}.aiqc a.tel b{font-size:13.5px;letter-spacing:0}
 .aiqc{display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 0 10px;font-size:13px;color:var(--muted)}.aiqc a{color:var(--fg);text-decoration:none}.aiqc b{font-family:var(--mono);font-weight:500}
 .aiqo{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.aiqo .hint{flex:1}
@@ -636,7 +636,7 @@ html.desk.glass .hd{background:rgba(23,36,63,.70)}html.desk.glass.scr .hd{backgr
 .pvbar button{border:0;background:#fff;color:#17243F;border-radius:9px;padding:7px 12px;font-weight:700;font-size:13px;white-space:nowrap}
 .admt.own{background:#17243F;color:#fff}
 .sh.amsh .shp{max-height:88vh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
-.amsh .asec{border-top:1px solid var(--line2);padding:12px 0 4px;margin-top:6px}.amsh .asec>label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:8px}.amsh .asec>label small{font-weight:500;margin-left:6px}
+.amsh .asec{border-top:1px solid var(--line2);padding:12px 0 4px;margin-top:6px}.amsh .asec>label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:8px}.amsh .asec>label small,.pklab small{font-weight:500;margin-left:6px}.pklab{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:10px 0 8px}
 .pkl{display:flex;flex-wrap:wrap;gap:6px;max-height:36vh;overflow-y:auto;overscroll-behavior:contain;padding:2px}.pk{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line2);background:var(--panel,#fff);color:var(--fg);border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;transition:background .18s ease,border-color .18s ease,color .18s ease}.pk small{color:var(--muted);font-size:11.5px}.pk[aria-pressed="true"]{background:color-mix(in srgb,#1f2f5c 9%,var(--panel,#fff));border-color:#1f2f5c;color:#1f2f5c}.pk[aria-pressed="true"]::before{content:"✓";font-weight:700;font-size:12px}.pk[aria-pressed="true"] small{color:#3d5a99}
 .amsh .seg.ast,.amsc.seg{display:flex}.amsh .seg.ast button,.amsc button{flex:1;min-height:40px}
 .amsh .arow,.acard .arow,.arow{display:flex;gap:8px;align-items:center;margin:8px 0}.arow span{font-size:13.5px;color:var(--muted);white-space:nowrap}.arow input,.arow select{flex:1;min-width:0}
@@ -1207,7 +1207,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.75.2</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.75.3</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1596,7 +1596,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.75.2';const VC={last:0,nv:''};
+const MVER='3.75.3';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
@@ -1659,6 +1659,9 @@ const stLab=s=>s.away?'휴원':s.pre?'예정':'재원';
 const clsOf=(b,sid)=>{const out=[];b.classes.forEach(c=>Object.entries(c.members||{}).forEach(([t,ids])=>{if(ids.includes(sid))out.push({c,t})}));return out};
 const clsTs=(b,c)=>[...new Set(Object.keys(c.members||{}).concat(b.sessions.filter(o=>o.cls===c.id).map(o=>o.t)))].filter(t=>TT(b,t));
 const clsPairs=b=>b.classes.slice().sort((a,z)=>a.name.localeCompare(z.name,'ko')).flatMap(c=>clsTs(b,c).map(t=>({c,t})));
+/* 3.75.3: 반 여러 개 고르기 칩 */
+const pairChips=(b,id)=>`<div class="pkl" id="${id}">${clsPairs(b).map(p=>`<button type="button" class="pk" data-pk="${esc(p.c.id+'|'+p.t)}" aria-pressed="false"><b>${esc(p.c.name)}</b><small>${esc(T(b,p.t))}T</small></button>`).join('')||'<span class="ssub">반이 없어요</span>'}</div>`;
+const pairPicked=id=>[...document.querySelectorAll(`#${id} .pk[aria-pressed="true"]`)].map(x=>x.dataset.pk);
 const pairOpts=b=>clsPairs(b).map(p=>`<option value="${esc(p.c.id+'|'+p.t)}">${esc(p.c.name)} · ${esc(T(b,p.t))}T</option>`).join('');
 const mdA=d=>d?`${+d.slice(5,7)}/${+d.slice(8,10)}`:'';
 const AMG=['stu','iq','cn','an'];
@@ -1695,7 +1698,7 @@ function amAddSheet(){const b=B0();shOpen(`<h3>학생 추가 · ${esc(b.name)}</
   <div class="a3"><input id="anN" placeholder="이름"><input id="anS" placeholder="학교"><input id="anG" placeholder="학년(예: 중2)"></div>
   <div class="asec"><div class="seg ast">${['재원','예정'].map(v=>`<button data-anv="${v}" aria-pressed="${v==='재원'}">${v==='재원'?'바로 재원':'입학 예정'}</button>`).join('')}</div>
     <div class="arow"><span id="anDL">첫 수업일</span><input type="date" id="anD"></div>
-    <div class="arow"><select id="anC"><option value="">반은 나중에</option>${pairOpts(b)}</select></div></div>
+    <label class="pklab">반 <small>여러 개 골라도 돼요 · 안 고르면 나중에</small></label>${pairChips(b,'anC')}</div>
   <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="amStAddGo">추가</button></div>`,{cls:'amsh'})}
 
 /* 문의 메모: PC가 반영한 것(q.notes) + 이 폰에서 보내 아직 반영 안 된 것(pend) */
@@ -1787,9 +1790,10 @@ function amClick(e){let t=e.target.closest&&e.target.closest('button,select,a,in
   if(ds.cper!==undefined){t.parentElement.querySelectorAll('[data-cper]').forEach(x=>x.setAttribute('aria-pressed',String(x===t)));return true}
   const s=ds.sid?S(b,ds.sid):null;
   if(ds.act==='amStSt'&&s){const v=(document.querySelector('[data-astv][aria-pressed="true"]')||{}).dataset.astv;const d=$('astDate').value;
-    if(v==='예정'&&!(d&&d>tdStr())){fzToast('첫 수업일을 내일 이후로 정해 주세요');return true}
+    if(v==='예정'&&!d){fzToast('첫 수업일을 골라 주세요');return true}
     if(v==='퇴원'&&!amArm(t,'한 번 더 누르면 퇴원 · 반에서 모두 빠져요'))return true;
-    adSend([{op:'stSt',a:{sid:s.id,st:v,date:d||''}}],`${s.name} ${v}${d?' '+mdA(d):''}`,t);return true}
+    const v2=v==='예정'&&d<=tdStr()?'재원':v; /* 3.75.3: 첫 수업일이 지났으면 그날부터 재원 */
+    adSend([{op:'stSt',a:{sid:s.id,st:v2,date:d||''}}],`${s.name} ${v2}${d?' '+mdA(d)+(v2!==v?'부터':''):''}`,t);return true}
   if(ds.amdel){const [cid,tt]=ds.amdel.split('|');const c=C(b,cid);if(!s||!c)return true;if(!amArm(t,'한 번 더'))return true;adSend([{op:'mDel',a:{sid:s.id,cls:cid,t:tt}}],`${s.name} ${c.name}에서 빼기`,t);return true}
   if(ds.act==='amMAdd'&&s){const v=$('amCls').value;if(!v){fzToast('넣을 반을 골라 주세요');return true}const [cid,tt]=v.split('|');const c=C(b,cid);adSend([{op:'mAdd',a:{sid:s.id,cls:cid,t:tt}}],`${s.name} ${c?c.name:''} 넣기`,t);return true}
   if(ds.act==='amHold'&&s){const on=ds.on==='1';adSend([{op:'cnHold',a:{sid:s.id,on,why:on?($('amCnN').value||'').trim().slice(0,40):''}}],`${s.name} 상담 ${on?'보류':'보류 풀기'}`,t);return true}
@@ -1801,9 +1805,10 @@ function amClick(e){let t=e.target.closest&&e.target.closest('button,select,a,in
   if(ds.act==='amEd'&&s){const n=$('aeN').value.trim();if(!n){fzToast('이름을 넣어 주세요');return true}adSend([{op:'stEd',a:{sid:s.id,name:n,school:$('aeS').value.trim(),grade:$('aeG').value.trim()}}],`${n} 정보 고치기`,t);return true}
   if(ds.act==='amStAdd'){amAddSheet();return true}
   if(ds.act==='amStAddGo'){const n=$('anN').value.trim().replace(/\s+/g,'');if(!n){fzToast('이름을 넣어 주세요');$('anN').focus();return true}const pre=((document.querySelector('[data-anv][aria-pressed="true"]')||{}).dataset||{}).anv==='예정';const d=$('anD').value;
-    if(pre&&!(d&&d>tdStr())){fzToast('입학 예정은 첫 수업일을 내일 이후로 정해 주세요');return true}
-    const ops=[{op:'stAdd',a:{name:n,school:$('anS').value.trim(),grade:$('anG').value.trim(),st:pre?'예정':'재원',from:d||''}}];const cv=$('anC').value;let cn='';if(cv){const [cid,tt]=cv.split('|');ops.push({op:'mAdd',a:{sid:'$new',cls:cid,t:tt}});cn=(C(b,cid)||{}).name||''}
-    adSend(ops,`${n} 학생 추가${pre?' (예정)':''}${cn?' · '+cn:''}`,t);return true}
+    if(pre&&!d){fzToast('입학 예정은 첫 수업일을 골라 주세요');return true}
+    /* 3.75.3: 첫 수업일이 오늘이거나 지났으면 그날부터 재원(입학일 = 첫 수업일) */const past=pre&&d<=tdStr();
+    const ops=[{op:'stAdd',a:{name:n,school:$('anS').value.trim(),grade:$('anG').value.trim(),st:pre&&!past?'예정':'재원',from:d||''}}];const pk=pairPicked('anC');pk.forEach(cv=>{const [cid,tt]=cv.split('|');ops.push({op:'mAdd',a:{sid:'$new',cls:cid,t:tt}})});const cn=pk.map(cv=>(C(b,cv.split('|')[0])||{}).name||'').filter(Boolean);
+    adSend(ops,`${n} 학생 추가${pre&&!past?' (예정)':past?` (${mdA(d)}부터 재원)`:''}${cn.length?' · '+cn.join(', '):''}`,t);return true}
   if(ds.adback){if(!amArm(t,'한 번 더'))return true;adSend([{op:'stSt',a:{sid:ds.adback,st:'재원'}}],`${ds.nm} 재원으로`,t);return true}
   if(ds.act==='amIqAdd'){shOpen(`<h3>입학 문의 추가</h3><div class="a3"><input id="iqN" placeholder="이름"><input id="iqS" placeholder="학교"><input id="iqG" placeholder="학년"></div><input id="iqP" inputmode="tel" placeholder="보호자 연락처" style="margin-top:8px"><div class="arow"><span>입학 희망일</span><input type="date" id="iqW"></div><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="amIqAddGo">추가</button></div>`,{cls:'amsh'});return true}
   if(ds.act==='amIqAddGo'){const n=$('iqN').value.trim();if(!n){fzToast('이름을 넣어 주세요');return true}const ph=$('iqP').value.replace(/\D/g,'');if(ph&&!/^0\d{8,10}$/.test(ph)){fzToast('연락처를 확인해 주세요');return true}
@@ -1812,8 +1817,8 @@ function amClick(e){let t=e.target.closest&&e.target.closest('button,select,a,in
   if(ds.act==='amIqNote'){const i=$('iqNt');const tx=(i&&i.value||'').trim();if(!tx){fzToast('메모를 적어 주세요');if(i)i.focus();return true}const qid=ds.qid;
     adSend([{op:'iqNote',a:{id:qid,tx}}],`${ds.nm} 메모`,t,{note:{qid,tx}}).then(ok=>{if(!ok)return;const q=(OX(B0()).inq||[]).find(x=>x.id===qid);if(q)amIqSheet(B0(),q)});return true}
   if(ds.iqndel){if(!amArm(t,'지울까요?'))return true;const qid=ds.iqndel;adSend([{op:'iqNoteDel',a:{id:qid,nid:ds.nid}}],'메모 지우기',t,{noteDel:{qid,nid:ds.nid}}).then(ok=>{if(!ok)return;const q=(OX(B0()).inq||[]).find(x=>x.id===qid);if(q)amIqSheet(B0(),q)});return true}
-  if(ds.iqpre){const q=(OX(b).inq||[]).find(x=>x.id===ds.iqpre);if(!q)return true;shOpen(`<h3>입학 예정으로 · ${esc(q.name)}</h3><p class="ssub">연락처까지 학생으로 옮겨요</p><div class="arow"><span>첫 수업일</span><input type="date" id="iqF" value="${esc(q.want&&q.want>tdStr()?q.want:'')}"></div><div class="asec"><label>반 <small>여러 개 골라도 돼요 · 안 고르면 나중에</small></label><div class="pkl" id="iqC">${clsPairs(b).map(p=>`<button type="button" class="pk" data-pk="${esc(p.c.id+'|'+p.t)}" aria-pressed="false"><b>${esc(p.c.name)}</b><small>${esc(T(b,p.t))}T</small></button>`).join('')||'<span class="ssub">반이 없어요</span>'}</div></div><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="amIqPreGo" data-qid="${esc(q.id)}" data-nm="${esc(q.name)}">입학 예정으로</button></div>`,{cls:'amsh'});return true}
-  if(ds.act==='amIqPreGo'){const d=$('iqF').value;if(!(d&&d>tdStr())){fzToast('첫 수업일을 내일 이후로 정해 주세요');return true}const ops=[{op:'iqReg',a:{id:ds.qid,from:d}}];/* 3.75.2: 반 여러 개 */const pk=[...document.querySelectorAll('#iqC .pk[aria-pressed="true"]')].map(x=>x.dataset.pk);pk.forEach(cv=>{const [cid,tt]=cv.split('|');ops.push({op:'mAdd',a:{sid:'$new',cls:cid,t:tt}})});adSend(ops,`${ds.nm} 입학 예정 ${mdA(d)}${pk.length?` · 반 ${pk.length}개`:''}`,t);return true}
+  if(ds.iqpre){const q=(OX(b).inq||[]).find(x=>x.id===ds.iqpre);if(!q)return true;shOpen(`<h3>입학 예정으로 · ${esc(q.name)}</h3><p class="ssub">연락처까지 학생으로 옮겨요 · 첫 수업일이 오늘이거나 지났으면 그날부터 재원(입학일)</p><div class="arow"><span>첫 수업일</span><input type="date" id="iqF" value="${esc(q.want&&q.want>tdStr()?q.want:'')}"></div><div class="asec"><label>반 <small>여러 개 골라도 돼요 · 안 고르면 나중에</small></label>${pairChips(b,'iqC')}</div><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="amIqPreGo" data-qid="${esc(q.id)}" data-nm="${esc(q.name)}">입학 예정으로</button></div>`,{cls:'amsh'});return true}
+  if(ds.act==='amIqPreGo'){const d=$('iqF').value;if(!d){fzToast('첫 수업일을 골라 주세요');return true} /* 3.75.3: 지난 날짜면 그날부터 재원 */const ops=[{op:'iqReg',a:{id:ds.qid,from:d}}];/* 3.75.2: 반 여러 개 */const pk=[...document.querySelectorAll('#iqC .pk[aria-pressed="true"]')].map(x=>x.dataset.pk);pk.forEach(cv=>{const [cid,tt]=cv.split('|');ops.push({op:'mAdd',a:{sid:'$new',cls:cid,t:tt}})});adSend(ops,`${ds.nm} ${d>tdStr()?'입학 예정 '+mdA(d):mdA(d)+'부터 재원'}${pk.length?` · 반 ${pk.length}개`:''}`,t);return true}
   if(ds.pk){const on=t.getAttribute('aria-pressed')!=='true';t.setAttribute('aria-pressed',String(on));return true}
   if(ds.iqnow){if(!amArm(t,'한 번 더'))return true;adSend([{op:'iqReg',a:{id:ds.iqnow,from:''}}],`${ds.nm} 바로 재원`,t);return true}
   if(ds.iqx){if(!amArm(t,'한 번 더'))return true;adSend([{op:'iqX',a:{id:ds.iqx}}],`${ds.nm} 입학취소`,t);return true}
