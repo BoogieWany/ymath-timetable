@@ -601,6 +601,9 @@ body.editing #gridScroll .grid thead th{z-index:3}
 .syncb.adm{background:color-mix(in srgb,#F4B860 20%,var(--panel));color:#9a5b08}
 .sydevs{display:flex;flex-direction:column;gap:6px;margin:14px 0 6px;max-width:820px}.sydevs>b{font-size:13.5px}
 .sydevs .mono{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+/* 3.78.1: 올려 둔 버전 상태 줄 (연결된 PC 위) */
+.updst{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--panel) 70%,transparent);font-size:13px;transition:background .25s}
+.updst>b.mono,.updst .mono{color:var(--fg)}.updst .sep{color:var(--muted)}.updst .sp{flex:1}.updst .btn.sm{padding:3px 10px;min-height:0;font-size:12.5px}
 :root{--admfg:#9a5b08;--admbg:color-mix(in srgb,#F4B860 20%,var(--panel))}
 :root[data-theme="dark"]{--admfg:#F6C778;--admbg:color-mix(in srgb,#F4B860 18%,var(--panel))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--admfg:#F6C778;--admbg:color-mix(in srgb,#F4B860 18%,var(--panel))}}
@@ -3299,7 +3302,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.78.0', APPDATE='2026-10-21';
+const APPVER='3.78.1', APPDATE='2026-10-22';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4401,6 +4404,7 @@ document.addEventListener('click',async e=>{
     case 'syJoin':syJoin();break;
     case 'syName':{SYNC.info=await bridge.syncName($('syName').value.trim());toast('이름을 저장했어요');break}
     case 'syPull':{toast('받는 중…');const ok=await syncPull({full:true});toast(ok?'최신으로 받았어요':'받지 못했어요 · '+SYNC.err);syncRender();break}
+    case 'updChk':updChk();break; /* 3.78.1: 업데이트 지금 확인(올리기·받기) */
     case 'lgoDlg':lgoDlg();break;
     case 'lgoGo':await lgoGo(el);break;
     case 'syOff':{if(!armed(el,'syoff'))return;if(UI.edit){toast('수정 모드를 먼저 끝내 주세요');return}SYNC.info=await bridge.syncOff();clearInterval(SYNC.timer);renderSyncState();syncRender();toast('이 PC의 연동을 껐어요 · 시간표는 그대로 남아요');break}
@@ -5291,12 +5295,22 @@ async function syncInit(){if(!bridge||!bridge.syncInfo){SYNC.ready=true;render()
   syncStartTimer();window.addEventListener('focus',()=>{syncPull()});renderSyncState();setTimeout(updTick,3000)}
 setTimeout(()=>keyExpCheck(),5000);setInterval(()=>keyExpCheck(),6*3600*1000);
 
-/* ---- 자동 업데이트 ---- */
-async function updTick(){if(!syOn()||!bridge.updCheck)return;
-  if(SYNC.info.role==='owner'){try{const r=await bridge.updPublish(APPVER);if(r&&r.published)toast(`다른 PC들에 새 버전 ${r.published}을(를) 보냈어요 · 2분 안에 자동으로 바뀌어요`,5000)}catch(e){}}
+/* ---- 자동 업데이트 ----
+   단추가 없어요: 프로그램 관리자 PC는 켜진 뒤 3초·2분마다 자기 버전이 올려 둔 버전보다 새로우면 저절로 올리고(updPublish),
+   모든 PC는 2분마다 받아요(updCheck). 3.78.1: 관리자 탭 [연결된 PC]에 '올려 둔 버전 · 마지막 확인' 상태 줄 */
+const UPD={pub:null,at:0,chk:0,busy:false,err:''};
+const vcmpR=(a,b)=>{const x=String(a||'').split('.').map(Number),y=String(b||'').split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)-(y[i]||0)}return 0};
+async function updTick(){if(!syOn()||!bridge.updCheck||UPD.busy)return;UPD.busy=true;UPD.err='';
+  if(SYNC.info.role==='owner'){try{const r=await bridge.updPublish(APPVER);if(r&&r.published){UPD.pub=r.published;UPD.at=Date.now();toast(`다른 PC들에 새 버전 ${r.published}을(를) 보냈어요 · 2분 안에 자동으로 바뀌어요`,5000)}else if(r&&r.skipped)UPD.pub=r.remote;else if(r&&r.err)UPD.err=r.err;else if(r&&r.nokey)UPD.err='서명 키가 없어 올리지 못해요'}catch(e){}}
   try{const r=await bridge.updCheck(APPVER);if(r&&r.updated){if(r.restart){updBanner(r.updated)}else toast(`새 버전 ${r.updated}을(를) 받았어요 · 곧 화면이 새로 바뀌어요`)}
-    else if(r&&r.err)console.warn(r.err)}catch(e){}
-  staleCheck()}
+    else if(r&&r.err){console.warn(r.err);UPD.err=UPD.err||r.err}}catch(e){}
+  UPD.chk=Date.now();UPD.busy=false;updStRender();staleCheck()}
+/* 상태 줄: 올려 둔 버전(저장소 version.json) · 이 PC 버전 · 마지막 확인 */
+function updStHTML(){const p=UPD.pub,c=p?vcmpR(APPVER,p):0;
+  const st=UPD.busy?'<span class="hint">확인하는 중…</span>':!p?'<span class="hint">아직 올린 버전이 없어요 · 켜 두면 저절로 올라가요</span>':c>0?`<span class="rqw">이 PC가 더 새 버전(${esc(APPVER)}) · 2분 안에 저절로 올라가요</span>`:c<0?`<span class="rqw">이 PC(${esc(APPVER)})가 더 옛 버전 · 받으면 다시 켜야 할 수 있어요</span>`:'<span class="hint">이 PC와 같아요</span>';
+  return `<div class="updst" id="updSt"><span>올려 둔 버전 <b class="mono">${p?esc(p):'—'}</b>${UPD.at?` <span class="hint">· ${fmtT(UPD.at)} 올림</span>`:''}</span><span class="sep">·</span>${st}<span class="sp"></span><span class="hint">${UPD.chk?'마지막 확인 '+fmtT(UPD.chk):''}</span><button class="btn sm" data-act="updChk" ${UPD.busy?'disabled':''}>지금 확인</button>${UPD.err?`<div class="rqw" style="flex-basis:100%">${esc(UPD.err)}</div>`:''}</div>`}
+function updStRender(){const el=$('updSt');if(el)el.outerHTML=updStHTML()}
+async function updChk(){if(UPD.busy)return;const p=updTick();updStRender();await p;toast(UPD.err?'확인했지만 올리지 못했어요 · '+UPD.err:'확인했어요',3500);syDevsLoad()}
 /* 다시 시작해야 하는 PC: 새 엔진을 받았는데 아직 옛 엔진으로 도는 중 → [적용]·바로 저장을 막음 (옛 방식으로 선생님 화면을 덮어쓰지 않게) */
 async function staleCheck(){if(!bridge||!bridge.appStale)return false;let s=false;try{s=!!await bridge.appStale()}catch(e){}
   if(s&&!UI.stale){UI.stale=true;updBanner('',true)}else if(!s)UI.stale=false;return s}
@@ -5463,10 +5477,13 @@ async function admJoin(){const code=($('anCode').value||'').trim(),pw=$('anPw').
   toast(`관리자 PC가 됐어요 · 평소엔 ${syBName(myBr())} 모드, 설정 맨 위 [관리자 모드]에 비밀번호를 넣으면 열려요`,6000)}
 
 /* ---- 연결된 PC · 원격 끊기 (관리자 모드) ---- */
-async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if(el)el.remove();return}let r;try{r=await bridge.syncDevices()}catch(e){return}const box=$('syDevs');if(!box)return;
+async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if(el)el.remove();return}let r;try{r=await bridge.syncDevices()}catch(e){return}
+  if(bridge.updRemoteVer){try{const v=await bridge.updRemoteVer();if(v&&v.ver){UPD.pub=v.ver;UPD.at=v.at||0}}catch(e){}} /* 저장소에 올려 둔 버전 */
+  const box=$('syDevs');if(!box)return;
   const L=(r.list||[]).sort((a,b)=>(b.me?1:0)-(a.me?1:0)||(a.role==='owner'?0:1)-(b.role==='owner'?0:1)||String(a.name).localeCompare(String(b.name),'ko'));
   const md=d=>{if(!d.day)return '';const [y,m,dd]=d.day.split('-');const age=Math.floor((Date.now()-new Date(+y,+m-1,+dd).getTime())/86400000);return `${+m}/${+dd}${age>=30?` <span class="rqw">· ${age}일째 안 켜짐</span>`:''}`};
   box.innerHTML=`<b>연결된 PC</b><span class="hint">각 PC가 켜질 때 여기에 나와요 · [연결 끊기]하면 그 PC는 다음 동기화(2분 안) 때 연동이 꺼지고 키가 지워져요. 시간표 파일은 그 PC에 남아요</span>
+    ${updStHTML()}
     ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+(d.role==='staff'?' 행정 선생님':' 관리자')}</td><td class="mono">${esc(d.ver||'')}${d.stale?' <span class="rqw" title="새 버전을 받았지만 다시 시작하지 않았어요 · 그 PC에서 프로그램을 껐다 켜 주세요">· 다시 켜야 함</span>':''}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
 async function syRevokeGo(btn){if(!armed(btn,'rv'+btn.dataset.syrevoke,'한 번 더 누르면 끊어요'))return;btn.disabled=true;const r=await bridge.syncRevoke(btn.dataset.syrevoke);
   if(!r.ok){btn.disabled=false;toast('끊지 못했어요 · '+(r.err||''),4000);return}toast(`${btn.dataset.n||'그 PC'}의 연결을 끊었어요 · 그 PC가 켜져 있으면 2분 안에 연동이 꺼져요`,5000);syDevsLoad()}
@@ -7309,7 +7326,8 @@ const HELP=[
   <li>코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기].</li></ul>`},
  {id:'a-pub',owner:1,t:'폰으로 보기 설정 · 키',b:`<ul><li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]·바로 저장할 때마다 올라가서 어디서나 폰으로 봐요. 시간표는 지점마다 따로 암호화되고, 사람마다 받는 묶음(지점·연락처·전체 업무)이 달라요.</li><li><b>보강 등록 키</b>(Issues 권한만 있는 GitHub 키)를 [설정 → 선생님 보강 등록]에 넣어 켜면 폰 요청(보강·상담 완료·업무 완료·관리 탭)이 PC로 와요.</li><li>GitHub 키는 만료 14일 전부터 위쪽 노란 띠로 알려 줘요. 새 키를 넣으면 지점 PC들은 자동으로 따라와요.</li></ul>`},
  {id:'a-deploy',owner:1,t:'업데이트 배포 · 업데이트 무게',b:`
-  <ul><li>새 버전 화면 파일을 관리자 PC 프로그램 폴더(resources\\app)에 넣고 켜면, 설정의 <b>[업데이트 올리기]</b>로 다른 PC에 보내요(2분 안에 받음). 본체(main.js)가 바뀐 버전은 받는 PC도 <b>다시 시작</b>이 필요해요.</li>
+  <ul><li>누르는 단추는 없어요. 새 버전 파일을 관리자 PC 프로그램 폴더(resources\\app)에 넣고 켜 두면, 켜진 뒤 3초·그다음 <b>2분마다</b> 이 PC 버전이 올려 둔 버전보다 새로울 때 <b>저절로</b> 저장소에 올리고("다른 PC들에 새 버전을 보냈어요" 알림), 다른 PC들은 2분마다 받아요. 본체(main.js)가 바뀐 버전은 받는 PC도 <b>다시 시작</b>이 필요해요(관리자 PC도 한 번 껐다 켜기).</li>
+  <li>[프로그램 관리 → 연결된 PC] 위 <b>올려 둔 버전</b> 줄에서 저장소에 올라간 버전·올린 시각·마지막 확인 시각을 보고, 기다리기 싫으면 <b>[지금 확인]</b>으로 바로 올리거나 받아요. 폰 [관리 → PC·업데이트]의 [시간표 지금 올리기]는 프로그램이 아니라 폰용 시간표 자료를 올리는 거예요.</li>
   <li>설치파일 폴더의 <b>업데이트 exe</b>는 새로 설치하거나 자동 업데이트가 안 될 때 써요.</li>
   <li><b>업데이트 무게</b> — 가벼움: 문구·색·보이기/숨기기·정렬(화면 파일만) · 보통: 기존 자료로 새 화면·칸·통계(화면 파일만) · 무거움: 폰에 새 자료 보내기·폰→PC 요청·권한·새 탭(main.js · 다시 시작) · 가장 무거움: 저장 방식·동기화 규칙·이름 규칙·서버 바꾸기(전체 점검 필수 · 옛 자료 옮기기).</li>
   <li><b>도움말</b>: 업데이트 때마다 바뀐 기능의 글을 고치고 그림을 다시 찍어요(개발키트 test/helpshots.js).</li></ul>`},
