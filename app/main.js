@@ -99,7 +99,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     exam:exPack(db,b).exam}};
   /* 전체 업무(지점장·행정·관리자 폰 보기용): 안 끝난 일 + 끝난 지 14일 안 된 일 */
   const tkA=(()=>{const td=new Date(Date.now()-14*864e5).toISOString().slice(0,10);const nm0=x=>String(x||'').replace(/\s+/g,'').replace(/T$/,'');
-    return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&(!t.done||String(t.doneAt||'')>=td)).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').split(',').map(nm0).filter(Boolean).join(','),n:t.n||0,a:t.ans?1:0,d:t.due||'',m:t.memo||'',...(t.done?{x:1,xd:String(t.doneAt||'').slice(0,10),xb:t.doneBy||''}:{})}))})();
+    return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&(!t.done||String(t.doneAt||'')>=td)).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').split(',').map(nm0).filter(Boolean).join(','),n:t.n||0,a:t.ans?1:0,...(t.pub?{p:1}:{}),d:t.due||'',m:t.memo||'',...(t.done?{x:1,xd:String(t.doneAt||'').slice(0,10),xb:t.doneBy||''}:{})}))})();
   const tkH=crypto.createHash('sha256').update(JSON.stringify(tkA)).digest('hex');
   const u=[],sig=[];
   for(const rs of Object.values(ppl)){const codes=[...new Set(rs.map(r=>String(r.t.ck||'')).filter(c=>/^\d{6}$/.test(c)))];if(!codes.length)continue;
@@ -169,7 +169,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
       ...(()=>{const e=exPack(db,b);return {...(e.exam?{exam:e.exam}:{}),exams:e.exams,...(e.exl?{exl:e.exl,rng:e.rng}:{})}})(),
       ...(()=>{const s=schPack(db,b);return s.length?{schl:s}:{}})(),
-      tk:(()=>{const W=new Set((b.teachers||[]).map(t=>String(t.name||'').replace(/\s+/g,'').replace(/T$/,'')));return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&!t.done&&String(t.who||'').split(',').some(n=>W.has(n.replace(/\s+/g,'').replace(/T$/,'')))).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').replace(/\s+/g,'').replace(/T$/,''),n:t.n||0,a:t.ans?1:0,d:t.due||'',m:t.memo||''}))})(),
+      tk:(()=>{const W=new Set((b.teachers||[]).map(t=>String(t.name||'').replace(/\s+/g,'').replace(/T$/,'')));return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&!t.done&&String(t.who||'').split(',').some(n=>W.has(n.replace(/\s+/g,'').replace(/T$/,'')))).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').replace(/\s+/g,'').replace(/T$/,''),n:t.n||0,a:t.ans?1:0,...(t.pub?{p:1}:{}),d:t.due||'',m:t.memo||''}))})(),
       ann:(b.ann||[]).filter(a=>!a.until||a.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(a=>({id:a.id,tx:a.tx,until:a.until||'',at:a.at||0})),
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
       // 예정 시간표: 날짜가 되면 폰이 스스로 이걸로 바꿔 보여 줌 · pub이면 그 전에도 미리 보기
