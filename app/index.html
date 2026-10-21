@@ -925,6 +925,13 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 /* 인쇄: A4 가로 한 장 */
 .pg.xcpg{padding:6mm 7mm}.xcal.pr{--fg:#1b2233;--muted:#6b7280;--panel:#fff;--line2:#e3e0d6}.xcal.pr .xcd{min-height:30mm;background:#faf8f2;border-color:#e6e0cf}.xcal.pr .xcd.e{background:transparent;border-color:transparent}.pg.xcpg{box-sizing:border-box}.xcal.pr .xcg{gap:5px}
 .xcal.pr .xce,.xcal.pr .xcw,.xcal.pr .xcd{-webkit-print-color-adjust:exact;print-color-adjust:exact}.xcal.pr .xcn{transition:none}.xcal.pr .xch{font-size:11px}.xcal.pr .xcn{font-size:10.5px}
+
+/* 3.75.3 반 여러 개 고르기 칩(PC) */
+.pkpc{display:flex;flex-wrap:wrap;gap:6px;max-height:240px;overflow-y:auto;padding:2px;margin:4px 0 6px}
+.pkpc .pk{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line2);background:var(--panel);color:var(--fg);border-radius:999px;padding:5px 11px;font:inherit;font-size:12.5px;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease}
+.pkpc .pk b{font-weight:600}.pkpc .pk small{color:var(--muted);font-size:11.5px}
+.pkpc .pk:hover{border-color:color-mix(in srgb,var(--navy) 35%,var(--line2))}
+.pkpc .pk[aria-pressed="true"]{background:color-mix(in srgb,var(--navy) 9%,var(--panel));border-color:var(--navy);color:var(--navy)}.pkpc .pk[aria-pressed="true"]::before{content:"✓";font-weight:700;font-size:11.5px}.pkpc .pk[aria-pressed="true"] small{color:color-mix(in srgb,var(--navy) 70%,var(--muted))}
 </style>
 </head>
 <body>
@@ -3285,7 +3292,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.75.2', APPDATE='2026-10-21';
+const APPVER='3.75.3', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4582,7 +4589,7 @@ function qaDlgHTML(title,sub,s,withName){const b=B();const schools=[...new Set(b
     <div id="qaMore" class="qamore${withName?' off':''}">
       <label class="qal" for="qaSchool">학교 <span class="hint">비워 둬도 돼요</span></label><input id="qaSchool" list="qaSl" autocomplete="off" placeholder="예: 용호중" value="${esc(s&&s.school||'')}"><datalist id="qaSl">${schools.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
       <label class="qal">학년 <span class="hint">비워 둬도 돼요</span></label><div class="seg qag" role="group" aria-label="학년">${QA_GRADES.map(g=>`<button data-qag="${g}" aria-pressed="${!!(s&&s.grade===g)}">${g}</button>`).join('')}</div></div>
-      <label class="qal" for="qaFrom">첫 수업일 <span class="hint">오늘 이후면 입학 예정 · 비우면 바로 재원</span></label><input id="qaFrom" type="date" value="${esc(s&&s.from||'')}">
+      <label class="qal" for="qaFrom">첫 수업일 <span class="hint">앞날이면 입학 예정 · 지난 날이면 그날부터 재원(입학일) · 비우면 바로 재원</span></label><input id="qaFrom" type="date" value="${esc(s&&s.from||'')}">
     <div class="admerr" id="qaErr"></div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" id="qaGo" data-act="qaSave">${withName?'넣기':'저장'}</button></div></div>`}
 function qaOpen(sid){if(!UI.edit&&!(typeof isStaff==='function'&&isStaff())){toast('수정 모드에서 넣을 수 있어요');return}const o=V().sessions.find(x=>x.id===sid);if(!o)return;
@@ -5817,7 +5824,7 @@ function stDlg(id){const s=S(id);if(!s||(typeof pcViewOnly==='function'&&pcViewO
   <div class="seg stseg" role="group" aria-label="상태">${['재원','휴원','예정','퇴원'].map(x=>`<button data-stv="${x}" aria-pressed="${cur===x}">${x==='예정'?'입학 예정':x}</button>`).join('')}</div>
   <div class="row" id="stOutRow"${cur==='퇴원'?'':' hidden'}><label for="stOut">퇴원일</label><input id="stOut" type="date" value="${esc(s.out||todayStr())}"><span class="hint">퇴원하면 모든 반·특강 명단에서 빠지고, 학생 관리 '퇴원'에 남아요</span></div>
   <label class="chk" style="margin:4px 0 6px"><input type="checkbox" id="stKey" ${s.key?'checked':''}> <i class="kst">★</i>주요 학생 <span class="hint">정기 상담을 따로 챙겨요(주요 학생 주기·한꺼번에 보류·지정) · 선생님 폰에도 ★로 보여요</span></label>
-  <div class="row"><label for="stFrom">첫 수업일</label><input id="stFrom" type="date" value="${esc(s.from||'')}"><span class="hint">예정이면 꼭 · 이 날부터 저절로 재원, 2주 동안 '신입'으로 보여요</span></div>
+  <div class="row"><label for="stFrom">첫 수업일</label><input id="stFrom" type="date" value="${esc(s.from||'')}"><span class="hint">예정이면 꼭 · 앞날이면 그날 저절로 재원, 오늘이거나 지난 날이면 그날부터 재원(입학일) · 2주 동안 '신입'</span></div>
   ${csTgt(s)?`<div class="row csrow"><label>신입 상담</label>${s.cs?`<span class="cst ok">상담 완료 · ${mdS(s.cs)}${s.csBy?' · '+esc(csByT(s.csBy)):''}</span><button class="btn sm" data-csset="${id}|0" data-label="상담 취소">상담 취소</button>`:`<span class="cst no">상담 전</span><button class="btn sm" data-csset="${id}|1">상담 완료로 표시</button>`}<span class="hint">선생님이 강사용에서 누르면 저절로 바뀌어요 · 바로 저장</span></div>`:''}
   ${typeof grHistBox==='function'?grHistBox(s):''}
   <div class="row" style="justify-content:flex-end"><span class="hint" style="flex:1">수정 모드가 아니어도 바로 저장돼요</span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="stSave">저장</button></div></div>`}
@@ -5826,7 +5833,8 @@ const csByT=n=>/\)$/.test(n)?n:n+'T';
 async function csSet(v){const [id,on]=v.split('|');const s=S(id);if(!s)return;$('modal').hidden=true;
   await quickChange(()=>{const x=B().students.find(i=>i.id===id);if(!x)return;if(on==='1'){x.cs=todayStr();x.csBy=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||''}else{delete x.cs;delete x.csBy}},on==='1'?`${sname(id)} · 상담 완료로 표시했어요`:`${sname(id)} · 상담 완료를 취소했어요 (다시 상담 전)`)}
 async function stSave(){const d=document.querySelector('[data-stid]');if(!d)return;const id=d.dataset.stid;const v=(document.querySelector('[data-stv][aria-pressed="true"]')||{}).dataset.stv||'재원';const fd=$('stFrom').value||'';const key=!!($('stKey')||{}).checked;const note=(($('stNote')||{}).value||'').trim();const kk=s=>{if(key)s.key=1;else delete s.key;if(note)s.note=note;else delete s.note};
-  if(v==='예정'&&!(fd&&fd>todayStr())){toast('입학 예정은 첫 수업일을 오늘 이후로 정해 주세요');$('stFrom').focus();return}
+  if(v==='예정'&&!fd){toast('입학 예정은 첫 수업일을 골라 주세요');$('stFrom').focus();return}
+  if(v==='예정'&&fd<=todayStr()){$('modal').hidden=true;await quickChange(()=>{const s=B().students.find(x=>x.id===id);if(!s)return;kk(s);s.status='재원';delete s.out;s.from=fd},`${sname(id)} · ${mdS(fd)}부터 재원(입학일 ${mdS(fd)})`);return} /* 3.75.3: 첫 수업일이 지났으면 그날부터 재원 */
   if(v==='퇴원'){const od=($('stOut')||{}).value||todayStr();$('modal').hidden=true;const n=stOutCls(B(),id);
     await quickChange(()=>{const b=B();const s=b.students.find(x=>x.id===id);if(!s)return;kk(s);s.status='퇴원';s.out=od;stOutApply(b,id)},`${sname(id)} · 퇴원 ${mdS(od)}${n?` · 반 ${n}곳에서 뺐어요`:''}`);return}
   $('modal').hidden=true;await quickChange(()=>{const s=B().students.find(x=>x.id===id);if(!s)return;kk(s);s.status=v;delete s.out;if(fd)s.from=fd;else delete s.from},v==='예정'?`${sname(id)} · 입학 예정 ${mdS(fd)}부터 · 선생님 폰 공지에 바로 보여요`:`${sname(id)} · ${v}${key?' · ★ 주요 학생':''}`)}
@@ -6095,17 +6103,24 @@ async function inqNote(id,tx){tx=String(tx||'').trim().slice(0,300);if(!tx){toas
 async function inqNoteDel(id,nid){await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.notes=(x.notes||[]).filter(n=>n.id!==nid)},'메모를 지웠어요')}
 async function inqSet(id,st){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;
   await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.st=st;delete x.gone;if(st==='cancel')x.cancelAt=todayStr();else delete x.cancelAt},st==='cancel'?`${q.name} · 입학취소 (취소된 문의에 남아요)`:`${q.name} · 다시 문의 중으로`)}
+/* 3.75.3 반 여러 개 고르기(PC): 지금 시간표의 반 × 그 반 선생님 */
+function pkPairsPC(){const b=B(),v=(b.versions||[]).find(x=>x.id===b.current)||V();return v.classes.slice().sort((a,z)=>sortKo(a.name,z.name)).flatMap(c=>[...new Set(Object.keys(c.members||{}).concat(v.sessions.filter(o=>o.cls===c.id).map(o=>o.t)))].filter(t=>b.teachers.some(x=>x.id===t)).map(t=>({c,t})))}
+function pkChipsPC(id){return `<div class="pkl pkpc" id="${id}">${pkPairsPC().map(p=>`<button type="button" class="pk" data-pk="${esc(p.c.id+'|'+p.t)}" aria-pressed="false"><b>${esc(p.c.name)}</b><small>${esc(tn(p.t))}T</small></button>`).join('')||'<span class="hint">반이 없어요</span>'}</div>`}
+const pkPickedPC=id=>[...document.querySelectorAll(`#${id} .pk[aria-pressed="true"]`)].map(x=>x.dataset.pk);
+function pkJoin(b,sid,pk){const v=(b.versions||[]).find(x=>x.id===b.current)||V();(pk||[]).forEach(cv=>{const [cid,t]=cv.split('|');const c=v.classes.find(x=>x.id===cid);if(!c)return;const m=c.members=c.members||{};m[t]=m[t]||[];if(!m[t].includes(sid))m[t].push(sid)})}
+document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('.pkpc .pk');if(!k)return;k.setAttribute('aria-pressed',String(k.getAttribute('aria-pressed')!=='true'))});
 function inqRegDlg(id){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const d0=q.want&&q.want>todayStr()?q.want:'';
-  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqT" style="width:min(460px,100%)" data-iqd="${id}"><h2 id="iqT">입학 예정으로 · ${esc(q.name)}</h2>
-  <div class="hint">${esc([q.school,q.grade].filter(Boolean).join(' '))} · 연락처까지 학생 관리로 옮겨요. 반 넣기는 지점 시간표 카드에서 해요.</div>
-  <div class="row"><label for="iqFrom">첫 수업일</label><input id="iqFrom" type="date" value="${esc(d0)}"><span class="hint">오늘 이후 · 이 날부터 저절로 재원이 되고 선생님 폰 공지에 떠요</span></div>
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqT" style="width:min(560px,100%)" data-iqd="${id}"><h2 id="iqT">입학 예정으로 · ${esc(q.name)}</h2>
+  <div class="hint">${esc([q.school,q.grade].filter(Boolean).join(' '))} · 연락처까지 학생 관리로 옮겨요.</div>
+  <div class="row"><label for="iqFrom">첫 수업일</label><input id="iqFrom" type="date" value="${esc(d0)}"><span class="hint">앞날이면 입학 예정(그날 저절로 재원) · 오늘이거나 지난 날이면 그날부터 재원(입학일)</span></div>
+  <label class="qal">반 <span class="hint">여러 개 골라도 돼요 · 안 고르면 나중에 시간표 카드에서</span></label>${pkChipsPC('iqPk')}
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqRegGo">입학 예정으로</button></div></div>`;setTimeout(()=>{const i=$('iqFrom');if(i)i.focus()},50)}
-async function inqRegGo(){const d=document.querySelector('[data-iqd]');if(!d)return;const fd=$('iqFrom').value||'';if(!(fd&&fd>todayStr())){toast('첫 수업일을 오늘 이후로 정해 주세요');$('iqFrom').focus();return}$('modal').hidden=true;await inqReg(d.dataset.iqd,fd)}
-async function inqReg(id,fd,rvId){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const pre=fd&&fd>todayStr();const sid=uid('s');const qq={name:q.name,school:q.school||'',grade:q.grade||'',from:fd,ph:q.ph,pa:q.pa};
+async function inqRegGo(){const d=document.querySelector('[data-iqd]');if(!d)return;const fd=$('iqFrom').value||'';if(!fd){toast('첫 수업일을 골라 주세요');$('iqFrom').focus();return}const pk=pkPickedPC('iqPk');$('modal').hidden=true;await inqReg(d.dataset.iqd,fd,undefined,pk)}
+async function inqReg(id,fd,rvId,pk){pk=pk||[];const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const pre=fd&&fd>todayStr();const sid=uid('s');const qq={name:q.name,school:q.school||'',grade:q.grade||'',from:fd,ph:q.ph,pa:q.pa};
   /* 퇴원했던 학생과 같으면(이름+학교 또는 보호자 번호) 먼저 물어보고 → 같은 학생이면 재입학으로 잇기(rvId) · 아니면 새로 등록 */
-  if(rvId===undefined&&typeof stuReviveAsk==='function'){stuReviveAsk(B(),qq,s=>inqReg(id,fd,s.id),()=>inqReg(id,fd,null));return}
-  return quickChange(()=>{const b=B();const x=(b.inq||[]).find(y=>y.id===id);if(!x)return;const rv=rvId?(b.students||[]).find(y=>y.id===rvId):null;if(rv){stuReviveDo(rv,qq);x.st='done';x.sid=rv.id;x.doneAt=todayStr();return}b.students.push({id:sid,name:q.name,school:q.school||'',grade:q.grade||'',status:pre?'예정':'재원',...(fd?{from:fd}:{}),...(q.ph?{ph:q.ph}:{}),...(q.pa&&q.pa.length?{pa:q.pa.map(p=>({l:p.l||'보호자',n:p.n}))}:{}),...(!q.school||!q.grade?{quick:1}:{}),at:todayStr()});x.st='done';x.sid=sid;x.doneAt=todayStr()},
-    (pre?`${q.name} · 입학 예정(${mdS(fd)}부터)으로 옮겼어요 · 반에 넣어 주세요`:`${q.name} · 오늘부터 재원으로 옮겼어요 · 반에 넣어 주세요`)+(rvId?' · 재입학으로 기록을 이었어요':''))}
+  if(rvId===undefined&&typeof stuReviveAsk==='function'){stuReviveAsk(B(),qq,s=>inqReg(id,fd,s.id,pk),()=>inqReg(id,fd,null,pk));return}
+  return quickChange(()=>{const b=B();const x=(b.inq||[]).find(y=>y.id===id);if(!x)return;const rv=rvId?(b.students||[]).find(y=>y.id===rvId):null;if(rv){stuReviveDo(rv,qq);x.st='done';x.sid=rv.id;x.doneAt=todayStr();pkJoin(b,rv.id,pk);return}b.students.push({id:sid,name:q.name,school:q.school||'',grade:q.grade||'',status:pre?'예정':'재원',...(fd?{from:fd}:{}),...(q.ph?{ph:q.ph}:{}),...(q.pa&&q.pa.length?{pa:q.pa.map(p=>({l:p.l||'보호자',n:p.n}))}:{}),...(!q.school||!q.grade?{quick:1}:{}),at:todayStr()});x.st='done';x.sid=sid;x.doneAt=todayStr();pkJoin(b,sid,pk)},
+    (pre?`${q.name} · 입학 예정(${mdS(fd)}부터)으로 옮겼어요`:`${q.name} · ${fd&&fd<todayStr()?mdS(fd)+'부터(입학일)':'오늘부터'} 재원으로 옮겼어요`)+(pk.length?` · 반 ${pk.length}개에 넣었어요`:' · 반에 넣어 주세요')+(rvId?' · 재입학으로 기록을 이었어요':''))}
 document.addEventListener('change',async e=>{if(e.target&&e.target.id==='fileInq'){const f=e.target.files[0];if(!f)return;try{const L=parseInq(await f.arrayBuffer());if(!L.length)throw new Error('학생을 한 명도 읽지 못했어요');await inqImport(L)}catch(err){toast('불러오지 못했어요: '+err.message,4500)}}});
 /* ===== 에듀OK에서 받기: 지점마다 이 PC에 아이디·비밀번호 저장 → 버튼 하나로 재학생명부·입학희망생명부를 받아 바로 불러오기 ===== */
 async function eokDlg(msg){if(!bridge||!bridge.eokInfo){toast('프로그램에서만 돼요');return}const b=B();const inf=(await bridge.eokInfo())[b.id]||{};
@@ -6304,7 +6319,7 @@ function adOps(b,x){const out=[];const td=todayStr();const by=x.mgr?(String(x.by
       if(ph&&!ok(ph))throw '번호 확인';if(ph)s.ph=ph;else delete s.ph;const pa=(Array.isArray(a.pa)?a.pa:[]).slice(0,4).map(x=>({l:adS(x.l).slice(0,10)||'보호자',n:dg(x.n)})).filter(x=>ok(x.n));if(pa.length)s.pa=pa;else delete s.pa;break}
     case 'stSt':{const s=stu(a.sid);if(!s)throw '학생 없음';const st=a.st;const d=adD(a.date);
       if(st==='퇴원'){s.status='퇴원';s.out=d||td;stOutApply(b,s.id)}
-      else if(st==='예정'){if(!(d&&d>td))throw '첫 수업일 필요';s.status='예정';s.from=d;delete s.out}
+      else if(st==='예정'){if(!d)throw '첫 수업일 필요';s.status=d>td?'예정':'재원';s.from=d;delete s.out} /* 3.75.3: 지난 날짜면 그날부터 재원 */
       else if(st==='재원'||st==='휴원'){s.status=st;delete s.out;if(d&&st==='재원')s.from=d}
       else throw '상태 모름';break}
     case 'mAdd':{const sid=a.sid==='$new'?lastSid:a.sid;const s=stu(sid);if(!s)throw '학생 없음';const v=adCur(b);const c=v&&v.classes.find(i=>i.id===a.cls);if(!c)throw '반 없음';
@@ -7109,7 +7124,7 @@ const HELP=[
   <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음 · 에듀OK에서 '대연고1' 같은 임시 이름이 실제 이름으로 바뀌어도 연락처·학교가 같으면 같은 사람)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
   <li>다시 불러올 때 <b>에듀OK에서 빠진 사람</b>(입학 처리·취소 등)은 확인 창에 따로 보여 주고, 체크된 채로 반영하면 <b>입학취소</b>로 옮겨요(취소된 문의에 '에듀OK에서 빠짐' 표시 · 되돌리기 가능). 명부를 기간·조건으로 걸러 받았으면 체크를 풀어요. 직접 넣은 문의는 해당 없어요.</li>
   <li>이미 학생이 된 문의(입학희망생·재학생명부를 불러올 때 같은 사람이 학생 관리에 있으면)는 저절로 <b>입학 완료</b>로 옮겨요.</li>
-  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로(폰 관리 탭에서는 반도 <b>여러 개</b> 골라 한 번에 넣어요) · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
+  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
   <li><b>메모</b>: 통화 내용·약속을 줄 아래 칸에 적고 [남기기](또는 Enter). ×를 두 번 누르면 지워져요. 폰 [관리] 탭의 입학 문의 카드에서도 같은 메모를 보고 남겨요.</li>
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
  {id:'cns',t:'정기 상담',b:`
