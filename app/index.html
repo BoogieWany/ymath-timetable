@@ -306,6 +306,7 @@ td.slot.av-no{background:repeating-linear-gradient(135deg,var(--err-bg) 0 6px,tr
 /* 학생 이름 토글 */
 .nmt{display:inline-flex;align-items:center;gap:6px;font-size:12.5px}
 .nmt small{font-size:11px;color:var(--muted);min-width:22px}
+.nmmode{border:1px solid var(--line2);background:transparent;color:var(--muted);border-radius:999px;font:inherit;font-size:11px;padding:1px 8px;cursor:pointer;transition:color .15s ease,border-color .15s ease,background .15s ease}.nmmode:hover{border-color:color-mix(in srgb,var(--navy) 35%,var(--line2));color:var(--fg)}.nmmode.on{color:var(--navy);border-color:color-mix(in srgb,var(--navy) 45%,var(--line2));background:color-mix(in srgb,var(--navy) 7%,transparent);font-weight:600}
 .tgl{width:36px;height:20px;border-radius:999px;border:0;background:var(--none);position:relative;cursor:pointer;padding:0;transition:background .2s}
 .tgl i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
 .tgl[aria-checked="true"]{background:var(--ok)}
@@ -3292,7 +3293,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.75.3', APPDATE='2026-10-21';
+const APPVER='3.75.4', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3630,8 +3631,11 @@ function calcBase(){const sc=document.getElementById('gridScroll');if(!sc)return
 // 이름 표시: 직접 켰거나, 125% 이상이거나, 칸이 충분히 넓고 높을 때(예: 월수금만 볼 때) 자동
 function namesAuto(){return UI.gs>=GS_NAMES-1e-9||((UI._cwE||0)>=68&&(UI._chE||0)>=76)}
 // 이름 토글: 평소엔 칸 크기에 따라 자동으로 켜지고 꺼짐(토글도 따라 움직임). 직접 누르면 그 상태로 고정 → 요일 보기·확대를 바꾸면 다시 자동
-function namesOn(){return UI.namesOv!==null?UI.namesOv:namesAuto()}
-function syncNamesToggle(){const b=$('nmTgl');if(!b)return;const on=namesOn();b.setAttribute('aria-checked',on);const h=$('nmHint');if(h)h.textContent=UI.namesOv===null?'자동':'고정'}
+/* 3.75.4 학생 이름 '직접' 모드: 확대해도 저절로 안 바뀌고 스위치로만(이 PC에 기억) · '자동'이면 예전처럼 125%부터 저절로 */
+UI.nmMan=(()=>{try{const v=localStorage.getItem('ymt_nmman');return v==='1'?true:v==='0'?false:null}catch(e){return null}})();
+const nmManSave=()=>{try{if(UI.nmMan===null)localStorage.removeItem('ymt_nmman');else localStorage.setItem('ymt_nmman',UI.nmMan?'1':'0')}catch(e){}};
+function namesOn(){if(UI.nmMan!==null)return UI.nmMan;return UI.namesOv!==null?UI.namesOv:namesAuto()}
+function syncNamesToggle(){const b=$('nmTgl');if(!b)return;const on=namesOn();b.setAttribute('aria-checked',on);const h=$('nmHint');if(h){h.textContent=UI.nmMan!==null?'직접':UI.namesOv===null?'자동':'고정';h.classList.toggle('on',UI.nmMan!==null)}}
 function setGs(g,quiet,now){g=Math.round(Math.max(GS_MIN,Math.min(GS_MAX,g))*100)/100;if(g===UI.gs)return;UI.namesOv=null;const was=namesOn();UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
     const tbs=[...document.querySelectorAll('#gridScroll table.grid')];
   if(tbs.length){tbs.forEach(t=>{t.setAttribute('style',gsVars(g,t));t.classList.toggle('withnames',namesOn())});syncNamesToggle();if(now){stretchChips(true);zxSync()}else stretchLater();const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}else render();
@@ -3663,7 +3667,7 @@ function zmMeasure(full){const sc=$('gridScroll');let off=0,on=0,nh=0;sc.querySe
     const pb=(nm?(nm.previousElementSibling||c):l).getBoundingClientRect().bottom;off=Math.max(off,pb-top+4);
     if(full&&nm){const r=nm.getBoundingClientRect();on=Math.max(on,r.bottom-top+4);nh=Math.max(nh,r.height)}});return {off:Math.ceil(off),on:Math.ceil(on),nh:Math.ceil(nh)}}
 /* 배율 g에서 이름이 자동으로 보이는지(namesAuto와 같은 기준) */
-function zmNamesAt(g){const base=UI._base||96,bh=UI._baseH||40;return g>=GS_NAMES-1e-9||(Math.round(base*g)>=68&&Math.round(bh*g)>=76)}
+function zmNamesAt(g){if(UI.nmMan!==null)return UI.nmMan;const base=UI._base||96,bh=UI._baseH||40;return g>=GS_NAMES-1e-9||(Math.round(base*g)>=68&&Math.round(bh*g)>=76)}
 /* 매 화면 적용: 칸 너비·글자·줄 높이(이름 섞기)·이름 펼침 정도 */
 /* 3.73.9: 세로(g: 줄 높이)와 가로(gx: 칸 너비·글자)를 따로 — 카드가 먼저 길어지고 좌우는 조금 늦게 따라 넓어짐 */
 function zmApply(g,ns,gx){if(gx==null)gx=g;const base=UI._base||96,bh=UI._baseH||40;const cw=Math.max(48,Math.round(base*gx));UI._cwE=cw;UI._chE=Math.round(bh*g);UI.gs=g;ZM.gA=gx;
@@ -3723,7 +3727,7 @@ function viewGrid(iss){
   const fit=null; // 추천 칸 표시는 끌 때만 (클릭으로는 옮기지 않음)
   const w=waiting();
   let h=`<div class="tools"><h2 class="vt" title="반 카드를 끌어서 다른 칸에 놓으면 이동, 이미 수업이 있으면 서로 바뀌어요. 카드를 누른 뒤 옮길 칸을 눌러도 돼요.">${esc(B().name)} · ${esc(V().name)}</h2>${gTeachSeg()}
-  <span class="zm"><button class="btn" data-gz="-1" aria-label="시간표 작게">－</button><b>${Math.round(UI.gs*100)}%</b><button class="btn" data-gz="1" aria-label="시간표 크게">＋</button></span><span class="nmt"><button class="tgl" id="nmTgl" role="switch" aria-checked="${namesOn()}" title="누르면 직접 켜고 끄기 · 보기나 확대를 바꾸면 다시 자동"><i></i></button><span>학생 이름</span><small id="nmHint">${UI.namesOv===null?'자동':'고정'}</small></span>
+  <span class="zm"><button class="btn" data-gz="-1" aria-label="시간표 작게">－</button><b>${Math.round(UI.gs*100)}%</b><button class="btn" data-gz="1" aria-label="시간표 크게">＋</button></span><span class="nmt"><button class="tgl" id="nmTgl" role="switch" aria-checked="${namesOn()}" title="학생 이름 켜고 끄기"><i></i></button><span>학생 이름</span><button class="nmmode${UI.nmMan!==null?' on':''}" id="nmHint" data-act="nmMode" title="자동: 확대하면(125%부터) 저절로 켜지고 꺼짐 · 직접: 확대해도 그대로, 스위치로만">${UI.nmMan!==null?'직접':UI.namesOv===null?'자동':'고정'}</button></span>
   <label class="chk"><input type="checkbox" id="optOff" ${UI.showOff?'checked':''}> 휴무 강사 칸도 보기</label>${noteToolbarHTML()}${spToolbarHTML()}
   <span class="sp"></span><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen" title="학원 관리 프로그램에서 뽑은 강사별 주간 시간표(.xls) 넣기">주간 시간표 가져오기</button>${UI.edit?'<button class="btn" data-act="recolorRand" title="누를 때마다 다른 색 조합 · 붙은 반끼리는 계속 구분되게">색 랜덤</button><button class="btn pri" data-act="autoOpen">자동 배치</button>':''}<button class="btn" data-pdf="branch">지점 시간표 PDF</button></div>
 `;
@@ -4299,7 +4303,8 @@ document.addEventListener('click',async e=>{
   if(el.id==='rqOn'){rqSave(!(RQS.info&&RQS.info.on));return}
   if(el.id==='nasOn'){nasSave({on:!(MOBI.nas&&MOBI.nas.on)});return}
   if(el.id==='modeTgl'){if(!UI.edit){if(UI._draft){UI._askOn=!UI._askOn;renderMode()}else enterEdit()}else{UI._askOff=!UI._askOff;renderMode()}return}
-  if(el.id==='nmTgl'){UI.namesOv=!namesOn();applyNames();return}
+  if(el.id==='nmTgl'){if(UI.nmMan!==null){UI.nmMan=!UI.nmMan;nmManSave()}else UI.namesOv=!namesOn();applyNames();return}
+  if(ds.act==='nmMode'){if(UI.nmMan!==null){UI.nmMan=null;UI.namesOv=null;toast('학생 이름: 자동 · 확대하면 125%부터 저절로 켜져요')}else{UI.nmMan=namesOn();toast(`학생 이름: 직접 · 확대해도 그대로(지금 ${UI.nmMan?'켬':'끔'}) · 스위치로만 바꿔요`)}nmManSave();applyNames();return}
   if(ds.themeSet){setTheme(ds.themeSet);return}
   if(ds.avail){openAvail(ds.avail);return}
   if(ds.avset){cycleAvail(ds.avset);return}
@@ -7068,7 +7073,7 @@ const HELP=[
   <li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결하면 학원 시간표가 그대로 들어와요. <a data-help="sync">지점 연동</a> 참고.</li></ol>`},
  {id:'view',t:'시간표 보기',b:`
   <ul><li>위쪽 <b>[전체 | 강사 이름]</b> 버튼으로 지점 전체 또는 한 강사의 주간 시간표를 봐요.</li>
-  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고, 125%를 지나면 학생 이름이 서서히 펼쳐져요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스 쪽을 중심으로</b> 커지고 작아져요 — 창 왼쪽에서 하면 조금 더 왼쪽, 오른쪽에서 하면 조금 더 오른쪽(위아래도 마찬가지)이 제자리라 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
+  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고, 125%를 지나면 학생 이름이 서서히 펼쳐져요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스 쪽을 중심으로</b> 커지고 작아져요 — 창 왼쪽에서 하면 조금 더 왼쪽, 오른쪽에서 하면 조금 더 오른쪽(위아래도 마찬가지)이 제자리라 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요. 스위치 옆 <b>[자동]</b>을 누르면 <b>[직접]</b>으로 바뀌어, 확대해도 이름이 저절로 켜지거나 꺼지지 않고 스위치로만 바뀌어요(이 PC에 기억 · 다시 누르면 자동).</li>
   <li>카드를 누르면 옆에 <b>명단 창</b>이 열리고, 오른쪽 아래 <b>선택한 항목</b>에 자세한 내용이 나와요.</li>
   ${HF('detail','카드를 누르면 명단 창 — 학생 이름, 당일 변경, (수정 모드면) 학생 넣기')}
   <li>한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. [찾기] 칸에 이름을 치면 돼요.</li>
