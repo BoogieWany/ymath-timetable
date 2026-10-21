@@ -328,7 +328,7 @@ ipcMain.handle('syncLock',async(e,id)=>{if(!syReady())return {ok:true,off:true};
     return {ok:false,err:ghErr(p)}}catch(err){return {ok:false,offline:true,err:err.message}}});
 ipcMain.handle('syncUnlock',async(e,ids,force)=>{const c=syCfg();const res={};
   for(const id of ids){try{const u=`${syBase()}/locks/${id}.json`;const g=await gh('GET',u);if(g.status!==200){res[id]=true;continue}
-    const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev!==c.dev&&!(force&&(c.role==='owner'||(c.role==='branch'&&id===c.branch)))){res[id]=false;continue} /* 강제 풀기: 관리자 PC는 모든 지점, 지점장 PC는 자기 지점만 */
+    const l=JSON.parse(Buffer.from(g.j.content,'base64').toString('utf8'));if(l.dev!==c.dev&&!(force&&(c.role==='owner'||((c.role==='branch'||c.role==='staff')&&id===c.branch)))){res[id]=false;continue} /* 강제 풀기: 관리자 PC는 모든 지점, 지점장·행정 PC는 자기 지점만 */
     const d=await gh('DELETE',u,{message:'잠금 풀기',sha:g.j.sha});res[id]=d.status===200}catch(err){res[id]=false}}return res});
 // 켜기(원장님) / 코드로 연결(지점 관리자) / 코드 만들기 / 끊기
 ipcMain.handle('syncInfo',()=>syInfo());
