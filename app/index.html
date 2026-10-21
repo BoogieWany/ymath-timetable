@@ -240,7 +240,7 @@ html:has(body.printing){background:#fff}
 .chip{padding:3px 6px}
 
 #gridScroll.measuring td.slot,#gridScroll.measuring .chip,#gridScroll.measuring .chip .nm{transition:none!important}
-#gridScroll.zming:not(.zx){overflow-x:clip} #gridScroll.zming table.grid{will-change:transform} /* 확대하는 동안 옆으로 삐져나와 가로 스크롤이 번쩍 생기지 않게 */
+#gridScroll.zming:not(.zx){overflow-x:clip} /* 확대하는 동안 옆으로 삐져나와 가로 스크롤이 번쩍 생기지 않게 */
 .chip.same{box-shadow:0 0 0 2px var(--panel),0 0 0 3px color-mix(in srgb,var(--navy) 60%,transparent)}
 .lg i.lg-good{width:8px;height:8px;border-radius:50%;background:var(--ok)}
 .lg i.lg-ok,.lg i.lg-warn,.lg i.lg-bad{width:8px;height:8px;border-radius:50%}
@@ -3260,7 +3260,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.73.0', APPDATE='2026-10-21';
+const APPVER='3.73.1', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3592,33 +3592,43 @@ function setGs(g,quiet,now){g=Math.round(Math.max(GS_MIN,Math.min(GS_MAX,g))*100
     const tbs=[...document.querySelectorAll('#gridScroll table.grid')];
   if(tbs.length){tbs.forEach(t=>{t.setAttribute('style',gsVars(g));t.classList.toggle('withnames',namesOn())});syncNamesToggle();if(now){stretchChips(true);zxSync()}else stretchLater();const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}else render();
   if(!quiet||was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
-/* 3.73.0 부드러운 확대: 휠·＋/－로 바꾸는 동안은 표를 그림처럼 매끄럽게 키우고(transform · 다시 배치 없음),
-   손을 멈추면(0.17초) 실제 칸 크기로 한 번에 자리 잡음. 마우스 아래 칸(버튼·키는 화면 가운데)이 그 자리에 머묾 */
-const ZM={on:false,g0:1,s:1,cx:0,cy:0,o:[],tbs:[],tm:0,raf:0};
+/* 3.73.1 부드러운 확대: 휠·＋/－는 '목표 배율'만 바꾸고, 실제 배율은 매 화면(약 60번/초)마다 목표 쪽으로 미끄러지듯 따라감.
+   매 화면 칸 크기를 실제로 바꾸고(그림 늘리기 아님 → 끝에 툭 바뀌는 것 없음) 마우스 아래 칸(버튼·키는 화면 가운데)이 제자리에 머물게 스크롤.
+   줄 높이는 움직이는 동안 같은 비율로 키우고, 멈춘 뒤 한 번만 정확히 재서 남은 차이도 부드럽게 맞춤 */
+const ZM={run:false,g:1,tg:1,el:null,fx:0,fy:0,cx:0,cy:0,hr:1,raf:0,last:0,tbs:[]};
 const zmClamp=g=>Math.max(GS_MIN,Math.min(GS_MAX,g));
 function zmCenter(){const sc=$('gridScroll');const r=sc.getBoundingClientRect();return [(Math.max(r.left,0)+Math.min(r.right,innerWidth))/2,(Math.max(r.top,0)+Math.min(r.bottom,innerHeight))/2]}
-function zmBegin(cx,cy){if(ZM.on&&ZM.tbs[0]&&ZM.tbs[0].isConnected)return true;const sc=$('gridScroll');const tbs=sc?[...sc.querySelectorAll('table.grid')]:[];if(!tbs.length)return false;
-  ZM.on=true;ZM.g0=UI.gs;ZM.s=1;ZM.cx=cx;ZM.cy=cy;ZM.tbs=tbs;ZM.o=tbs.map(t=>{const r=t.getBoundingClientRect();return `${cx-r.left}px ${cy-r.top}px`});sc.classList.add('zming');return true}
-function zmPaint(){ZM.tbs.forEach((t,i)=>{t.style.transformOrigin=ZM.o[i];t.style.transform=ZM.s===1?'':`scale(${ZM.s})`});const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(ZM.g0*ZM.s*100)+'%'}
 function zmScroll(dx,dy){const sc=$('gridScroll');if(sc){const l=sc.scrollLeft,t=sc.scrollTop;sc.scrollLeft+=dx;sc.scrollTop+=dy;dx-=sc.scrollLeft-l;dy-=sc.scrollTop-t}if(Math.abs(dx)>.5||Math.abs(dy)>.5)window.scrollBy(dx,dy)}
-function zmCommit(){clearTimeout(ZM.tm);cancelAnimationFrame(ZM.raf);if(!ZM.on)return;ZM.on=false;if(ZM.tg!=null)ZM.s=ZM.tg/ZM.g0;ZM.tg=null;const sc=$('gridScroll');const g=Math.round(zmClamp(ZM.g0*ZM.s)*100)/100;
-  if(!ZM.tbs[0]||!ZM.tbs[0].isConnected){if(sc)sc.classList.remove('zming');setGs(g,true);return}
-  /* 기준점: 마우스(가운데) 아래 칸의 어느 위치였는지 기억 → 실제 크기로 바꾼 뒤 그 위치가 다시 같은 곳에 오게 스크롤 */
-  const hit=document.elementFromPoint(ZM.cx,ZM.cy);const el=(hit&&hit.closest&&sc.contains(hit)&&hit.closest('td,th'))||ZM.tbs[0];const r=el.getBoundingClientRect();const fx=(ZM.cx-r.left)/(r.width||1),fy=(ZM.cy-r.top)/(r.height||1);
-  sc.classList.add('measuring');ZM.tbs.forEach(t=>{t.style.transform='';t.style.transformOrigin=''});
-  if(g!==UI.gs)setGs(g,true,true);sc.classList.remove('zming');
-  const r2=el.getBoundingClientRect();zmScroll(r2.left+fx*r2.width-ZM.cx,r2.top+fy*r2.height-ZM.cy);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.remove('measuring')));const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(UI.gs*100)+'%'}
-/* 휠·터치패드: 마우스 휠 한 칸 = 8% · 터치패드 모으기/벌리기는 손가락 움직인 만큼 */
-function zmWheel(e){if(!zmBegin(e.clientX,e.clientY))return;let d=e.deltaY*(e.deltaMode===1?40:1);
-  const f=Math.abs(d)>=50&&Number.isInteger(d)?Math.pow(1.08,-Math.sign(d)*Math.max(1,Math.round(Math.abs(d)/100))):Math.exp(-d/100);
-  ZM.tg=null;cancelAnimationFrame(ZM.raf);ZM.s=zmClamp(ZM.g0*ZM.s*f)/ZM.g0;zmPaint();clearTimeout(ZM.tm);ZM.tm=setTimeout(zmCommit,170)}
-/* ＋/－ 버튼·Ctrl+±·Ctrl+0: 화면 가운데를 기준으로 0.18초 동안 부드럽게 */
-function zmTo(gt){const c=zmCenter();if(!zmBegin(c[0],c[1])){setGs(gt);return}clearTimeout(ZM.tm);cancelAnimationFrame(ZM.raf);
-  ZM.tg=Math.round(zmClamp(gt)*100)/100;const s0=ZM.s,s1=zmClamp(gt)/ZM.g0,t0=performance.now(),D=180;
-  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ZM.s=s1;zmPaint();zmCommit();return}
-  const step=now=>{const k=Math.min(1,(now-t0)/D);const e=1-Math.pow(1-k,3);ZM.s=s0+(s1-s0)*e;zmPaint();if(k<1)ZM.raf=requestAnimationFrame(step);else{ZM.tm=setTimeout(zmCommit,60)}};ZM.raf=requestAnimationFrame(step)}
-const zmCur=()=>ZM.on?(ZM.tg!=null?ZM.tg:ZM.g0*ZM.s):UI.gs; /* 움직이는 중에 또 누르면 가던 목표에서 이어서 */
+/* 기준점: (cx,cy) 아래 칸과 그 칸 안 위치 */
+function zmAnchor(cx,cy){const sc=$('gridScroll');const h=document.elementFromPoint(cx,cy);const el=(h&&sc.contains(h)&&h.closest('td,th'))||ZM.tbs[0];const r=el.getBoundingClientRect();ZM.el=el;ZM.cx=cx;ZM.cy=cy;ZM.fx=(cx-r.left)/(r.width||1);ZM.fy=(cy-r.top)/(r.height||1)}
+function zmKeep(){const el=ZM.el;if(!el||!el.isConnected)return;const r=el.getBoundingClientRect();zmScroll(r.left+ZM.fx*r.width-ZM.cx,r.top+ZM.fy*r.height-ZM.cy)}
+function zmApply(g){const base=UI._base||96,bh=UI._baseH||40;const cw=Math.max(48,Math.round(base*g));UI._cwE=cw;UI._chE=Math.round(bh*g);
+  const fs=Math.max(9.5,Math.min(26,12*g)).toFixed(1)+'px',ch=Math.round(bh*g*ZM.hr)+'px';ZM.tbs.forEach(t=>{t.style.setProperty('--cw',cw+'px');t.style.setProperty('--fs',fs);t.style.setProperty('--ch',ch)});
+  const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}
+function zmStart(cx,cy){const sc=$('gridScroll');const tbs=sc?[...sc.querySelectorAll('table.grid')]:[];if(!tbs.length)return false;
+  if(ZM.run&&ZM.tbs[0]===tbs[0]&&tbs[0].isConnected){return true}
+  ZM.tbs=tbs;ZM.g=ZM.tg=UI.gs;const ch=parseFloat(tbs[0].style.getPropertyValue('--ch'))||((UI._baseH||40)*UI.gs);ZM.hr=Math.max(1,ch/((UI._baseH||40)*UI.gs));
+  zmAnchor(cx,cy);sc.classList.add('measuring');ZM.run=true;ZM.last=performance.now();cancelAnimationFrame(ZM.raf);ZM.raf=requestAnimationFrame(zmFrame);return true}
+function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){ZM.run=false;setGs(ZM.tg,true);return}
+  const dt=Math.min(64,now-ZM.last);ZM.last=now;const k=1-Math.exp(-dt/75);ZM.g+= (ZM.tg-ZM.g)*k;if(Math.abs(ZM.tg-ZM.g)<0.0015)ZM.g=ZM.tg;
+  zmApply(ZM.g);zxSync();zmKeep();
+  if(ZM.g===ZM.tg){zmEnd();return}ZM.raf=requestAnimationFrame(zmFrame)}
+/* 멈춤: 배율 저장 · 이름 표시(125%~) 정리 · 줄 높이를 정확히 재고 차이가 있으면 0.15초 동안 맞춤 */
+function zmEnd(){ZM.run=false;const sc=$('gridScroll');const g=Math.round(ZM.tg*100)/100;const was=namesOn();UI.namesOv=null;UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
+  const tbs=ZM.tbs;const h0=parseFloat(tbs[0].style.getPropertyValue('--ch'))||0;tbs.forEach(t=>{t.setAttribute('style',gsVars(g));t.style.setProperty('--ch',h0+'px');t.classList.toggle('withnames',namesOn())});syncNamesToggle();
+  const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%';
+  stretchChips(true);const h1=parseFloat(tbs[0].style.getPropertyValue('--ch'))||h0;zmKeep();zxSync();zmKeep();
+  if(Math.abs(h1-h0)>1){tbs.forEach(t=>t.style.setProperty('--ch',h0+'px'));zmKeep();const t0=performance.now();const step=now=>{if(ZM.run)return;const q=Math.min(1,(now-t0)/150),e=1-Math.pow(1-q,3);const h=Math.round(h0+(h1-h0)*e)+'px';tbs.forEach(t=>t.style.setProperty('--ch',h));zmKeep();if(q<1)requestAnimationFrame(step);else done()};requestAnimationFrame(step)}else done();
+  function done(){if(ZM.run)return;requestAnimationFrame(()=>{if(!ZM.run)sc.classList.remove('measuring')})}
+  if(was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
+/* 휠: 마우스 휠 한 칸 = 8% · 터치패드 모으기/벌리기는 손가락 움직인 만큼 · 마우스가 움직이면 기준점도 거기로 */
+function zmWheel(e){if(!zmStart(e.clientX,e.clientY))return;if(Math.abs(e.clientX-ZM.cx)>3||Math.abs(e.clientY-ZM.cy)>3)zmAnchor(e.clientX,e.clientY);
+  const d=e.deltaY*(e.deltaMode===1?40:1);const f=Math.abs(d)>=50&&Number.isInteger(d)?Math.pow(1.08,-Math.sign(d)*Math.max(1,Math.round(Math.abs(d)/100))):Math.exp(-d/100);
+  ZM.tg=zmClamp(ZM.tg*f)}
+/* ＋/－ 버튼·Ctrl+±·Ctrl+0: 화면 가운데 기준 */
+function zmTo(gt){const c=zmCenter();const fresh=!ZM.run;if(!zmStart(c[0],c[1])){setGs(gt);return}if(!fresh)zmAnchor(c[0],c[1]);ZM.tg=zmClamp(gt);
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ZM.g=ZM.tg}}
+const zmCur=()=>ZM.run?ZM.tg:UI.gs; /* 움직이는 중에 또 누르면 가던 목표에서 이어서 */
 function dayCols(days){
   const b=B();const cols=[];
   days.forEach(d=>{const ts=b.teachers.filter(t=>UI.showOff||!(t.off||[]).includes(d)||V().sessions.some(o=>o.d===d&&o.t===t.id));(ts.length?ts:b.teachers.slice(0,1)).forEach((t,i,a)=>cols.push({d,t,end:i===a.length-1,first:i===0,n:a.length}))});
