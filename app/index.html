@@ -3285,7 +3285,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.75.0', APPDATE='2026-10-21';
+const APPVER='3.75.1', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6047,30 +6047,43 @@ function inqConfirm(b,res){const add=res.add;const nm=L=>L.slice(0,6).map(esc).j
   <div class="hint">${add.length?`새 입학 문의 <b>${add.length}명</b>을 넣어요`:'새 문의는 없어요'}${res.dup.length?` · 그대로인 문의 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생인 ${res.stu.length}명은 건너뛰어요`:''}</div>
   ${add.length?`<div class="iqpv">${add.slice(0,8).map(q=>`<span>${esc(q.name)} <small>${esc([q.school,q.grade].filter(Boolean).join(' '))}</small></span>`).join('')}${add.length>8?`<span class="hint">외 ${add.length-8}명</span>`:''}</div>`:''}
   ${res.upd.length?`<div class="iqx"><b>정보가 바뀐 ${res.upd.length}명</b> — 새 정보로 덮어써요 <span class="hint">${nm(res.upd.map(x=>x.name))}</span></div>`:''}
+  ${res.upd.some(x=>x.old&&tnm(x.old)!==tnm(x.name))?`<div class="hint" style="margin:-2px 0 4px 2px">이름이 바뀐 문의: ${res.upd.filter(x=>x.old&&tnm(x.old)!==tnm(x.name)).slice(0,6).map(x=>esc(x.old)+' → '+esc(x.name)).join(', ')}</div>`:''}
+  ${res.back.length?`<div class="iqx"><b>에듀OK에 다시 나온 ${res.back.length}명</b> — 문의 중으로 되살려요 <span class="hint">${nm(res.back.map(x=>x.name))}</span></div>`:''}
+  ${res.dedup.length?`<div class="iqx"><b>겹친 문의 ${res.dedup.length}개</b> — 같은 사람이 '빠짐'으로 취소된 채 하나 더 있어서 지워요</div>`:''}
   ${res.close.length?`<div class="iqx"><b>이미 학생이 된 ${res.close.length}명</b> — 입학 완료로 옮겨요 <span class="hint">${nm(res.close)}</span></div>`:''}
   ${res.gone.length?`<label class="iqx iqgone"><input type="checkbox" id="iqGoneChk" checked><span><b>에듀OK에서 빠진 ${res.gone.length}명</b> — 입학취소로 옮겨요(취소된 문의에 남아 언제든 되돌려요) <span class="hint">${nm(res.goneN)}</span></span></label><div class="hint">명부를 기간·조건으로 걸러서 받았다면 체크를 풀어 주세요. 직접 넣은 문의는 여기 들어가지 않아요.</div>`:''}
   <div class="hint">다른 지점 명부라면 [취소]하고 위에서 지점을 바꾼 뒤 다시 불러오세요.</div>
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqGo">${esc(b.name)}에 반영</button></div></div>`}
 /* 3.73.6 같은 사람 판단: 이름이 같고 (학교가 같거나 연락처(학생·보호자 번호)가 하나라도 같으면) — 학교명을 고쳐도 같은 아이로 봄 · 형제는 보호자 번호가 같아도 이름이 달라 섞이지 않음 */
 const iqPhs=x=>[x.ph,...((x.pa||[]).map(p=>p.n))].map(n=>String(n||'').replace(/\D/g,'')).filter(n=>n.length>=9);
-function iqSame(a,b){if(tnm(a.name)!==tnm(b.name))return false;if(tnm(a.school)&&tnm(a.school)===tnm(b.school))return true;const pa=iqPhs(a);return iqPhs(b).some(n=>pa.includes(n))||(!tnm(a.school)&&!tnm(b.school)&&!pa.length)}
+/* 3.75.1: 이름이 바뀌어도(에듀OK에서 '대연고1' 같은 임시 이름 → 실제 이름) 연락처가 같고 같은 학교면 같은 사람 — 학년도 같거나 둘 중 하나가 임시 이름일 때만(형제는 학년이 달라 섞이지 않음) */
+const iqTmp=n=>/\d/.test(n)||/(초|중|고)$/.test(n); /* 임시 이름: 숫자가 있거나 학교 이름처럼 끝남 */
+function iqSame(a,b){const na=tnm(a.name),nb=tnm(b.name);const pa=iqPhs(a);const sh=iqPhs(b).some(n=>pa.includes(n));const ss=tnm(a.school)&&tnm(a.school)===tnm(b.school);
+  if(na===nb)return ss||sh||(!tnm(a.school)&&!tnm(b.school)&&!pa.length);
+  return sh&&ss&&((a.grade&&a.grade===b.grade)||iqTmp(na)||iqTmp(nb))}
+/* 학생과 비교할 땐 더 엄격히: 이름이 다르면 문의 쪽이 임시 이름이고 학교·학년·번호가 다 같을 때만 */
+function iqSameS(q,s){if(tnm(q.name)===tnm(s.name))return iqSame(q,s);return iqTmp(tnm(q.name))&&iqSame(q,s)&&q.grade&&q.grade===s.grade}
 /* 이미 학생이 된 문의(문의 중) → 입학 완료로 정리 · 돌려주는 값: 정리한 이름들 */
-function iqCloseStudents(b){const out=[];(b.inq||[]).forEach(q=>{if(q.st!=='open')return;const s=b.students.find(s=>!isOut(s)&&iqSame(q,s));if(!s)return;q.st='done';q.sid=s.id;q.doneAt=todayStr();q.auto=1;out.push(q.name)});return out}
+function iqCloseStudents(b){const out=[];(b.inq||[]).forEach(q=>{if(q.st!=='open')return;const s=b.students.find(s=>!isOut(s)&&iqSameS(q,s));if(!s)return;q.st='done';q.sid=s.id;q.doneAt=todayStr();q.auto=1;out.push(q.name)});return out}
 async function inqImport(list,go){const b=B();const res=iqPlan(b,list);
-  if(!res.add.length&&!res.upd.length&&!res.gone.length&&!res.close.length){toast(`바뀐 문의가 없어요${res.dup.length?` · 이미 있음 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생 ${res.stu.length}명`:''}`,4000);return}
+  if(!res.add.length&&!res.upd.length&&!res.gone.length&&!res.close.length&&!res.back.length&&!res.dedup.length){toast(`바뀐 문의가 없어요${res.dup.length?` · 이미 있음 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생 ${res.stu.length}명`:''}`,4000);return}
   if(!go){UI.iqPend=list;inqConfirm(b,res);return}UI.iqPend=null;const goneOn=!$('iqGoneChk')||$('iqGoneChk').checked;
   await quickChange(()=>{const bb=B();const r=iqPlan(bb,list);bb.inq=bb.inq||[];
-    r.upd.forEach(({id,q})=>{const x=bb.inq.find(y=>y.id===id);if(!x)return;['school','grade','want','reg','src'].forEach(k=>{if(q[k])x[k]=q[k]});if(q.ph)x.ph=q.ph;if(q.pa&&q.pa.length)x.pa=q.pa});
+    const upd=(x,q)=>{['school','grade','want','reg','src'].forEach(k=>{if(q[k])x[k]=q[k]});if(q.ph)x.ph=q.ph;if(q.pa&&q.pa.length)x.pa=q.pa;if(q.name&&!iqTmp(tnm(q.name)))x.name=q.name};
+    r.upd.forEach(({id,q})=>{const x=bb.inq.find(y=>y.id===id);if(x)upd(x,q)});
+    r.back.forEach(({id,q})=>{const x=bb.inq.find(y=>y.id===id);if(!x)return;upd(x,q);x.st='open';delete x.gone;delete x.cancelAt});
+    if(r.dedup.length){const D=new Set(r.dedup);bb.inq=bb.inq.filter(y=>!D.has(y.id))}
     bb.inq=bb.inq.concat(r.add.map(q=>Object.assign({id:uid('q'),st:'open',at:todayStr()},q)));
     if(goneOn)r.gone.forEach(id=>{const x=bb.inq.find(y=>y.id===id);if(x&&x.st==='open'){x.st='cancel';x.cancelAt=todayStr();x.gone=1}});
     iqCloseStudents(bb)},
-   [res.add.length?`새 문의 ${res.add.length}명`:'',res.upd.length?`정보 바뀜 ${res.upd.length}명`:'',goneOn&&res.gone.length?`에듀OK에서 빠져 입학취소로 ${res.gone.length}명`:'',res.close.length?`이미 학생이라 입학 완료로 ${res.close.length}명`:''].filter(Boolean).join(' · ')||'입학 문의를 반영했어요')}
+   [res.add.length?`새 문의 ${res.add.length}명`:'',res.upd.length?`정보 바뀜 ${res.upd.length}명`:'',goneOn&&res.gone.length?`에듀OK에서 빠져 입학취소로 ${res.gone.length}명`:'',res.close.length?`이미 학생이라 입학 완료로 ${res.close.length}명`:'',res.back.length?`다시 나와서 문의 중으로 ${res.back.length}명`:'',res.dedup.length?`겹친 문의 ${res.dedup.length}개 정리`:''].filter(Boolean).join(' · ')||'입학 문의를 반영했어요')}
 /* 불러오기 계획: add 새 문의 · upd 같은 사람인데 정보가 바뀜(덮어씀) · dup 그대로 · stu 이미 학생 · gone 프로그램엔 '문의 중'인데 명부에 없음(직접 넣은 문의는 제외) · close 이미 학생이 된 문의 */
-function iqPlan(b,list){const res={add:[],upd:[],dup:[],stu:[],gone:[],close:[]};const inq=b.inq||[];const live=b.students.filter(s=>!isOut(s));const hit=new Set();const seen=[];
-  list.forEach(q=>{if(seen.some(o=>iqSame(o,q)))return;seen.push(q);const x=inq.find(y=>iqSame(y,q));
-    if(x){hit.add(x.id);const ch=['school','grade','want'].some(k=>q[k]&&q[k]!==(x[k]||''))||iqPhs(q).some(n=>!iqPhs(x).includes(n));if(ch&&x.st==='open')res.upd.push({id:x.id,q,name:q.name});else res.dup.push(q.name);return}
-    if(live.some(s=>iqSame(q,s))){res.stu.push(q.name);return}res.add.push(q)});
-  inq.forEach(x=>{if(x.st!=='open')return;if(live.some(s=>iqSame(x,s))){res.close.push(x.name);hit.add(x.id);return}if(!hit.has(x.id)&&x.src!=='직접 입력')res.gone.push(x.id)});
+function iqPlan(b,list){const res={add:[],upd:[],dup:[],stu:[],gone:[],close:[],back:[],dedup:[]};const inq=b.inq||[];const live=b.students.filter(s=>!isOut(s));const hit=new Set();const seen=[];
+  list.forEach(q=>{if(seen.some(o=>iqSame(o,q)))return;seen.push(q);const M=inq.filter(y=>iqSame(y,q));const x=M.find(y=>y.st==='open')||M.find(y=>y.st==='cancel'&&y.gone)||M[0];
+    if(x){M.forEach(y=>hit.add(y.id));M.filter(y=>y!==x&&y.st==='cancel'&&y.gone).forEach(y=>res.dedup.push(y.id));if(x.st==='cancel'&&x.gone){res.back.push({id:x.id,q,name:q.name});return}
+      const ch=['school','grade','want'].some(k=>q[k]&&q[k]!==(x[k]||''))||iqPhs(q).some(n=>!iqPhs(x).includes(n))||(tnm(q.name)!==tnm(x.name)&&!iqTmp(tnm(q.name)));if(ch&&x.st==='open')res.upd.push({id:x.id,q,name:q.name,old:x.name});else res.dup.push(q.name);return}
+    if(live.some(s=>iqSameS(q,s))){res.stu.push(q.name);return}res.add.push(q)});
+  inq.forEach(x=>{if(x.st!=='open')return;if(live.some(s=>iqSameS(x,s))){res.close.push(x.name);hit.add(x.id);return}if(!hit.has(x.id)&&x.src!=='직접 입력')res.gone.push(x.id)});
   res.goneN=res.gone.map(id=>(inq.find(x=>x.id===id)||{}).name);return res}
 async function inqAdd(){const n=($('iqName').value||'').trim().replace(/\s+/g,'');if(!n){toast('이름을 넣어 주세요');$('iqName').focus();return}
   const ph=String($('iqPh').value||'').replace(/\D/g,'');if(ph&&!/^0\d{8,10}$/.test(ph)){toast('연락처를 확인해 주세요');return}
@@ -7093,7 +7106,7 @@ const HELP=[
   <li><b>명부 입학일</b>: 재학생명부의 입학일이 첫 수업일로 들어가요(2주 신입·입학 예정 다시 계산).</li></ul>`},
  {id:'inq',t:'입학 문의',b:`
   ${HF('inq','입학 문의 — 줄마다 [입학 예정으로]·[바로 재원]·[입학취소], 아래 메모')}
-  <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
+  <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음 · 에듀OK에서 '대연고1' 같은 임시 이름이 실제 이름으로 바뀌어도 연락처·학교가 같으면 같은 사람)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
   <li>다시 불러올 때 <b>에듀OK에서 빠진 사람</b>(입학 처리·취소 등)은 확인 창에 따로 보여 주고, 체크된 채로 반영하면 <b>입학취소</b>로 옮겨요(취소된 문의에 '에듀OK에서 빠짐' 표시 · 되돌리기 가능). 명부를 기간·조건으로 걸러 받았으면 체크를 풀어요. 직접 넣은 문의는 해당 없어요.</li>
   <li>이미 학생이 된 문의(입학희망생·재학생명부를 불러올 때 같은 사람이 학생 관리에 있으면)는 저절로 <b>입학 완료</b>로 옮겨요.</li>
   <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
