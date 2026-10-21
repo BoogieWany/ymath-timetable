@@ -3264,7 +3264,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.73.9', APPDATE='2026-10-21';
+const APPVER='3.74.0', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3624,7 +3624,9 @@ function zmScroll(dx,dy){const q=1/(window.devicePixelRatio||1);dx=Math.abs(dx)<
 /* 3.73.8: 기준점을 커서보다 창 가장자리 쪽으로 조금 더 치우침(창 가운데에서 떨어진 만큼의 35%) — 왼쪽에서 키우면 더 왼쪽이, 오른쪽에서 키우면 더 오른쪽이 제자리 · 시간표 칸 밖으로는 안 나감 */
 const ZM_BIAS=0.35;
 function zmBias(cx){const sc=$('gridScroll');if(!sc)return cx;const r=sc.getBoundingClientRect();const L=Math.max(r.left,0)+2,R=Math.min(r.right,innerWidth)-2;const m=(L+R)/2;return Math.max(L,Math.min(R,cx+(cx-m)*ZM_BIAS))}
-function zmAnchor(cx0,cy){const cx=zmBias(cx0);ZM.rx=cx0;ZM.ry=cy;const sc=$('gridScroll');/* 3.73.9: 그 자리의 칸(td) — 겹친 요소·틈에 걸려도 칸을 찾고, 없으면 그 높이 줄에서 x가 들어가는 칸(표 전체를 기준으로 잡으면 안 커지는 열 때문에 조금씩 밀렸음) */
+/* 3.74.0: 위아래도 똑같이 — 창(보이는 시간표) 위쪽에서 하면 더 위, 아래쪽에서 하면 더 아래가 제자리 */
+function zmBiasY(cy){const sc=$('gridScroll');if(!sc)return cy;const r=sc.getBoundingClientRect();const T=Math.max(r.top,0)+2,Bm=Math.min(r.bottom,innerHeight)-2;if(Bm<=T)return cy;const m=(T+Bm)/2;return Math.max(T,Math.min(Bm,cy+(cy-m)*ZM_BIAS))}
+function zmAnchor(cx0,cy0){const cx=zmBias(cx0),cy=zmBiasY(cy0);ZM.rx=cx0;ZM.ry=cy0;const sc=$('gridScroll');/* 3.73.9: 그 자리의 칸(td) — 겹친 요소·틈에 걸려도 칸을 찾고, 없으면 그 높이 줄에서 x가 들어가는 칸(표 전체를 기준으로 잡으면 안 커지는 열 때문에 조금씩 밀렸음) */
   let el=null;for(const h of document.elementsFromPoint(cx,cy)){if(!sc.contains(h))continue;const c=h.closest('td.slot,td,th');if(c&&sc.contains(c)){el=c;break}}
   if(!el){const tds=[...sc.querySelectorAll('td.slot')];let best=null,bd=1e9;for(const c of tds){const r=c.getBoundingClientRect();const dx=cx<r.left?r.left-cx:cx>r.right?cx-r.right:0,dy=cy<r.top?r.top-cy:cy>r.bottom?cy-r.bottom:0;const d=dx+dy;if(d<bd){bd=d;best=c;if(!d)break}}el=best||ZM.tbs[0]}const r=el.getBoundingClientRect();ZM.el=el;ZM.cx=cx;ZM.cy=cy;ZM.fx=(cx-r.left)/(r.width||1);ZM.fy=(cy-r.top)/(r.height||1)}
 function zmKeep(){const el=ZM.el;if(!el||!el.isConnected)return;const r=el.getBoundingClientRect();zmScroll(r.left+ZM.fx*r.width-ZM.cx,r.top+ZM.fy*r.height-ZM.cy)}
@@ -6975,7 +6977,7 @@ const HELP=[
   <li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결하면 학원 시간표가 그대로 들어와요. <a data-help="sync">지점 연동</a> 참고.</li></ol>`},
  {id:'view',t:'시간표 보기',b:`
   <ul><li>위쪽 <b>[전체 | 강사 이름]</b> 버튼으로 지점 전체 또는 한 강사의 주간 시간표를 봐요.</li>
-  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고, 125%를 지나면 학생 이름이 서서히 펼쳐져요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스 쪽을 중심으로</b> 커지고 작아져요 — 창 왼쪽에서 하면 조금 더 왼쪽, 오른쪽에서 하면 조금 더 오른쪽이 제자리라 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
+  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고, 125%를 지나면 학생 이름이 서서히 펼쳐져요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스 쪽을 중심으로</b> 커지고 작아져요 — 창 왼쪽에서 하면 조금 더 왼쪽, 오른쪽에서 하면 조금 더 오른쪽(위아래도 마찬가지)이 제자리라 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
   <li>카드를 누르면 옆에 <b>명단 창</b>이 열리고, 오른쪽 아래 <b>선택한 항목</b>에 자세한 내용이 나와요.</li>
   ${HF('detail','카드를 누르면 명단 창 — 학생 이름, 당일 변경, (수정 모드면) 학생 넣기')}
   <li>한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. [찾기] 칸에 이름을 치면 돼요.</li>
