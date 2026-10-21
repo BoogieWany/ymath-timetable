@@ -779,6 +779,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .sttbl tfoot tr.stev td{font-weight:400;color:var(--muted);background:none;border-top:1px dashed var(--line2);font-size:12px}
 .iqbr{color:var(--navy);background:color-mix(in srgb,var(--navy) 9%,transparent);border-radius:8px;padding:1px 8px}
 .iqpv{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.iqx{display:block;margin:8px 0 2px;padding:8px 10px;border:1px solid var(--line2);border-radius:9px;background:color-mix(in srgb,var(--panel) 92%,var(--navy));font-size:13px;line-height:1.5}.iqx .hint{display:block;margin-top:2px}
+.iqgt{font-style:normal;font-size:10.5px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:0 6px;margin-left:6px;white-space:nowrap}
+.iqgone{display:flex;gap:8px;align-items:flex-start;cursor:pointer}.iqgone input{margin-top:3px;accent-color:var(--navy)}
 .iqpv span{background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:3px 10px;font-size:12.5px}
 .iqpv small{color:var(--muted)}
 .eogo{display:flex;gap:10px;margin:6px 0 4px}.eogo .btn{flex:1;padding:12px 10px;font-size:14px}
@@ -3261,7 +3264,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.73.3', APPDATE='2026-10-21';
+const APPVER='3.73.6', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3558,9 +3561,19 @@ function perLabel(p){const wd=per('월')[p],we=per('토')[p];return `<b>${esc(wd
 // 시간표 배율 (0.7~2.4). 1.25배 이상이면 학생 이름 표시. 바뀔 때 다시 그리지 않고 크기만 바꿔 부드럽게 이어짐
 const GS_MIN=0.7,GS_MAX=2.4,GS_NAMES=1.25;
 // 가로·세로 같은 비율로 커짐. 단, 가로는 화면 폭(_fit)을 넘지 않아 좌우 스크롤이 생기지 않음
-function gsVars(g){const base=UI._base||96,fit=Math.max(base,UI._fit||base);const cw=Math.max(48,Math.round(base*g)); /* 3.66.7: 확대하면 칸 너비도 같이 커짐(100%는 화면에 꼭 맞고, 넘치면 좌우로 밀어 봄) */const ch=Math.round((UI._baseH||40)*g);UI._cwE=cw;UI._chE=ch;
-  return `--cw:${cw}px;--ch:${ch}px;--fs:${Math.max(9.5,Math.min(26,12*g)).toFixed(1)}px`} /* 3.73.0: 글자도 칸과 같은 비율로(가로·세로·글자가 함께 커짐) */
-function applyNames(){document.querySelectorAll('#gridScroll table.grid').forEach(t=>t.classList.toggle('withnames',namesOn()));syncNamesToggle();stretchLater()}
+function gsVars(g,t){const base=UI._base||96,fit=Math.max(base,UI._fit||base);const cw=Math.max(48,Math.round(base*g));/* 3.73.4: 표(위칸·아래칸)마다 100%에 화면을 꼭 채우는 자기 기준 너비(_base)로 — 열 수가 다른 아래칸도 처음부터 같은 비율로 커짐 */const cwT=t&&t._base?Math.max(48,t._base*g).toFixed(2):cw; /* 3.66.7: 확대하면 칸 너비도 같이 커짐(100%는 화면에 꼭 맞고, 넘치면 좌우로 밀어 봄) */const ch=Math.round((UI._baseH||40)*g);UI._cwE=cw;UI._chE=ch;
+  return `--cw:${cwT}px;--ch:${ch}px;--fs:${Math.max(9.5,Math.min(26,12*g)).toFixed(1)}px`} /* 3.73.0: 글자도 칸과 같은 비율로(가로·세로·글자가 함께 커짐) */
+/* 이름 스위치: 3.73.4 — 확대 때와 같은 방식으로 접히고 펼쳐짐. 펼칠 땐 실제 이름 높이까지만(0→높이) 0.25초, 접을 땐 지금 높이에서 0까지 0.25초(예전엔 80em↔0이라 끝에서 급하게 닫혔음) · 줄 높이도 같은 순간 목표로 가서 같이 움직임 */
+let _nmT=null;
+function applyNames(){const sc=$('gridScroll');const tbs=sc?[...sc.querySelectorAll('table.grid')]:[];const on=namesOn();if(!tbs.length){syncNamesToggle();return}
+  if(typeof ZM!=='undefined'&&ZM.run){tbs.forEach(t=>t.classList.toggle('withnames',on));syncNamesToggle();stretchLater();return}
+  const bh=(UI._baseH||40)*UI.gs;const lay=()=>void tbs[0].offsetHeight;sc.classList.add('measuring');
+  tbs.forEach(t=>{t.classList.add('withnames');t.style.setProperty('--nmh','80em')});lay();const m=zmMeasure(true);const cap=(m.nh+4)+'px';
+  if(on){tbs.forEach(t=>{t.style.setProperty('--nmh','0px');t.style.setProperty('--nmo','0')});lay();sc.classList.remove('measuring');lay();
+    tbs.forEach(t=>{t.style.setProperty('--nmh',cap);t.style.setProperty('--nmo','1');t.style.setProperty('--ch',Math.round(Math.max(bh,m.on+8))+'px')})}
+  else{tbs.forEach(t=>t.style.setProperty('--nmh',cap));lay();sc.classList.remove('measuring');lay();
+    tbs.forEach(t=>{t.classList.remove('withnames');t.style.setProperty('--ch',Math.round(Math.max(bh,m.off+8))+'px')})}
+  syncNamesToggle();clearTimeout(_nmT);_nmT=setTimeout(()=>{if(typeof ZM!=='undefined'&&ZM.run)return;tbs.forEach(t=>{t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')});stretchLater()},320)}
 // 카드 높이: 모든 줄을 같은 높이로, 배율에 비례해서 커짐 (이름이 보이면 가장 긴 명단 기준 × 배율)
 function stretchChips(now){const sc=document.getElementById('gridScroll');if(!sc)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length)return;
   const g=UI.gs;
@@ -3578,11 +3591,13 @@ function calcBase(){const sc=document.getElementById('gridScroll');if(!sc)return
   const tlw=Math.max(0,...tbs.map(t=>(+t.dataset.tl||0)*((t.querySelector('th.wtl')||{}).offsetWidth||0)));
   // 수정 모드: 표가 보관함 옆에 다 안 들어가면 보관함을 얇은 탭으로 접음(마우스를 올리거나 끌어 오면 펼쳐짐)
   const fit=Math.floor((sc.clientWidth-pw-tlw-6)/maxc);const nb=Math.max(56,Math.min(320,fit));
+  /* 표마다: 열 수가 적은 아래칸은 칸을 더 넓게 잡아 100%에 화면을 꼭 채움(예전엔 th.per의 width:1%로 표가 늘어나 채워졌는데, 그러면 확대 초반에 아래칸 칸이 안 커져 비율이 어긋났음) */
+  let bch=false;tbs.forEach(t=>{const c=+t.dataset.cols||1;const tw=(+t.dataset.tl||0)*((t.querySelector('th.wtl')||{}).offsetWidth||0);const b=Math.max(56,(sc.clientWidth-pw-tw-6)/c);/* 3.73.5: 반올림 없이 정확히 → 위칸·아래칸 너비가 어느 배율에서도 똑같아 가로 스크롤 최대가 매 화면 엇갈리지 않음(오른쪽 끝에서 확대할 때 좌우 떨림 원인) */if(Math.abs((t._base||0)-b)>0.01){t._base=b;bch=true}});
   // 100% 높이 = 시간표(위·아래칸)가 창 높이에 딱 맞는 줄 높이
   const rows=tbs.reduce((a,t)=>a+t.tBodies[0].rows.length,0);const head=tbs.reduce((a,t)=>a+t.tHead.getBoundingClientRect().height,0);
   const top=sc.getBoundingClientRect().top+window.scrollY;const avail=window.innerHeight-(top-window.scrollY>0?Math.min(top,260):260)-head-8*(tbs.length-1)-14;
   const bh=Math.max(40,Math.min(140,Math.floor(avail/Math.max(1,rows))));
-  if(nb!==UI._base||fit!==UI._fit||bh!==UI._baseH){UI._base=nb;UI._fit=fit;UI._baseH=bh;tbs.forEach(t=>{t.setAttribute('style',gsVars(UI.gs));delete t._nmc})}
+  if(bch||nb!==UI._base||fit!==UI._fit||bh!==UI._baseH){UI._base=nb;UI._fit=fit;UI._baseH=bh;tbs.forEach(t=>{t.setAttribute('style',gsVars(UI.gs,t));delete t._nmc})}
   tbs.forEach(t=>t.classList.toggle('withnames',namesOn()));syncNamesToggle()}
 // 이름 표시: 직접 켰거나, 125% 이상이거나, 칸이 충분히 넓고 높을 때(예: 월수금만 볼 때) 자동
 function namesAuto(){return UI.gs>=GS_NAMES-1e-9||((UI._cwE||0)>=68&&(UI._chE||0)>=76)}
@@ -3591,7 +3606,7 @@ function namesOn(){return UI.namesOv!==null?UI.namesOv:namesAuto()}
 function syncNamesToggle(){const b=$('nmTgl');if(!b)return;const on=namesOn();b.setAttribute('aria-checked',on);const h=$('nmHint');if(h)h.textContent=UI.namesOv===null?'자동':'고정'}
 function setGs(g,quiet,now){g=Math.round(Math.max(GS_MIN,Math.min(GS_MAX,g))*100)/100;if(g===UI.gs)return;UI.namesOv=null;const was=namesOn();UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
     const tbs=[...document.querySelectorAll('#gridScroll table.grid')];
-  if(tbs.length){tbs.forEach(t=>{t.setAttribute('style',gsVars(g));t.classList.toggle('withnames',namesOn())});syncNamesToggle();if(now){stretchChips(true);zxSync()}else stretchLater();const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}else render();
+  if(tbs.length){tbs.forEach(t=>{t.setAttribute('style',gsVars(g,t));t.classList.toggle('withnames',namesOn())});syncNamesToggle();if(now){stretchChips(true);zxSync()}else stretchLater();const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}else render();
   if(!quiet||was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
 /* 3.73.1 부드러운 확대: 휠·＋/－는 '목표 배율'만 바꾸고, 실제 배율은 매 화면(약 60번/초)마다 목표 쪽으로 미끄러지듯 따라감.
    매 화면 칸 크기를 실제로 바꾸고(그림 늘리기 아님 → 끝에 툭 바뀌는 것 없음) 마우스 아래 칸(버튼·키는 화면 가운데)이 제자리에 머물게 스크롤.
@@ -3616,7 +3631,7 @@ function zmNamesAt(g){const base=UI._base||96,bh=UI._baseH||40;return g>=GS_NAME
 function zmApply(g,ns){const base=UI._base||96,bh=UI._baseH||40;const cw=Math.max(48,Math.round(base*g));UI._cwE=cw;UI._chE=Math.round(bh*g);UI.gs=g;ZM.gA=g;
   const fs=zmFs(g);const hOff=Math.max(bh*g,ZM.natOff*(fs/zmFs(ZM.gOff))+8);const rOn=ZM.natOn==null?1:fs/zmFs(ZM.gOn);const hOn=ZM.natOn==null?hOff:Math.max(bh*g,ZM.natOn*rOn+8);
   const h=Math.round(hOff+(hOn-hOff)*ns);const showN=ns>0;const cap=showN?Math.round((ZM.nmH*rOn+4)*ns)+'px':'';
-  ZM.tbs.forEach(t=>{t.style.setProperty('--cw',cw+'px');t.style.setProperty('--fs',fs.toFixed(1)+'px');t.style.setProperty('--ch',h+'px');t.classList.toggle('withnames',showN);
+  ZM.tbs.forEach(t=>{t.style.setProperty('--cw',(t._base?Math.max(48,t._base*g).toFixed(2):cw)+'px');t.style.setProperty('--fs',fs.toFixed(1)+'px');t.style.setProperty('--ch',h+'px');t.classList.toggle('withnames',showN);
     if(showN){t.style.setProperty('--nmh',cap);t.style.setProperty('--nmo',ns.toFixed(3))}else{t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')}});
   const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}
 function zmStart(cx,cy){const sc=$('gridScroll');const tbs=sc?[...sc.querySelectorAll('table.grid')]:[];if(!tbs.length)return false;
@@ -3630,7 +3645,7 @@ function zmMeasureOn(){ZM.tbs.forEach(t=>{t.classList.add('withnames');t.style.s
 function zmPremeasure(){const sc=$('gridScroll');if(!sc||ZM.run)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length||tbs[0]._nmc||tbs[0].classList.contains('withnames'))return;
   sc.classList.add('measuring');tbs.forEach(t=>{t.classList.add('withnames');t.style.setProperty('--nmh','80em');t.style.setProperty('--nmo','0')});void tbs[0].offsetHeight;const m=zmMeasure(true);
   tbs.forEach(t=>{t.classList.remove('withnames');t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')});void tbs[0].offsetHeight;sc.classList.remove('measuring');tbs[0]._nmc={on:m.on,nh:m.nh,g:UI.gs}}
-function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){/* 도중에 다시 그려졌으면(연동 등) 목표 배율로 바로 마무리 */ZM.run=false;const g=Math.round(ZM.tg*100)/100;UI.gs=g;UI.namesOv=null;try{localStorage.setItem('ymt_gs',g)}catch(e){}const sc=$('gridScroll');if(sc){sc.classList.remove('measuring');sc.querySelectorAll('table.grid').forEach(t=>{t.setAttribute('style',gsVars(g));t.classList.toggle('withnames',namesOn())});syncNamesToggle();stretchLater()}return}
+function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){/* 도중에 다시 그려졌으면(연동 등) 목표 배율로 바로 마무리 */ZM.run=false;const g=Math.round(ZM.tg*100)/100;UI.gs=g;UI.namesOv=null;try{localStorage.setItem('ymt_gs',g)}catch(e){}const sc=$('gridScroll');if(sc){sc.classList.remove('measuring');sc.querySelectorAll('table.grid').forEach(t=>{t.setAttribute('style',gsVars(g,t));t.classList.toggle('withnames',namesOn())});syncNamesToggle();stretchLater()}return}
   const dt=Math.max(0,Math.min(34,now-ZM.last));/* 한 화면이 늦어도 뛰지 않고 느려지게 · 첫 화면 시각이 시작보다 앞서도 거꾸로 가지 않게 */ZM.last=now;const k=1-Math.exp(-dt/75);ZM.g+=(ZM.tg-ZM.g)*k;if(Math.abs(ZM.tg-ZM.g)<0.0015||ZM.rm)ZM.g=ZM.tg;
   ZM.nsT=zmNamesAt(ZM.g)?1:0;if(ZM.nsT===1&&ZM.natOn==null)zmMeasureOn();
   /* 이름 펼침: 0.26초 S자 곡선(천천히 시작해 천천히 끝남) · 도중에 되돌아가도 그 자리에서 이어서 */
@@ -3639,7 +3654,7 @@ function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){/* 도중에 
   if(ZM.g===ZM.tg&&ZM.ns===ZM.nsT){zmEnd();return}ZM.raf=requestAnimationFrame(zmFrame)}
 /* 멈춤: 배율 저장 · 이름 표시 정리 · 줄 높이를 정확히 재고 차이가 있으면 0.15초 동안 맞춤 */
 function zmEnd(){ZM.run=false;const sc=$('gridScroll');const g=Math.round(ZM.tg*100)/100;UI.namesOv=null;UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
-  const tbs=ZM.tbs;const h0=parseFloat(tbs[0].style.getPropertyValue('--ch'))||0;tbs.forEach(t=>{t.setAttribute('style',gsVars(g));t.style.setProperty('--ch',h0+'px');t.classList.toggle('withnames',namesOn())});syncNamesToggle();
+  const tbs=ZM.tbs;const h0=parseFloat(tbs[0].style.getPropertyValue('--ch'))||0;tbs.forEach(t=>{t.setAttribute('style',gsVars(g,t));t.style.setProperty('--ch',h0+'px');t.classList.toggle('withnames',namesOn())});syncNamesToggle();
   const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%';
   stretchChips(true);const h1=parseFloat(tbs[0].style.getPropertyValue('--ch'))||h0;zmKeep();zxSync();zmKeep();
   if(Math.abs(h1-h0)>1){tbs.forEach(t=>t.style.setProperty('--ch',h0+'px'));zmKeep();const t0=performance.now();const step=now=>{if(ZM.run)return;const q=Math.min(1,(now-t0)/150),e=1-Math.pow(1-q,3);const h=Math.round(h0+(h1-h0)*e)+'px';tbs.forEach(t=>t.style.setProperty('--ch',h));zmKeep();if(q<1)requestAnimationFrame(step);else done()};requestAnimationFrame(step)}else done();
@@ -3794,7 +3809,7 @@ function viewStudents(){
   const nA=b.students.filter(s=>!offS(s)&&!isPre(s)).length;const nO=b.students.filter(isOut).length;const nP=b.students.filter(isPre).length;
   let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2>${typeof isStaff==='function'&&isStaff()?'<button class="btn sm" data-act="statPop" title="실적 통계 (내 지점)">실적 통계</button>':''}<span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn eokbtn" data-act="eokOpen" title="에듀OK에 로그인해서 재학생명부·입학희망생명부를 받아 바로 불러와요">에듀OK에서 받기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
   if(UI.importRes){const r=UI.importRes;h+=`<div class="sec"><div class="box"><b>명부 가져오기 결과 (${r.total}명)</b>
-    <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div>${r.re&&r.re.length?`<div>재입학(퇴원 학생 되살림) ${r.re.length}명: ${esc(r.re.join(', '))}</div>`:''}${r.hasFrom?`<div>입학일 반영 ${r.from}명 · 지금 신입 ${(r.nNew||[]).length}명${(r.nNew||[]).length?' ('+esc(r.nNew.join(', '))+')':''} · 입학 예정 ${(r.nPre||[]).length}명${(r.nPre||[]).length?' ('+esc(r.nPre.join(', '))+')':''}${r.nCs?` · 신입 상담 전 ${r.nCs}명`:''}</div>`:''}<div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
+    <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div>${r.iqDone&&r.iqDone.length?`<div>입학 문의 → 입학 완료 ${r.iqDone.length}명: ${esc(r.iqDone.join(', '))}</div>`:''}${r.re&&r.re.length?`<div>재입학(퇴원 학생 되살림) ${r.re.length}명: ${esc(r.re.join(', '))}</div>`:''}${r.hasFrom?`<div>입학일 반영 ${r.from}명 · 지금 신입 ${(r.nNew||[]).length}명${(r.nNew||[]).length?' ('+esc(r.nNew.join(', '))+')':''} · 입학 예정 ${(r.nPre||[]).length}명${(r.nPre||[]).length?' ('+esc(r.nPre.join(', '))+')':''}${r.nCs?` · 신입 상담 전 ${r.nCs}명`:''}</div>`:''}<div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
     ${r.missing.length?`<div class="box warn"><span>명부에 없는 재원생 ${r.missing.length}명: ${esc(r.missing.map(id=>sname(id)).join(', '))}</span><div class="row"><button class="btn" data-act="missingAway">모두 휴원으로 바꾸기</button><span class="hint">퇴원생이면 아래 표에서 직접 삭제하세요</span></div></div>`:''}
     ${r.added.length?'<div class="hint">새 학생은 반 관리에서 반 명단에 넣어 주세요. "명부 반" 칸에 명부의 반 이름이 보여요.</div>':''}<div><button class="btn" data-act="closeImport">닫기</button></div></div></div>`}
   h+=inqBoxHTML(b);h+=newBoxHTML(b);h+=cnBoxHTML(b);
@@ -4151,6 +4166,7 @@ function applyRoster(list,skip){
       else{const s={id:uid('s'),name:r.name,school:r.school,grade:r.grade,status:'재원',rosterClasses:r.classes,...(r.ph?{ph:r.ph}:{}),...(r.pa&&r.pa.length?{pa:r.pa}:{})};setFrom(s,r);b.students.push(s);seen.add(s.id);res.added.push(r.name)}
     });
     b.students.forEach(s=>{if(!seen.has(s.id)&&!offS(s)&&s.status!=='예정')res.missing.push(s.id)});
+    if(typeof iqCloseStudents==='function')res.iqDone=iqCloseStudents(b); /* 3.73.6: 학생이 된 입학 문의는 입학 완료로 */
     if(res.hasFrom){const L=b.students.filter(s=>seen.has(s.id));res.nNew=L.filter(isNewS).map(s=>s.name);res.nPre=L.filter(isPre).map(s=>s.name);res.nCs=L.filter(s=>csTgt(s)&&!s.cs).length}
   },`명부 ${list.length}명을 반영했어요`);
   UI.importRes=res;render();
@@ -5973,7 +5989,7 @@ function stOutApply(b,id){stOutVers(b).forEach(v=>v.classes.forEach(c=>Object.ke
 const inqLive=b=>(b.inq||[]).filter(q=>q.st==='open');
 const phF=n=>{n=String(n||'').replace(/\D/g,'');return n.length===11?n.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3'):n.length===10?n.replace(/(\d{2,3})(\d{3,4})(\d{4})/,'$1-$2-$3'):n};
 function inqBoxHTML(b){const L=inqLive(b).sort((a,z)=>(a.want||'9').localeCompare(z.want||'9')||(a.reg||'').localeCompare(z.reg||''));const C0=(b.inq||[]).filter(q=>q.st==='cancel');const nDone=(b.inq||[]).filter(q=>q.st==='done').length;
-  const row=q=>`<div class="iqr"><div class="iqn"><b>${esc(q.name)}</b><span>${esc([q.school,q.grade].filter(Boolean).join(' '))||'—'}</span></div>
+  const row=q=>`<div class="iqr"><div class="iqn"><b>${esc(q.name)}</b><span>${esc([q.school,q.grade].filter(Boolean).join(' '))||'—'}</span>${q.st==='cancel'&&q.gone?'<em class="iqgt" title="에듀OK 입학희망생명부를 다시 불러왔을 때 명부에 없어서 취소로 옮겨졌어요">에듀OK에서 빠짐</em>':''}</div>
     <div class="iqc">${q.ph?`<span>학생 <b class="mono">${esc(phF(q.ph))}</b></span>`:''}${(q.pa||[]).map(p=>`<span>${esc(p.l||'보호자')}${p.nm?' '+esc(p.nm):''} <b class="mono">${esc(phF(p.n))}</b></span>`).join('')||(q.ph?'':'<span class="hint">연락처 없음</span>')}</div>
     <div class="iqd">${q.want?`<span>희망 <b>${mdS(q.want)}</b></span>`:''}${q.reg?`<span>문의 ${mdS(q.reg)}</span>`:''}${q.src?`<span>${esc(q.src)}</span>`:''}</div>
     <div class="iqo">${q.st==='open'?`<button class="btn sm pri" data-iqreg="${q.id}" title="첫 수업일을 정해 입학 예정 학생으로">입학 예정으로</button><button class="btn sm" data-iqnow="${q.id}" data-label="바로 재원" title="오늘부터 재원 학생으로">바로 재원</button><button class="btn sm" data-iqx="${q.id}" data-label="입학취소">입학취소</button>`:`<span class="hint">${q.cancelAt?mdS(q.cancelAt)+' 취소':''}</span><button class="btn sm" data-iqback="${q.id}">되돌리기</button>`}</div>
@@ -5993,17 +6009,35 @@ function parseInq(buf){let txt=new TextDecoder('euc-kr').decode(buf);if(/charset
     const pn=dg(v(cs,'보호자핸드폰'));const q={name,school:shortSchool(v(cs,'학교')),grade:v(cs,'학년'),ph:dg(v(cs,'핸드폰'))||dg(v(cs,'전화번호')),pa:pn?[{l:v(cs,'관계')||'보호자',nm:v(cs,'보호자명'),n:pn}]:[],want:dt(v(cs,'입학희망일')),reg:dt(v(cs,'등록일')),src:v(cs,'등록경로')};
     out.push(q)});return out}
 // 불러오기 전 확인: 지금 보는 지점이 맞는지(다른 지점을 보다가 불러오는 실수 막기)
-function inqConfirm(b,add,res){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqcT" style="width:min(460px,100%)"><h2 id="iqcT"><span class="iqbr">${esc(b.name)}</span>에 넣을까요?</h2>
-  <div class="hint">입학 문의 <b>${add.length}명</b>을 ${esc(b.name)}에 넣어요${res.dup.length?` · 이미 있는 문의 ${res.dup.length}명은 건너뛰어요`:''}${res.stu.length?` · 이미 학생인 ${res.stu.length}명도 건너뛰어요`:''}</div>
-  <div class="iqpv">${add.slice(0,8).map(q=>`<span>${esc(q.name)} <small>${esc([q.school,q.grade].filter(Boolean).join(' '))}</small></span>`).join('')}${add.length>8?`<span class="hint">외 ${add.length-8}명</span>`:''}</div>
+function inqConfirm(b,res){const add=res.add;const nm=L=>L.slice(0,6).map(esc).join(', ')+(L.length>6?` 외 ${L.length-6}명`:'');$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqcT" style="width:min(480px,100%)"><h2 id="iqcT"><span class="iqbr">${esc(b.name)}</span>에 반영할까요?</h2>
+  <div class="hint">${add.length?`새 입학 문의 <b>${add.length}명</b>을 넣어요`:'새 문의는 없어요'}${res.dup.length?` · 그대로인 문의 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생인 ${res.stu.length}명은 건너뛰어요`:''}</div>
+  ${add.length?`<div class="iqpv">${add.slice(0,8).map(q=>`<span>${esc(q.name)} <small>${esc([q.school,q.grade].filter(Boolean).join(' '))}</small></span>`).join('')}${add.length>8?`<span class="hint">외 ${add.length-8}명</span>`:''}</div>`:''}
+  ${res.upd.length?`<div class="iqx"><b>정보가 바뀐 ${res.upd.length}명</b> — 새 정보로 덮어써요 <span class="hint">${nm(res.upd.map(x=>x.name))}</span></div>`:''}
+  ${res.close.length?`<div class="iqx"><b>이미 학생이 된 ${res.close.length}명</b> — 입학 완료로 옮겨요 <span class="hint">${nm(res.close)}</span></div>`:''}
+  ${res.gone.length?`<label class="iqx iqgone"><input type="checkbox" id="iqGoneChk" checked><span><b>에듀OK에서 빠진 ${res.gone.length}명</b> — 입학취소로 옮겨요(취소된 문의에 남아 언제든 되돌려요) <span class="hint">${nm(res.goneN)}</span></span></label><div class="hint">명부를 기간·조건으로 걸러서 받았다면 체크를 풀어 주세요. 직접 넣은 문의는 여기 들어가지 않아요.</div>`:''}
   <div class="hint">다른 지점 명부라면 [취소]하고 위에서 지점을 바꾼 뒤 다시 불러오세요.</div>
-  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqGo">${esc(b.name)}에 넣기</button></div></div>`}
-async function inqImport(list,go){const b=B();const res={add:[],dup:[],stu:[]};const key=q=>tnm(q.name)+'|'+tnm(q.school);
-  const have=new Set((b.inq||[]).map(key));const stu=new Set(b.students.filter(s=>!isOut(s)).map(key));const add=[];
-  list.forEach(q=>{const k=key(q);if(have.has(k)){res.dup.push(q.name);return}if(stu.has(k)){res.stu.push(q.name);return}have.add(k);add.push(Object.assign({id:uid('q'),st:'open',at:todayStr()},q));res.add.push(q.name)});
-  if(!add.length){toast(`새로 넣을 문의가 없어요${res.dup.length?` · 이미 있음 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생 ${res.stu.length}명`:''}`,4000);return}
-  if(!go){UI.iqPend=list;inqConfirm(b,add,res);return}UI.iqPend=null;
-  await quickChange(()=>{const bb=B();bb.inq=(bb.inq||[]).concat(add)},`입학 문의 ${add.length}명을 넣었어요${res.dup.length?` · 이미 있음 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생 ${res.stu.length}명(${res.stu.slice(0,3).join(', ')}${res.stu.length>3?' 외':''})`:''}`)}
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqGo">${esc(b.name)}에 반영</button></div></div>`}
+/* 3.73.6 같은 사람 판단: 이름이 같고 (학교가 같거나 연락처(학생·보호자 번호)가 하나라도 같으면) — 학교명을 고쳐도 같은 아이로 봄 · 형제는 보호자 번호가 같아도 이름이 달라 섞이지 않음 */
+const iqPhs=x=>[x.ph,...((x.pa||[]).map(p=>p.n))].map(n=>String(n||'').replace(/\D/g,'')).filter(n=>n.length>=9);
+function iqSame(a,b){if(tnm(a.name)!==tnm(b.name))return false;if(tnm(a.school)&&tnm(a.school)===tnm(b.school))return true;const pa=iqPhs(a);return iqPhs(b).some(n=>pa.includes(n))||(!tnm(a.school)&&!tnm(b.school)&&!pa.length)}
+/* 이미 학생이 된 문의(문의 중) → 입학 완료로 정리 · 돌려주는 값: 정리한 이름들 */
+function iqCloseStudents(b){const out=[];(b.inq||[]).forEach(q=>{if(q.st!=='open')return;const s=b.students.find(s=>!isOut(s)&&iqSame(q,s));if(!s)return;q.st='done';q.sid=s.id;q.doneAt=todayStr();q.auto=1;out.push(q.name)});return out}
+async function inqImport(list,go){const b=B();const res=iqPlan(b,list);
+  if(!res.add.length&&!res.upd.length&&!res.gone.length&&!res.close.length){toast(`바뀐 문의가 없어요${res.dup.length?` · 이미 있음 ${res.dup.length}명`:''}${res.stu.length?` · 이미 학생 ${res.stu.length}명`:''}`,4000);return}
+  if(!go){UI.iqPend=list;inqConfirm(b,res);return}UI.iqPend=null;const goneOn=!$('iqGoneChk')||$('iqGoneChk').checked;
+  await quickChange(()=>{const bb=B();const r=iqPlan(bb,list);bb.inq=bb.inq||[];
+    r.upd.forEach(({id,q})=>{const x=bb.inq.find(y=>y.id===id);if(!x)return;['school','grade','want','reg','src'].forEach(k=>{if(q[k])x[k]=q[k]});if(q.ph)x.ph=q.ph;if(q.pa&&q.pa.length)x.pa=q.pa});
+    bb.inq=bb.inq.concat(r.add.map(q=>Object.assign({id:uid('q'),st:'open',at:todayStr()},q)));
+    if(goneOn)r.gone.forEach(id=>{const x=bb.inq.find(y=>y.id===id);if(x&&x.st==='open'){x.st='cancel';x.cancelAt=todayStr();x.gone=1}});
+    iqCloseStudents(bb)},
+   [res.add.length?`새 문의 ${res.add.length}명`:'',res.upd.length?`정보 바뀜 ${res.upd.length}명`:'',goneOn&&res.gone.length?`에듀OK에서 빠져 입학취소로 ${res.gone.length}명`:'',res.close.length?`이미 학생이라 입학 완료로 ${res.close.length}명`:''].filter(Boolean).join(' · ')||'입학 문의를 반영했어요')}
+/* 불러오기 계획: add 새 문의 · upd 같은 사람인데 정보가 바뀜(덮어씀) · dup 그대로 · stu 이미 학생 · gone 프로그램엔 '문의 중'인데 명부에 없음(직접 넣은 문의는 제외) · close 이미 학생이 된 문의 */
+function iqPlan(b,list){const res={add:[],upd:[],dup:[],stu:[],gone:[],close:[]};const inq=b.inq||[];const live=b.students.filter(s=>!isOut(s));const hit=new Set();const seen=[];
+  list.forEach(q=>{if(seen.some(o=>iqSame(o,q)))return;seen.push(q);const x=inq.find(y=>iqSame(y,q));
+    if(x){hit.add(x.id);const ch=['school','grade','want'].some(k=>q[k]&&q[k]!==(x[k]||''))||iqPhs(q).some(n=>!iqPhs(x).includes(n));if(ch&&x.st==='open')res.upd.push({id:x.id,q,name:q.name});else res.dup.push(q.name);return}
+    if(live.some(s=>iqSame(q,s))){res.stu.push(q.name);return}res.add.push(q)});
+  inq.forEach(x=>{if(x.st!=='open')return;if(live.some(s=>iqSame(x,s))){res.close.push(x.name);hit.add(x.id);return}if(!hit.has(x.id)&&x.src!=='직접 입력')res.gone.push(x.id)});
+  res.goneN=res.gone.map(id=>(inq.find(x=>x.id===id)||{}).name);return res}
 async function inqAdd(){const n=($('iqName').value||'').trim().replace(/\s+/g,'');if(!n){toast('이름을 넣어 주세요');$('iqName').focus();return}
   const ph=String($('iqPh').value||'').replace(/\D/g,'');if(ph&&!/^0\d{8,10}$/.test(ph)){toast('연락처를 확인해 주세요');return}
   const q={id:uid('q'),st:'open',at:todayStr(),reg:todayStr(),name:n,school:($('iqSchool').value||'').trim(),grade:($('iqGrade').value||'').trim(),ph:'',pa:ph?[{l:'보호자',n:ph}]:[],want:$('iqWant').value||'',src:'직접 입력'};
@@ -6013,7 +6047,7 @@ async function inqNote(id,tx){tx=String(tx||'').trim().slice(0,300);if(!tx){toas
   await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.notes=(x.notes||[]).concat([{id:uid('n'),at:todayStr(),by,tx}])},'메모를 남겼어요')}
 async function inqNoteDel(id,nid){await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.notes=(x.notes||[]).filter(n=>n.id!==nid)},'메모를 지웠어요')}
 async function inqSet(id,st){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;
-  await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.st=st;if(st==='cancel')x.cancelAt=todayStr();else delete x.cancelAt},st==='cancel'?`${q.name} · 입학취소 (취소된 문의에 남아요)`:`${q.name} · 다시 문의 중으로`)}
+  await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.st=st;delete x.gone;if(st==='cancel')x.cancelAt=todayStr();else delete x.cancelAt},st==='cancel'?`${q.name} · 입학취소 (취소된 문의에 남아요)`:`${q.name} · 다시 문의 중으로`)}
 function inqRegDlg(id){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const d0=q.want&&q.want>todayStr()?q.want:'';
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqT" style="width:min(460px,100%)" data-iqd="${id}"><h2 id="iqT">입학 예정으로 · ${esc(q.name)}</h2>
   <div class="hint">${esc([q.school,q.grade].filter(Boolean).join(' '))} · 연락처까지 학생 관리로 옮겨요. 반 넣기는 지점 시간표 카드에서 해요.</div>
@@ -6982,7 +7016,9 @@ const HELP=[
   <li><b>명부 입학일</b>: 재학생명부의 입학일이 첫 수업일로 들어가요(2주 신입·입학 예정 다시 계산).</li></ul>`},
  {id:'inq',t:'입학 문의',b:`
   ${HF('inq','입학 문의 — 줄마다 [입학 예정으로]·[바로 재원]·[입학취소], 아래 메모')}
-  <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 이름·학교는 다시 안 넣고, 이미 학생이면 건너뛰어요.</li>
+  <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
+  <li>다시 불러올 때 <b>에듀OK에서 빠진 사람</b>(입학 처리·취소 등)은 확인 창에 따로 보여 주고, 체크된 채로 반영하면 <b>입학취소</b>로 옮겨요(취소된 문의에 '에듀OK에서 빠짐' 표시 · 되돌리기 가능). 명부를 기간·조건으로 걸러 받았으면 체크를 풀어요. 직접 넣은 문의는 해당 없어요.</li>
+  <li>이미 학생이 된 문의(입학희망생·재학생명부를 불러올 때 같은 사람이 학생 관리에 있으면)는 저절로 <b>입학 완료</b>로 옮겨요.</li>
   <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
   <li><b>메모</b>: 통화 내용·약속을 줄 아래 칸에 적고 [남기기](또는 Enter). ×를 두 번 누르면 지워져요. 폰 [관리] 탭의 입학 문의 카드에서도 같은 메모를 보고 남겨요.</li>
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
