@@ -904,6 +904,27 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .grid.withnames .chip .nm{max-height:var(--nmh,80em);opacity:calc(.95*var(--nmo,1));margin-top:calc(2px*var(--nmo,1))} /* 확대 중엔 --nmh·--nmo로 서서히 펼침 */
 .grid .chip .nm .sn:has(small.nw),.grid .chip .nm .sn:has(small.pre){grid-column:1/-1}
 #gridScroll.zx{overflow:auto;max-height:calc(100vh - 18px);--toph:0px;scrollbar-gutter:stable} /* 수정 모드와 같은 방식: 머리 줄은 시간표 칸 맨 위에 붙음 */
+/* 3.75.0 시험 달력(날짜별 학생) — 벽 달력 느낌 · 화면·인쇄 같이 */
+.xcdlg .xcym{min-width:86px;text-align:center;font-size:14px}.xcdlg .nmt{display:inline-flex;align-items:center;gap:6px;margin:0 6px 0 10px;font-size:13px;color:var(--muted)}.xcdlg .nmt label{cursor:pointer}
+.xcbody{padding:14px 20px 18px}
+.xcal{--xm:#3f7f86;--xmb:#e6f1f1;--xh:#b85f62;--xhb:#f8e9e8;font-family:var(--f-body);color:var(--fg)}
+.xct{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}.xct b{font-size:26px;font-weight:800;color:#b5504f;letter-spacing:-.02em}.xct small{font-size:11px;letter-spacing:.28em;color:var(--muted)}.xct span{margin-left:auto;font-size:12px;color:var(--muted)}
+.xcg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.xcw{text-align:center;font-size:12px;font-weight:700;color:#fff;background:#4c6b78;border-radius:999px;padding:4px 0}.xcw.su{background:#c0605a}.xcw.sa{background:#5a7cb8}
+.xcd{min-height:96px;border-radius:10px;background:color-mix(in srgb,var(--panel) 94%,#c9b98f);border:1px solid color-mix(in srgb,var(--line2) 70%,#d9cdb0);padding:6px 6px 7px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.xcd.e{background:transparent;border-color:transparent}.xcd i{font-style:normal;font-weight:700;font-size:13px;color:var(--fg);line-height:1}.xcd.su i{color:#c0605a}.xcd.sa i{color:#5a7cb8}
+.xcd.td{box-shadow:inset 0 0 0 2px var(--sel)}
+.xce{border-radius:7px;padding:4px 6px 4px 8px;background:var(--xmb);border-left:3px solid var(--xm);min-width:0}.xce.k고{background:var(--xhb);border-left-color:var(--xh)}
+.xch{display:flex;align-items:baseline;gap:4px;min-width:0;font-size:12px;line-height:1.3}.xch b{font-weight:800;white-space:nowrap}.xch span{color:var(--muted);font-size:11.5px;white-space:nowrap}.xcp{font-size:10.5px;color:var(--muted);margin-top:1px}.xch em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:var(--xm)}.xce.k고 .xch em{color:var(--xh)}
+.xcn{display:flex;flex-wrap:wrap;gap:0 6px;font-size:11.5px;line-height:1.45;max-height:0;opacity:0;overflow:hidden;transition:max-height .28s var(--ease,ease),opacity .22s ease,margin .22s ease}
+.xcal.on .xcn{max-height:30em;opacity:1;margin-top:2px}
+.xcl{display:flex;align-items:center;gap:12px;margin-top:10px;font-size:11.5px;color:var(--muted)}.xcl span{display:inline-flex;align-items:center;gap:5px}.xcl span::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--xm)}.xcl span.k고::before{background:var(--xh)}.xcl small{margin-left:auto}
+.exchip.excal{border-style:dashed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xcal{--xmb:color-mix(in srgb,#3f7f86 22%,var(--panel));--xhb:color-mix(in srgb,#b85f62 22%,var(--panel))}:root:not([data-theme="light"]) .xcd{background:color-mix(in srgb,var(--panel) 92%,#fff)}}
+:root[data-theme="dark"] .xcal{--xmb:color-mix(in srgb,#3f7f86 22%,var(--panel));--xhb:color-mix(in srgb,#b85f62 22%,var(--panel))}:root[data-theme="dark"] .xcd{background:color-mix(in srgb,var(--panel) 92%,#fff)}
+/* 인쇄: A4 가로 한 장 */
+.pg.xcpg{padding:6mm 7mm}.xcal.pr{--fg:#1b2233;--muted:#6b7280;--panel:#fff;--line2:#e3e0d6}.xcal.pr .xcd{min-height:30mm;background:#faf8f2;border-color:#e6e0cf}.xcal.pr .xcd.e{background:transparent;border-color:transparent}.pg.xcpg{box-sizing:border-box}.xcal.pr .xcg{gap:5px}
+.xcal.pr .xce,.xcal.pr .xcw,.xcal.pr .xcd{-webkit-print-color-adjust:exact;print-color-adjust:exact}.xcal.pr .xcn{transition:none}.xcal.pr .xch{font-size:11px}.xcal.pr .xcn{font-size:10.5px}
 </style>
 </head>
 <body>
@@ -3264,7 +3285,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.74.2', APPDATE='2026-10-21';
+const APPVER='3.75.0', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6483,7 +6504,7 @@ function schUpcoming(b,days){const td=todayStr();const lim=dPlus(td,days||60);co
   ks.forEach(k=>{const x=schNextExam(k,td);if(x&&x.from<=lim)out.push(Object.assign({k,n:schStudents(k,b).length},x))});return out.sort((a,z)=>a.from.localeCompare(z.from)||z.n-a.n)}
 const dDay=(d,td)=>Math.round((new Date(d+'T00:00:00')-new Date((td||todayStr())+'T00:00:00'))/864e5);
 function schStripHTML(b,inSch){const L=schUpcoming(b,inSch?90:45);if(!L.length)return inSch?'<div class="sec exstrip"><h3>다가오는 시험</h3><div class="hint">앞으로 90일 안에 잡힌 시험이 없어요 · 아래 학교 카드의 학사일정이나 [시트 불러오기]로 넣어 주세요</div></div>':'';const td=todayStr();
-  return `<div class="${inSch?'sec exstrip':'exstrip bar'}">${inSch?'<h3>다가오는 시험 <span class="hint">학생들이 다니는 학교 · 90일 안</span></h3>':'<b class="exl">다가오는 시험</b>'}<div class="exchips">${L.map(x=>{const dd=dDay(x.from,td);const on=x.from<=td;const math=x.dm.find(d=>/수학|공수|대수|미적|확통|기하/.test(d.t))||x.dm[0];
+  return `<div class="${inSch?'sec exstrip':'exstrip bar'}">${inSch?'<h3>다가오는 시험 <span class="hint">학생들이 다니는 학교 · 90일 안</span></h3>':'<b class="exl">다가오는 시험</b>'}<div class="exchips">${inSch?'':'<button class="exchip excal" data-act="xcOpen" title="날마다 누가 시험을 치는지 · 인쇄"><b>시험 달력</b><span>날짜별 학생</span><em>열기</em><small>이름 보기 · 인쇄</small></button>'}${L.map(x=>{const dd=dDay(x.from,td);const on=x.from<=td;const math=x.dm.find(d=>/수학|공수|대수|미적|확통|기하/.test(d.t))||x.dm[0];
     return `<button class="exchip${on?' on':dd<=7?' soon':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)} ${esc(annMD(x.from))}~${esc(annMD(x.to))}${math?' · 수학 '+esc(annMD(math.d)):''}"><b>${esc(schName(x.k))}</b><span>${esc(x.lab)}</span><em>${on?'시험 중':`D-${dd}`}</em><small>${esc(annMD(x.from))}${x.to!==x.from?'~'+esc(annMD(x.to)):''}${math?' · 수학 '+esc(annMD(math.d)):''} · ${x.n}명</small></button>`}).join('')}</div></div>`}
 /* ===== 학교 정보 화면 ===== */
 function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI.sch))UI.sch=ks[0]||'';UI.schY=UI.schY||+todayStr().slice(0,4);const ed=schCanEdit();const td=todayStr();
@@ -6500,7 +6521,7 @@ function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI
 function schCalHTML(b){const td=todayStr();UI.schM=UI.schM||td.slice(0,7);const [y,m]=UI.schM.split('-').map(Number);const ks=new Set((b.students||[]).filter(s=>!offS(s)).map(s=>schNorm(s.school)).filter(Boolean));const all=UI.schAll;
   const ev={};schKeys().forEach(k=>{if(!all&&!ks.has(k))return;schExams(k).forEach(x=>{let first=true;for(let d=x.from;d<=x.to;d=dPlus(d,1)){const wk=[0,6].includes(new Date(d+'T00:00:00').getDay());const math=x.dm.some(z=>z.d===d);if(wk&&!math)continue; /* 주말은 시험일로 안 보이게(그날 수학 시험을 넣은 경우만 보임) */const f=first;first=false;if(d.slice(0,7)!==UI.schM)continue;(ev[d]=ev[d]||[]).push({k,lab:x.lab,math,first:f})}})});
   const ld=new Date(y,m,0).getDate();const fd=new Date(y,m-1,1).getDay();const cells=[];for(let i=0;i<fd;i++)cells.push('');for(let d=1;d<=ld;d++)cells.push(`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);while(cells.length%7)cells.push('');
-  return `<div class="sec schcal"><h3>시험 달력 <span class="hint">${all?'모든 학교':esc(b.name)+' 학생들 학교'} · 수학 시험일은 진하게</span><span class="sp"></span><span class="seg" style="margin-right:8px"><button data-act="schAllTg" aria-pressed="${!all}">우리 지점</button><button data-act="schAllTg" aria-pressed="${!!all}">모든 학교</button></span><button class="btn sm" data-act="schMv" data-n="-1">‹</button><b style="min-width:72px;text-align:center">${y}년 ${m}월</b><button class="btn sm" data-act="schMv" data-n="1">›</button><button class="btn sm" data-act="schMv" data-n="0">이번 달</button></h3>
+  return `<div class="sec schcal"><h3>시험 달력 <span class="hint">${all?'모든 학교':esc(b.name)+' 학생들 학교'} · 수학 시험일은 진하게</span><span class="sp"></span><span class="seg" style="margin-right:8px"><button data-act="schAllTg" aria-pressed="${!all}">우리 지점</button><button data-act="schAllTg" aria-pressed="${!!all}">모든 학교</button></span><button class="btn sm" data-act="schMv" data-n="-1">‹</button><b style="min-width:72px;text-align:center">${y}년 ${m}월</b><button class="btn sm" data-act="schMv" data-n="1">›</button><button class="btn sm" data-act="schMv" data-n="0">이번 달</button><button class="btn sm pri" data-act="xcOpen" title="날마다 누가 무슨 시험을 치는지 · 학생 이름 보기 · 인쇄" style="margin-left:6px">날짜별 학생 · 인쇄</button></h3>
     <div class="calg">${DAYS.slice(6).concat(DAYS.slice(0,6)).map(d=>`<div class="calh">${d}</div>`).join('')}${cells.map(d=>{if(!d)return '<div class="cald e"></div>';const L=ev[d]||[];return `<div class="cald${d===td?' td':''}${new Date(d+'T00:00:00').getDay()===0?' su':''}"><i>${+d.slice(8)}</i>${L.map(x=>`<button class="calev${x.math?' math':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)}">${esc(schName(x.k))}${x.first?' <small>'+esc(x.lab.replace(/학기 /,''))+'</small>':''}</button>`).join('')}</div>`}).join('')}</div></div>`}
 /* 학교 카드: 학사일정 · 시험 범위 · 부교재 · 등급컷 · 기출 수거 · 선택과목 · 메모 */
 function schCardHTML(k,b,ed){const o=schGet(k);const kd=schKindOf(k);const y=UI.schY;const cal=(o.cal||{})[y]||{};const td=todayStr();const stu=schStudents(k,b);const grades=kd==='고'?['고1','고2','고3']:kd==='중'?['중1','중2','중3']:[];
@@ -6709,6 +6730,48 @@ function moreIssues(b,out){if(!b||(typeof pcViewOnly==='function'&&pcViewOnly(b)
   /* 8. 보호자 번호가 하나도 없는 재원생 */
   {const dg=x=>String(x||'').replace(/\D/g,'');const L=act.filter(s=>!dg(s.ph)&&!(s.pa||[]).some(p=>dg(p.n)));if(L.length)out.push({lv:'info',k:'연락처 없음',m:`${L.slice(0,8).map(s=>s.name).join(', ')}${L.length>8?` 외 ${L.length-8}명`:''} · 학생·보호자 번호가 하나도 없어요`,ids:[],go:{view:'students'}})}
 }
+/* ===== 3.75.0 시험 날짜별 학생 달력 (벽 달력처럼) — 날마다 "학교+학년(중등) / 학교+과목(고등) · 몇 명" 띠, '학생 이름' 스위치로 이름 펼침, A4 가로 인쇄
+   과목→학생: 고1 공통수학은 학년, 고2·고3은 학생 카드 선택과목(s.subj['학년-학기']) — 없으면 과목 기본 학년(대수·미적1 고2 · 미적2 고3 · 확통·기하 고2·3)으로
+   지점 학생만(지점장·행정·관리자 PC · 다른 지점은 시간표만이라 못 엶) */
+const XC_G={'공통수학1':['고1'],'공통수학2':['고1'],'대수':['고2'],'미적분Ⅰ':['고2'],'확률과 통계':['고2','고3'],'기하':['고2','고3'],'미적분Ⅱ':['고3']};
+function xcTokens(t){return String(t||'').split(/[,\/·\n]+|\s+/).map(x=>x.trim()).filter(Boolean)}
+/* 한 학교의 그날 시험 글자(t) → [{lab, sj, sts}] */
+function xcGroups(b,k,x,t){const kd=schKindOf(k);const sem=x.mk[1];const S=schStudents(k,b).filter(s=>!isPre(s)&&stuKind(s)===kd).sort((a,z)=>sortKo(a.name,z.name));if(!S.length)return [];const nm=schName(k);const out=[];const tk=xcTokens(t);
+  const byG=gs=>gs.map(g=>({lab:nm+(kd==='중'?g.slice(1):' '+g),sj:'',g,sts:S.filter(s=>s.grade===g)})).filter(o=>o.sts.length);
+  const gTok=[...new Set(tk.flatMap(w=>{const m=/^(?:(중|고))?([123])(?:학년)?$/.exec(w)||/^(중|고)([123])$/.exec(w);return m?[kd+m[2]]:[]}))];
+  if(kd==='중'){return byG(gTok.length?gTok:['중1','중2','중3'])}
+  const sjs=[...new Set(tk.map(subjNorm).filter(s=>HS_SUBJ.includes(s)))];
+  sjs.forEach(sj=>{const sts=S.filter(s=>{const gn=(/^고([123])$/.exec(s.grade||'')||[])[1];if(!gn)return false;if(gn==='1')return XC_G[sj].includes('고1');const L=(s.subj||{})[`${gn}-${sem}`];return L&&L.length?L.map(subjNorm).includes(sj):XC_G[sj].includes(s.grade)});if(sts.length)out.push({lab:nm,sj:subjShort(sj),sts})});
+  if(!sjs.length)out.push(...byG(gTok.length?gTok:['고1','고2','고3']));return out}
+/* 그 달의 날짜별 시험 */
+function xcMonth(b,ym){const ks=new Set((b.students||[]).filter(s=>!offS(s)).map(s=>schNorm(s.school)).filter(k=>k&&['중','고'].includes(schKindOf(k))));const ev={};
+  ks.forEach(k=>schExams(k).forEach(x=>{if(x.to.slice(0,7)<ym||x.from.slice(0,7)>ym)return;const kd=schKindOf(k);
+    if(x.dm.length)x.dm.forEach(({d,t})=>{if(d.slice(0,7)!==ym)return;xcGroups(b,k,x,t).forEach(o=>(ev[d]=ev[d]||[]).push(Object.assign({k,kd},o)))});
+    else if(x.from.slice(0,7)===ym)xcGroups(b,k,x,'').forEach(o=>(ev[x.from]=ev[x.from]||[]).push(Object.assign({k,kd,per:`${annMD(x.from)}~${annMD(x.to)}`},o)))}));
+  Object.values(ev).forEach(L=>L.sort((a,z)=>({중:0,고:1}[a.kd]-{중:0,고:1}[z.kd])||sortKo(a.lab,z.lab)||sortKo(a.sj,z.sj)));return ev}
+/* 처음 열 달: 지금 시험 중이거나 다음 시험이 있는 달 */
+function xcStartYm(b){const td=todayStr();const L=schUpcoming(b,120);const x=L.find(x=>x.to>=td);return x?(x.from<=td?td:x.from).slice(0,7):td.slice(0,7)}
+function xcCells(ym){const [y,m]=ym.split('-').map(Number);const ld=new Date(y,m,0).getDate();const fd=new Date(y,m-1,1).getDay();const c=[];for(let i=0;i<fd;i++)c.push('');for(let d=1;d<=ld;d++)c.push(`${ym}-${String(d).padStart(2,'0')}`);while(c.length%7)c.push('');return c}
+const XC_EN=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+function xcGridHTML(b,ym,names,pr){const ev=xcMonth(b,ym);const td=todayStr();const W=['일','월','화','수','목','금','토'];const [y,m]=ym.split('-').map(Number);
+  const chip=o=>`<div class="xce k${o.kd}"><div class="xch"><b>${esc(o.lab)}</b>${o.sj?`<span>${esc(o.sj)}</span>`:''}<em>${o.sts.length}</em></div>${o.per?`<div class="xcp" title="과목별 시험 날짜가 없어서 첫날에 기간으로 보여요">기간 ${esc(o.per)}</div>`:''}<div class="xcn">${o.sts.map(s=>`<span>${esc(s.name)}</span>`).join('')}</div></div>`;
+  return `<div class="xcal${names?' on':''}${pr?' pr':''}"><div class="xct"><b>${m}월</b><small>${XC_EN[m-1]} ${y}</small><span>${esc(b.name)} 시험 일정</span></div>
+    <div class="xcg">${W.map((w,i)=>`<div class="xcw${i===0?' su':i===6?' sa':''}">${w}</div>`).join('')}${xcCells(ym).map((d,i)=>{if(!d)return '<div class="xcd e"></div>';const L=ev[d]||[];return `<div class="xcd${d===td&&!pr?' td':''}${i%7===0?' su':i%7===6?' sa':''}${L.length?' has':''}"><i>${+d.slice(8)}</i>${L.map(chip).join('')}</div>`}).join('')}</div>
+    <div class="xcl"><span class="k중">중등</span><span class="k고">고등</span><small>고2·고3은 학생 카드의 선택과목 기준(안 넣었으면 과목 기본 학년) · 과목별 날짜가 없는 학교는 첫날에 기간으로</small></div></div>`}
+function xcOpen(){const b=B();if(typeof pcViewOnly==='function'&&pcViewOnly(b)){toast('다른 지점은 시간표만 볼 수 있어요');return}UI.xc=UI.xc&&UI.xc.b===b.id?UI.xc:{b:b.id,ym:xcStartYm(b),names:false};$('modal').hidden=false;xcRender()}
+function xcRender(){const X=UI.xc;if(!X)return;const b=B();const [y,m]=X.ym.split('-').map(Number);
+  $('modal').innerHTML=`<div class="dlg statdlg xcdlg" role="dialog" aria-modal="true" aria-labelledby="xcT" style="width:min(1240px,97vw)"><div class="sp-head"><h2 id="xcT">시험 달력</h2><span class="hint">날마다 누가 무슨 시험을 치는지 · ${esc(b.name)} 학생</span><span class="sp"></span>
+    <button class="btn sm" data-act="xcMv" data-n="-1" aria-label="지난달">‹</button><b class="xcym">${y}년 ${m}월</b><button class="btn sm" data-act="xcMv" data-n="1" aria-label="다음 달">›</button>
+    <span class="nmt"><button class="tgl" id="xcNm" role="switch" aria-checked="${X.names}"></button><label for="xcNm">학생 이름</label></span>
+    <button class="btn" data-act="xcPrint">인쇄 · PDF</button><button class="btn" data-act="xcClose">닫기</button></div><div class="sp-body xcbody">${xcGridHTML(b,X.ym,X.names)}</div></div>`}
+function xcMv(n){const X=UI.xc;const [y,m]=X.ym.split('-').map(Number);const d=new Date(y,m-1+n,1);X.ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;xcRender()}
+function xcNames(){const X=UI.xc;X.names=!X.names;const c=document.querySelector('.xcdlg .xcal');if(c)c.classList.toggle('on',X.names);const t=$('xcNm');if(t)t.setAttribute('aria-checked',X.names)}
+async function xcPrint(){const X=UI.xc;const b=B();$('print').innerHTML=`<div class="pg xcpg">${xcGridHTML(b,X.ym,X.names,true)}</div>`;document.body.classList.add('printing');
+  /* A4 가로 한 장에 맞춤: 폭을 인쇄 폭(1075px)으로 두고 높이가 넘치면 그만큼 줄임 */{const pg=document.querySelector('#print .xcpg');let z=1;for(let i=0;i<3;i++){pg.style.width=(1075/z)+'px';pg.style.zoom='';const h=pg.scrollHeight;const nz=Math.min(1,735/h);if(Math.abs(nz-z)<0.01)break;z=nz}pg.style.width=(1075/z)+'px';pg.style.zoom=z.toFixed(3)}
+  try{if(bridge){const r=await bridge.pdf({name:`${b.name}_시험달력_${X.ym}`.replace(/[\\/:*?"<>|~]/g,'_'),landscape:true,pageSize:'A4'});if(r&&r.saved)toast('PDF 저장: '+r.path)}else window.print()}catch(e){toast('PDF를 만들지 못했어요: '+e.message)}
+  finally{document.body.classList.remove('printing');$('print').innerHTML=''}}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#xcNm,[data-act="xcMv"],[data-act="xcPrint"],[data-act="xcClose"],[data-act="xcOpen"]');if(!t)return;e.stopPropagation();
+  if(t.id==='xcNm')xcNames();else if(t.dataset.act==='xcMv')xcMv(+t.dataset.n);else if(t.dataset.act==='xcPrint')xcPrint();else if(t.dataset.act==='xcOpen')xcOpen();else{UI.xc&&(UI.xc.open=false);$('modal').hidden=true}},true);
 
 /* ===== 성적 관리 (PC) — 잠금 없는 공유 자료 sync/shared/grades.json (학교 정보·업무와 같은 방식)
    DB.grades={rec:{학생id:{'연도|학기|중간/기말|과목':{exp,fin,gr,at}}}, tests:{시험id:{id,br,name,grade,date,max,cut,at,del}}, tres:{시험id:{학생id:{sc,d,s,at}}}, mig:{지점id:1}}
@@ -7053,6 +7116,8 @@ const HELP=[
   ${HF('school','학교 정보 — 위쪽 다가오는 시험 띠와 달력, 학교 카드')}
   <ul><li>학생들이 다니는 학교가 저절로 목록에 떠요(없으면 [학교 추가]). 학교를 고르면 <b>학사일정</b>(시험·방학·수련회, 수학 시험일), <b>시험 범위</b>, <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등학교는 <b>선택과목</b>, <b>메모</b>.</li>
   ${HF('card','학교 카드 — 학사일정·범위·부교재·등급컷·기출 수거·선택과목')}
+  <li><b>시험 달력 · 날짜별 학생</b>: 학교 정보의 시험 달력 [날짜별 학생 · 인쇄](또는 지점 시간표 위 다가오는 시험 띠의 [시험 달력]). 날마다 <b>학교+학년(중등)</b>·<b>학교+과목(고등)</b>과 인원이 떠요. <b>학생 이름</b> 스위치를 켜면 이름이 펼쳐지고, <b>[인쇄 · PDF]</b>는 지금 보이는 대로 A4 가로 한 장. 고2·고3은 학생 카드의 선택과목 기준(안 넣었으면 과목 기본 학년), 과목별 날짜가 없는 학교는 첫날에 기간으로 보여요. 지점 학생만 나와요.</li>
+  ${HF('xcal','시험 달력 — 날짜별로 누가 무슨 시험을 치는지 · 학생 이름 켬')}
   <li><b>시험 범위</b>: [범위 넣기]에서 22개정 단원을 <b>두 번</b> 눌러 시작~끝. '소단원까지 보기'로 더 잘게, 메모·직접 쓰기도 돼요.</li>
   ${HF('rng','범위 넣기 — 단원을 두 번 눌러 시작~끝')}
   <li><b>선택과목</b>: 고2·3 학생마다 학년·학기별 과목. 범위·성적이 이 과목으로 연결돼요. 고1은 2학기에 2학년 과목 조사(체크)만.</li>
