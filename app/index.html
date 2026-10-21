@@ -937,6 +937,8 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 /* 3.75.6 시험 범위 과목 추가·지우기 */
 .rngr{position:relative}.rngx{border:0;background:transparent;color:var(--muted);font:inherit;font-size:15px;line-height:1;padding:3px 6px;border-radius:6px;cursor:pointer;margin-left:2px;transition:color .15s ease,background .15s ease}.rngx:hover{color:var(--err);background:color-mix(in srgb,var(--err) 8%,transparent)}.rngx.arm{font-size:11.5px;color:var(--err);font-weight:700}
 .rngadd{margin:2px 0 8px}.rngadd select{font-size:12.5px;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 8px;cursor:pointer}.rngadd select:hover{border-color:color-mix(in srgb,var(--navy) 40%,var(--line));color:var(--fg)}
+
+.pkpc .pkmore{border:1px dashed var(--line2);background:transparent;color:var(--muted);border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;cursor:pointer}.pkpc .pkmore:hover{color:var(--fg);border-color:color-mix(in srgb,var(--navy) 35%,var(--line2))}
 </style>
 </head>
 <body>
@@ -3297,7 +3299,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.77.0', APPDATE='2026-10-21';
+const APPVER='3.78.0', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3693,7 +3695,7 @@ function zmPremeasure(){const sc=$('gridScroll');if(!sc||ZM.run)return;const tbs
   tbs.forEach(t=>{t.classList.remove('withnames');t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')});void tbs[0].offsetHeight;sc.classList.remove('measuring');tbs[0]._nmc={on:m.on,nh:m.nh,g:UI.gs}}
 function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){/* 도중에 다시 그려졌으면(연동 등) 목표 배율로 바로 마무리 */ZM.run=false;const g=Math.round(ZM.tg*100)/100;UI.gs=g;UI.namesOv=null;try{localStorage.setItem('ymt_gs',g)}catch(e){}const sc=$('gridScroll');if(sc){sc.classList.remove('measuring');sc.querySelectorAll('table.grid').forEach(t=>{t.setAttribute('style',gsVars(g,t));t.classList.toggle('withnames',namesOn())});syncNamesToggle();stretchLater()}return}
   const dt=Math.max(0,Math.min(34,now-ZM.last));/* 한 화면이 늦어도 뛰지 않고 느려지게 · 첫 화면 시각이 시작보다 앞서도 거꾸로 가지 않게 */ZM.last=now;/* 3.73.8: 임계 감쇠 스프링 — 속도(ZM.v)를 이어 가서 휠을 연달아 굴려도 칸마다 멈칫하지 않고 한 번에 미끄러지듯(튀어 넘치지 않음) · 약 0.3초에 자리 잡음 */
-  {const w=18,h=dt/1000;const steps=Math.max(1,Math.ceil(h/0.008));const hs=h/steps;for(let i=0;i<steps;i++){const a=w*w*(ZM.tg-ZM.g)-2*w*ZM.v;ZM.v+=a*hs;ZM.g+=ZM.v*hs;/* 3.74.1: 가로는 세로와 '같은 순간에' 출발하되 속도만 느리게 — 세로 속도의 60%로 같이 움직이고, 벌어진 만큼은 0.1초 남짓에 따라잡음(예전 스프링은 가로가 늦게 출발해서 '길어진 다음 넓어지는' 순서처럼 보였음) */ZM.vx=0.6*ZM.v+9*(ZM.g-ZM.gx);ZM.gx+=ZM.vx*hs}}
+  {const w=14,h=dt/1000;/* 3.78.0: 조금 더 미끄러지게(ω 18→14 · 약 0.45초에 자리 잡음) */const steps=Math.max(1,Math.ceil(h/0.008));const hs=h/steps;for(let i=0;i<steps;i++){const a=w*w*(ZM.tg-ZM.g)-2*w*ZM.v;ZM.v+=a*hs;ZM.g+=ZM.v*hs;/* 3.74.1: 가로는 세로와 '같은 순간에' 출발하되 속도만 느리게 — 세로 속도의 60%로 같이 움직이고, 벌어진 만큼은 0.1초 남짓에 따라잡음(예전 스프링은 가로가 늦게 출발해서 '길어진 다음 넓어지는' 순서처럼 보였음) */ZM.vx=0.6*ZM.v+6*(ZM.g-ZM.gx);ZM.gx+=ZM.vx*hs}}
   if((Math.abs(ZM.tg-ZM.g)<0.0008&&Math.abs(ZM.v)<0.01)||ZM.rm){ZM.g=ZM.tg;ZM.v=0}
   if((Math.abs(ZM.tg-ZM.gx)<0.002&&ZM.g===ZM.tg)||ZM.rm){ZM.gx=ZM.tg;ZM.vx=0} /* 가로는 같이 출발·조금 느리게 */
   ZM.nsT=zmNamesAt(ZM.g)?1:0;if(ZM.nsT===1&&ZM.natOn==null)zmMeasureOn();
@@ -6114,7 +6116,11 @@ async function inqSet(id,st){const q=(B().inq||[]).find(x=>x.id===id);if(!q)retu
   await quickChange(()=>{const x=(B().inq||[]).find(y=>y.id===id);if(!x)return;x.st=st;delete x.gone;if(st==='cancel')x.cancelAt=todayStr();else delete x.cancelAt},st==='cancel'?`${q.name} · 입학취소 (취소된 문의에 남아요)`:`${q.name} · 다시 문의 중으로`)}
 /* 3.75.3 반 여러 개 고르기(PC): 지금 시간표의 반 × 그 반 선생님 */
 function pkPairsPC(){const b=B(),v=(b.versions||[]).find(x=>x.id===b.current)||V();return v.classes.slice().sort((a,z)=>sortKo(a.name,z.name)).flatMap(c=>[...new Set(Object.keys(c.members||{}).concat(v.sessions.filter(o=>o.cls===c.id).map(o=>o.t)))].filter(t=>b.teachers.some(x=>x.id===t)).map(t=>({c,t})))}
-function pkChipsPC(id){return `<div class="pkl pkpc" id="${id}">${pkPairsPC().map(p=>`<button type="button" class="pk" data-pk="${esc(p.c.id+'|'+p.t)}" aria-pressed="false"><b>${esc(p.c.name)}</b><small>${esc(tn(p.t))}T</small></button>`).join('')||'<span class="hint">반이 없어요</span>'}</div>`}
+/* 3.78.0 학년에 맞는 반을 위로 · 나머지는 접어 둠(반 학년 = 반 이름의 학년 글자 또는 명단 학생들의 학년) */
+function pkGradeOf(b,c){const m=/(초|중|고)\s?([1-6])/.exec(c.name||'');if(m)return new Set([m[1]+m[2]]);const G=new Set();Object.values(c.members||{}).flat().forEach(id=>{const s=(b.students||[]).find(x=>x.id===id);if(s&&s.grade)G.add(s.grade)});return G}
+function pkChipsPC(id,grade){const b=B();const P=pkPairsPC();const fit=p=>!grade||pkGradeOf(b,p.c).has(grade);const A=P.filter(fit),Z=P.filter(p=>!fit(p));const chip=p=>`<button type="button" class="pk" data-pk="${esc(p.c.id+'|'+p.t)}" aria-pressed="false"><b>${esc(p.c.name)}</b><small>${esc(tn(p.t))}T</small></button>`;
+  return `<div class="pkl pkpc" id="${id}">${A.map(chip).join('')||(P.length?'':'<span class="hint">반이 없어요</span>')}${Z.length?`<button type="button" class="pkmore" data-pkmore="1">${A.length?`다른 학년 반 ${Z.length}개 더 보기`:`반 ${Z.length}개 보기`}</button><span class="pkrest" hidden>${Z.map(chip).join('')}</span>`:''}</div>`}
+document.addEventListener('click',e=>{const m=e.target.closest&&e.target.closest('[data-pkmore]');if(!m)return;e.preventDefault();const r=m.nextElementSibling;if(r){r.hidden=false;r.style.display='contents'}m.remove()});
 const pkPickedPC=id=>[...document.querySelectorAll(`#${id} .pk[aria-pressed="true"]`)].map(x=>x.dataset.pk);
 function pkJoin(b,sid,pk){const v=(b.versions||[]).find(x=>x.id===b.current)||V();(pk||[]).forEach(cv=>{const [cid,t]=cv.split('|');const c=v.classes.find(x=>x.id===cid);if(!c)return;const m=c.members=c.members||{};m[t]=m[t]||[];if(!m[t].includes(sid))m[t].push(sid)})}
 document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('.pkpc .pk');if(!k)return;k.setAttribute('aria-pressed',String(k.getAttribute('aria-pressed')!=='true'))});
@@ -6122,7 +6128,7 @@ function inqRegDlg(id){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;con
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="iqT" style="width:min(560px,100%)" data-iqd="${id}"><h2 id="iqT">입학 예정으로 · ${esc(q.name)}</h2>
   <div class="hint">${esc([q.school,q.grade].filter(Boolean).join(' '))} · 연락처까지 학생 관리로 옮겨요.</div>
   <div class="row"><label for="iqFrom">첫 수업일</label><input id="iqFrom" type="date" value="${esc(d0)}"><span class="hint">앞날이면 입학 예정(그날 저절로 재원) · 오늘이거나 지난 날이면 그날부터 재원(입학일)</span></div>
-  <label class="qal">반 <span class="hint">여러 개 골라도 돼요 · 안 고르면 나중에 시간표 카드에서</span></label>${pkChipsPC('iqPk')}
+  <label class="qal">반 <span class="hint">여러 개 골라도 돼요 · 안 고르면 나중에 시간표 카드에서</span></label>${pkChipsPC('iqPk',q.grade)}
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqRegGo">입학 예정으로</button></div></div>`;setTimeout(()=>{const i=$('iqFrom');if(i)i.focus()},50)}
 async function inqRegGo(){const d=document.querySelector('[data-iqd]');if(!d)return;const fd=$('iqFrom').value||'';if(!fd){toast('첫 수업일을 골라 주세요');$('iqFrom').focus();return}const pk=pkPickedPC('iqPk');$('modal').hidden=true;await inqReg(d.dataset.iqd,fd,undefined,pk)}
 async function inqReg(id,fd,rvId,pk){pk=pk||[];const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const pre=fd&&fd>todayStr();const sid=uid('s');const qq={name:q.name,school:q.school||'',grade:q.grade||'',from:fd,ph:q.ph,pa:q.pa};
@@ -6542,7 +6548,7 @@ function schUpcoming(b,days){const td=todayStr();const lim=dPlus(td,days||60);co
 const dDay=(d,td)=>Math.round((new Date(d+'T00:00:00')-new Date((td||todayStr())+'T00:00:00'))/864e5);
 function schStripHTML(b,inSch){const L=schUpcoming(b,inSch?90:45);if(!L.length)return inSch?'<div class="sec exstrip"><h3>다가오는 시험</h3><div class="hint">앞으로 90일 안에 잡힌 시험이 없어요 · 아래 학교 카드의 학사일정이나 [시트 불러오기]로 넣어 주세요</div></div>':'';const td=todayStr();
   return `<div class="${inSch?'sec exstrip':'exstrip bar'}">${inSch?'<h3>다가오는 시험 <span class="hint">학생들이 다니는 학교 · 90일 안</span></h3>':'<b class="exl">다가오는 시험</b>'}<div class="exchips">${L.map(x=>{const dd=dDay(x.from,td);const on=x.from<=td;const math=x.dm.find(d=>/수학|공수|대수|미적|확통|기하/.test(d.t))||x.dm[0];
-    return `<button class="exchip${on?' on':dd<=7?' soon':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)} ${esc(annMD(x.from))}~${esc(annMD(x.to))}${math?' · 수학 '+esc(annMD(math.d)):''}"><b>${esc(schName(x.k))}</b><span>${esc(x.lab)}</span><em>${on?'시험 중':`D-${dd}`}</em><small>${esc(annMD(x.from))}${x.to!==x.from?'~'+esc(annMD(x.to)):''}${math?' · 수학 '+esc(annMD(math.d)):''} · ${x.n}명</small></button>`}).join('')}${inSch?'':'<button class="exchip excal" data-act="xcOpen" title="날마다 누가 시험을 치는지 · 인쇄"><b>시험 달력</b><span>날짜별 학생</span><em>열기</em><small>이름 보기 · 인쇄</small></button>'}</div></div>`}
+    return `<button class="exchip${on?' on':dd<=7?' soon':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)} ${esc(annMD(x.from))}~${esc(annMD(x.to))}${math?' · 수학 '+esc(annMD(math.d)):''}"><b>${esc(schName(x.k))}</b><span>${esc(x.lab)}</span><em>${on?(x.to===td?'오늘 끝':'시험 중'):`D-${dd}`}</em><small>${esc(annMD(x.from))}${x.to!==x.from?'~'+esc(annMD(x.to)):''}${math?' · 수학 '+esc(annMD(math.d)):''} · ${x.n}명</small></button>`}).join('')}${inSch?'':'<button class="exchip excal" data-act="xcOpen" title="날마다 누가 시험을 치는지 · 인쇄"><b>시험 달력</b><span>날짜별 학생</span><em>열기</em><small>이름 보기 · 인쇄</small></button>'}</div></div>`}
 /* ===== 학교 정보 화면 ===== */
 function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI.sch))UI.sch=ks[0]||'';UI.schY=UI.schY||+todayStr().slice(0,4);const ed=schCanEdit();const td=todayStr();
   let h=`<div class="card-h"><h2>학교 정보</h2><span class="hint">모든 지점이 같이 써요 · 학생의 학교·학년에 따라 저절로 연결돼요${typeof syOn==='function'&&syOn()?SCHS.err?` · <span class="bad">공유 실패: ${esc(SCHS.err)}</span>`:' · 공유 중':''}</span><span class="sp"></span>
@@ -6551,7 +6557,7 @@ function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI
   h+=schStripHTML(b,true);
   h+=schCalHTML(b);
   h+=`<div class="schwrap"><div class="schlist">${['중','고','초'].map(kd=>{const L=ks.filter(k=>schKindOf(k)===kd);if(!L.length)return '';return `<div class="schgrp"><h4>${kd==='중'?'중학교':kd==='고'?'고등학교':'초등학교'} <small>${L.length}</small></h4>${L.map(k=>{const nx=schNextExam(k,td);const n=schStudents(k,b).length,na=schStudents(k).length;
-      return `<button class="schitem${k===UI.sch?' on':''}" data-act="schPick" data-k="${esc(k)}"><b>${esc(schName(k))}</b><small>${n}명${na!==n?` · 전체 ${na}`:''}</small>${nx?`<em>${esc(nx.lab)} ${esc(annMD(nx.from))}${nx.from<=td?' 시험 중':' D-'+dDay(nx.from,td)}</em>`:'<em class="dim">다음 시험 없음</em>'}</button>`}).join('')}</div>`}).join('')||'<div class="hint" style="padding:12px">학생 관리에 학교가 적힌 학생이 있으면 여기 저절로 떠요 · [학교 추가]로 직접 넣어도 돼요</div>'}</div>
+      return `<button class="schitem${k===UI.sch?' on':''}" data-act="schPick" data-k="${esc(k)}"><b>${esc(schName(k))}</b><small>${n}명${na!==n?` · 전체 ${na}`:''}</small>${nx?`<em>${esc(nx.lab)} ${esc(annMD(nx.from))}${nx.from<=td?(nx.to===td?' 오늘 끝':' 시험 중'):' D-'+dDay(nx.from,td)}</em>`:'<em class="dim">다음 시험 없음</em>'}</button>`}).join('')}</div>`}).join('')||'<div class="hint" style="padding:12px">학생 관리에 학교가 적힌 학생이 있으면 여기 저절로 떠요 · [학교 추가]로 직접 넣어도 돼요</div>'}</div>
     <div class="schcard">${UI.sch?schCardHTML(UI.sch,b,ed):'<div class="hint" style="padding:20px">왼쪽에서 학교를 고르세요</div>'}</div></div>`;
   return h}
 /* 달력: 이번 달부터 2달 · 시험(중간·기말)만 표시 */
@@ -7026,8 +7032,8 @@ function viewTasks(){const b=B();UI.tk=UI.tk||{kind:'',who:'',open:true,q:'',sum
     <select data-tko="who"><option value="">모든 담당</option>${names.map(n=>`<option value="${esc(n)}" ${G.who===n?'selected':''}>${esc(n)}T</option>`).join('')}</select><input id="tkQ" placeholder="학교·단원·비고 찾기" value="${esc(G.q)}" autocomplete="off" style="width:150px">
     </div>`;
   const tg=(t,f,on,lab)=>`<button class="tkt${on?' on':''}" data-tkt="${esc(t.id)}|${f}" ${ed?'':'disabled'} title="${lab}">${on?'✓':''}<span>${lab}</span></button>`;
-  const row=t=>`<tr class="${t.done?'done':''}"><td class="l"><span class="tkk k${esc(t.kind||'기타')}">${esc(TK_KIND[t.kind]||t.kind||'기타')}</span></td><td class="l">${esc(t.grade||'')}</td><td class="l">${esc(t.school||'')}</td><td class="l"><b>${esc(t.title||'')}</b>${t.due?`<small class="hint"> · ${esc(annMD(t.due))}까지</small>`:''}</td><td class="l">${esc(t.subj||'')}</td><td class="l">${t.who?esc(tkWho(t.who).split(',').map(n=>n+'T').join(', ')):'<span class="hint">미정</span>'}</td><td class="num">${t.n||''}</td><td class="num">${tg(t,'ans',!!t.ans,'답안')}</td><td class="num">${tg(t,'done',!!t.done,'완료')}${t.done&&t.doneBy?`<small class="hint tkby">${esc(t.doneBy)}${t.doneAt?' '+esc(annMD(t.doneAt)):''}</small>`:''}</td><td class="num">${tg(t,'chk',!!t.chk,'점검')}</td><td class="l"><small>${esc(t.memo||'')}</small></td><td class="num">${ed?`<button class="tedit" data-act="tkEdit" data-id="${esc(t.id)}" title="고치기·지우기">⋯</button>`:''}</td></tr>`;
-  h+=`<div class="sec grsec"><h3>업무 목록 <span class="hint">안 끝난 일 ${L.length}개${Dn.length?` · 완료 ${Dn.length}개는 맨 아래`:''} · 답안·완료·점검은 눌러서 바꿔요 · 줄 끝 ⋯로 고치기</span></h3><div class="scroll grscroll"><table class="tbl tkt-tbl"><thead><tr><th class="l">종류</th><th class="l">학년</th><th class="l">학교</th><th class="l">파일명 · 단원</th><th class="l">과목 · 회차</th><th class="l">담당</th><th>문항</th><th>답안</th><th>완료</th><th>점검</th><th class="l">비고</th><th></th></tr></thead><tbody>
+  const row=t=>`<tr class="${t.done?'done':''}"><td class="l"><span class="tkk k${esc(t.kind||'기타')}">${esc(TK_KIND[t.kind]||t.kind||'기타')}</span></td><td class="l">${esc(t.grade||'')}</td><td class="l">${esc(t.school||'')}</td><td class="l"><b>${esc(t.title||'')}</b>${t.due?`<small class="hint"> · ${esc(annMD(t.due))}까지</small>`:''}</td><td class="l">${esc(t.subj||'')}</td><td class="l">${t.who?esc(tkWho(t.who).split(',').map(n=>n+'T').join(', ')):'<span class="hint">미정</span>'}</td>${t.kind==='블로그'?`<td class="num" colspan="2">${tg(t,'pub',!!t.pub,'발행 완료')}</td>`:`<td class="num">${t.n||''}</td><td class="num">${tg(t,'ans',!!t.ans,'답안')}</td>`}<td class="num">${tg(t,'done',!!t.done,'완료')}${t.done&&t.doneBy?`<small class="hint tkby">${esc(t.doneBy)}${t.doneAt?' '+esc(annMD(t.doneAt)):''}</small>`:''}</td><td class="num">${tg(t,'chk',!!t.chk,'점검')}</td><td class="l"><small>${esc(t.memo||'')}</small></td><td class="num">${ed?`<button class="tedit" data-act="tkEdit" data-id="${esc(t.id)}" title="고치기·지우기">⋯</button>`:''}</td></tr>`;
+  h+=`<div class="sec grsec"><h3>업무 목록 <span class="hint">안 끝난 일 ${L.length}개${Dn.length?` · 완료 ${Dn.length}개는 맨 아래`:''} · 답안·완료·점검(블로그는 발행 완료)은 눌러서 바꿔요 · 줄 끝 ⋯로 고치기</span></h3><div class="scroll grscroll"><table class="tbl tkt-tbl"><thead><tr><th class="l">종류</th><th class="l">학년</th><th class="l">학교</th><th class="l">${G.kind==='블로그'?'글 제목 · 시험':'파일명 · 단원'}</th><th class="l">과목 · 회차</th><th class="l">담당</th>${G.kind==='블로그'?'<th colspan="2">발행</th>':'<th>문항</th><th>답안</th>'}<th>완료</th><th>점검</th><th class="l">비고</th><th></th></tr></thead><tbody>
     ${L.map(row).join('')||'<tr><td colspan="12" class="hint">안 끝난 일이 없어요 · [+ 업무 추가]나 [시트 불러오기]</td></tr>'}
     ${Dn.length||nOld?`<tr class="tkfold"><td colspan="12"><button class="btn sm" data-tko="showDone" data-v="${G.showDone?'0':'1'}">${G.showDone?'완료된 일 숨기기':`완료된 일 ${Dn.length}개 펼치기`}</button>${nOld?`<span class="hint">3개월 지난 완료 ${nOld}개는 자동으로 숨겨요</span>`:''}</td></tr>`:''}${G.showDone?Dn.map(row).join(''):''}</tbody></table></div></div>`;
   /* 담당별 합계 */
@@ -7091,7 +7097,7 @@ const HELP=[
   <li>한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. [찾기] 칸에 이름을 치면 돼요.</li>
   <li>아래 <b>자동 점검</b>에 겹침·빠진 수업·연강 아님 같은 문제가 떠요. 누르면 해당 카드가 강조돼요. 규칙은 경고일 뿐이라 예외는 그대로 둬도 돼요.</li>
   <li>시간표 말고도 챙길 일이 같이 떠요 — 누르면 그 화면으로 가요: <b>시험일 없는 학교</b>(이번 학기 기말 일정 없음) · <b>시험 범위 비어 있음</b>(3주 안 시험) · <b>선택과목 미정</b>(고2·3) · <b>상담 전 신입</b>(첫 수업 2주 지남) · <b>확정 점수 빠짐</b>(시험 끝나고 2주) · <b>기한 지난 업무</b> · <b>입학 문의 1주 지남</b> · <b>연락처 없음</b>.</li>
-  <li>위쪽 <b>다가오는 시험</b> 띠에 학생들 학교의 다음 시험이 D-day로 떠요(<a data-help="school">학교 정보</a>). 시험 기간 동안은 '시험 중', 끝나는 날이 지나면 띠에서 빠져요(폰도 같아요).</li></ul>`},
+  <li>위쪽 <b>다가오는 시험</b> 띠에 학생들 학교의 다음 시험이 D-day로 떠요(<a data-help="school">학교 정보</a>). 시험 기간 동안은 '시험 중', 마지막 날엔 '오늘 끝', 끝나는 날이 지나면 띠에서 빠져요(폰도 같아요).</li></ul>`},
  {id:'other',t:'다른 지점 보기',b:`
   <ul><li><b>지점장 PC·행정 PC</b>에서 위쪽 지점을 다른 지점으로 바꾸면 <b>지점 시간표·학생별·반 관리</b>만 참고용으로 보여요. 학생 관리·강사 관리·성적 탭과 학생 카드는 안 보여요 — 지점끼리 협조할 때 시간표만 참고하라는 뜻이에요.</li>
   ${HF('vo','다른 지점을 고르면 맨 위에 "참고용으로 시간표만" 줄이 뜨고 탭이 줄어요')}
@@ -7141,7 +7147,7 @@ const HELP=[
   <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음 · 에듀OK에서 '대연고1' 같은 임시 이름이 실제 이름으로 바뀌어도 연락처·학교가 같으면 같은 사람)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
   <li>다시 불러올 때 <b>에듀OK에서 빠진 사람</b>(입학 처리·취소 등)은 확인 창에 따로 보여 주고, 체크된 채로 반영하면 <b>입학취소</b>로 옮겨요(취소된 문의에 '에듀OK에서 빠짐' 표시 · 되돌리기 가능). 명부를 기간·조건으로 걸러 받았으면 체크를 풀어요. 직접 넣은 문의는 해당 없어요.</li>
   <li>이미 학생이 된 문의(입학희망생·재학생명부를 불러올 때 같은 사람이 학생 관리에 있으면)는 저절로 <b>입학 완료</b>로 옮겨요.</li>
-  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
+  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도 · 학생 학년에 맞는 반이 먼저 보이고 나머지는 [더 보기]) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
   <li><b>메모</b>: 통화 내용·약속을 줄 아래 칸에 적고 [남기기](또는 Enter). ×를 두 번 누르면 지워져요. 폰 [관리] 탭의 입학 문의 카드에서도 같은 메모를 보고 남겨요.</li>
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
  {id:'cns',t:'정기 상담',b:`
@@ -7183,7 +7189,7 @@ const HELP=[
  {id:'tasks',t:'업무',b:`
   ${HF('tasks','업무 — 모든 지점이 같이 쓰는 일 목록 · 담당별 합계')}
   <ul><li>인강·자료 제작·<b>블로그 분석글</b>처럼 나눠서 하는 일을 <b>모든 지점이 같이</b> 봐요(지점 구분 없음).</li>
-  <li><b>[+ 업무 추가]</b>(종류·학년·학교·파일명/단원·과목·담당·문항수·기한·비고 · 블로그 분석글은 제목 칸이 '글 제목 · 시험'으로 바뀌어요) 또는 <b>[시트 불러오기]</b>에 '인강분배' 시트 엑셀. 담당은 강사 목록에서 여러 명도.</li>
+  <li><b>[+ 업무 추가]</b>(종류·학년·학교·파일명/단원·과목·담당·문항수·기한·비고 · 블로그 분석글은 제목 칸이 '글 제목 · 시험'으로 바뀌고, 목록에서 문항·답안 대신 <b>[발행 완료]</b> 하나를 눌러요) 또는 <b>[시트 불러오기]</b>에 '인강분배' 시트 엑셀. 담당은 강사 목록에서 여러 명도.</li>
   <li>표에서 <b>답안·완료·점검</b>을 눌러 바꿔요. 완료된 일은 맨 아래 접혀 있고, 3개월 지나면 자동으로 숨어요. 아래에 <b>담당별 합계</b>.</li>
   <li>폰: 담당 선생님은 [오늘] 탭에 <b>내 업무</b> → [완료]를 누르면 PC에 1~2분 뒤 반영. 지점장·행정·관리자 폰은 <b>전체 업무</b>(진행 중·끝난 일 2주·사람별)를 봐요(보기만).</li></ul>`},
  {id:'stats',t:'실적 통계',b:`
@@ -7229,9 +7235,10 @@ const HELP=[
   <div class="hrow">${HF('m-today','오늘 — 내 수업, 지금·다음, 내 업무·상담 알림')}${HF('m-grid','전체 — 지점 시간표 전체 표')}${HF('m-stu','학생 — 신입·예정 카드와 연락처')}</div>
   <ul><li>선생님은 [강사 관리]에서 받은 <b>6자리 로그인 코드</b>로 들어가요. <b>오늘</b>(내 수업·지금·다음) · <b>전체</b>(지점 시간표, 두 손가락 확대) · 요일별 · 강사별 · <b>학생</b>(이름으로 찾기 · 학교·학년·연락처·듣는 반·다음 시험).</li>
   <li>카드를 <b>꾹 누르면</b> 그 수업이 크게 떠요. 누른 채 학생 이름 위로 옮겨 떼면 그 학생 카드.</li>
-  <li><b>학생 카드</b>에 <b>자체시험 점수</b>(학원 시험 최근 6회 · 기준 아래는 빨갛게 · 풀이완료·발송완료)가 떠요. 선생님은 <b>내 담당 학생만</b>, 지점장·행정은 자기 지점 학생 전체. 내신 성적은 폰으로 안 가요.</li>
+  <li><b>학생 카드</b>에 <b>자체시험 점수</b>(학원 시험 최근 6회 · 기준 아래는 빨갛게 · 지난 회 대비 ▲▼ · 풀이완료·발송완료)가 떠요. 선생님은 <b>내 담당 학생만</b>, 지점장·행정은 자기 지점 학생 전체. 내신 성적은 폰으로 안 가요.</li>
   ${HF('m-ts','폰 학생 카드 — 자체시험 점수(담당 학생만)')}
-  <li><b>학교</b> 탭: 우리 지점 학생들이 다니는 학교의 <b>시험 일정·과목별 시험일</b>, <b>시험 범위</b>(시험을 골라서), <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등 <b>선택과목</b>(선생님은 내 학생만 · 지점장·행정은 지점 전체). 학교 메모는 폰으로 안 가요. 고치기는 PC [학교 정보]에서.</li>
+  <li><b>학교</b> 탭: 우리 지점 학생들이 다니는 학교의 <b>시험 일정·과목별 시험일</b>, <b>시험 범위</b>(시험을 골라서), <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등 <b>선택과목</b>(선생님은 내 학생만 · 지점장·행정은 지점 전체). 학교 메모는 폰으로 안 가요. 고치기는 PC [학교 정보]에서. 위 <b>[시험 달력]</b>을 누르면 날짜별로 누가 무슨 시험을 치는지(지점 학생 전체 · 날짜를 누르면 그날 띠 · 이름 스위치)가 나와요.</li>
+  ${HF('m-xcal','폰 시험 달력 — 날짜를 누르면 그날 시험 띠, 이름 켬')}
   ${HF('m-sch','폰 학교 탭 — 학교 칩 · 시험 일정 · 범위 · 부교재 · 선택과목')}
   <li>아래 빈 곳: <b>다가오는 시험</b>, <b>새로 오는 학생</b>(선생님은 담당 반만), <b>학원 공지</b>, <b>내 메모</b>(그 폰에만). 화면 아래엔 하루 한 줄 응원.</li>
   <li>[오늘] 탭 띠: <b>내 업무</b>([완료] → PC 반영), <b>정기 상담</b>(남은 학생), 지점장·행정·관리자는 <b>전체 업무</b>.</li>
