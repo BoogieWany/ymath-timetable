@@ -101,8 +101,9 @@ table.grid{border-collapse:separate;border-spacing:0;font-size:12px}
 td.slot{width:var(--cw,96px);min-width:var(--cw,96px);height:var(--ch,40px);position:relative;transition:width .22s ease,min-width .22s ease,height .22s ease}
 #gridScroll .chip{min-height:calc(var(--ch,40px) - 8px);transition:font-size .22s ease;display:flex;flex-direction:column;justify-content:flex-start}
 .grid .chip{transition:font-size .22s ease}
-.grid .chip .nm{max-height:9em;overflow:hidden;transition:max-height .25s ease,opacity .2s ease,margin .2s ease}
-.grid:not(.withnames) .chip .nm{max-height:0;opacity:0;margin-top:0}
+.grid .chip .nm{max-height:9em;overflow:hidden;transition:max-height .25s ease,opacity .2s ease,margin .2s ease,content-visibility .25s allow-discrete}
+/* 3.73.3: 접힌 이름은 배치에서도 빼서(content-visibility) 확대 중 매 화면 그리는 비용을 절반으로 · 접히는 동안(allow-discrete)은 보이는 채로 */
+.grid:not(.withnames) .chip .nm{max-height:0;opacity:0;margin-top:0;content-visibility:hidden}
 @media (prefers-reduced-motion:reduce){td.slot,.grid .chip,.grid .chip .nm{transition:none}}
 .grid .chip{font-size:var(--fs,12px)}
 .grid .chip small,.grid .chip .nm{font-size:calc(var(--fs,12px) - 1px)}
@@ -889,7 +890,7 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .grmode{margin-left:4px}
 .tstt th.th-t{min-width:150px;vertical-align:top;position:relative;padding-right:22px}.tstt th.th-t b{display:block;font-size:12.5px;white-space:normal}.tstt th.th-t small{font-weight:400;color:var(--muted)}.tedit{position:absolute;right:4px;top:4px;border:0;background:none;cursor:pointer;color:var(--muted);font-size:14px;border-radius:6px;padding:0 4px}.tedit:hover{background:var(--line2);color:var(--fg)}
 .tcell{white-space:nowrap}.tcell .gri{width:58px}.tcell .gri[data-low="1"]{color:var(--err);border-color:color-mix(in srgb,var(--err) 50%,var(--line));font-weight:700}
-.tck{display:inline-flex;align-items:center;gap:2px;margin-left:5px;cursor:pointer;font-size:11px;color:var(--muted)}.tck input{width:13px;height:13px;accent-color:var(--navy);margin:0}.tck i{font-style:normal}.tck input:checked+i{color:var(--navy);font-weight:700}
+.tck{display:inline-flex;align-items:center;gap:3px;margin-left:7px;cursor:pointer;font-size:11px;color:var(--muted);letter-spacing:-.01em}.tck input{width:13px;height:13px;accent-color:var(--navy);margin:0}.tck i{font-style:normal}.tck input:checked+i{color:var(--navy);font-weight:700}
 .tsum small{color:var(--muted)}.grh .bad{color:var(--err)}
 .statdlg{padding:0;gap:0;max-height:92vh}.sp-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--line2)}.sp-head h2{margin:0}.sp-body{overflow:auto}.sp-body .card-h{padding:10px 20px}.sp-body .sec{padding:12px 20px}
 .tkt-tbl td,.tkt-tbl th{font-size:12.5px}.tkt-tbl tr.done td{opacity:.55}.tkt-tbl tr.done td .tkt.on{opacity:1}
@@ -897,7 +898,7 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .tkt{border:1px solid var(--line);background:var(--panel);border-radius:999px;min-width:46px;padding:2px 8px;font-size:11.5px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:3px;justify-content:center;transition:all .15s}.tkt span{font-size:11px}.tkt.on{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}.tkt:disabled{cursor:default;opacity:.7}.tkby{display:block;font-size:10.5px}
 .tkfold td{background:color-mix(in srgb,var(--line2) 45%,var(--panel))}.tkfold .btn{margin-right:10px}.tkwho{margin:2px 0 6px}.tkwho .sjb{font-size:12.5px;padding:3px 10px}
 /* 3.66.5: 이름이 많은 반 — 이름 칸 높이 제한 없앰(카드·줄 높이가 늘어남) · 신입/예정 표시가 붙은 이름은 한 줄 전체 */
-.grid.withnames .chip .nm{max-height:80em}
+.grid.withnames .chip .nm{max-height:var(--nmh,80em);opacity:calc(.95*var(--nmo,1));margin-top:calc(2px*var(--nmo,1))} /* 확대 중엔 --nmh·--nmo로 서서히 펼침 */
 .grid .chip .nm .sn:has(small.nw),.grid .chip .nm .sn:has(small.pre){grid-column:1/-1}
 #gridScroll.zx{overflow:auto;max-height:calc(100vh - 18px);--toph:0px;scrollbar-gutter:stable} /* 수정 모드와 같은 방식: 머리 줄은 시간표 칸 맨 위에 붙음 */
 </style>
@@ -3260,7 +3261,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.73.2', APPDATE='2026-10-21';
+const APPVER='3.73.3', APPDATE='2026-10-21';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3568,7 +3569,7 @@ function stretchChips(now){const sc=document.getElementById('gridScroll');if(!sc
   nat=Math.ceil(nat);
   const base=(UI._baseH||40)*g;const H=Math.round(Math.max(base,nat+8)); /* 3.73.0: 이름 표시 여부와 상관없이 같은 공식 → 확대 중 비율이 갑자기 바뀌지 않음 */
   if(tbs.every(t=>t.style.getPropertyValue('--ch')===H+'px'))return;if(now){tbs.forEach(t=>t.style.setProperty('--ch',H+'px'));return}requestAnimationFrame(()=>tbs.forEach(t=>{if(t.style.getPropertyValue('--ch')!==H+'px')t.style.setProperty('--ch',H+'px')}))}
-let _stT=null;function stretchLater(){clearTimeout(_stT);stretchChips();zxSync();_stT=setTimeout(()=>{stretchChips();zxSync()},300)}
+let _stT=null;function stretchLater(){clearTimeout(_stT);stretchChips();zxSync();_stT=setTimeout(()=>{stretchChips();zxSync();if(typeof zmPremeasure==='function'&&window.requestIdleCallback)requestIdleCallback(()=>zmPremeasure(),{timeout:1500})},300)}
 /* 확대해서 좌우로 넘치면 시간표 칸 안에서 좌우·위아래로 밀어 봄(머리 줄·교시 칸은 붙어 있음) */
 function zxSync(){const sc=$('gridScroll');if(!sc)return;const was=sc.classList.contains('zx');const tw=Math.max(0,...[...sc.querySelectorAll('table.grid')].map(t=>t.offsetWidth));const on=tw>sc.clientWidth+4;if(on!==was){sc.classList.toggle('zx',on)}}
 // 100% = 휠 없이 한 화면에 들어오는 칸 너비
@@ -3581,7 +3582,7 @@ function calcBase(){const sc=document.getElementById('gridScroll');if(!sc)return
   const rows=tbs.reduce((a,t)=>a+t.tBodies[0].rows.length,0);const head=tbs.reduce((a,t)=>a+t.tHead.getBoundingClientRect().height,0);
   const top=sc.getBoundingClientRect().top+window.scrollY;const avail=window.innerHeight-(top-window.scrollY>0?Math.min(top,260):260)-head-8*(tbs.length-1)-14;
   const bh=Math.max(40,Math.min(140,Math.floor(avail/Math.max(1,rows))));
-  if(nb!==UI._base||fit!==UI._fit||bh!==UI._baseH){UI._base=nb;UI._fit=fit;UI._baseH=bh;tbs.forEach(t=>t.setAttribute('style',gsVars(UI.gs)))}
+  if(nb!==UI._base||fit!==UI._fit||bh!==UI._baseH){UI._base=nb;UI._fit=fit;UI._baseH=bh;tbs.forEach(t=>{t.setAttribute('style',gsVars(UI.gs));delete t._nmc})}
   tbs.forEach(t=>t.classList.toggle('withnames',namesOn()));syncNamesToggle()}
 // 이름 표시: 직접 켰거나, 125% 이상이거나, 칸이 충분히 넓고 높을 때(예: 월수금만 볼 때) 자동
 function namesAuto(){return UI.gs>=GS_NAMES-1e-9||((UI._cwE||0)>=68&&(UI._chE||0)>=76)}
@@ -3594,41 +3595,63 @@ function setGs(g,quiet,now){g=Math.round(Math.max(GS_MIN,Math.min(GS_MAX,g))*100
   if(!quiet||was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
 /* 3.73.1 부드러운 확대: 휠·＋/－는 '목표 배율'만 바꾸고, 실제 배율은 매 화면(약 60번/초)마다 목표 쪽으로 미끄러지듯 따라감.
    매 화면 칸 크기를 실제로 바꾸고(그림 늘리기 아님 → 끝에 툭 바뀌는 것 없음) 마우스 아래 칸(버튼·키는 화면 가운데)이 제자리에 머물게 스크롤.
-   줄 높이는 움직이는 동안 같은 비율로 키우고, 멈춘 뒤 한 번만 정확히 재서 남은 차이도 부드럽게 맞춤 */
-const ZM={run:false,g:1,tg:1,el:null,fx:0,fy:0,cx:0,cy:0,hr:1,raf:0,last:0,tbs:[]};
+   3.73.3 학생 이름(125%~): 배율이 125%를 지나는 순간부터 이름이 서서히 펼쳐지고(ns 0→1 · 투명도·높이 함께), 줄 높이는
+   '이름 없을 때 높이'와 '이름 있을 때 높이'를 ns로 섞어서 끊김 없이 이어짐. 이름 있을 때 높이는 처음 필요할 때 한 번만 재고(보이지 않게 펼쳐서) 글자 크기에 비례해 추정.
+   멈추면 정확히 한 번 재서 남은 차이(몇 px)만 0.15초 동안 맞춤 */
+const ZM={run:false,g:1,tg:1,gA:1,ns:0,nsP:0,nsT:0,el:null,fx:0,fy:0,cx:0,cy:0,raf:0,last:0,tbs:[],was:false,rm:false,natOff:0,gOff:1,natOn:null,nmH:0,gOn:1};
 const zmClamp=g=>Math.max(GS_MIN,Math.min(GS_MAX,g));
+const zmFs=g=>Math.max(9.5,Math.min(26,12*g)); /* 글자 크기(px) = 칸과 같은 비율 */
 function zmCenter(){const sc=$('gridScroll');const r=sc.getBoundingClientRect();return [(Math.max(r.left,0)+Math.min(r.right,innerWidth))/2,(Math.max(r.top,0)+Math.min(r.bottom,innerHeight))/2]}
 function zmScroll(dx,dy){const sc=$('gridScroll');if(sc){const l=sc.scrollLeft,t=sc.scrollTop;sc.scrollLeft+=dx;sc.scrollTop+=dy;dx-=sc.scrollLeft-l;dy-=sc.scrollTop-t}if(Math.abs(dx)>.5||Math.abs(dy)>.5)window.scrollBy(dx,dy)}
 /* 기준점: (cx,cy) 아래 칸과 그 칸 안 위치 */
 function zmAnchor(cx,cy){const sc=$('gridScroll');const h=document.elementFromPoint(cx,cy);const el=(h&&sc.contains(h)&&h.closest('td,th'))||ZM.tbs[0];const r=el.getBoundingClientRect();ZM.el=el;ZM.cx=cx;ZM.cy=cy;ZM.fx=(cx-r.left)/(r.width||1);ZM.fy=(cy-r.top)/(r.height||1)}
 function zmKeep(){const el=ZM.el;if(!el||!el.isConnected)return;const r=el.getBoundingClientRect();zmScroll(r.left+ZM.fx*r.width-ZM.cx,r.top+ZM.fy*r.height-ZM.cy)}
-function zmApply(g){const base=UI._base||96,bh=UI._baseH||40;const cw=Math.max(48,Math.round(base*g));UI._cwE=cw;UI._chE=Math.round(bh*g);
-  const fs=Math.max(9.5,Math.min(26,12*g)).toFixed(1)+'px',ch=Math.round(bh*g*ZM.hr)+'px';ZM.tbs.forEach(t=>{t.style.setProperty('--cw',cw+'px');t.style.setProperty('--fs',fs);t.style.setProperty('--ch',ch)});
+/* 카드 내용 높이 재기(stretchChips와 같은 기준): off = 이름 앞까지 · on = 이름까지(full일 때만) · nh = 이름 블록 높이 */
+function zmMeasure(full){const sc=$('gridScroll');let off=0,on=0,nh=0;sc.querySelectorAll('td.slot:not(.spcell) .chip').forEach(c=>{const l=c.lastElementChild;if(!l)return;const top=c.getBoundingClientRect().top;const nm=l.classList.contains('nm')?l:null;
+    const pb=(nm?(nm.previousElementSibling||c):l).getBoundingClientRect().bottom;off=Math.max(off,pb-top+4);
+    if(full&&nm){const r=nm.getBoundingClientRect();on=Math.max(on,r.bottom-top+4);nh=Math.max(nh,r.height)}});return {off:Math.ceil(off),on:Math.ceil(on),nh:Math.ceil(nh)}}
+/* 배율 g에서 이름이 자동으로 보이는지(namesAuto와 같은 기준) */
+function zmNamesAt(g){const base=UI._base||96,bh=UI._baseH||40;return g>=GS_NAMES-1e-9||(Math.round(base*g)>=68&&Math.round(bh*g)>=76)}
+/* 매 화면 적용: 칸 너비·글자·줄 높이(이름 섞기)·이름 펼침 정도 */
+function zmApply(g,ns){const base=UI._base||96,bh=UI._baseH||40;const cw=Math.max(48,Math.round(base*g));UI._cwE=cw;UI._chE=Math.round(bh*g);UI.gs=g;ZM.gA=g;
+  const fs=zmFs(g);const hOff=Math.max(bh*g,ZM.natOff*(fs/zmFs(ZM.gOff))+8);const rOn=ZM.natOn==null?1:fs/zmFs(ZM.gOn);const hOn=ZM.natOn==null?hOff:Math.max(bh*g,ZM.natOn*rOn+8);
+  const h=Math.round(hOff+(hOn-hOff)*ns);const showN=ns>0;const cap=showN?Math.round((ZM.nmH*rOn+4)*ns)+'px':'';
+  ZM.tbs.forEach(t=>{t.style.setProperty('--cw',cw+'px');t.style.setProperty('--fs',fs.toFixed(1)+'px');t.style.setProperty('--ch',h+'px');t.classList.toggle('withnames',showN);
+    if(showN){t.style.setProperty('--nmh',cap);t.style.setProperty('--nmo',ns.toFixed(3))}else{t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')}});
   const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%'}
 function zmStart(cx,cy){const sc=$('gridScroll');const tbs=sc?[...sc.querySelectorAll('table.grid')]:[];if(!tbs.length)return false;
   if(ZM.run&&ZM.tbs[0]===tbs[0]&&tbs[0].isConnected){return true}
-  ZM.tbs=tbs;ZM.g=ZM.tg=UI.gs;const ch=parseFloat(tbs[0].style.getPropertyValue('--ch'))||((UI._baseH||40)*UI.gs);ZM.hr=Math.max(1,ch/((UI._baseH||40)*UI.gs));
+  ZM.tbs=tbs;ZM.g=ZM.tg=UI.gs;ZM.was=namesOn();UI.namesOv=null;ZM.ns=ZM.nsP=ZM.nsT=ZM.was?1:0;ZM.rm=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  ZM.gA=UI.gs;const m=zmMeasure(ZM.was);ZM.natOff=m.off;ZM.gOff=UI.gs;const cc=tbs[0]._nmc;if(ZM.was){ZM.natOn=m.on;ZM.nmH=m.nh;ZM.gOn=UI.gs}else if(cc){ZM.natOn=cc.on;ZM.nmH=cc.nh;ZM.gOn=cc.g}else ZM.natOn=null;
   zmAnchor(cx,cy);sc.classList.add('measuring');ZM.run=true;ZM.last=performance.now();cancelAnimationFrame(ZM.raf);ZM.raf=requestAnimationFrame(zmFrame);return true}
-function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){ZM.run=false;setGs(ZM.tg,true);return}
-  const dt=Math.min(64,now-ZM.last);ZM.last=now;const k=1-Math.exp(-dt/75);ZM.g+= (ZM.tg-ZM.g)*k;if(Math.abs(ZM.tg-ZM.g)<0.0015)ZM.g=ZM.tg;
-  zmApply(ZM.g);zxSync();zmKeep();
-  if(ZM.g===ZM.tg){zmEnd();return}ZM.raf=requestAnimationFrame(zmFrame)}
-/* 멈춤: 배율 저장 · 이름 표시(125%~) 정리 · 줄 높이를 정확히 재고 차이가 있으면 0.15초 동안 맞춤 */
-function zmEnd(){ZM.run=false;const sc=$('gridScroll');const g=Math.round(ZM.tg*100)/100;const was=namesOn();UI.namesOv=null;UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
+/* 이름 있을 때 높이를 모르면: 보이지 않게(투명) 펼쳐서 한 번 재고 바로 되돌림 */
+function zmMeasureOn(){ZM.tbs.forEach(t=>{t.classList.add('withnames');t.style.setProperty('--nmh','80em');t.style.setProperty('--nmo','0')});void ZM.tbs[0].offsetHeight;const m=zmMeasure(true);ZM.natOn=m.on;ZM.nmH=m.nh;ZM.gOn=ZM.gA;ZM.tbs[0]._nmc={on:m.on,nh:m.nh,g:ZM.gA}}
+/* 미리 재기(한가할 때): 이름이 접혀 있는 표에서 '이름 있을 때 높이'를 보이지 않게 펼쳐서 재 두면, 확대 중 125%를 지날 때 멈칫하지 않음 */
+function zmPremeasure(){const sc=$('gridScroll');if(!sc||ZM.run)return;const tbs=[...sc.querySelectorAll('table.grid')];if(!tbs.length||tbs[0]._nmc||tbs[0].classList.contains('withnames'))return;
+  sc.classList.add('measuring');tbs.forEach(t=>{t.classList.add('withnames');t.style.setProperty('--nmh','80em');t.style.setProperty('--nmo','0')});void tbs[0].offsetHeight;const m=zmMeasure(true);
+  tbs.forEach(t=>{t.classList.remove('withnames');t.style.removeProperty('--nmh');t.style.removeProperty('--nmo')});void tbs[0].offsetHeight;sc.classList.remove('measuring');tbs[0]._nmc={on:m.on,nh:m.nh,g:UI.gs}}
+function zmFrame(now){if(!ZM.run)return;if(!ZM.tbs[0].isConnected){/* 도중에 다시 그려졌으면(연동 등) 목표 배율로 바로 마무리 */ZM.run=false;const g=Math.round(ZM.tg*100)/100;UI.gs=g;UI.namesOv=null;try{localStorage.setItem('ymt_gs',g)}catch(e){}const sc=$('gridScroll');if(sc){sc.classList.remove('measuring');sc.querySelectorAll('table.grid').forEach(t=>{t.setAttribute('style',gsVars(g));t.classList.toggle('withnames',namesOn())});syncNamesToggle();stretchLater()}return}
+  const dt=Math.max(0,Math.min(34,now-ZM.last));/* 한 화면이 늦어도 뛰지 않고 느려지게 · 첫 화면 시각이 시작보다 앞서도 거꾸로 가지 않게 */ZM.last=now;const k=1-Math.exp(-dt/75);ZM.g+=(ZM.tg-ZM.g)*k;if(Math.abs(ZM.tg-ZM.g)<0.0015||ZM.rm)ZM.g=ZM.tg;
+  ZM.nsT=zmNamesAt(ZM.g)?1:0;if(ZM.nsT===1&&ZM.natOn==null)zmMeasureOn();
+  /* 이름 펼침: 0.26초 S자 곡선(천천히 시작해 천천히 끝남) · 도중에 되돌아가도 그 자리에서 이어서 */
+  ZM.nsP=Math.max(0,Math.min(1,ZM.nsP+(ZM.nsT>ZM.nsP?1:ZM.nsT<ZM.nsP?-1:0)*dt/260));if(ZM.rm)ZM.nsP=ZM.nsT;ZM.ns=ZM.nsP*ZM.nsP*(3-2*ZM.nsP);
+  zmApply(ZM.g,ZM.ns);zxSync();zmKeep();
+  if(ZM.g===ZM.tg&&ZM.ns===ZM.nsT){zmEnd();return}ZM.raf=requestAnimationFrame(zmFrame)}
+/* 멈춤: 배율 저장 · 이름 표시 정리 · 줄 높이를 정확히 재고 차이가 있으면 0.15초 동안 맞춤 */
+function zmEnd(){ZM.run=false;const sc=$('gridScroll');const g=Math.round(ZM.tg*100)/100;UI.namesOv=null;UI.gs=g;try{localStorage.setItem('ymt_gs',g)}catch(e){}
   const tbs=ZM.tbs;const h0=parseFloat(tbs[0].style.getPropertyValue('--ch'))||0;tbs.forEach(t=>{t.setAttribute('style',gsVars(g));t.style.setProperty('--ch',h0+'px');t.classList.toggle('withnames',namesOn())});syncNamesToggle();
   const lb=document.querySelector('.zm b');if(lb)lb.textContent=Math.round(g*100)+'%';
   stretchChips(true);const h1=parseFloat(tbs[0].style.getPropertyValue('--ch'))||h0;zmKeep();zxSync();zmKeep();
   if(Math.abs(h1-h0)>1){tbs.forEach(t=>t.style.setProperty('--ch',h0+'px'));zmKeep();const t0=performance.now();const step=now=>{if(ZM.run)return;const q=Math.min(1,(now-t0)/150),e=1-Math.pow(1-q,3);const h=Math.round(h0+(h1-h0)*e)+'px';tbs.forEach(t=>t.style.setProperty('--ch',h));zmKeep();if(q<1)requestAnimationFrame(step);else done()};requestAnimationFrame(step)}else done();
   function done(){if(ZM.run)return;requestAnimationFrame(()=>{if(!ZM.run)sc.classList.remove('measuring')})}
-  if(was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
+  if(ZM.was!==namesOn())toast(`시간표 ${Math.round(g*100)}%${namesOn()?' · 학생 이름 표시':' · 인원수만'}`)}
 /* 휠: 마우스 휠 한 칸 = 5% · 터치패드 모으기/벌리기는 손가락 움직인 만큼 · 마우스가 움직이면 기준점도 거기로 */
 function zmWheel(e){if(!zmStart(e.clientX,e.clientY))return;if(Math.abs(e.clientX-ZM.cx)>3||Math.abs(e.clientY-ZM.cy)>3)zmAnchor(e.clientX,e.clientY);
   const d=e.deltaY*(e.deltaMode===1?40:1);/* 3.73.2: 휠 한 칸 5%(화면 배율 125%·150% PC는 한 칸 값이 66.7·80처럼 나와서 예전엔 크게 뛰었음 → 값에 비례) · 터치패드는 움직인 만큼 · 한 번에 최대 7% */
   const f=Math.min(1.07,Math.max(1/1.07,Math.abs(d)>=30?Math.pow(1.05,-d/100):Math.exp(-d/100)));
   ZM.tg=zmClamp(ZM.tg*f)}
 /* ＋/－ 버튼·Ctrl+±·Ctrl+0: 화면 가운데 기준 */
-function zmTo(gt){const c=zmCenter();const fresh=!ZM.run;if(!zmStart(c[0],c[1])){setGs(gt);return}if(!fresh)zmAnchor(c[0],c[1]);ZM.tg=zmClamp(gt);
-  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ZM.g=ZM.tg}}
+function zmTo(gt){const c=zmCenter();const fresh=!ZM.run;if(!zmStart(c[0],c[1])){setGs(gt);return}if(!fresh)zmAnchor(c[0],c[1]);ZM.tg=zmClamp(gt)}
 /* ＋/－ 한 번 = 10%(110·120·130…로 맞춤) */
 const zmStep=k=>Math.round((zmCur()+k*0.1)*10)/10;
 const zmCur=()=>ZM.run?ZM.tg:UI.gs; /* 움직이는 중에 또 누르면 가던 목표에서 이어서 */
@@ -6692,7 +6715,7 @@ function viewGrades(){const b=B();const td=todayStr();UI.gr=UI.gr||{ek:ekNow(td)
   const nIn=L.filter(s=>grSubjects(s,G.ek).some(sj=>{const r=grRec(s,G.ek,sj);return r&&(r.fin!=null||r.exp!=null)})).length;
   const modeSeg=`<span class="seg grmode"><button data-gro="mode" data-v="" aria-pressed="${!G.mode}">내신</button><button data-gro="mode" data-v="t" aria-pressed="${G.mode==='t'}">자체시험</button></span>`;
   const shared=typeof syOn==='function'&&syOn()?(SH.grades.st.err?` · <span class="bad">공유 실패: ${esc(SH.grades.st.err)}</span>`:' · 잠금 없이 바로 저장'):'';
-  if(G.mode==='t')return `<div class="card-h"><h2>성적 관리 · ${esc(b.name)}</h2>${modeSeg}<span class="hint">학원 자체시험(단원테스트·내신대비 회차) 점수와 풀이 완료·학부모 발송 체크${shared}</span></div>`+viewTests(b,G,ed);
+  if(G.mode==='t')return `<div class="card-h"><h2>성적 관리 · ${esc(b.name)}</h2>${modeSeg}<span class="hint">학원 자체시험(단원테스트·내신대비 회차) 점수와 풀이완료·발송완료(학부모) 체크${shared}</span></div>`+viewTests(b,G,ed);
   let h=`<div class="card-h"><h2>성적 관리 · ${esc(b.name)}</h2>${modeSeg}<span class="hint">${esc(ekShort(G.ek))} · ${L.length}명 중 입력 ${nIn}명 · 등락은 같은 과목 바로 전 시험과 비교${shared}</span><span class="sp"></span>${ed?'<button class="btn" data-act="grImport" title="구글 시트 중등부·고등부 시험결과 시트(.xlsx)를 그대로 넣으면 이름+학교로 맞춰 들어와요">시트 불러오기</button>':''}</div>
   <div class="tools grtools"><label class="chk" style="gap:6px">연도 <select data-gro="y">${[y-2,y-1,y,y+1].map(yy=>`<option value="${yy}" ${yy===y?'selected':''}>${yy}</option>`).join('')}</select></label><span class="seg">${ekAll(y).map(ek=>`<button data-grek="${esc(ek)}" aria-pressed="${ek===G.ek}">${ek.split('|')[1]}학기 ${ek.split('|')[2]}</button>`).join('')}</span>
     <span class="seg cgg"><button data-grg="" aria-pressed="${!G.g}">전체</button>${grades.map(g=>`<button data-grg="${esc(g)}" aria-pressed="${G.g===g}">${esc(g)}</button>`).join('')}</span>
@@ -6799,12 +6822,12 @@ function viewTests(b,G,ed){const grades=[...new Set(b.students.filter(s=>!isOut(
   let h=`<div class="tools grtools"><span class="seg cgg">${grades.map(g=>`<button data-gro="tg" data-v="${esc(g)}" aria-pressed="${G.tg===g}">${esc(g)} <small>${tstList(b,g).length}</small></button>`).join('')||'<span class="hint">학생이 없어요</span>'}</span>
     <select data-gro="cls"><option value="">모든 반</option>${clsOpts.map(c=>`<option value="${c.id}" ${G.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select><input id="grQ" placeholder="이름·학교 찾기" value="${esc(G.q)}" autocomplete="off" style="width:130px">
     <span class="sp"></span><label class="chk"><input type="checkbox" data-gro="out" ${G.out?'checked':''}> 퇴원 포함</label>${ed?`<button class="btn pri" data-act="tstAdd">+ 시험 추가</button>`:''}</div>`;
-  const cell=(s,t)=>{const r=tstRes(t,s.id);return `<td class="tcell"><input class="gri" type="number" min="0" max="${t.max||100}" step="1" data-ti="${esc(t.id)}|${esc(s.id)}|sc" value="${r.sc==null?'':r.sc}" ${ed?'':'disabled'} placeholder="점수"${t.cut&&r.sc!=null&&r.sc<t.cut?' data-low="1"':''}><label class="tck" title="풀이 완료"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|d" ${r.d?'checked':''} ${ed?'':'disabled'}><i>풀</i></label><label class="tck" title="학부모님께 발송 완료"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|s" ${r.s?'checked':''} ${ed?'':'disabled'}><i>발</i></label></td>`};
+  const cell=(s,t)=>{const r=tstRes(t,s.id);return `<td class="tcell"><input class="gri" type="number" min="0" max="${t.max||100}" step="1" data-ti="${esc(t.id)}|${esc(s.id)}|sc" value="${r.sc==null?'':r.sc}" ${ed?'':'disabled'} placeholder="점수"${t.cut&&r.sc!=null&&r.sc<t.cut?' data-low="1"':''}><label class="tck" title="학생이 틀린 문제 풀이를 마침"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|d" ${r.d?'checked':''} ${ed?'':'disabled'}><i>풀이완료</i></label><label class="tck" title="학부모님께 결과를 보냄"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|s" ${r.s?'checked':''} ${ed?'':'disabled'}><i>발송완료</i></label></td>`};
   const avg=t=>{const a=L.map(s=>tstRes(t,s.id).sc).filter(x=>x!=null);return a.length?{n:a.length,avg:Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10,ok:t.cut?a.filter(x=>x>=t.cut).length:null,d:L.filter(s=>tstRes(t,s.id).d).length,s:L.filter(s=>tstRes(t,s.id).s).length}:null};
-  h+=`<div class="sec grsec"><h3>자체시험 점수 <span class="hint">${esc(G.tg||'')} · 시험마다 점수와 풀이 완료(풀)·학부모 발송(발) 체크 · 기준 점수 아래는 빨갛게</span></h3>
+  h+=`<div class="sec grsec"><h3>자체시험 점수 <span class="hint">${esc(G.tg||'')} · 시험마다 점수와 풀이완료·발송완료 체크 · 기준 점수 아래는 빨갛게</span></h3>
     ${TS.length?`<div class="scroll grscroll"><table class="tbl grt tstt"><thead><tr><th class="l nm">학생</th><th class="l">반</th>${TS.map(t=>`<th class="th-t"><b>${esc(t.name)}</b><small>${t.date?esc(annMD(t.date)):''}${t.max&&t.max!==100?` · ${t.max}점`:''}${t.cut?` · 기준 ${t.cut}`:''}</small>${ed?`<button class="tedit" data-act="tstEdit" data-id="${esc(t.id)}" title="시험 고치기·지우기">⋯</button>`:''}</th>`).join('')}</tr></thead>
       <tbody>${L.map(s=>`<tr${isOut(s)?' class="out"':''}><td class="l nm"><button class="lnk" data-act="stCard" data-sid="${esc(s.id)}"><b>${esc(s.name)}</b></button>${s.re?'<i class="reb">재</i>':''}</td><td class="l"><small>${esc([...new Set(grCls(b,s.id).map(x=>x.c.name))].join(', '))}</small></td>${TS.map(t=>cell(s,t)).join('')}</tr>`).join('')||`<tr><td colspan="${TS.length+2}" class="hint">학생이 없어요</td></tr>`}</tbody>
-      <tfoot><tr><td class="l" colspan="2"><b>평균 · 통과 · 체크</b></td>${TS.map(t=>{const a=avg(t);return `<td class="l tsum">${a?`<b>${a.avg}</b> <small>${a.n}명${a.ok!=null?` · 통과 ${a.ok}`:''} · 풀 ${a.d} · 발 ${a.s}</small>`:'<span class="hint">–</span>'}</td>`}).join('')}</tr></tfoot></table></div>`:`<div class="hint">${esc(G.tg||'')} 시험이 아직 없어요 · [+ 시험 추가]로 단원테스트·내신대비 회차를 만들어요</div>`}</div>`;
+      <tfoot><tr><td class="l" colspan="2"><b>평균 · 통과 · 체크</b></td>${TS.map(t=>{const a=avg(t);return `<td class="l tsum">${a?`<b>${a.avg}</b> <small>${a.n}명${a.ok!=null?` · 통과 ${a.ok}`:''} · 풀이완료 ${a.d} · 발송완료 ${a.s}</small>`:'<span class="hint">–</span>'}</td>`}).join('')}</tr></tfoot></table></div>`:`<div class="hint">${esc(G.tg||'')} 시험이 아직 없어요 · [+ 시험 추가]로 단원테스트·내신대비 회차를 만들어요</div>`}</div>`;
   return h}
 function tstDlg(id){const b=B();const t=id?GR().tests[id]:null;const G=UI.gr||{};
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ttT" style="width:min(440px,100%)"><h2 id="ttT">${t?'시험 고치기':'자체시험 추가'}</h2>
@@ -6825,7 +6848,7 @@ document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.dataset&&t.dat
 document.addEventListener('keydown',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.ti||t.type!=='number')return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const tid=t.dataset.ti.split('|')[0];const all=[...document.querySelectorAll(`input[type=number][data-ti^="${CSS.escape(tid)}|"]`)];const i=all.indexOf(t);const n=all[i+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();n.focus();n.select()}}});
 /* 학생 카드에 자체시험 */
 function tstHistHTML(b,s){const L=tstList(b).filter(t=>{const r=tstRes(t,s.id);return r.sc!=null||r.d||r.s}).sort((a,z)=>(z.date||'').localeCompare(a.date||''));if(!L.length)return '';
-  return `<div class="qal" style="margin-top:10px">자체시험 <span class="hint">${L.length}회</span></div><div class="scroll" style="max-height:160px"><table class="tbl grh"><thead><tr><th class="l">시험</th><th>날짜</th><th>점수</th><th>풀이</th><th>발송</th></tr></thead><tbody>${L.map(t=>{const r=tstRes(t,s.id);return `<tr><td class="l">${esc(t.name)} <small class="hint">${esc(t.grade)}</small></td><td class="num">${t.date?esc(annMD(t.date)):''}</td><td class="num"><b${t.cut&&r.sc!=null&&r.sc<t.cut?' class="bad"':''}>${r.sc??''}</b>${t.max&&t.max!==100?`<small>/${t.max}</small>`:''}</td><td class="num">${r.d?'✓':''}</td><td class="num">${r.s?'✓':''}</td></tr>`}).join('')}</tbody></table></div>`}
+  return `<div class="qal" style="margin-top:10px">자체시험 <span class="hint">${L.length}회</span></div><div class="scroll" style="max-height:160px"><table class="tbl grh"><thead><tr><th class="l">시험</th><th>날짜</th><th>점수</th><th>풀이완료</th><th>발송완료</th></tr></thead><tbody>${L.map(t=>{const r=tstRes(t,s.id);return `<tr><td class="l">${esc(t.name)} <small class="hint">${esc(t.grade)}</small></td><td class="num">${t.date?esc(annMD(t.date)):''}</td><td class="num"><b${t.cut&&r.sc!=null&&r.sc<t.cut?' class="bad"':''}>${r.sc??''}</b>${t.max&&t.max!==100?`<small>/${t.max}</small>`:''}</td><td class="num">${r.d?'✓':''}</td><td class="num">${r.s?'✓':''}</td></tr>`}).join('')}</tbody></table></div>`}
 
 /* ===== 업무 (나눠서 하는 일: 인강·자료 제작·기타) — 모든 지점 공유 sync/shared/tasks.json
    DB.tasks={list:{id:{id,kind:'인강'|'자료'|'기타',grade,school,title,subj,who,ans,done,doneAt,doneBy,chk,n,memo,due,at,by,del}}} · 항목마다 at 큰 쪽이 남음 · 지운 건 del=1로 남겨 다른 PC와 맞춤
@@ -6906,7 +6929,7 @@ const HELP=[
   <li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결하면 학원 시간표가 그대로 들어와요. <a data-help="sync">지점 연동</a> 참고.</li></ol>`},
  {id:'view',t:'시간표 보기',b:`
   <ul><li>위쪽 <b>[전체 | 강사 이름]</b> 버튼으로 지점 전체 또는 한 강사의 주간 시간표를 봐요.</li>
-  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고(125%부터) 학생 이름이 보여요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스가 가리키는 칸</b>이 그 자리에 머물러서 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
+  <li><b>[－ ％ ＋]</b>나 <b>Ctrl + 마우스 휠</b>로 크게 하면 칸·글자가 같은 비율로 커지고, 125%를 지나면 학생 이름이 서서히 펼쳐져요. 휠 한 칸은 5%, 버튼 한 번은 10%씩 바뀌고, 굴리는 동안 부드럽게 커지다가 손을 멈추면 그 크기로 자리 잡아요. <b>마우스가 가리키는 칸</b>이 그 자리에 머물러서 보던 곳을 놓치지 않아요(버튼·Ctrl ±는 화면 가운데 기준). 노트북 터치패드는 두 손가락을 벌리고 모으면 돼요. 화면보다 넓어지면 시간표 칸 안에서 좌우로 밀어 봐요(Shift + 휠). <b>학생 이름</b> 스위치로 직접 켜고 끌 수도 있어요.</li>
   <li>카드를 누르면 옆에 <b>명단 창</b>이 열리고, 오른쪽 아래 <b>선택한 항목</b>에 자세한 내용이 나와요.</li>
   ${HF('detail','카드를 누르면 명단 창 — 학생 이름, 당일 변경, (수정 모드면) 학생 넣기')}
   <li>한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. [찾기] 칸에 이름을 치면 돼요.</li>
@@ -6995,8 +7018,8 @@ const HELP=[
   ${HF('stcard','학생 카드 — 성적 흐름과 특이사항')}
   <li>성적은 <b>잠금 없는 공유 자료</b>라 수정 모드 없이 바로 저장되고 다른 PC에 곧 보여요. 지점장·행정 PC는 자기 지점만 고쳐요.</li>
   <li><b>[시트 불러오기]</b>: 구글 시트 중등부·고등부 엑셀의 시험결과 시트를 읽어 이름+학교로 맞춰 넣어요(동명이인은 창에서 고르기).</li>
-  <li><b>[자체시험]</b>: 학원 시험(단원테스트·내신대비 회차)을 학년별로 만들고(<b>[+ 시험 추가]</b>: 이름·학년·날짜·만점·기준 점수) 학생마다 점수와 <b>풀</b>(풀이 완료)·<b>발</b>(학부모 발송) 체크. 기준 아래 점수는 빨갛게, 맨 아래 줄에 평균·통과·체크 수. 열 머리의 ⋯로 고치거나 지워요.</li>
-  ${HF('tests','자체시험 — 점수와 풀·발 체크')}</ul>`},
+  <li><b>[자체시험]</b>: 학원 시험(단원테스트·내신대비 회차)을 학년별로 만들고(<b>[+ 시험 추가]</b>: 이름·학년·날짜·만점·기준 점수) 학생마다 점수와 <b>풀이완료</b>·<b>발송완료</b>(학부모님께 보냄) 체크. 기준 아래 점수는 빨갛게, 맨 아래 줄에 평균·통과·체크 수. 열 머리의 ⋯로 고치거나 지워요.</li>
+  ${HF('tests','자체시험 — 점수와 풀이완료·발송완료 체크')}</ul>`},
  {id:'tasks',t:'업무',b:`
   ${HF('tasks','업무 — 모든 지점이 같이 쓰는 일 목록 · 담당별 합계')}
   <ul><li>인강·자료 제작처럼 나눠서 하는 일을 <b>모든 지점이 같이</b> 봐요(지점 구분 없음).</li>
