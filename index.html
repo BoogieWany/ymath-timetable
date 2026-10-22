@@ -129,7 +129,8 @@ main{padding:12px 12px calc(28px + env(safe-area-inset-bottom));max-width:760px;
 .xcml{margin-top:10px;display:flex;flex-direction:column;gap:6px}.xcmlh{font-weight:700;font-size:14px;margin:4px 0 2px}.xcmlh small{color:var(--muted);font-weight:500;margin-left:6px}
 .xce{border-radius:9px;padding:7px 9px 7px 10px;background:var(--xmb);border-left:3px solid var(--xm)}.xce.k고{background:var(--xhb);border-left-color:var(--xh)}
 .xch{display:flex;align-items:baseline;gap:5px;font-size:13.5px}.xch b{font-weight:800}.xch span{color:var(--muted);font-size:12px}.xch em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:var(--xm)}.xce.k고 .xch em{color:var(--xh)}
-.xcp{font-size:11.5px;color:var(--muted);margin-top:1px}.xcn{display:flex;flex-wrap:wrap;gap:1px 8px;font-size:12.5px;margin-top:3px;line-height:1.5}
+.xcp{font-size:11.5px;color:var(--muted);margin-top:1px}
+.xcn .xcs{appearance:none;border:0;background:none;padding:2px 0;margin:0;font:inherit;color:inherit;cursor:pointer;border-radius:4px;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 25%,transparent);text-underline-offset:3px;-webkit-tap-highlight-color:transparent;transition:background .15s ease}.xcn .xcs:active{background:color-mix(in srgb,currentColor 10%,transparent)}@media (hover:hover){.xcn .xcs:hover{text-decoration-color:currentColor}}.xcn{display:flex;flex-wrap:wrap;gap:1px 8px;font-size:12.5px;margin-top:3px;line-height:1.5}
 .xcl{display:flex;gap:12px;margin-top:10px;font-size:11.5px;color:var(--muted)}.xcl span{display:inline-flex;align-items:center;gap:5px}.xcl span::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--xm)}.xcl span.k고::before{background:var(--xh)}
 .sec small{font-weight:400;color:var(--muted);font-size:calc(12.5px*var(--mz,1))}
 .sec:first-child{margin-top:6px}
@@ -1013,7 +1014,7 @@ function vToday(b){const d=todayD();const dt=new Date();const me=ME();const myT=
     if(mine.length)h+=`<div class="list">${mine.map((x,i)=>x.sp?spCard(b,x.sp,`${spTime(x.sp)}${spD(x.sp)}`,mk[i],x):card(b,x.o,`${esc(pshort(per(b,d,x.o.p).name))} · ${fromMin(x.s)}–${fromMin(x.e)}`,false,mk[i],x)).join('')}</div>`;
     else{let nx='';for(let i=1;i<=7&&!nx;i++){const d2=DAYS[(DAYS.indexOf(d)+i)%7];const its=todayItems(b,d2).filter(x=>x.t===myT);
         if(its.length){const x=its[0];nx=`다음 수업: <b>${i===1?'내일':d2+'요일'}</b> ${x.sp?esc(x.sp.name)+' '+fromMin(x.s):esc(pshort(per(b,d2,x.o.p).name))+' '+fromMin(x.s)+' '+esc((C(b,x.o.cls)||{}).name)}`}}
-      h+=`<div class="empty">오늘은 수업이 없어요${nx?'<br>'+nx:''}</div>`}}
+      const hol=((TT(b,myT)||{}).off||[]).includes(d);h+=`<div class="empty">${hol?'오늘은 휴일이에요 · 푹 쉬세요':'오늘은 수업이 없어요'}${nx?'<br>'+nx:''}</div>`}} /* 3.78.6: 강사 관리 휴무 요일이면 '휴일' */
   const all=`<div class="sec">오늘 전체 수업</div>`+dayBody(b,d,true);
   if(wide)return `<div class="tdw"><div class="tdl">${h}${dockHTML(b,false)}</div><div class="tdr">${all}</div></div>${footBody(b)}`; /* 3.78.2: 넓은 화면 두 단 — 왼쪽 내 것(업무·내 수업·시험·새 학생·공지·메모), 오른쪽 오늘 전체 수업 */
   return `<div>${h}${all}${foot()}</div>`}
@@ -1068,13 +1069,15 @@ function xcCalM(b){const td=tdStr();const X=ST.xc=ST.xc||{};if(!X.ym){const nx=(
   const W=['일','월','화','수','목','금','토'];const L=X.d?ev[X.d]||[]:[];
   const nav=`<div class="xcmh"><button class="xcmv" data-xcmv="-1" aria-label="지난달">‹</button><b>${y}년 ${m}월</b><button class="xcmv" data-xcmv="1" aria-label="다음 달">›</button><button class="nmt2${X.names?' on':''}" data-xcnm="1" role="switch" aria-checked="${!!X.names}"><i></i><span>학생 이름</span></button></div>`;
   if(wide){ /* 3.78.2: PC 화면 — 칸 안에 바로 학교·과목·인원(·이름) · 날짜 누르기 없이 한눈에 */
-    const chip=o=>`<div class="xce k${o.kd}"><div class="xch"><b>${esc(o.lab)}</b>${o.sj?`<span>${esc(o.sj)}</span>`:''}<em>${o.sts.length}</em></div>${o.per?`<div class="xcp">기간 ${esc(o.per)}</div>`:''}${X.names?`<div class="xcn">${o.sts.map(s=>`<span>${esc(s.name)}</span>`).join('')}</div>`:''}</div>`;
+    const chip=o=>`<div class="xce k${o.kd}"><div class="xch"><b>${esc(o.lab)}</b>${o.sj?`<span>${esc(o.sj)}</span>`:''}<em>${o.sts.length}</em></div>${o.per?`<div class="xcp">기간 ${esc(o.per)}</div>`:''}${X.names?`<div class="xcn">${o.sts.map(s=>`<button class="xcs" data-xcs="${esc(s.id)}">${esc(s.name)}</button>`).join('')}</div>`:''}</div>`;
     return `<div class="xcm">${nav}<div class="xcg2">${W.map((w,i)=>`<div class="xcw2${i===0?' su':i===6?' sa':''}">${w}</div>`).join('')}${cells.map((d,i)=>{if(!d)return '<div class="xcd2 e"></div>';const E=ev[d]||[];return `<div class="xcd2${d===td?' td':''}${i%7===0?' su':i%7===6?' sa':''}${E.length?' has':''}"><i>${+d.slice(8)}</i>${E.map(chip).join('')}</div>`}).join('')}</div>
     ${days.length?'':'<div class="ssub" style="text-align:center;padding:12px 0">이 달에는 시험이 없어요</div>'}<div class="xcl"><span class="k중">중등</span><span class="k고">고등</span></div></div>`}
   return `<div class="xcm"><div class="xcmh"><button class="xcmv" data-xcmv="-1" aria-label="지난달">‹</button><b>${y}년 ${m}월</b><button class="xcmv" data-xcmv="1" aria-label="다음 달">›</button><button class="nmt2${X.names?' on':''}" data-xcnm="1" role="switch" aria-checked="${!!X.names}"><i></i><span>학생 이름</span></button></div>
     <div class="xcmg">${W.map((w,i)=>`<i class="${i===0?'su':i===6?'sa':''}">${w}</i>`).join('')}${cells.map((d,i)=>{if(!d)return '<span class="e"></span>';const E=ev[d]||[];const n=E.reduce((a,o)=>a+o.sts.length,0);return `<button class="xcmd${d===td?' td':''}${d===X.d?' on':''}${E.length?' has':''}${i%7===0?' su':i%7===6?' sa':''}" data-xcd="${d}"><span>${+d.slice(8)}</span>${E.length?`<small class="k${E[0].kd}">${n}</small>`:''}</button>`}).join('')}</div>
-    ${X.d?`<div class="xcml"><div class="xcmlh">${mdd(X.d)}(${wdn(X.d)}) <small>${L.reduce((a,o)=>a+o.sts.length,0)}명</small></div>${L.map(o=>`<div class="xce k${o.kd}"><div class="xch"><b>${esc(o.lab)}</b>${o.sj?`<span>${esc(o.sj)}</span>`:''}<em>${o.sts.length}</em></div>${o.per?`<div class="xcp">기간 ${esc(o.per)}</div>`:''}${X.names?`<div class="xcn">${o.sts.map(s=>`<span>${esc(s.name)}</span>`).join('')}</div>`:''}</div>`).join('')||'<div class="ssub">이 날은 시험이 없어요</div>'}</div>`:'<div class="ssub" style="text-align:center;padding:12px 0">이 달에는 시험이 없어요</div>'}
+    ${X.d?`<div class="xcml"><div class="xcmlh">${mdd(X.d)}(${wdn(X.d)}) <small>${L.reduce((a,o)=>a+o.sts.length,0)}명</small></div>${L.map(o=>`<div class="xce k${o.kd}"><div class="xch"><b>${esc(o.lab)}</b>${o.sj?`<span>${esc(o.sj)}</span>`:''}<em>${o.sts.length}</em></div>${o.per?`<div class="xcp">기간 ${esc(o.per)}</div>`:''}${X.names?`<div class="xcn">${o.sts.map(s=>`<button class="xcs" data-xcs="${esc(s.id)}">${esc(s.name)}</button>`).join('')}</div>`:''}</div>`).join('')||'<div class="ssub">이 날은 시험이 없어요</div>'}</div>`:'<div class="ssub" style="text-align:center;padding:12px 0">이 달에는 시험이 없어요</div>'}
     <div class="xcl"><span class="k중">중등</span><span class="k고">고등</span></div></div>`}
+/* 3.78.7: 시험 달력의 학생 이름을 누르면 학생 카드(연락처는 지금처럼 받은 사람만) */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-xcs]');if(!t||ST.tab!=='sch')return;e.stopPropagation();stuSheet(t.dataset.xcs)},true);
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-xcmv],[data-xcd],[data-xcnm],[data-schv]');if(!t||ST.tab!=='sch')return;const X=ST.xc=ST.xc||{};
   if(t.dataset.schv){ST.schV=t.dataset.schv}else if(t.dataset.xcmv){const [y,m]=X.ym.split('-').map(Number);const d=new Date(y,m-1+ +t.dataset.xcmv,1);X.ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;X.d=''}else if(t.dataset.xcd){X.d=t.dataset.xcd}else if(t.dataset.xcnm){X.names=!X.names}
   ST.mh='';render()});
@@ -1332,11 +1335,12 @@ const CHEER={
  examEnd:['시험 기간 동안 고생 많으셨어요.'],
  vac:['방학 특강도 함께해 주셔서 든든해요.','방학에도 아이들 곁을 지켜 주셔서 고맙습니다.','방학 동안 쌓은 게 새 학기에 보일 거예요.'],
  all:['선생님 덕분에 오늘도 와이매쓰가 따뜻해요.','아이들은 선생님의 말투까지 기억해요.','오늘도 누군가에게는 최고의 선생님이에요.','작은 칭찬 하나가 아이의 하루를 바꿔요.','함께해 주셔서 늘 고맙습니다.','수학을 좋아하게 되는 순간, 그 옆엔 늘 선생님이 있어요.','서두르지 않아도 괜찮아요. 꾸준함이 이겨요.','선생님의 하루도 응원하고 있어요.','와이매쓰는 선생님과 함께라서 든든해요.','선생님 수업을 기다리는 아이들이 있어요.','꾸준히 해 오신 게 아이들 성적에 남아요.','아이들은 설명보다 태도를 먼저 배워요.','오늘도 함께해 주셔서 고맙습니다.','한 명 한 명 챙겨 주시는 거, 다 보여요.','잘 가르치는 건 결국 잘 기다려 주는 거예요.','오늘 수업이 아이들의 다음 시험을 바꿔요.','선생님 한 분 한 분이 와이매쓰예요.','아이들이 수학을 덜 무서워하게 된 건 선생님 덕분이에요.','매일 같은 자리에 있어 주셔서 든든합니다.','오늘도 묵묵히, 고맙습니다.','좋은 수업은 티 나지 않게 쌓여요.','아이들 이름을 불러 주는 것만으로도 수업이 달라져요.','오늘 하루도 응원합니다.']};
-function cheerCtx(b){if(isAdm()){const td=tdStr(),dw=new Date().getDay();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;const its=todayItems(b,todayD());const ctx=!its.length?'off':'on';const pools=[[CHEER_ADM[ctx==='off'?'off':'day'],3],[CHEER_ADM.all,1]];
+function cheerCtx(b){if(isAdm()){const td=tdStr(),dw=new Date().getDay();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;const its=todayItems(b,todayD());const ctx=!its.length?'off':'on';if(ctx==='off')return {ctx,pools:[[CHEER_ADM.off,1]],myT:null,adm:1}; /* 3.78.6: 쉬는 날엔 쉬는 날 문구만 */const pools=[[CHEER_ADM.day,3],[CHEER_ADM.all,1]];
     if(dw===1&&ctx!=='off')pools.push([CHEER_ADM.mon,2]);if(ex&&td>=ex.from&&td<=ex.to)pools.push([CHEER_ADM.exam,4]);else if(ex&&td>ex.to&&td<=plusD(ex.to,3))pools.push([CHEER_ADM.examEnd,5]);if(sps(b).length&&ctx!=='off')pools.push([CHEER_ADM.vac,2]);
     if(b.students.some(s=>csTgt(s)&&!csDone(b,s)))pools.push([CHEER_ADM.newS,2]);return {ctx,pools,myT:null,adm:1}}
   const me=ME();const myT=me&&me.br===b.id&&TT(b,me.t)?me.t:null;const d=todayD();const its=todayItems(b,d).filter(x=>!myT||x.t===myT);const nm=nowMin();const dw=new Date().getDay();
   const ctx=!its.length?'off':nm<its[0].s?'pre':nm>=Math.max(...its.map(x=>x.e))?'post':'mid';const td=tdStr();const ex=b.exam&&b.exam.from&&b.exam.to?b.exam:null;
+  if(ctx==='off')return {ctx,pools:[[CHEER.off,3]].concat(dw===6||dw===0?[[CHEER.wkoff,3]]:[]),myT}; /* 3.78.6: 쉬는 날(내 수업 없는 날)엔 시험 기간이어도 쉬는 날 문구만 */
   const pools=[[CHEER[ctx],3]];
   if(dw===1&&ctx!=='post')pools.push([CHEER.mon,2]);if(dw===5&&ctx==='post')pools.push([CHEER.fri,3]);if(dw===6&&ctx!=='off')pools.push([CHEER.sat,2]);if((dw===6||dw===0)&&ctx==='off')pools.push([CHEER.wkoff,3]);
   if(ex&&td>=ex.from&&td<=ex.to)pools.push([CHEER.exam,4]);else if(ex&&td>ex.to&&td<=plusD(ex.to,3))pools.push([CHEER.examEnd,5]);
@@ -1345,7 +1349,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.78.5</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.78.7</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1744,7 +1748,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.78.5';const VC={last:0,nv:''};
+const MVER='3.78.7';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
