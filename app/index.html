@@ -3302,7 +3302,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.78.3', APPDATE='2026-10-22';
+const APPVER='3.78.4', APPDATE='2026-10-22';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -5289,10 +5289,10 @@ async function syEnable(){const name=($('syName')&&$('syName').value.trim())||'�
   const items=DB.branches.filter(b=>!present.has(b.id)).map(b=>({id:b.id,data:b}));
   if(items.length){const r2=await bridge.syncPush(items);Object.assign(known,r2.shas||{});if(!r2.ok){toast(r2.err,5000)}}
   await bridge.save(JSON.stringify(DB),{quiet:true});syncStartTimer();render();toast('지점 연동을 켰어요 · 지점 코드를 만들 수 있어요')}
-function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInterval(()=>{if(!document.hidden)syncPull({silent:false});updTick()},120000)}
+function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInterval(()=>{if(!document.hidden)syncPull({silent:false}).then(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}});updTick()},120000)}
 async function syncInit(){if(!bridge||!bridge.syncInfo){SYNC.ready=true;render();return}try{SYNC.info=await bridge.syncInfo()}catch(e){SYNC.ready=true;render();return}SYNC.ready=true;if(!syOn()){render();return}render();if(admLocked()||isStaff()||SYNC.info.role==='branch'){const mb=myBr();if(mb&&DB.branches.some(b=>b.id===mb)&&DB.currentBranch!==mb&&!UI.edit){DB.currentBranch=mb;render()}} /* 켜면 내 지점부터 (지점장·행정·잠근 관리자 PC) */
   await syncPull({silent:true});try{if(bridge.ghLater)bridge.ghLater()}catch(e){} // 받은 뒤에 올림 — 옛 시간표가 먼저 올라가지 않게
-  syncStartTimer();window.addEventListener('focus',()=>{syncPull()});renderSyncState();setTimeout(updTick,3000)}
+  syncStartTimer();window.addEventListener('focus',()=>{syncPull().then(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}})});renderSyncState();setTimeout(updTick,3000);setTimeout(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}},6000) /* 3.78.4 지점장이 바꾼 자기 코드 맞추기 */}
 setTimeout(()=>keyExpCheck(),5000);setInterval(()=>keyExpCheck(),6*3600*1000);
 
 /* ---- 자동 업데이트 ----
@@ -5836,12 +5836,26 @@ function ckCell(t){if(typeof isStaff==='function'&&isStaff())return '<span class
   return t.ck?`<span class="ckc mono">${esc(t.ck)}</span>${diff?'<span class="hint" title="같은 이름 선생님인데 지점마다 코드가 달라요 · [바꾸기]를 누르면 전 지점이 같은 코드가 돼요"> · 지점마다 달라요</span>':''} <button class="btn sm" data-ckcopy="${t.id}" title="주소와 이 선생님 개인 코드를 복사 · 카톡 1:1로 보내 주세요">복사</button>${ed?` <button class="btn sm" data-cknew="${t.id}" data-label="바꾸기" title="새 코드로 바꾸면 그 선생님은 새 코드로 다시 로그인해야 해요">바꾸기</button>`:''}`:(ed?`<button class="btn sm" data-cknew="${t.id}" data-label="만들기">만들기</button>`:'<span class="hint">없음</span>')}
 /* 로그인 코드: 6자리 · 전 지점에서 겹치지 않게 · 다른 지점에 같은 이름 선생님 코드가 있으면 처음 만들 땐 그 코드를 그대로(한 사람 = 한 코드) */
 async function ckNew(tid){const t0=B().teachers.find(x=>x.id===tid);if(!t0)return;const me=sameT(t0.name),ed=sameTEd(t0.name);
-  if(me.length>ed.length&&t0.ck){toast('다른 지점에도 등록된 선생님이에요 · 코드 바꾸기는 관리자 모드에서 해 주세요 (전 지점이 같은 코드여야 해요)',5000);return}
+  const self=me.length>ed.length&&t0.ck&&ckSelfMgr(t0);
+  if(me.length>ed.length&&t0.ck&&!self){toast('다른 지점에도 등록된 선생님이에요 · 코드 바꾸기는 관리자 모드에서 해 주세요 (전 지점이 같은 코드여야 해요)',5000);return}
   const mine=new Set(me.map(x=>x.t));const used=new Set(DB.branches.flatMap(b=>(b.teachers||[]).concat(b.staff||[])).filter(x=>!mine.has(x)&&x.ck).map(x=>x.ck));
   const have=!t0.ck&&me.find(x=>x.t.ck);let c=have?have.t.ck:'';   // 처음 만들 땐 다른 지점에 이미 있는 그 사람 코드를 그대로
   while(!c||used.has(c))c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);
   const bids=[...new Set(ed.map(x=>x.b.id))];
-  await quickChange(()=>{sameT(t0.name).forEach(x=>{if(bids.includes(x.b.id))x.t.ck=c})},`${tn(tid)} 선생님 로그인 코드: ${c}${bids.length>1?` (${bids.length}개 지점 공통)`:''} · [복사]로 1:1로 보내 주세요`,bids)}
+  const at=Date.now(),by=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'';const others=[...new Set(me.filter(x=>!bids.includes(x.b.id)).map(x=>x.b.name))];
+  await quickChange(()=>{sameT(t0.name).forEach(x=>{if(bids.includes(x.b.id)){x.t.ck=c;x.t.ckAt=at;if(by)x.t.ckBy=by}})},self?`내 로그인 코드: ${c} · 이 지점은 바로 바뀌었고, ${others.join('·')}은(는) 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요 (새 코드로 바로 로그인돼요)`:`${tn(tid)} 선생님 로그인 코드: ${c}${bids.length>1?` (${bids.length}개 지점 공통)`:''} · [복사]로 1:1로 보내 주세요`,bids)}
+/* 3.78.4: 지점장 PC는 다른 지점에도 등록된 '자기' 코드를 바꿀 수 있음(연결할 때 넣은 이름 = 그 지점 지점장 선생님) · 다른 지점은 부원장님 PC가 받아 같은 코드로 맞춤(ckAlign) */
+function ckSelfMgr(t){if(typeof syOn!=='function'||!syOn()||SYNC.info.role!=='branch')return false;const b=B();return b.id===myBr()&&(b.mgr||[]).includes(t.id)&&!!tnm(SYNC.info.name)&&tnm(SYNC.info.name)===tnm(t.name)}
+/* 부원장님 PC: 같은 이름 선생님 코드가 지점마다 다르고 한쪽이 더 나중에 바뀌었으면(ckAt) 나머지 지점도 그 코드로 — 받을 때마다 확인 · 잠긴 지점은 다음에 */
+async function ckAlign(){if(typeof syOn!=='function'||!syOn()||!realOwner()||UI.edit||UI.peek||UI.stale||SYNC.ckBusy)return;
+  const G={};DB.branches.forEach(b=>(b.teachers||[]).forEach(t=>{const k=tnm(t.name);if(k)(G[k]=G[k]||[]).push({b,t})}));const todo=[];
+  Object.values(G).forEach(L=>{if(L.length<2)return;const tg=L.filter(x=>x.t.ck&&x.t.ckAt).sort((a,z)=>z.t.ckAt-a.t.ckAt)[0];if(!tg)return;L.forEach(x=>{if(x.t.ck!==tg.t.ck&&(x.t.ckAt||0)<tg.t.ckAt)todo.push({b:x.b,t:x.t,ck:tg.t.ck,at:tg.t.ckAt,by:tg.t.ckBy||'',nm:tg.t.name})})});
+  if(!todo.length)return;SYNC.ckBusy=true;
+  try{const bids=[...new Set(todo.map(x=>x.b.id))];const ok=[];for(const id of bids){try{const l=await bridge.syncLock(id);if(l.ok){ok.push(id);SYNC.mine.add(id)}}catch(e){}}
+    const T=todo.filter(x=>ok.includes(x.b.id));if(!T.length)return;
+    T.forEach(x=>{x.t.ck=x.ck;x.t.ckAt=x.at;if(x.by)x.t.ckBy=x.by});DB.updated=new Date().toISOString();await saveNow();await syncAfterApply();render();
+    const nm=[...new Set(T.map(x=>x.nm))];toast(`${nm.join('·')} 선생님이 바꾼 로그인 코드를 ${[...new Set(T.map(x=>x.b.name))].join('·')}에도 맞췄어요`,5000)}
+  finally{SYNC.ckBusy=false}}
 /* 모든 지점 보기: 관리자만 켜고 끔 */
 async function tAllTg(name){if(!isOwner())return;const me=sameT(name);if(!me.length)return;const on=!me.some(x=>x.t.all);const bids=[...new Set(me.map(x=>x.b.id))];
   await quickChange(()=>{sameT(name).forEach(x=>{if(on)x.t.all=1;else delete x.t.all})},`${me[0].t.name} 선생님: 강사용에서 ${on?'모든 지점을 볼 수 있어요':'이름 있는 지점만 보여요'}`,bids)}
@@ -7182,7 +7196,7 @@ const HELP=[
  {id:'teacher',t:'강사 관리 · 로그인 코드',b:`
   ${HF('teacher','강사 관리 — 휴무 요일·연락처·로그인 코드·주당 타임·오늘 수업')}
   <ul><li>강사마다 휴무 요일·선생님 연락처·<b>로그인 코드</b>를 보기 모드에서도 바로 바꿔요. 이름·순서·추가·삭제는 수정 모드에서.</li>
-  <li><b>강사용 로그인</b>: [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 <b>1:1</b>로 보내 주세요. 로그인하면 그 선생님 이름이 있는 지점만 보이고 담당 학생 연락처가 바로 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요.</li>
+  <li><b>강사용 로그인</b>: [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 <b>1:1</b>로 보내 주세요. 로그인하면 그 선생님 이름이 있는 지점만 보이고 담당 학생 연락처가 바로 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 여러 지점에 등록된 선생님 코드는 전 지점이 같아야 해서 관리자 모드에서 바꿔요 — 단, <b>지점장은 자기 PC에서 자기 코드를 바꿀 수 있어요</b>(그 PC를 연결할 때 넣은 이름이 지점장 이름과 같을 때). 자기 지점은 바로 바뀌고, 다른 지점은 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요. 그 사이에도 새 코드로 로그인돼요.</li>
   <li><b>행정 선생님</b>: 아래 행정 선생님 칸에서 이름을 넣고 [추가]하면 로그인 코드가 만들어져요. 행정 선생님 폰은 소속 지점 학생·연락처 전체, 다른 지점은 시간표만. 폰을 잃어버렸으면 <b>[기기 끊기]</b>(두 번).</li>
   ${HF('staff','행정 선생님 칸 — 코드·복사·기기 끊기·PC 연결 코드')}</ul>`},
  {id:'school',t:'학교 정보 · 시험 기간',b:`
