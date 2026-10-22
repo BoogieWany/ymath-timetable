@@ -3302,7 +3302,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.78.4', APPDATE='2026-10-22';
+const APPVER='3.78.5', APPDATE='2026-10-22';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -5289,7 +5289,7 @@ async function syEnable(){const name=($('syName')&&$('syName').value.trim())||'�
   const items=DB.branches.filter(b=>!present.has(b.id)).map(b=>({id:b.id,data:b}));
   if(items.length){const r2=await bridge.syncPush(items);Object.assign(known,r2.shas||{});if(!r2.ok){toast(r2.err,5000)}}
   await bridge.save(JSON.stringify(DB),{quiet:true});syncStartTimer();render();toast('지점 연동을 켰어요 · 지점 코드를 만들 수 있어요')}
-function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInterval(()=>{if(!document.hidden)syncPull({silent:false}).then(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}});updTick()},120000)}
+function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInterval(()=>{const al=()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}};if(!document.hidden)syncPull({silent:false}).then(al);else if(realOwner())syncPull({silent:true}).then(al) /* 3.78.4: 부원장님 PC는 최소화돼 있어도 받아서 코드 맞추기 */;updTick()},120000)}
 async function syncInit(){if(!bridge||!bridge.syncInfo){SYNC.ready=true;render();return}try{SYNC.info=await bridge.syncInfo()}catch(e){SYNC.ready=true;render();return}SYNC.ready=true;if(!syOn()){render();return}render();if(admLocked()||isStaff()||SYNC.info.role==='branch'){const mb=myBr();if(mb&&DB.branches.some(b=>b.id===mb)&&DB.currentBranch!==mb&&!UI.edit){DB.currentBranch=mb;render()}} /* 켜면 내 지점부터 (지점장·행정·잠근 관리자 PC) */
   await syncPull({silent:true});try{if(bridge.ghLater)bridge.ghLater()}catch(e){} // 받은 뒤에 올림 — 옛 시간표가 먼저 올라가지 않게
   syncStartTimer();window.addEventListener('focus',()=>{syncPull().then(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}})});renderSyncState();setTimeout(updTick,3000);setTimeout(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}},6000) /* 3.78.4 지점장이 바꾼 자기 코드 맞추기 */}
@@ -5848,7 +5848,7 @@ async function ckNew(tid){const t0=B().teachers.find(x=>x.id===tid);if(!t0)retur
 function ckSelfMgr(t){if(typeof syOn!=='function'||!syOn()||SYNC.info.role!=='branch')return false;const b=B();return b.id===myBr()&&(b.mgr||[]).includes(t.id)&&!!tnm(SYNC.info.name)&&tnm(SYNC.info.name)===tnm(t.name)}
 /* 부원장님 PC: 같은 이름 선생님 코드가 지점마다 다르고 한쪽이 더 나중에 바뀌었으면(ckAt) 나머지 지점도 그 코드로 — 받을 때마다 확인 · 잠긴 지점은 다음에 */
 async function ckAlign(){if(typeof syOn!=='function'||!syOn()||!realOwner()||UI.edit||UI.peek||UI.stale||SYNC.ckBusy)return;
-  const G={};DB.branches.forEach(b=>(b.teachers||[]).forEach(t=>{const k=tnm(t.name);if(k)(G[k]=G[k]||[]).push({b,t})}));const todo=[];
+  const G={};DB.branches.forEach(b=>{(b.teachers||[]).forEach(t=>{const k=tnm(t.name);if(k)(G['T'+k]=G['T'+k]||[]).push({b,t})});(b.staff||[]).forEach(t=>{const k=tnm(t.name);if(k)(G['S'+k]=G['S'+k]||[]).push({b,t})})});const todo=[]; /* 강사·행정 따로 */
   Object.values(G).forEach(L=>{if(L.length<2)return;const tg=L.filter(x=>x.t.ck&&x.t.ckAt).sort((a,z)=>z.t.ckAt-a.t.ckAt)[0];if(!tg)return;L.forEach(x=>{if(x.t.ck!==tg.t.ck&&(x.t.ckAt||0)<tg.t.ckAt)todo.push({b:x.b,t:x.t,ck:tg.t.ck,at:tg.t.ckAt,by:tg.t.ckBy||'',nm:tg.t.name})})});
   if(!todo.length)return;SYNC.ckBusy=true;
   try{const bids=[...new Set(todo.map(x=>x.b.id))];const ok=[];for(const id of bids){try{const l=await bridge.syncLock(id);if(l.ok){ok.push(id);SYNC.mine.add(id)}}catch(e){}}
@@ -5906,7 +5906,7 @@ function viewTeachers(){const b=B(),v=V(),sch=b.sched&&b.versions.find(x=>x.id==
     <td class="num">${os.length}</td><td class="num">${cls}</td><td class="num">${stu}</td><td class="num">${tdn||'<span class="hint">-</span>'}</td><td class="num">${n||r?`${n}${r?` · <b class="rqn">${r}</b>`:''}`:'<span class="hint">-</span>'}</td><td class="num">${x||'<span class="hint">-</span>'}</td>
     <td class="ops">${E?`<button class="btn sm" data-tmove="${t.id}|-1" ${i===0?'disabled':''} aria-label="위로">▲</button><button class="btn sm" data-tmove="${t.id}|1" ${i===b.teachers.length-1?'disabled':''} aria-label="아래로">▼</button><button class="btn sm danger" data-deltea="${t.id}" data-label="삭제" ${used(t.id)?'disabled title="지금 시간표·예정 시간표·특강에 있는 강사는 먼저 빼야 해요"':usedOld(t.id)?'title="지난 시간표에만 있어요 · 지우면 그 시간표에선 (삭제된 강사)로 보여요"':''}>삭제</button>`:''}</td></tr>`});
   h+=`</tbody></table></div>${E?'<div class="row" style="margin-top:10px"><input id="newT" placeholder="새 강사 이름" style="width:140px"><button class="btn" data-act="addTeacher">강사 추가</button></div>':''}`;
-  if(!(typeof isStaff==='function'&&isStaff()))h+=staffHTML(b,ed);
+  if(!(typeof isStaff==='function'&&isStaff()))h+=staffHTML(b,ed);else if(b.id===myBr())h+=staffSelfHTML(b); /* 3.78.4: 행정 PC는 자기 코드 줄만 */
   return h}
 /* ===== 행정 선생님: 개인 로그인 코드로 강사용 — 소속 지점은 학생 전체 연락처 · 다른 지점은 시간표만 · 내 수업 없음 (보기 모드에서도 바로 저장) ===== */
 function staffHTML(b,ed){const L=b.staff||[];
@@ -5914,6 +5914,11 @@ function staffHTML(b,ed){const L=b.staff||[];
   ${L.length?`<table class="tbl stftbl"><tbody>${L.map(a=>{const o=stfSame(a.name).filter(x=>x.b.id!==b.id).map(x=>x.b.name);return `<tr><td><button class="stfnm" data-stfnm="${a.id}" ${ed?'':'disabled'} title="${ed?'이름 고치기 (코드는 그대로)':''}"><b>${esc(a.name)}</b></button> <span class="hint">행정${o.length?' · '+esc(o.join('·'))+'에도':''}</span></td><td>${stfCk(a,ed)}${typeof isOwner==='function'&&isOwner()&&typeof syOn==='function'&&syOn()?` <button class="btn sm" data-stfpc="${a.id}" title="행정 선생님 PC에 지점장용 프로그램을 깔고 이 코드로 연결하면 소속 지점만 보이는 행정 모드가 돼요">PC 연결 코드</button>`:''}</td><td class="ops">${ed?`<button class="btn sm danger" data-stfdel="${a.id}" data-label="삭제">삭제</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'<div class="hint">아직 없어요</div>'}
   ${ed?'<div class="row" style="margin-top:8px"><input id="newStf" placeholder="행정 선생님 이름" style="width:160px"><button class="btn" data-act="stfAdd">추가</button></div>':''}</div>`}
 const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button>${ed?` <button class="btn sm" data-stfck="${a.id}" data-label="기기 끊기" title="이 코드로 로그인한 폰·PC를 모두 끊고 새 코드를 만들어요 (폰을 잃어버렸을 때)">기기 끊기</button>`:''}`:(ed?`<button class="btn sm" data-stfck="${a.id}">코드 만들기</button>`:'<span class="hint">코드 없음</span>');
+/* 3.78.4: 행정 PC — 자기 줄(연결할 때 넣은 이름, 뒤 '행정'은 빼고 비교)만 보이고 코드를 바꿀 수 있음 */
+const stfSelfName=()=>tnm((typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'');
+const stfIsSelf=a=>{if(!(typeof isStaff==='function'&&isStaff()))return false;const me=stfSelfName(),an=tnm(a.name);return !!me&&!!an&&(an===me||an===me.replace(/행정$/,'')||an+'행정'===me)};
+function staffSelfHTML(b){const L=(b.staff||[]).filter(stfIsSelf);if(!L.length)return '';
+  return `<div class="sec stfbox"><h3>내 로그인 코드 <span class="hint">폰·강사용 PC에서 쓰는 내 코드 · 바꾸면 예전 코드로 로그인한 기기는 1~2분 뒤 끊겨요${stfSame(L[0].name).length>1?' · 다른 지점은 부원장님 PC가 같은 코드로 맞춰요':''}</span></h3><table class="tbl stftbl"><tbody>${L.map(a=>`<tr><td><b>${esc(a.name)}</b> <span class="hint">행정</span></td><td>${a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button> <button class="btn sm" data-stfck="${a.id}" data-label="코드 바꾸기">코드 바꾸기</button>`:'<span class="hint">코드 없음 · 부원장님께 받아 주세요</span>'}</td></tr>`).join('')}</tbody></table></div>`}
 const stfSame=name=>DB.branches.flatMap(b=>(b.staff||[]).filter(a=>tnm(a.name)===tnm(name)).map(a=>({b,a})));
 const stfSameEd=name=>stfSame(name).filter(x=>!(typeof syOn==='function'&&syOn())||canEditB(x.b.id));
 const stfById=id=>{for(const b of DB.branches){const a=(b.staff||[]).find(x=>x.id===id);if(a)return {b,a}}return null};
@@ -5923,8 +5928,10 @@ async function stfAdd(){const i=$('newStf');const n=(i&&i.value||'').trim().repl
   if(sameT(n).length){toast('같은 이름의 강사가 있어요 · 다른 이름(예: 이름 뒤에 행정)으로 넣어 주세요',3200);return}
   const o=stfSame(n).find(x=>x.a.ck);const c=o?o.a.ck:newCode(); // 다른 지점에 같은 이름 = 같은 사람 → 같은 코드
   await quickChange(()=>{const b=B();b.staff=b.staff||[];b.staff.push({id:uid('a'),name:o?o.a.name:n,ck:c})},o?`행정 선생님 ${n} 추가 · ${o.b.name}과 같은 사람이라 코드도 같아요(${c})`:`행정 선생님 ${n} 추가 · 로그인 코드 ${c} · [복사]로 1:1로 보내 주세요`)}
-async function stfCkNew(id){const r=stfById(id);if(!r)return;const L=stfSameEd(r.a.name);const bids=[...new Set(L.map(x=>x.b.id))];const had=!!r.a.ck;const c=newCode();
-  await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c})},had?`${r.a.name} 행정 선생님: 예전 코드로 로그인한 기기는 1~2분 뒤 모두 끊겨요 · 새 코드 ${c} · [복사]로 1:1로 보내 주세요`:`${r.a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`,bids)}
+async function stfCkNew(id){const r=stfById(id);if(!r)return;if(typeof isStaff==='function'&&isStaff()&&!stfIsSelf(r.a)){toast('행정 PC에서는 내 코드만 바꿀 수 있어요');return}const L=stfSameEd(r.a.name);const bids=[...new Set(L.map(x=>x.b.id))];const had=!!r.a.ck;const c=newCode();
+  const at=Date.now(),by=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'';const others=[...new Set(stfSame(r.a.name).filter(x=>!bids.includes(x.b.id)).map(x=>x.b.name))];
+  if(had&&others.length){await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c;x.a.ckAt=at;if(by)x.a.ckBy=by})},`${stfIsSelf(r.a)?'내':r.a.name+' 행정 선생님'} 새 코드 ${c} · 이 지점은 바로 바뀌었고, ${others.join('·')}은(는) 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요`,bids);return}
+  await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c;x.a.ckAt=at;if(by)x.a.ckBy=by})},had?`${r.a.name} 행정 선생님: 예전 코드로 로그인한 기기는 1~2분 뒤 모두 끊겨요 · 새 코드 ${c} · [복사]로 1:1로 보내 주세요`:`${r.a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`,bids)}
 async function stfDel(id){const r=stfById(id);if(!r)return;await quickChange(()=>{const b=DB.branches.find(x=>x.id===r.b.id);b.staff=(b.staff||[]).filter(x=>x.id!==id)},`${r.a.name} 행정 선생님을 ${r.b.name}에서 뺐어요${stfSame(r.a.name).length>1?' · 다른 지점에는 남아 있어요':' · 그 코드로는 더 못 들어와요'}`,r.b.id)}
 function stfNmDlg(id){const r=stfById(id);if(!r)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="sfT" style="width:min(400px,100%)" data-stfnmd="${id}"><h2 id="sfT">이름 고치기 · 행정 선생님</h2>
   <div class="hint">로그인 코드는 그대로예요. 다시 로그인하지 않아도 1~2분 뒤 새 이름으로 보여요.${stfSame(r.a.name).length>1?' 다른 지점에 같은 이름도 같이 바뀌어요.':''}</div>
@@ -7196,7 +7203,7 @@ const HELP=[
  {id:'teacher',t:'강사 관리 · 로그인 코드',b:`
   ${HF('teacher','강사 관리 — 휴무 요일·연락처·로그인 코드·주당 타임·오늘 수업')}
   <ul><li>강사마다 휴무 요일·선생님 연락처·<b>로그인 코드</b>를 보기 모드에서도 바로 바꿔요. 이름·순서·추가·삭제는 수정 모드에서.</li>
-  <li><b>강사용 로그인</b>: [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 <b>1:1</b>로 보내 주세요. 로그인하면 그 선생님 이름이 있는 지점만 보이고 담당 학생 연락처가 바로 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 여러 지점에 등록된 선생님 코드는 전 지점이 같아야 해서 관리자 모드에서 바꿔요 — 단, <b>지점장은 자기 PC에서 자기 코드를 바꿀 수 있어요</b>(그 PC를 연결할 때 넣은 이름이 지점장 이름과 같을 때). 자기 지점은 바로 바뀌고, 다른 지점은 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요. 그 사이에도 새 코드로 로그인돼요.</li>
+  <li><b>강사용 로그인</b>: [만들기] → <b>[복사]</b>로 주소와 코드를 카톡 <b>1:1</b>로 보내 주세요. 로그인하면 그 선생님 이름이 있는 지점만 보이고 담당 학생 연락처가 바로 보여요. [바꾸기]로 새 코드를 만들면 예전 코드로 로그인한 기기는 다시 로그인해야 해요. 여러 지점에 등록된 선생님 코드는 전 지점이 같아야 해서 관리자 모드에서 바꿔요 — 단, <b>지점장은 자기 PC에서 자기 코드를 바꿀 수 있어요</b>(그 PC를 연결할 때 넣은 이름이 지점장 이름과 같을 때). 자기 지점은 바로 바뀌고, 다른 지점은 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요. 그 사이에도 새 코드로 로그인돼요. <b>행정 선생님 PC</b>도 [강사 관리] 아래 <b>내 로그인 코드</b> 칸에서 자기 코드만 바꿀 수 있어요(다른 지점은 맞춰지기 전까지 자기 지점만 보여요). 부원장님 PC는 창이 최소화돼 있어도 2분마다 받아서 맞춰요.</li>
   <li><b>행정 선생님</b>: 아래 행정 선생님 칸에서 이름을 넣고 [추가]하면 로그인 코드가 만들어져요. 행정 선생님 폰은 소속 지점 학생·연락처 전체, 다른 지점은 시간표만. 폰을 잃어버렸으면 <b>[기기 끊기]</b>(두 번).</li>
   ${HF('staff','행정 선생님 칸 — 코드·복사·기기 끊기·PC 연결 코드')}</ul>`},
  {id:'school',t:'학교 정보 · 시험 기간',b:`
