@@ -942,6 +942,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .rngadd{margin:2px 0 8px}.rngadd select{font-size:12.5px;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 8px;cursor:pointer}.rngadd select:hover{border-color:color-mix(in srgb,var(--navy) 40%,var(--line));color:var(--fg)}
 
 .pkpc .pkmore{border:1px dashed var(--line2);background:transparent;color:var(--muted);border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;cursor:pointer}.pkpc .pkmore:hover{color:var(--fg);border-color:color-mix(in srgb,var(--navy) 35%,var(--line2))}
+
+/* 3.78.9 출제 참고사항 */
+.rngv .rngn{margin-top:4px;padding:5px 9px;border-left:3px solid #F4B860;background:color-mix(in srgb,#F4B860 9%,var(--panel));border-radius:6px;font-size:12.5px;color:var(--fg);white-space:pre-wrap;line-height:1.5}
 </style>
 </head>
 <body>
@@ -3302,7 +3305,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.78.8', APPDATE='2026-10-22';
+const APPVER='3.78.9', APPDATE='2026-10-22';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6622,8 +6625,8 @@ function schCardHTML(k,b,ed){const o=schGet(k);const kd=schKindOf(k);const y=UI.
     const L=[...set].filter(x=>!del.has(x)||stu.some(s=>s.grade===g&&stuSubj(s,curEk).includes(x))).sort((a,z)=>HS_SUBJ.indexOf(a)-HS_SUBJ.indexOf(z));const r0=(o.rng||{})[`${curEk}|${g}`];return r0&&!r0.del&&(r0.a||r0.z||r0.free||r0.memo)?L.concat(['']):L};
   const skipG=grades.filter(g=>exSkipEk(g,curEk)); /* 3.78.3: 이 시험이 없는 학년 */
   h+=`<div class="sec"><h3>시험 범위 <span class="hint">단원을 눌러 시작~끝을 고르거나 직접 써요${skipG.length?` · <b>${skipG.join('·')}</b>은 ${ekMk(curEk)==='f2'&&kd==='중'?'2학기 기말이':'2학기 시험이'} 없어 빠져요`:''}</span><span class="sp"></span><span class="seg">${eks.map(ek=>`<button data-act="schEk" data-ek="${esc(ek)}" aria-pressed="${ek===curEk}">${esc(EK_LAB[ekMk(ek)])}</button>`).join('')}</span></h3>
-    <div class="rngt">${grades.filter(g=>!exSkipEk(g,curEk)).map(g=>subjOf(g).map(sj=>{const rk=`${curEk}|${g}${sj?'|'+sj:''}`;const r=(o.rng||{})[rk];const n=stu.filter(s=>s.grade===g&&(!sj||stuSubj(s,curEk).includes(sj))).length;const has=r&&(r.a||r.z||r.free||r.memo);const canX=ed&&kd==='고'&&(!sj||!n)&&!(g==='고1'&&/^공통수학/.test(sj));
-      return `<div class="rngr"><label>${esc(g)}${sj?` <i>${esc(subjShort(sj))}</i>`:kd==='고'?' <i class="dim">과목 구분 없음</i>':''}<small>${n?n+'명':''}</small></label><div class="rngv${has?'':' none'}">${has?esc(rangeText(r)):'아직 없음'}</div>${ed?`<button class="btn sm" data-act="rngDlg" data-k="${esc(k)}" data-rk="${esc(rk)}">${has?'고치기':'범위 넣기'}</button>`:''}${canX?`<button class="rngx" data-act="rngSjDel" data-k="${esc(k)}" data-rk="${esc(rk)}" title="이 과목 줄 지우기 (두 번)" aria-label="지우기">×</button>`:''}</div>`}).join('')+(ed&&kd==='고'?(()=>{const cur=subjOf(g);const left=HS_SUBJ.filter(x=>!cur.includes(x));return left.length?`<div class="rngadd"><select data-rngadd="${esc(k)}|${esc(curEk)}|${esc(g)}" aria-label="${esc(g)} 과목 추가"><option value="">+ ${esc(g)} 과목 추가</option>${left.map(x=>`<option value="${esc(x)}">${esc(subjShort(x))}</option>`).join('')}</select></div>`:''})():'')).join('')||'<div class="hint">학년 정보가 없어요</div>'}</div></div>`;
+    <div class="rngt">${grades.filter(g=>!exSkipEk(g,curEk)).map(g=>subjOf(g).map(sj=>{const rk=`${curEk}|${g}${sj?'|'+sj:''}`;const r=(o.rng||{})[rk];const n=stu.filter(s=>s.grade===g&&(!sj||stuSubj(s,curEk).includes(sj))).length;const has=r&&(r.a||r.z||r.free||r.memo);const hasN=!!(r&&!r.del&&r.note);const canX=ed&&kd==='고'&&(!sj||!n)&&!(g==='고1'&&/^공통수학/.test(sj));
+      return `<div class="rngr"><label>${esc(g)}${sj?` <i>${esc(subjShort(sj))}</i>`:kd==='고'?' <i class="dim">과목 구분 없음</i>':''}<small>${n?n+'명':''}</small></label><div class="rngv${has||hasN?'':' none'}">${has?esc(rangeText(r)):hasN?'':'아직 없음'}${hasN?`<div class="rngn">${esc(r.note)}</div>`:''}</div>${ed?`<button class="btn sm" data-act="rngDlg" data-k="${esc(k)}" data-rk="${esc(rk)}">${has||hasN?'고치기':'범위 넣기'}</button>`:''}${canX?`<button class="rngx" data-act="rngSjDel" data-k="${esc(k)}" data-rk="${esc(rk)}" title="이 과목 줄 지우기 (두 번)" aria-label="지우기">×</button>`:''}</div>`}).join('')+(ed&&kd==='고'?(()=>{const cur=subjOf(g);const left=HS_SUBJ.filter(x=>!cur.includes(x));return left.length?`<div class="rngadd"><select data-rngadd="${esc(k)}|${esc(curEk)}|${esc(g)}" aria-label="${esc(g)} 과목 추가"><option value="">+ ${esc(g)} 과목 추가</option>${left.map(x=>`<option value="${esc(x)}">${esc(subjShort(x))}</option>`).join('')}</select></div>`:''})():'')).join('')||'<div class="hint">학년 정보가 없어요</div>'}</div></div>`;
   /* 부교재 · 등급컷 · 기출 수거 */
   const bks=kd==='고'?HS_SUBJ:grades;
   h+=`<div class="sec"><h3>부교재 <span class="hint">${kd==='고'?'과목별':'학년별'} · 학교에서 쓰는 책</span></h3><div class="bkt">${bks.map(x=>`<div class="bkr"><label>${esc(kd==='고'?subjShort(x):x)}</label><input data-sbook="${esc(x)}" value="${esc(((o.books||{})[x]||{}).t||'')}" placeholder="예: 올포유" maxlength="80"${dis}></div>`).join('')}</div></div>`;
@@ -6648,7 +6651,8 @@ function rngDlg(k,rk){const o=schGet(k);const r=Object.assign({a:null,z:null,mem
     <div id="rgTree" class="rgtree"></div>
     <div class="rgsum" id="rgSum"></div>
     <label class="qal" for="rgMemo">끝 단원 메모 <span class="hint">예: 평행이동 제외 · 증명까지</span></label><input id="rgMemo" maxlength="80" value="${esc(r.memo||'')}">
-    <label class="qal" for="rgFree">직접 쓰기 <span class="hint">단원 대신 글로 (예: 교과서 72~131쪽) · 단원을 골랐으면 덧붙는 설명이 돼요</span></label><input id="rgFree" maxlength="200" value="${esc(r.free||'')}">
+    <label class="qal" for="rgFree">직접 쓰기 <span class="hint">단원 대신 글로 (예: 교과서 72~131쪽 · 기말 전범위) · 단원을 골랐으면 덧붙는 설명이 돼요</span></label><input id="rgFree" maxlength="200" value="${esc(r.free||'')}">
+    <label class="qal" for="rgNote">출제 참고사항 <span class="hint">선생님 폰 학교 탭·학생 카드에도 보여요 · 예: 도형의 방정식은 10월 모고에서, 집합·명제는 올포유에서 출제</span></label><textarea id="rgNote" rows="3" maxlength="400" style="width:100%;resize:vertical">${esc(r.note||'')}</textarea>
     <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn" data-act="rngClear">비우기</button><span class="sp"></span><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="rngSave">저장</button></div></div>`;
   rngTreeRender()}
 function rngTreeRender(){const R=UI.rng;if(!R)return;const tree=unitTree(R.uk);const el=$('rgTree');if(!el)return;const deep=R.deep;
@@ -6662,8 +6666,8 @@ function rngTreeRender(){const R=UI.rng;if(!R)return;const tree=unitTree(R.uk);c
   const sum=$('rgSum');if(sum)sum.innerHTML=R.a||R.z?`<b>${esc(unitName(R.a)||'처음')}</b> ~ <b>${esc(unitName(R.z)||(R.a?unitName(R.a):'끝'))}</b>${R.a&&!R.z?' <span class="hint">(끝 단원을 한 번 더 누르면 범위가 돼요)</span>':''}`:'<span class="hint">아직 고른 단원이 없어요</span>'}
 function rngPick(p){const R=UI.rng;if(!R)return;const tree=unitTree(R.uk);const flat=[];tree.forEach(u=>{flat.push([u[0]]);(u[1]||[]).forEach(m=>{flat.push([u[0],m[0]]);(m[1]||[]).forEach(s=>flat.push([u[0],m[0],s]))})});const pos=q=>flat.findIndex(x=>x.join('/')===q.join('/'));
   if(!R.a||(R.a&&R.z)){R.a=p;R.z=null}else if(pos(p)<pos(R.a)){R.z=R.a;R.a=p}else if(pos(p)===pos(R.a)){R.a=null;R.z=null}else R.z=p;rngTreeRender()}
-async function rngSave(){const R=UI.rng;if(!R)return;const memo=($('rgMemo').value||'').trim(),free=($('rgFree').value||'').trim();if(!R.a&&!R.z&&!free){toast('단원을 고르거나 직접 써 주세요');return}
-  $('modal').hidden=true;await schSave((S,at)=>{const o=S.list[R.k]=S.list[R.k]||{};o.rng=o.rng||{};o.rng[R.rk]={a:R.a||null,z:R.z||R.a||null,memo,free,at}},'시험 범위를 저장했어요');UI.rng=null}
+async function rngSave(){const R=UI.rng;if(!R)return;const memo=($('rgMemo').value||'').trim(),free=($('rgFree').value||'').trim(),note=(($('rgNote')||{}).value||'').trim().replace(/\n{3,}/g,'\n\n');if(!R.a&&!R.z&&!free&&!note){toast('단원을 고르거나 직접 쓰거나 참고사항을 써 주세요');return}
+  $('modal').hidden=true;await schSave((S,at)=>{const o=S.list[R.k]=S.list[R.k]||{};o.rng=o.rng||{};o.rng[R.rk]={a:R.a||null,z:R.z||R.a||null,memo,free,...(note?{note}:{}),at}},note&&!R.a&&!free?'출제 참고사항을 저장했어요':'시험 범위를 저장했어요');UI.rng=null} /* 3.78.9: 출제 참고사항(note) — 폰에도 감 */
 async function rngClear(){const R=UI.rng;if(!R)return;$('modal').hidden=true;await schSave((S,at)=>{const o=S.list[R.k]=S.list[R.k]||{};o.rng=o.rng||{};o.rng[R.rk]={a:null,z:null,memo:'',free:'',at}},'범위를 비웠어요');UI.rng=null}
 /* 단원 목록 고치기: 들여쓰기 글로 (대단원 / 두 칸 중단원 / 네 칸 소단원) */
 function unitEditDlg(uk){const tree=unitTree(uk);const txt=tree.map(u=>[u[0]].concat((u[1]||[]).flatMap(m=>['  '+m[0]].concat((m[1]||[]).map(s=>'    '+s)))).join('\n')).join('\n');
@@ -7214,6 +7218,7 @@ const HELP=[
   ${HF('xcal','시험 달력 — 날짜별로 누가 무슨 시험을 치는지 · 학생 이름 켬')}
   <li><b>학년별로 없는 시험</b>: <b>중3은 2학기 기말</b>, <b>고3은 2학기 중간·기말</b>(2학기 시험 자체)이 없어요. 학교 정보의 시험 날짜는 1·2학년 것이라 그대로 두고, 그 학년 학생만 <b>시험 달력·다가오는 시험 띠 인원·폰 다음 시험 D-day·정기 상담 시험 기간·시험 범위/등급컷/기출 수거 줄·성적 관리 명단</b>에서 빠져요. 중3만 다니는 학교의 기말은 띠·시험 기간에도 안 잡혀요.</li>
   <li><b>시험 범위</b>: 고등은 과목마다 한 줄 — 학생들 선택과목으로 저절로 생기고, 학년 아래 <b>[+ 과목 추가]</b>로 넣거나 줄 끝 <b>×</b>(두 번)로 지워요(그 과목 듣는 학생이 있으면 지울 수 없어요). [범위 넣기]에서 22개정 단원을 <b>두 번</b> 눌러 시작~끝. '소단원까지 보기'로 더 잘게, 메모·직접 쓰기도 돼요.</li>
+  <li><b>출제 참고사항</b>: 범위 창 맨 아래 칸에 "도형의 방정식은 10월 모고에서, 집합·명제는 올포유에서 출제"처럼 시험마다·학년(과목)마다 적어 두면 학교 카드 범위 줄 아래 노란 띠로 보이고, <b>선생님 폰 학교 탭과 학생 카드 다음 시험</b>에도 떠요. 범위 없이 참고사항만 넣어도 돼요. (학교 메모는 지금처럼 PC에만)</li>
   ${HF('rng','범위 넣기 — 단원을 두 번 눌러 시작~끝')}
   <li><b>선택과목</b>: 고2·3 학생마다 학년·학기별 과목. 범위·성적이 이 과목으로 연결돼요. 고1은 2학기에 2학년 과목 조사(체크)만.</li>
   <li>모든 지점이 같이 쓰는 자료예요(누구나 고침 · 칸마다 마지막에 고친 게 남음). 같은 학교가 두 이름으로 잡히면 카드의 <b>[합치기]</b>.</li>
@@ -7282,7 +7287,7 @@ const HELP=[
   <li><b>학생 카드</b>에 <b>자체시험 점수</b>(학원 시험 최근 6회 · 기준 아래는 빨갛게 · 지난 회 대비 ▲▼ · 풀이완료·발송완료)가 떠요. 선생님은 <b>내 담당 학생만</b>, 지점장·행정은 자기 지점 학생 전체. 내신 성적은 폰으로 안 가요.</li>
   ${HF('m-ts','폰 학생 카드 — 자체시험 점수(담당 학생만)')}
   <li>중3은 2학기 기말, 고3은 2학기 시험이 없어서 그 학생들은 폰 <b>다음 시험·다가오는 시험 띠·시험 달력·범위 줄·상담 시험 기간</b>에서 빠져요.</li>
-  <li><b>학교</b> 탭: 우리 지점 학생들이 다니는 학교의 <b>시험 일정·과목별 시험일</b>, <b>시험 범위</b>(시험을 골라서), <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등 <b>선택과목</b>(선생님은 내 학생만 · 지점장·행정은 지점 전체). 학교 메모는 폰으로 안 가요. 고치기는 PC [학교 정보]에서. 위 <b>[시험 달력]</b>을 누르면 날짜별로 누가 무슨 시험을 치는지(지점 학생 전체 · 날짜를 누르면 그날 띠 · 이름 스위치)가 나와요. 이름을 누르면 그 학생 카드가 떠서 바로 전화할 수 있어요(연락처는 지금처럼 받는 사람만 — 선생님은 담당 학생, 지점장·행정은 지점 전체).</li>
+  <li><b>학교</b> 탭: 우리 지점 학생들이 다니는 학교의 <b>시험 일정·과목별 시험일</b>, <b>시험 범위</b>(시험을 골라서), <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등 <b>선택과목</b>(선생님은 내 학생만 · 지점장·행정은 지점 전체). 학교 메모는 폰으로 안 가요. 범위 줄 아래 노란 띠는 <b>출제 참고사항</b>(어디서 나오는지 등)이에요 — 학생 카드 다음 시험에도 보여요. 고치기는 PC [학교 정보]에서. 위 <b>[시험 달력]</b>을 누르면 날짜별로 누가 무슨 시험을 치는지(지점 학생 전체 · 날짜를 누르면 그날 띠 · 이름 스위치)가 나와요. 이름을 누르면 그 학생 카드가 떠서 바로 전화할 수 있어요(연락처는 지금처럼 받는 사람만 — 선생님은 담당 학생, 지점장·행정은 지점 전체).</li>
   ${HF('m-xcal','폰 시험 달력 — 날짜를 누르면 그날 시험 띠, 이름 켬')}
   ${HF('m-sch','폰 학교 탭 — 학교 칩 · 시험 일정 · 범위 · 부교재 · 선택과목')}
   <li>아래 빈 곳: <b>다가오는 시험</b>, <b>새로 오는 학생</b>(선생님은 담당 반만), <b>학원 공지</b>, <b>내 메모</b>(그 폰에만). 화면 아래엔 하루 한 줄 응원(내 수업이 없는 날엔 시험 기간이어도 쉬는 날 문구만). 강사 관리에서 휴무 요일로 정한 날엔 오늘 탭에 <b>오늘은 휴일이에요</b>가 떠요.</li>
