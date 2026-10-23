@@ -146,11 +146,11 @@ function schPack(db,b){EXDB=db;const L=((db.schools||{}).list)||{};const td=exTd
   const rt=r=>{if(!r||r.del||(!r.a&&!r.z&&!r.free))return '';const un=p=>(p||[]).filter(Boolean).pop()||'';let t=r.free&&!(r.a&&r.a.length)?r.free:(un(r.a)&&un(r.z)?(un(r.a)===un(r.z)?un(r.a):`${un(r.a)} ~ ${un(r.z)}`):(un(r.a)||un(r.z)||''));if(r.memo)t+=` · ${r.memo}`;if(r.free&&(r.a&&r.a.length))t+=` (${r.free})`;return t};
   const ks=[...new Set((b.students||[]).filter(s=>s.status!=='퇴원').map(s=>exNorm(s.school)).filter(k=>k&&exKind(k)))];const out=[];
   ks.forEach(k=>{const o=L[k]||{};if(o.hide&&o.hide.v)return;const base=o.base||{};const cal={};Object.entries(o.cal||{}).forEach(([yy,c])=>{if(!yrs.has(yy)||!c)return;const x={};['m1','f1','m2','f2','camp','trip','sum','win'].forEach(mk=>{if(c[mk]&&c[mk][0])x[mk]=c[mk]});if(c.dm&&Object.keys(c.dm).length)x.dm=c.dm;cal[yy]=x});
-    const rng={};Object.entries(o.rng||{}).forEach(([rk,r])=>{if(!yrs.has(rk.split('|')[0]))return;const t=rt(r);if(t)rng[rk]=t});
+    const rng={},rnn={};Object.entries(o.rng||{}).forEach(([rk,r])=>{if(!yrs.has(rk.split('|')[0]))return;const t=rt(r);if(t)rng[rk]=t;if(r&&!r.del&&r.note)rnn[rk]=String(r.note).slice(0,400)}); /* 3.78.9 출제 참고사항 */
     const books={};Object.entries(o.books||{}).forEach(([x,v])=>{if(v&&v.t)books[x]=v.t});
     const cuts={};Object.entries(o.cuts||{}).forEach(([ck,v])=>{if(!yrs.has(ck.split('|')[0])||!v||!v.c)return;const c={};Object.entries(v.c).forEach(([n,x])=>{if(x!=null&&x!=='')c[n]=x});if(Object.keys(c).length)cuts[ck]=c});
     const got=[];Object.entries(o.got||{}).forEach(([gk,v])=>{if(v&&v.v&&+gk.slice(0,4)>=y-3)got.push(gk)});
-    out.push({k,nm:base.name||k,kd:exKind(k),pub:base.pub||'',al:base.alias||[],cal,rng,books,cuts,got})});
+    out.push({k,nm:base.name||k,kd:exKind(k),pub:base.pub||'',al:base.alias||[],cal,rng,...(Object.keys(rnn).length?{rnn}:{}),books,cuts,got})});
   return out}
 function exPack(db,b){EXDB=db;const td=exTd();const P=exPeriods(db,b);const both=[P.중,P.고].filter(x=>x&&x.from&&x.to);const exam=both.length?{from:both.map(x=>x.mf).sort()[0],to:both.map(x=>x.mt).sort().pop()}:null; /* 폰 응원·예전 폰: 관리 기간 합친 것 */
   const ks=new Set((b.students||[]).filter(s=>s.status!=='퇴원').map(s=>exNorm(s.school)).filter(k=>k&&exKind(k)));const lim=exPlus(td,60);const exl=[],rng={};
