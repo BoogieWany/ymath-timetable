@@ -123,6 +123,7 @@ td.fit-warn:hover{background:var(--warn-bg)!important}
 td.fit-bad{cursor:not-allowed}
 td.fit-bad::after{content:"겹침";position:absolute;right:4px;top:2px;font-size:9.5px;color:var(--err);font-weight:600;opacity:.6;z-index:2;pointer-events:none}
 td.drophover{outline:2px dashed var(--sel);outline-offset:-3px}
+td.drophover.dropcopy{outline-color:#3f9a64;background:color-mix(in srgb,#3f9a64 7%,transparent);position:relative}td.drophover.dropcopy::after{content:'+ 새 반';position:absolute;right:4px;top:3px;font-size:10px;font-weight:700;color:#2f7a4e;background:var(--panel);border-radius:999px;padding:0 6px;box-shadow:0 0 0 1px color-mix(in srgb,#3f9a64 40%,transparent);pointer-events:none}
 .chip{display:block;width:100%;border:0;border-radius:6px;padding:4px 6px;text-align:left;cursor:grab;font-size:12px;line-height:1.25;margin-top:2px}
 .chip:first-child{margin-top:0}
 .chip b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -945,6 +946,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 
 /* 3.78.9 출제 참고사항 */
 .rngv .rngn{margin-top:4px;padding:5px 9px;border-left:3px solid #F4B860;background:color-mix(in srgb,#F4B860 9%,var(--panel));border-radius:6px;font-size:12.5px;color:var(--fg);white-space:pre-wrap;line-height:1.5}
+
+/* 3.79.0 새 반으로 복사 — 학생 고르기 */
+.ccl{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px 10px;max-height:260px;overflow:auto;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-top:6px}.ccl .chk{font-size:13px}
 </style>
 </head>
 <body>
@@ -3305,7 +3309,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.78.9', APPDATE='2026-10-22';
+const APPVER='3.79.0', APPDATE='2026-10-22';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4025,6 +4029,20 @@ function renderDetail(){
 function toast(m,ms){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),ms||Math.max(2000,Math.min(6000,String(m).length*70)))}
 
 /* ================= 이동 ================= */
+/* 3.79.0 새 반으로 복사: 같은 색·같은 학생(고른 학생만)으로 새 반을 만들고 놓은 칸에 수업 하나 — 원래 반·수업은 그대로 */
+function clsCopyDlg(pk,d,p,t){const c=C(pk.cls);if(!c)return;const ids=[...new Set(Object.values(c.members||{}).flat())].filter(id=>S(id));
+  const nm=c.name+' 보충';let k=1;const taken=n=>V().classes.some(x=>tnm(x.name)===tnm(n));let name=nm;while(taken(name))name=nm+' '+(++k);
+  UI.ccp={cls:pk.cls,d,p,t};$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ccT" style="width:min(520px,100%)"><h2 id="ccT">새 반으로 복사</h2>
+    <div class="hint" style="margin:-4px 0 10px"><b>${esc(c.name)}</b>과 같은 색으로 새 반을 만들어 <b>${esc(d)} ${esc(pname(d,p))} · ${esc(tn(t))}T</b> 칸에 놓아요. 원래 반과 수업은 그대로예요.</div>
+    <div class="row"><label for="ccName">새 반 이름</label><input id="ccName" value="${esc(name)}" style="width:220px"></div>
+    <div class="row" style="margin-top:12px;align-items:center;gap:8px"><b style="font-size:13.5px">같이 들어갈 학생</b><span class="hint">빼고 싶은 학생만 끄세요 · ${ids.length}명</span><span class="sp"></span><button class="btn sm" data-act="ccAll">모두</button><button class="btn sm" data-act="ccNone">모두 끄기</button></div>
+    <div class="ccl">${ids.map(id=>{const s=S(id);return `<label class="chk"><input type="checkbox" data-ccs="${esc(id)}" checked> ${esc(s.name)} <small class="hint">${esc(s.grade||'')}</small></label>`}).join('')||'<span class="hint">학생이 없어요</span>'}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="ccGo">만들고 놓기</button></div></div>`;setTimeout(()=>{const i=$('ccName');if(i){i.focus();i.select()}},40)}
+function clsCopyGo(){const R=UI.ccp;if(!R)return;const src=C(R.cls);if(!src)return;const name=(($('ccName')||{}).value||'').trim().replace(/\s+/g,' ');if(!name){toast('새 반 이름을 넣어 주세요');return}
+  if(V().classes.some(x=>tnm(x.name)===tnm(name))){toast('같은 이름의 반이 있어요 · 다른 이름으로');return}
+  const sel=[...document.querySelectorAll('[data-ccs]')].filter(x=>x.checked).map(x=>x.dataset.ccs);$('modal').hidden=true;UI.ccp=null;const id=uid('c');
+  commit(()=>{const n=JSON.parse(JSON.stringify(src));delete n.from;n.id=id;n.name=name;n.members={[R.t]:sel};V().classes.push(n);V().sessions.push({id:uid('x'),cls:id,t:R.t,d:R.d,p:R.p});sel.forEach(sid=>{try{schedAdd(n,R.t,sid)}catch(e){}})},
+    `${src.name} → 새 반 "${name}" (${sel.length}명) · ${R.d} ${pname(R.d,R.p)}에 놓았어요 · 원래 반은 그대로`)}
 function placeAt(pk,d,p,t,swap){
   t=t||pk.t;const occs=sessionsAt(d,p,t).filter(x=>x.id!==pk.sid);const occ=swap?occs[0]:null;
   const f=fitMap(pk)[d+'|'+p+'|'+t];const warnBad=f&&f.lv==='bad'?' · ⚠ '+f.why:'';
@@ -4564,6 +4582,9 @@ document.addEventListener('click',async e=>{
     case 'clearSel':UI.sel=null;UI.hl=new Set();UI.picked=null;render();break;
     case 'issueAll':UI.issueAll=true;render();break;
     case 'newClass':{const id=uid('c');const t0=B().teachers[0];commit(()=>{V().classes.push({id,name:'새 반',color:firstFree(),members:t0?{[t0.id]:[]}:{},rule:t0?{[t0.id]:2}:{}})},'새 반을 만들었어요');UI.cls=id;render();setTimeout(()=>{const i=$('cName');if(i){i.focus();i.select()}},30);break}
+    case 'ccGo':clsCopyGo();break;
+    case 'ccAll':document.querySelectorAll('[data-ccs]').forEach(x=>x.checked=true);break;
+    case 'ccNone':document.querySelectorAll('[data-ccs]').forEach(x=>x.checked=false);break;
     case 'dupClass':{const src=C(UI.cls);const id=uid('c');commit(()=>{const n=JSON.parse(JSON.stringify(src));n.id=id;n.name=src.name+' 복사';V().classes.push(n)},'반을 복사했어요 (수업은 배치 대기)');UI.cls=id;render();break}
     case 'delClass':{if(!armed(el,'c'+UI.cls))return;const id=UI.cls;trashClass(id);UI.cls=null;render();break}
     case 'trashToggle':UI.trashOpen=!UI.trashOpen;render();break;
@@ -4750,17 +4771,17 @@ document.addEventListener('dragstart',e=>{const sn=e.target.closest&&e.target.cl
   const c=e.target.closest&&e.target.closest('.chip');if(!c||UI.view!=='grid'||!UI.edit){if(c)e.preventDefault();return}
   if(c.dataset.spid){const sp=SPC(c.dataset.spid);if(!sp)return;drag={spid:sp.id};e.dataTransfer.setData('text/plain','p');e.dataTransfer.effectAllowed='move';if(UI.pop)closePop();document.querySelectorAll('#gridScroll td.spcell').forEach(td=>{if(td.dataset.t!==sp.t)td.classList.add('fit-ok')});return}
   if(c.dataset.sid){const o=V().sessions.find(x=>x.id===c.dataset.sid);drag={sid:o.id,cls:o.cls,t:o.t}}else if(c.dataset.wait){const [cls,t,i]=c.dataset.wait.split('|');drag={cls,t,i:+i}}else return;
-  e.dataTransfer.setData('text/plain','x');e.dataTransfer.effectAllowed='move';if(UI.pop)closePop();
+  e.dataTransfer.setData('text/plain','x');e.dataTransfer.effectAllowed='copyMove'; /* 3.79.0: Ctrl = 새 반으로 복사 */if(UI.pop)closePop();
   // 끄는 동안 가능한 칸 표시
   const fit=fitMap(drag);document.querySelectorAll('td.slot[data-t]').forEach(td=>{const f=fit[td.dataset.d+'|'+td.dataset.p+'|'+td.dataset.t];if(f&&f.lv!=='self')td.classList.add('fit-'+f.lv)})});
 document.addEventListener('dragend',()=>{drag=null;sdrag=null;document.body.classList.remove('sdragging');document.querySelectorAll('.sdrop-ok,.sdrop-bad,.sdrop-hover').forEach(x=>x.classList.remove('sdrop-ok','sdrop-bad','sdrop-hover'));const tz=$('trash');if(tz)tz.classList.remove('drop');document.querySelectorAll('.fit-ok,.fit-good,.fit-warn,.fit-bad,.drophover').forEach(x=>x.classList.remove('fit-ok','fit-good','fit-warn','fit-bad','drophover'));const tr=$('tray');if(tr)tr.classList.remove('drop')});
 document.addEventListener('dragover',e=>{if(sdrag){const ch=underChip(e);document.querySelectorAll('.sdrop-hover').forEach(x=>x.classList.remove('sdrop-hover'));if(ch&&chipKey(ch)!==sdrag.from){e.preventDefault();e.dataTransfer.dropEffect=e.ctrlKey?'copy':'move';ch.classList.add('sdrop-hover')}else{const tz=e.target.closest&&e.target.closest('#trash');if(tz)e.preventDefault()}return}
   if(!drag)return;const td=e.target.closest&&e.target.closest('td.slot[data-t]');const tr=e.target.closest&&e.target.closest('#tray');
-  document.querySelectorAll('.drophover').forEach(x=>x.classList.remove('drophover'));
+  document.querySelectorAll('.drophover').forEach(x=>x.classList.remove('drophover','dropcopy'));
   const tz=e.target.closest&&e.target.closest('#trash');if($('trash'))$('trash').classList.toggle('drop',!!tz);
   if(tz){e.preventDefault();if(tr)tr.classList.remove('drop');return}
   if(drag.spid){if(td&&td.classList.contains('spcell')){e.preventDefault();td.classList.add('drophover')}return}
-  if(td&&!td.classList.contains('none')&&!td.classList.contains('spcell')){e.preventDefault();td.classList.add('drophover')}
+  if(td&&!td.classList.contains('none')&&!td.classList.contains('spcell')){e.preventDefault();e.dataTransfer.dropEffect=e.ctrlKey?'copy':'move';td.classList.add('drophover');td.classList.toggle('dropcopy',!!e.ctrlKey)}
   else if(tr&&drag.sid){e.preventDefault();tr.classList.add('drop')}});
 // 놓을 때 고르는 작은 메뉴 (윈도우에서는 끄는 중 Shift·Ctrl이 잘 안 잡혀서 메뉴로 고름. 끌기 전에 누르고 있던 키는 그대로 적용)
 function dropMenu(x,y,title,opts){return new Promise(res=>{const m=$('dropMenu');m.innerHTML=`<b>${esc(title)}</b>`+opts.map((o,i)=>`<button class="btn${i===0?' pri':''}" data-dm="${o.v}">${esc(o.t)}<small>${esc(o.s||'')}</small></button>`).join('')+'<button class="btn" data-dm="">취소</button>';
@@ -4788,6 +4809,7 @@ document.addEventListener('drop',async e=>{const X=e.clientX,Y=e.clientY;const s
     if(td&&td.classList.contains('spcell')){spSetTeacher(d.spid,td.dataset.t);return}if(td||tr)toast('특강 카드는 특강 줄 안에서 강사 칸으로만 옮길 수 있어요 · 요일·시간은 [수정]에서');return}
   if(e.target.closest&&e.target.closest('#trash')){let one=shift?true:null;if(one===null){const v=await dropMenu(X,Y,`${C(d.cls).name} 지우기`,[{v:'all',t:'반 전체 지우기',s:'이 반의 수업 전부'},{v:'one',t:'이 수업 1개만',s:d.sid?'이 칸의 수업만':'대기 카드 1개만'}]);if(!v)return;one=v==='one'}
     if(one)trashCard(d);else{trashClass(d.cls);UI.picked=null;UI.sel=null;render()}return}
+  if(td&&ctrl&&C(d.cls)){clsCopyDlg(d,td.dataset.d,+td.dataset.p,td.dataset.t);return} /* 3.79.0: Ctrl + 끌기 = 새 반으로 복사해서 여기 놓기(학생 골라서) */
   if(td){const occ=sessionsAt(td.dataset.d,+td.dataset.p,td.dataset.t).filter(x=>x.id!==d.sid);let swap=shift;
     if(!swap&&occ.length&&d.sid){const v=await dropMenu(X,Y,`${C(d.cls).name} → ${C(occ[0].cls).name} 칸`,[{v:'stack',t:'겹쳐 넣기',s:'한 칸에 두 수업 (고민 중)'},{v:'swap',t:'자리 바꾸기',s:`${C(occ[0].cls).name}은(는) 원래 자리로`}]);if(!v)return;swap=v==='swap'}
     placeAt(d,td.dataset.d,+td.dataset.p,td.dataset.t,swap)}
@@ -7161,6 +7183,7 @@ const HELP=[
  {id:'move',t:'반 카드 옮기기',b:`
   <ul><li>카드는 <b>끌어서만</b> 옮겨져요 (누르기만 해서는 안 옮겨져요). 끄는 동안 <b>초록 점</b> = 추천 칸(연강 맞음), <b>겹침</b> = 학생이 겹치는 칸.</li>
   <li>수업이 있는 칸에 놓으면 <b>[겹쳐 넣기 / 자리 바꾸기]</b>를 골라요. 다른 강사 칸에 놓으면 담당 강사가 바뀌어요.</li>
+  <li><b>Ctrl을 누른 채 끌어 놓으면 새 반으로 복사</b>돼요(칸에 "+ 새 반"이 떠요). 같은 색으로 "○○ 보충" 반이 생기고 놓은 칸에 수업이 하나 들어가요. 창에서 <b>빼고 싶은 학생만 체크를 끄면</b> 그 학생은 원래 반에만 남아요 — 예: 중1 A2 목요일 뒷타임을 따로 만들고 중2 수업 듣는 친구는 빼기. 원래 반은 그대로, 나중에 원래 반에 새 학생이 오면 보충 반에도 넣어 주세요.</li>
   <li>오른쪽 <b>보관함</b>: 아직 안 놓은 수업(주당 횟수보다 적을 때)이 대기해요. 카드를 여기로 끌면 시간표에서 빠져요. <b>[+ 새 반]</b>으로 반을 만들어요.</li>
   <li><b>휴지통</b>에 놓으면 [반 전체 / 이 수업만]을 골라 지워요. 휴지통에서 되살릴 수 있어요.</li>
   <li><b>[자동 배치]</b>: 고른 반을 학생 겹침·선호 시간·연강을 따져 여러 안으로 배치해 보여 줘요(AI 없이 계산). 미리 보고 마음에 드는 안만 적용해요.</li>
@@ -7317,7 +7340,7 @@ const HELP=[
  {id:'update',t:'업데이트',b:`<ul><li>부원장님 PC에서 새 버전을 올리면 연동된 PC들이 2분 안에 자동으로 받아요. 본체가 바뀐 업데이트는 위쪽 <b>[지금 다시 시작]</b>을 눌러요.</li><li>수정 중이거나 창을 열어 둔 채 새 버전을 받으면 <b>"새 버전이 준비됐어요"</b> 띠만 떠요. 수정을 끝내거나 창을 닫으면 저절로 바뀌어요.</li></ul>`},
  {id:'keys',t:'단축키',b:`<table class="tbl" style="max-width:520px"><tbody>
   <tr><td><b>Ctrl + 휠 / Ctrl ± / Ctrl 0</b></td><td>시간표 크기 (마우스 위치 기준으로 부드럽게)</td></tr><tr><td><b>Ctrl + Z / Ctrl + Y</b></td><td>되돌리기 / 다시하기 (수정 모드)</td></tr>
-  <tr><td><b>Delete / Shift + Delete</b></td><td>선택한 카드: 반 전체 / 이 수업만 휴지통</td></tr><tr><td><b>Esc</b></td><td>창 닫기 · 도움말 닫기 · 선택 해제</td></tr>
+  <tr><td><b>Delete / Shift + Delete</b></td><td>선택한 카드: 반 전체 / 이 수업만 휴지통</td></tr><tr><td><b>Ctrl + 카드 끌기</b></td><td>새 반으로 복사해서 놓기 (학생 골라서)</td></tr><tr><td><b>Shift + 카드 끌기</b></td><td>찬 칸이면 바로 자리 바꾸기</td></tr><tr><td><b>Esc</b></td><td>창 닫기 · 도움말 닫기 · 선택 해제</td></tr>
   <tr><td><b>F1</b></td><td>도움말 열기 / 닫기</td></tr><tr><td><b>F11</b></td><td>전체 화면</td></tr><tr><td><b>제목 줄 더블클릭</b></td><td>최대화 / 원래 크기</td></tr></tbody></table>`},
  {id:'faq',t:'자주 묻는 것 · 문제 해결',b:`
   <ul><li><b>고쳐지지 않아요</b> → 보기 모드예요. 위쪽 스위치를 켜세요. 다른 PC가 수정 중(🔒)이면 끝날 때까지 기다리거나 지점장 PC에서 [잠금 풀고 고치기].</li>
