@@ -273,9 +273,6 @@ body.wide .gt .seg.tch{max-width:none}
 .meta .ver{margin-left:auto;font-family:var(--mono);font-size:11px;opacity:.75}
 
 html{touch-action:pan-x pan-y;overscroll-behavior-y:contain}
-/* 3.78.8: 화면이 옆으로 밀려 있다 탭을 바꿀 때 제자리로 튀어 번쩍이던 것 — 탭 밀기·스르륵 들어올 때 내용이 잠깐 화면 밖으로 나가도 페이지가 가로로 스크롤되지 않게 (clip은 위쪽 바 sticky를 깨지 않음) */
-html,body{overflow-x:clip}
-@supports not (overflow-x:clip){html,body{overflow-x:hidden}body{overflow-y:visible}}
 body.wide,html:has(body.wide){touch-action:auto}
 .fz button.rs{font-size:17px}
 .hdx,#hdShow{display:none}
@@ -363,13 +360,10 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .tabs{position:relative}
 .tabs button{border-bottom-color:transparent!important;transition:color .25s ease}
 .tind{position:absolute;left:0;bottom:0;height:2.5px;width:0;background:#F4B860;border-radius:2px;opacity:0;transition:transform .34s cubic-bezier(.22,.61,.36,1),width .34s cubic-bezier(.22,.61,.36,1);pointer-events:none}
-main.tin-r{animation:tabR .32s cubic-bezier(.22,.61,.36,1)}
-main.tin-l{animation:tabL .32s cubic-bezier(.22,.61,.36,1)}
-/* 3.78.8: 0에서 시작하면 첫 화면에 내용이 통째로 사라졌다(바탕만) 다시 나타나 번쩍여 보임 → 반투명에서 시작해 자연스럽게 */
+main.tin-r{animation:tinR .32s cubic-bezier(.22,.61,.36,1)}
+main.tin-l{animation:tinL .32s cubic-bezier(.22,.61,.36,1)}
 @keyframes tinR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
 @keyframes tinL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
-@keyframes tabR{from{opacity:.4;transform:translateX(16px)}to{opacity:1;transform:none}}
-@keyframes tabL{from{opacity:.4;transform:translateX(-16px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){main.tin-r,main.tin-l{animation:none}.tind{transition:none}}
 
 /* 전체 표 카드: 반 이름 한 줄(줄바꿈 없음) + 아래 인원수, 칸은 좁고 길게 · 가로 모드는 정사각형에 가깝게 */
@@ -1355,7 +1349,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.78.8</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.78.7</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1754,7 +1748,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.78.8';const VC={last:0,nv:''};
+const MVER='3.78.7';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
