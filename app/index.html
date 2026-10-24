@@ -964,6 +964,22 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .grq input:focus{outline:none;border-color:var(--info);box-shadow:0 0 0 3px color-mix(in srgb,var(--info) 18%,transparent);width:230px}
 .grq .grqx{position:absolute;right:5px;width:20px;height:20px;border:0;border-radius:50%;background:var(--line2);color:var(--muted);font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .grq .grqx:hover{background:var(--line);color:var(--fg)}
+/* 3.79.9 자체시험 정기시험 묶음 · 지난 회 대비 */
+.tdl{display:inline-block;font-style:normal;font-size:10.5px;font-weight:700;border-radius:999px;padding:0 5px;margin-left:4px;line-height:16px;vertical-align:middle;min-width:24px;text-align:center}
+.tdl.up{color:var(--ok);background:var(--ok-bg)}.tdl.dn{color:var(--err);background:var(--err-bg)}.tdl.eq{color:var(--muted);background:var(--line2);font-weight:600}
+.tsum .tdl{margin:0 4px 0 6px}
+.tstt th.th-t em{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--info);letter-spacing:-.01em;margin-bottom:1px}
+.tstt th.th-t.ser{box-shadow:inset 0 2px 0 color-mix(in srgb,var(--info) 45%,transparent)}
+.tser{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 10px;padding:8px 12px;border-radius:10px;background:color-mix(in srgb,var(--info) 6%,var(--panel));border:1px solid color-mix(in srgb,var(--info) 18%,var(--line))}
+.tser b{font-size:13.5px}.tser>span:not(.sp){font-size:12px;color:var(--muted)}.tser .btn.sm{padding:4px 10px;font-size:12px}
+.seg.tstm{display:flex;margin:0 0 12px}.seg.tstm button{flex:1}
+#tbTitles{width:100%;box-sizing:border-box;resize:vertical;font:inherit;font-size:13px;line-height:1.5}
+.tbpv{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--bg);font-size:12.5px;line-height:1.6;min-height:20px}
+.tstt tbody td:nth-child(2) small{white-space:nowrap}.tsum small{display:block;margin-top:2px;white-space:nowrap}
+.tsdz{margin-top:12px;gap:6px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--line2)}
+/* 회차가 많아 옆으로 밀어도 학생 이름은 왼쪽에 붙어 있게 */
+.tstt th.nm,.tstt td.nm{position:sticky;left:0;z-index:2;background:var(--panel);box-shadow:1px 0 0 var(--line2)}
+.tstt thead th.nm{z-index:3}.tstt tfoot td:first-child{position:sticky;left:0;z-index:2;background:var(--panel)}
 </style>
 </head>
 <body>
@@ -3324,7 +3340,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.79.8', APPDATE='2026-10-24';
+const APPVER='3.79.9', APPDATE='2026-10-24';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4494,6 +4510,13 @@ document.addEventListener('click',async e=>{
     case 'grImpGo':grImportGo();break;
     case 'stCard':stDlg(ds.sid);break;
     case 'tstAdd':tstDlg('');break;
+    case 'tstMode':tstDlg('',ds.v);break;
+    case 'tstBulkSave':tstBulkSave();break;
+    case 'tserNext':tserNext(ds.id);break;
+    case 'tserEdit':tserDlg(ds.id);break;
+    case 'tserSave':tserSave(ds.id);break;
+    case 'tserDel':if(!armed(el,'tserDel'+ds.id,'한 번 더 누르면 모두 지워요 (점수도)'))return;tserDel(ds.id);break;
+    case 'tserTrim':tserDel(ds.id,true);break;
     case 'tkAdd':tkDlg('');break;
     case 'tkEdit':tkDlg(ds.id);break;
     case 'tkSaveGo':tkSaveGo(ds.id);break;
@@ -7010,7 +7033,7 @@ async function grFlush(next){clearTimeout(GRQ.timer);const P=Object.values(GRQ.p
 document.addEventListener('input',e=>{const t=e.target;if(!t||!t.dataset||UI.view!=='grades')return;if(t.dataset.gi)grQueue(t);if(t.id==='grQ'){UI.gr.q=t.value;clearTimeout(GRQ.qt);GRQ.qt=setTimeout(()=>{const el=document.activeElement;render();if(el&&el.id==='grQ'){const i=$('grQ');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}},350)}});
 document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.gi&&Object.keys(GRQ.pend).length){const n=e.relatedTarget&&e.relatedTarget.dataset&&e.relatedTarget.dataset.gi;grFlush(n||'')}});
 document.addEventListener('keydown',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.gi)return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const all=[...document.querySelectorAll(`[data-gi$="|${t.dataset.gi.split('|')[2]}"]`)];const i=all.indexOf(t);const n=all[i+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();n.focus();n.select()}}});
-document.addEventListener('change',e=>{const t=e.target;if(!t||!t.dataset||UI.view!=='grades')return;const o=t.dataset.gro;if(!o)return;const G=UI.gr;if(o==='y'){const p=G.ek.split('|');G.ek=`${t.value}|${p[1]}|${p[2]}`}else if(o==='cls')G.cls=t.value;else if(o==='out')G.out=t.checked;render()});
+document.addEventListener('change',e=>{const t=e.target;if(!t||!t.dataset||UI.view!=='grades')return;const o=t.dataset.gro;if(!o)return;const G=UI.gr;if(o==='y'){const p=G.ek.split('|');G.ek=`${t.value}|${p[1]}|${p[2]}`}else if(o==='cls')G.cls=t.value;else if(o==='ts')G.ts=t.value;else if(o==='out')G.out=t.checked;render()});
 document.addEventListener('click',e=>{if(UI.view!=='grades')return;const a=e.target.closest&&e.target.closest('[data-grek],[data-grg],[data-gro]');if(!a||a.tagName!=='BUTTON')return;const G=UI.gr;if(a.dataset.grek)G.ek=a.dataset.grek;else if(a.dataset.grg!=null)G.g=a.dataset.grg;else if(a.dataset.gro==='one')G.one=a.dataset.v==='1';else if(a.dataset.gro==='stat')G.stat=a.dataset.v;else if(a.dataset.gro==='mode')G.mode=a.dataset.v;else if(a.dataset.gro==='tg')G.tg=a.dataset.v;else return;render()});
 /* ===== 학생 카드(학생 관리 상태 창)에 보이는 성적 흐름 · 특이사항 ===== */
 function grHistHTML(s){const L=grRecs(s.id).sort((a,z)=>ekCmp(a.ek,z.ek)||sortKo(a.subj||'',z.subj||''));if(!L.length)return '<div class="hint">아직 성적 기록이 없어요 · [성적 관리]에서 적어요</div>';
@@ -7069,29 +7092,79 @@ async function grImportGo(){const R=UI.grImp,M=UI.grImpM;if(!R||!M)return;docume
   const picked=Object.values(M).filter(m=>m.pick);if(!picked.length){toast('맞는 학생이 없어요');return}const n=picked.reduce((a,m)=>a+m.n,0),ns=picked.length;
   await grSave((G,at)=>{picked.forEach(m=>{const sid=m.pick.s.id;R.recs.filter(r=>r.name===m.name&&r.school===m.school).forEach(r=>{const vals={};if(r.exp!=null)vals.exp=r.exp;if(r.fin!=null)vals.fin=r.fin;if(r.gr!=null)vals.gr=r.gr;grPutRec(G,sid,r.ek,r.subj,vals,at)})})},`시트 성적 ${n}칸 · ${ns}명 반영`);UI.grImp=null;UI.grImpM=null}
 /* ===== 자체시험 (학원 시험) — 공유 자료 tests/tres · 성적 관리 안 [내신|자체시험] · 학생 카드 ===== */
-const tstList=(b,g)=>Object.values(GR().tests).filter(t=>t&&!t.del&&t.br===b.id&&(!g||t.grade===g)).sort((a,z)=>(a.date||'').localeCompare(z.date||'')||sortKo(a.name,z.name));
+const tstList=(b,g)=>Object.values(GR().tests).filter(t=>t&&!t.del&&t.br===b.id&&(!g||t.grade===g)).sort((a,z)=>(a.date||'').localeCompare(z.date||'')||sortKo(a.ser||'',z.ser||'')||((a.no||0)-(z.no||0))||sortKo(a.name,z.name));
+/* 3.79.9 정기시험(묶음): 회차마다 시험 하나 — 묶음 정보는 시험 안에(ser 묶음 id · sn 묶음 이름 · no 회차 · iv 간격 일수) → 옛 버전 PC가 저장해도 안 사라짐 */
+const tstSeries=(b,g)=>{const m={};tstList(b,g).forEach(t=>{if(!t.ser)return;const x=m[t.ser]=m[t.ser]||{id:t.ser,name:t.sn||'정기시험',grade:t.grade,iv:t.iv||0,L:[]};x.L.push(t);if(t.sn)x.name=t.sn;if(t.iv!=null)x.iv=t.iv});return Object.values(m).sort((a,z)=>sortKo(a.name,z.name))};
+const tstSerAll=(b,id)=>Object.values(GR().tests).filter(t=>t&&!t.del&&t.br===b.id&&t.ser===id).sort((a,z)=>(a.no||0)-(z.no||0)||(a.date||'').localeCompare(z.date||''));
+/* 등락: 같은 묶음의 바로 전 회(단독 시험끼리는 바로 전 단독 시험) 중 그 학생이 본 시험과 비교 · 만점이 다르면 100점으로 환산 */
+function tstDeltas(b,g){const last={},D={},C={};tstList(b,g).forEach(t=>{const k=t.ser||'';const lk=last[k]=last[k]||{};const d=D[t.id]={};const R=GR().tres[t.id]||{};const mx=t.max||100;
+  Object.entries(R).forEach(([sid,r])=>{if(!r||r.sc==null)return;const p=lk[sid];if(!p)return;if(p.mx===mx)d[sid]=Math.round((r.sc-p.sc)*10)/10;else{d[sid]=Math.round((r.sc/mx-p.sc/p.mx)*1000)/10;C[t.id+'|'+sid]=1}});
+  Object.entries(R).forEach(([sid,r])=>{if(r&&r.sc!=null)lk[sid]={sc:r.sc,mx}})});return {D,C}}
+const tstDlHTML=(d,conv)=>d==null?'':`<i class="tdl ${d>0?'up':d<0?'dn':'eq'}" title="${conv?'100점으로 환산해서 ':''}지난 회 대비">${d>0?'▲'+d:d<0?'▼'+(-d):'–0'}</i>`;
 const tstRes=(t,sid)=>((GR().tres[t.id]||{})[sid])||{};
 function viewTests(b,G,ed){const grades=[...new Set(b.students.filter(s=>!isOut(s)).map(s=>s.grade).filter(Boolean).concat(tstList(b).map(t=>t.grade)))].sort((a,z)=>GRADE_ORDER(a)-GRADE_ORDER(z));if(!G.tg||!grades.includes(G.tg))G.tg=grades[0]||'';
   const v=(b.versions||[]).find(x=>x.id===b.current)||{classes:[]};const clsOpts=v.classes.slice().sort((a,z)=>sortKo(a.name,z.name));
   let L=b.students.filter(s=>(G.out?true:!isOut(s))&&!isPre(s)&&s.grade===G.tg&&(!G.q||s.name.includes(G.q.trim())||(s.school||'').includes(G.q.trim())));
   if(G.cls){const c=v.classes.find(x=>x.id===G.cls);const ids=new Set(c?Object.values(c.members||{}).flat():[]);L=L.filter(s=>ids.has(s.id))}L.sort((a,z)=>sortKo(a.name,z.name));
-  const TS=tstList(b,G.tg);
+  const SER=tstSeries(b,G.tg);if(G.ts&&G.ts!=='one'&&!SER.some(x=>x.id===G.ts))G.ts='';const curS=G.ts&&G.ts!=='one'?SER.find(x=>x.id===G.ts):null;
+  const TS=tstList(b,G.tg).filter(t=>!G.ts?true:G.ts==='one'?!t.ser:t.ser===G.ts);const DL=tstDeltas(b,G.tg);
+  const serSel=SER.length?`<select data-gro="ts" title="정기시험 묶음만 보기"><option value="">모든 시험</option>${SER.map(x=>`<option value="${esc(x.id)}" ${G.ts===x.id?'selected':''}>${esc(x.name)} (${x.L.length}회)</option>`).join('')}<option value="one" ${G.ts==='one'?'selected':''}>단독 시험만</option></select>`:'';
+  const ivL=d=>d===7?'매주':d===14?'2주마다':d?d+'일마다':'';
   let h=`<div class="tools grtools"><span class="seg cgg">${grades.map(g=>`<button data-gro="tg" data-v="${esc(g)}" aria-pressed="${G.tg===g}">${esc(g)} <small>${tstList(b,g).length}</small></button>`).join('')||'<span class="hint">학생이 없어요</span>'}</span>
-    <select data-gro="cls"><option value="">모든 반</option>${clsOpts.map(c=>`<option value="${c.id}" ${G.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select>${grQHTML(G)}
+    <select data-gro="cls"><option value="">모든 반</option>${clsOpts.map(c=>`<option value="${c.id}" ${G.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select>${serSel}${grQHTML(G)}
     <span class="sp"></span><label class="chk"><input type="checkbox" data-gro="out" ${G.out?'checked':''}> 퇴원 포함</label>${ed?`<button class="btn pri" data-act="tstAdd">+ 시험 추가</button>`:''}</div>`;
-  const cell=(s,t)=>{const r=tstRes(t,s.id);return `<td class="tcell"><input class="gri" type="number" min="0" max="${t.max||100}" step="1" data-ti="${esc(t.id)}|${esc(s.id)}|sc" value="${r.sc==null?'':r.sc}" ${ed?'':'disabled'} placeholder="점수"${t.cut&&r.sc!=null&&r.sc<t.cut?' data-low="1"':''}><label class="tck" title="학생이 틀린 문제 풀이를 마침"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|d" ${r.d?'checked':''} ${ed?'':'disabled'}><i>풀이완료</i></label><label class="tck" title="학부모님께 결과를 보냄"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|s" ${r.s?'checked':''} ${ed?'':'disabled'}><i>발송완료</i></label></td>`};
-  const avg=t=>{const a=L.map(s=>tstRes(t,s.id).sc).filter(x=>x!=null);return a.length?{n:a.length,avg:Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10,ok:t.cut?a.filter(x=>x>=t.cut).length:null,d:L.filter(s=>tstRes(t,s.id).d).length,s:L.filter(s=>tstRes(t,s.id).s).length}:null};
-  h+=`<div class="sec grsec"><h3>자체시험 점수 <span class="hint">${esc(G.tg||'')} · 시험마다 점수와 풀이완료·발송완료 체크 · 기준 점수 아래는 빨갛게</span></h3>
-    ${TS.length?`<div class="scroll grscroll"><table class="tbl grt tstt"><thead><tr><th class="l nm">학생</th><th class="l">반</th>${TS.map(t=>`<th class="th-t"><b>${esc(t.name)}</b><small>${t.date?esc(annMD(t.date)):''}${t.max&&t.max!==100?` · ${t.max}점`:''}${t.cut?` · 기준 ${t.cut}`:''}</small>${ed?`<button class="tedit" data-act="tstEdit" data-id="${esc(t.id)}" title="시험 고치기·지우기">⋯</button>`:''}</th>`).join('')}</tr></thead>
+  const cell=(s,t)=>{const r=tstRes(t,s.id);const dl=(DL.D[t.id]||{})[s.id];return `<td class="tcell"><input class="gri" type="number" min="0" max="${t.max||100}" step="1" data-ti="${esc(t.id)}|${esc(s.id)}|sc" value="${r.sc==null?'':r.sc}" ${ed?'':'disabled'} placeholder="점수"${t.cut&&r.sc!=null&&r.sc<t.cut?' data-low="1"':''}>${tstDlHTML(r.sc==null?null:dl,DL.C[t.id+'|'+s.id])}<label class="tck" title="학생이 틀린 문제 풀이를 마침"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|d" ${r.d?'checked':''} ${ed?'':'disabled'}><i>풀이완료</i></label><label class="tck" title="학부모님께 결과를 보냄"><input type="checkbox" data-ti="${esc(t.id)}|${esc(s.id)}|s" ${r.s?'checked':''} ${ed?'':'disabled'}><i>발송완료</i></label></td>`};
+  const avg=t=>{const a=L.map(s=>tstRes(t,s.id).sc).filter(x=>x!=null);const dd=L.map(s=>tstRes(t,s.id).sc==null?null:(DL.D[t.id]||{})[s.id]).filter(x=>x!=null);return a.length?{dl:dd.length?Math.round(dd.reduce((x,y)=>x+y,0)/dd.length*10)/10:null,n:a.length,avg:Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10,ok:t.cut?a.filter(x=>x>=t.cut).length:null,d:L.filter(s=>tstRes(t,s.id).d).length,s:L.filter(s=>tstRes(t,s.id).s).length}:null};
+  h+=`<div class="sec grsec"><h3>자체시험 점수 <span class="hint">${esc(G.tg||'')} · 시험마다 점수와 풀이완료·발송완료 체크 · 기준 점수 아래는 빨갛게 · ▲▼는 지난 회 대비</span></h3>
+    ${curS?(()=>{const f=curS.L[0]||{},l=curS.L[curS.L.length-1]||{};return `<div class="tser"><b>${esc(curS.name)}</b><span>${esc(curS.grade)} · ${curS.L.length}회${ivL(curS.iv)?' · '+ivL(curS.iv):''}${f.date&&l.date?` · ${esc(annMD(f.date))}~${esc(annMD(l.date))}`:''}${l.max&&l.max!==100?` · ${l.max}점`:''}${l.cut?` · 기준 ${l.cut}`:''}</span><span class="sp"></span>${ed?`<button class="btn sm" data-act="tserNext" data-id="${esc(curS.id)}">+ 다음 회</button><button class="btn sm" data-act="tserEdit" data-id="${esc(curS.id)}">묶음 고치기</button>`:''}</div>`})():''}
+    ${TS.length?`<div class="scroll grscroll"><table class="tbl grt tstt"><thead><tr><th class="l nm">학생</th><th class="l">반</th>${TS.map(t=>`<th class="th-t${t.ser?' ser':''}">${t.ser&&!curS&&t.sn&&!t.name.startsWith(t.sn)?`<em>${esc(t.sn)}</em>`:''}<b>${esc(t.name)}</b><small>${t.date?esc(annMD(t.date)):''}${t.max&&t.max!==100?` · ${t.max}점`:''}${t.cut?` · 기준 ${t.cut}`:''}</small>${ed?`<button class="tedit" data-act="tstEdit" data-id="${esc(t.id)}" title="시험 고치기·지우기">⋯</button>`:''}</th>`).join('')}</tr></thead>
       <tbody>${L.map(s=>`<tr data-gsid="${esc(s.id)}"${isOut(s)?' class="out"':''}><td class="l nm"><button class="lnk" data-act="stCard" data-sid="${esc(s.id)}"><b>${esc(s.name)}</b></button>${s.re?'<i class="reb">재</i>':''}</td><td class="l"><small>${esc([...new Set(grCls(b,s.id).map(x=>x.c.name))].join(', '))}</small></td>${TS.map(t=>cell(s,t)).join('')}</tr>`).join('')||`<tr><td colspan="${TS.length+2}" class="hint">학생이 없어요</td></tr>`}</tbody>
-      <tfoot><tr><td class="l" colspan="2"><b>평균 · 통과 · 체크</b></td>${TS.map(t=>{const a=avg(t);return `<td class="l tsum">${a?`<b>${a.avg}</b> <small>${a.n}명${a.ok!=null?` · 통과 ${a.ok}`:''} · 풀이완료 ${a.d} · 발송완료 ${a.s}</small>`:'<span class="hint">–</span>'}</td>`}).join('')}</tr></tfoot></table></div>`:`<div class="hint">${esc(G.tg||'')} 시험이 아직 없어요 · [+ 시험 추가]로 단원테스트·내신대비 회차를 만들어요</div>`}</div>`;
+      <tfoot><tr><td class="l nm"><b>평균 · 통과</b></td><td></td>${TS.map(t=>{const a=avg(t);return `<td class="l tsum">${a?`<b>${a.avg}</b>${a.dl!=null?tstDlHTML(a.dl):''} <small>${a.n}명${a.ok!=null?` · 통과 ${a.ok}`:''} · 풀이완료 ${a.d} · 발송완료 ${a.s}</small>`:'<span class="hint">–</span>'}</td>`}).join('')}</tr></tfoot></table></div>`:`<div class="hint">${esc(G.tg||'')} 시험이 아직 없어요 · [+ 시험 추가]로 단원테스트·내신대비 회차를 만들거나, 주간테스트처럼 정기적으로 보는 시험은 [정기시험 여러 회]로 한꺼번에 만들어요</div>`}</div>`;
+  /* 회차가 많으면 처음 열 때(학년·묶음 바꿀 때) 맨 오른쪽 = 최근 시험이 보이게 */
+  const sk=(G.tg||'')+'|'+(G.ts||'');if(G._tsk!==sk){G._tsk=sk;setTimeout(()=>{const el=document.querySelector('.tstt')&&document.querySelector('.tstt').closest('.grscroll');if(el)el.scrollLeft=el.scrollWidth},0)}
   return h}
-function tstDlg(id){const b=B();const t=id?GR().tests[id]:null;const G=UI.gr||{};
-  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ttT" style="width:min(440px,100%)"><h2 id="ttT">${t?'시험 고치기':'자체시험 추가'}</h2>
-    <label class="qal" for="ttName">시험 이름</label><input id="ttName" maxlength="40" value="${esc(t?t.name:'')}" placeholder="예: 2. 좌표평면과 그래프 · 내신대비 1회">
-    <div class="row"><label for="ttGrade">학년</label><input id="ttGrade" maxlength="4" value="${esc(t?t.grade:G.tg||'')}" placeholder="중1" style="width:70px"><label for="ttDate" style="width:auto">날짜</label><input id="ttDate" type="date" value="${esc(t&&t.date||todayStr())}"></div>
+function tstDlg(id,mode){const b=B();const t=id?GR().tests[id]:null;const G=UI.gr||{};const bulk=!t&&mode==='bulk';
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ttT" style="width:min(${bulk?500:440}px,100%)"><h2 id="ttT">${t?'시험 고치기':'자체시험 추가'}</h2>
+    ${t?(t.ser?`<div class="hint" style="margin:-4px 0 8px">정기시험 <b>${esc(t.sn||'')}</b> ${t.no||''}회 · 묶음 전체는 [묶음 고치기]에서</div>`:''):`<span class="seg tstm" role="group"><button data-act="tstMode" data-v="" aria-pressed="${!bulk}">한 회</button><button data-act="tstMode" data-v="bulk" aria-pressed="${bulk}">정기시험 여러 회</button></span>`}
+    ${bulk?`<label class="qal" for="tbName">정기시험 이름</label><input id="tbName" maxlength="24" placeholder="예: 주간테스트" value="주간테스트">
+    <div class="row"><label for="tbGrade">학년</label><input id="tbGrade" maxlength="4" value="${esc(G.tg||'')}" placeholder="중1" style="width:70px"><label for="tbMax" style="width:auto">만점</label><input id="tbMax" type="number" min="1" max="999" value="100" style="width:70px"><label for="tbCut" style="width:auto">기준 점수</label><input id="tbCut" type="number" min="0" max="999" placeholder="없음" style="width:70px"></div>
+    <div class="row"><label for="tbDate">첫 시험</label><input id="tbDate" type="date" value="${esc(todayStr())}"><select id="tbIv"><option value="7">매주</option><option value="14">2주마다</option><option value="0">날짜는 나중에</option></select><label for="tbN" style="width:auto">회 수</label><input id="tbN" type="number" min="1" max="60" value="10" style="width:64px"></div>
+    <label class="qal" for="tbTitles">회차 제목 <span class="hint">비워 두면 1회·2회… · 한 줄에 하나씩 적으면 줄 수만큼 만들어요(예: 단원 이름)</span></label><textarea id="tbTitles" rows="4" placeholder="1. 소인수분해&#10;2. 정수와 유리수&#10;3. 문자와 식"></textarea>
+    <div class="tbpv" id="tbPv"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><span class="sp"></span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="tstBulkSave">만들기</button></div></div>`
+    :`<label class="qal" for="ttName">시험 이름</label><input id="ttName" maxlength="40" value="${esc(t?t.name:'')}" placeholder="예: 2. 좌표평면과 그래프 · 내신대비 1회">
+    <div class="row"><label for="ttGrade">학년</label><input id="ttGrade" maxlength="4" value="${esc(t?t.grade:G.tg||'')}" placeholder="중1" style="width:70px"><label for="ttDate" style="width:auto">날짜</label><input id="ttDate" type="date" value="${esc(t?t.date||'':todayStr())}"></div>
     <div class="row"><label for="ttMax">만점</label><input id="ttMax" type="number" min="1" max="999" value="${t&&t.max||100}" style="width:70px"><label for="ttCut" style="width:auto">기준 점수</label><input id="ttCut" type="number" min="0" max="999" value="${t&&t.cut!=null?t.cut:''}" placeholder="없음" style="width:70px"><span class="hint">아래면 빨갛게 · 재시험 기준</span></div>
-    <div class="row" style="justify-content:flex-end;margin-top:10px">${t?`<button class="btn danger" data-act="tstDel" data-id="${esc(t.id)}" data-label="시험 지우기">시험 지우기</button>`:''}<span class="sp"></span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="tstSave" data-id="${esc(t?t.id:'')}">저장</button></div></div>`;setTimeout(()=>{const i=$('ttName');if(i)i.focus()},30)}
+    <div class="row" style="justify-content:flex-end;margin-top:10px">${t?`<button class="btn danger" data-act="tstDel" data-id="${esc(t.id)}" data-label="시험 지우기">시험 지우기</button>`:''}<span class="sp"></span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="tstSave" data-id="${esc(t?t.id:'')}">저장</button></div></div>`}`;
+  if(bulk)tstBulkPv();setTimeout(()=>{const i=$(bulk?'tbName':'ttName');if(i){i.focus();if(bulk)i.select()}},30)}
+/* 정기시험 여러 회: 미리 보기 */
+function tstBulkRead(){const name=($('tbName').value||'').trim(),grade=($('tbGrade').value||'').trim(),max=+$('tbMax').value||100,cutV=$('tbCut').value,cut=cutV===''?null:+cutV,d0=$('tbDate').value||'',iv=+$('tbIv').value||0;
+  const titles=($('tbTitles').value||'').split('\n').map(x=>x.trim()).filter(Boolean).slice(0,60);const n=titles.length||Math.max(1,Math.min(60,+$('tbN').value||1));
+  const add=(d,k)=>{if(!d||!iv)return '';const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+iv*k);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+  const L=[];for(let k=0;k<n;k++)L.push({no:k+1,name:titles[k]||`${name} ${k+1}회`,date:iv?add(d0,k):(k===0?d0:'')});return {name,grade,max,cut,iv,L,titles:!!titles.length}}
+function tstBulkPv(){const el=$('tbPv');if(!el)return;const R=tstBulkRead();const nI=$('tbN');if(nI){nI.disabled=R.titles;if(R.titles)nI.value=R.L.length}const f=R.L[0],l=R.L[R.L.length-1];
+  el.innerHTML=R.name?`<b>${R.L.length}개</b>를 만들어요 · ${esc(f.name)}${f.date?` (${esc(annMD(f.date))})`:''}${R.L.length>1?` … ${esc(l.name)}${l.date?` (${esc(annMD(l.date))})`:''}`:''}<br><span class="hint">나중에 [+ 다음 회]로 더 붙이고, 회차마다 ⋯로 고치거나 지울 수 있어요</span>`:'<span class="hint">정기시험 이름을 적어 주세요</span>'}
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#modal')&&/^tb/.test(e.target.id||''))tstBulkPv()});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='tbIv')tstBulkPv()});
+async function tstBulkSave(){const R=tstBulkRead();if(!R.name){toast('정기시험 이름을 적어 주세요');return}if(!/^(초|중|고)\d$/.test(R.grade)){toast('학년은 중1·고2처럼 적어 주세요');return}if(!grCanEdit())return;
+  $('modal').hidden=true;const br=B().id;const ser=uid('ts');UI.gr=UI.gr||{};UI.gr.tg=R.grade;UI.gr.ts=ser;
+  await grSave((G,at)=>{R.L.forEach(x=>{const id=uid('t');G.tests[id]={id,br,name:x.name,grade:R.grade,date:x.date,max:R.max,...(R.cut!=null?{cut:R.cut}:{}),ser,sn:R.name,no:x.no,iv:R.iv,at}})},`${R.grade} '${R.name}' ${R.L.length}회를 만들었어요`)}
+/* 묶음: 다음 회 · 고치기 · 지우기 */
+async function tserNext(sid){const b=B();const L=tstSerAll(b,sid);if(!L.length||!grCanEdit())return;const l=L[L.length-1];const no=(l.no||L.length)+1;const iv=l.iv||0;
+  let date='';if(l.date&&iv){const x=new Date(l.date+'T00:00:00');x.setDate(x.getDate()+iv);date=`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`}
+  const sn=l.sn||'정기시험';const named=L.every(t=>t.name===`${sn} ${t.no}회`);
+  await grSave((G,at)=>{const id=uid('t');G.tests[id]={id,br:b.id,name:named?`${sn} ${no}회`:`${no}회`,grade:l.grade,date,max:l.max||100,...(l.cut!=null?{cut:l.cut}:{}),ser:sid,sn,no,iv,at}},`${sn} ${no}회를 붙였어요${date?' · '+annMD(date):''}`);
+  if(!named){const t=Object.values(GR().tests).find(x=>x.ser===sid&&x.no===no&&!x.del);if(t)tstDlg(t.id)}}
+function tserDlg(sid){const b=B();const L=tstSerAll(b,sid);if(!L.length)return;const l=L[L.length-1];const empty=L.filter(t=>!Object.values(GR().tres[t.id]||{}).some(r=>r&&(r.sc!=null||r.d||r.s)));
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="tsT" style="width:min(460px,100%)"><h2 id="tsT">정기시험 묶음 고치기</h2>
+    <label class="qal" for="tsName">이름</label><input id="tsName" maxlength="24" value="${esc(l.sn||'')}">
+    <div class="row"><label for="tsMax">만점</label><input id="tsMax" type="number" min="1" max="999" value="${l.max||100}" style="width:70px"><label for="tsCut" style="width:auto">기준 점수</label><input id="tsCut" type="number" min="0" max="999" value="${l.cut!=null?l.cut:''}" placeholder="없음" style="width:70px"><select id="tsIv"><option value="7" ${l.iv===7?'selected':''}>매주</option><option value="14" ${l.iv===14?'selected':''}>2주마다</option><option value="0" ${!l.iv?'selected':''}>간격 없음</option></select></div>
+    <div class="hint" style="margin:4px 0 2px">만점·기준 점수는 ${L.length}회 모두에 적용돼요 · 이름을 바꾸면 '1회·2회…' 이름도 같이 바뀌어요 · 간격은 [+ 다음 회] 날짜에 써요</div>
+    <div class="row tsdz"><button class="btn danger sm" data-act="tserDel" data-id="${esc(sid)}">묶음 지우기 (${L.length}회·점수 모두)</button>${empty.length&&empty.length<L.length?`<button class="btn sm" data-act="tserTrim" data-id="${esc(sid)}">점수 없는 ${empty.length}회만 지우기</button>`:''}</div><div class="row" style="justify-content:flex-end;margin-top:12px"><span class="sp"></span><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="tserSave" data-id="${esc(sid)}">저장</button></div></div>`}
+async function tserSave(sid){const b=B();const name=($('tsName').value||'').trim(),max=+$('tsMax').value||100,cutV=$('tsCut').value,cut=cutV===''?null:+cutV,iv=+$('tsIv').value||0;if(!name){toast('이름을 적어 주세요');return}if(!grCanEdit())return;$('modal').hidden=true;
+  await grSave((G,at)=>{Object.values(G.tests).forEach(t=>{if(!t||t.del||t.br!==b.id||t.ser!==sid)return;if(t.sn&&t.name===`${t.sn} ${t.no}회`)t.name=`${name} ${t.no}회`;t.sn=name;t.max=max;t.iv=iv;if(cut==null)delete t.cut;else t.cut=cut;t.at=at})},`'${name}' 묶음을 고쳤어요`)}
+async function tserDel(sid,onlyEmpty){const b=B();if(!grCanEdit())return;$('modal').hidden=true;const has=t=>Object.values(GR().tres[t.id]||{}).some(r=>r&&(r.sc!=null||r.d||r.s));let n=0;
+  await grSave((G,at)=>{Object.values(G.tests).forEach(t=>{if(!t||t.del||t.br!==b.id||t.ser!==sid)return;if(onlyEmpty&&has(t))return;t.del=1;t.at=at;n++})},onlyEmpty?'점수 없는 회차를 지웠어요':'정기시험 묶음을 지웠어요');if(!onlyEmpty&&UI.gr)UI.gr.ts=''}
 async function tstSave(id){const name=($('ttName').value||'').trim(),grade=($('ttGrade').value||'').trim(),date=$('ttDate').value||'',max=+$('ttMax').value||100,cutV=$('ttCut').value;const cut=cutV===''?null:+cutV;if(!name){toast('시험 이름을 적어 주세요');return}if(!/^(초|중|고)\d$/.test(grade)){toast('학년은 중1·고2처럼 적어 주세요');return}if(!grCanEdit())return;$('modal').hidden=true;UI.gr=UI.gr||{};UI.gr.tg=grade;const br=B().id;const was=!!(id&&GR().tests[id]);
   await grSave((G,at)=>{let t=id?G.tests[id]:null;if(!t){id=uid('t');t=G.tests[id]={id,br}}Object.assign(t,{name,grade,date,max,at});if(cut==null)delete t.cut;else t.cut=cut},was?'시험을 고쳤어요':`${grade} '${name}' 시험을 만들었어요`)}
 async function tstDel(id){if(!grCanEdit())return;$('modal').hidden=true;await grSave((G,at)=>{const t=G.tests[id];if(t){t.del=1;t.at=at}},'시험을 지웠어요')}
@@ -7104,8 +7177,8 @@ document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.datase
 document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.ti&&Object.keys(TQ.pend).length){const n=e.relatedTarget&&e.relatedTarget.dataset&&e.relatedTarget.dataset.ti;tstFlush(n||'')}});
 document.addEventListener('keydown',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.ti||t.type!=='number')return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const tid=t.dataset.ti.split('|')[0];const all=[...document.querySelectorAll(`input[type=number][data-ti^="${CSS.escape(tid)}|"]`)];const i=all.indexOf(t);const n=all[i+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();n.focus();n.select()}}});
 /* 학생 카드에 자체시험 */
-function tstHistHTML(b,s){const L=tstList(b).filter(t=>{const r=tstRes(t,s.id);return r.sc!=null||r.d||r.s}).sort((a,z)=>(z.date||'').localeCompare(a.date||''));if(!L.length)return '';
-  return `<div class="qal" style="margin-top:10px">자체시험 <span class="hint">${L.length}회</span></div><div class="scroll" style="max-height:160px"><table class="tbl grh"><thead><tr><th class="l">시험</th><th>날짜</th><th>점수</th><th>풀이완료</th><th>발송완료</th></tr></thead><tbody>${L.map(t=>{const r=tstRes(t,s.id);return `<tr><td class="l">${esc(t.name)} <small class="hint">${esc(t.grade)}</small></td><td class="num">${t.date?esc(annMD(t.date)):''}</td><td class="num"><b${t.cut&&r.sc!=null&&r.sc<t.cut?' class="bad"':''}>${r.sc??''}</b>${t.max&&t.max!==100?`<small>/${t.max}</small>`:''}</td><td class="num">${r.d?'✓':''}</td><td class="num">${r.s?'✓':''}</td></tr>`}).join('')}</tbody></table></div>`}
+function tstHistHTML(b,s){const DD={};[...new Set(tstList(b).map(t=>t.grade))].forEach(g=>{const x=tstDeltas(b,g);Object.assign(DD,Object.fromEntries(Object.entries(x.D).map(([k,v])=>[k,{v,c:x.C}])))});const L=tstList(b).filter(t=>{const r=tstRes(t,s.id);return r.sc!=null||r.d||r.s}).sort((a,z)=>(z.date||'').localeCompare(a.date||''));if(!L.length)return '';
+  return `<div class="qal" style="margin-top:10px">자체시험 <span class="hint">${L.length}회</span></div><div class="scroll" style="max-height:160px"><table class="tbl grh"><thead><tr><th class="l">시험</th><th>날짜</th><th>점수</th><th>지난 회 대비</th><th>풀이완료</th><th>발송완료</th></tr></thead><tbody>${L.map(t=>{const r=tstRes(t,s.id);return `<tr><td class="l">${t.ser&&t.sn&&!t.name.startsWith(t.sn)?`<small class="hint">${esc(t.sn)} · </small>`:''}${esc(t.name)} <small class="hint">${esc(t.grade)}</small></td><td class="num">${t.date?esc(annMD(t.date)):''}</td><td class="num"><b${t.cut&&r.sc!=null&&r.sc<t.cut?' class="bad"':''}>${r.sc??''}</b>${t.max&&t.max!==100?`<small>/${t.max}</small>`:''}</td><td class="num">${r.sc!=null&&DD[t.id]?tstDlHTML(DD[t.id].v[s.id],DD[t.id].c[t.id+'|'+s.id]):''}</td><td class="num">${r.d?'✓':''}</td><td class="num">${r.s?'✓':''}</td></tr>`}).join('')}</tbody></table></div>`}
 
 /* ===== 업무 (나눠서 하는 일: 인강·자료 제작·기타) — 모든 지점 공유 sync/shared/tasks.json
    DB.tasks={list:{id:{id,kind:'인강'|'자료'|'기타',grade,school,title,subj,who,ans,done,doneAt,doneBy,chk,n,memo,due,at,by,del}}} · 항목마다 at 큰 쪽이 남음 · 지운 건 del=1로 남겨 다른 PC와 맞춤
@@ -7287,6 +7360,9 @@ const HELP=[
   <li>성적은 <b>잠금 없는 공유 자료</b>라 수정 모드 없이 바로 저장되고 다른 PC에 곧 보여요. 지점장·행정 PC는 자기 지점만 고쳐요.</li>
   <li><b>[시트 불러오기]</b>: 구글 시트 중등부·고등부 엑셀의 시험결과 시트를 읽어 이름+학교로 맞춰 넣어요(동명이인은 창에서 고르기).</li>
   <li><b>[자체시험]</b>: 학원 시험(단원테스트·내신대비 회차)을 학년별로 만들고(<b>[+ 시험 추가]</b>: 이름·학년·날짜·만점·기준 점수) 학생마다 점수와 <b>풀이완료</b>·<b>발송완료</b>(학부모님께 보냄) 체크. 기준 아래 점수는 빨갛게, 맨 아래 줄에 평균·통과·체크 수. 열 머리의 ⋯로 고치거나 지워요.</li>
+  <li><b>정기시험(주간테스트처럼 정기적으로 보는 시험)</b>: [+ 시험 추가] → <b>[정기시험 여러 회]</b>에서 이름(예: 주간테스트)·학년·만점·기준 점수·첫 시험 날짜·간격(매주·2주마다)·회 수를 넣으면 1회·2회…가 한꺼번에 생겨요. <b>회차 제목</b> 칸에 한 줄에 하나씩(예: 단원 이름) 적으면 줄 수만큼 그 제목으로 만들어요.</li>
+  <li>위쪽 <b>시험 고르기</b>(모든 시험 · 묶음 이름 · 단독 시험만)로 한 묶음만 볼 수 있어요. 묶음을 고르면 나오는 띠에서 <b>[+ 다음 회]</b>(간격만큼 뒤 날짜로 한 회 붙이기)·<b>[묶음 고치기]</b>(이름·만점·기준 점수를 모든 회에 · 점수 없는 회만 지우기 · 묶음 통째 지우기). 한 회만 고치거나 지울 땐 그 열의 ⋯.</li>
+  <li><b>지난 회 대비</b>: 점수 옆 ▲▼는 내신 등락처럼 그 학생의 바로 전 회와 비교해요 — 같은 정기시험 묶음끼리(단독 시험은 단독 시험끼리), 안 본 회는 건너뛰고, 만점이 다르면 100점으로 환산. 맨 아래 평균 줄·학생 카드·선생님 폰의 자체시험에도 같이 나와요. 회차가 많으면 옆으로 밀어 보고(이름 칸은 왼쪽에 고정), 처음 열면 최근 회차 쪽이 보여요.</li>
   ${HF('tests','자체시험 — 점수와 풀이완료·발송완료 체크')}</ul>`},
  {id:'tasks',t:'업무',b:`
   ${HF('tasks','업무 — 모든 지점이 같이 쓰는 일 목록 · 담당별 합계')}
