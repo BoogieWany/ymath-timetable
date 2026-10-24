@@ -89,7 +89,11 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   /* 3.77.0 자체시험 점수(학원 시험만 · 내신 성적은 안 보냄) — 사람마다 묶음에: 선생님은 담당 학생만 · 지점장은 그 지점 전체 · 행정은 소속 지점 · 관리자 전부 · 다른 지점은 안 보냄
      학생마다 최근 6회 [시험 이름, 날짜, 점수, 만점, 기준 점수, 풀이완료, 발송완료] */
   const tsAll=b=>{const G=db.grades||{};const T=Object.values(G.tests||{}).filter(t=>t&&!t.del&&t.br===b.id);const m={};const live=new Set((b.students||[]).filter(st=>st.status!=='퇴원').map(st=>st.id));
-    T.forEach(t=>{const R=(G.tres||{})[t.id]||{};Object.entries(R).forEach(([sid,r])=>{if(!live.has(sid)||!r||(r.sc==null&&!r.d&&!r.s))return;(m[sid]=m[sid]||[]).push([String(t.name||''),String(t.date||''),r.sc==null?null:r.sc,t.max||100,t.cut||0,r.d?1:0,r.s?1:0])})});
+    /* 3.79.9 [7] = 지난 회 대비(같은 학년·같은 정기시험 묶음의 바로 전 회 · 단독 시험끼리는 바로 전 단독 시험 · 만점 다르면 100점 환산) — PC 자체시험 표와 같은 규칙 */
+    T.sort((a,z)=>String(a.date||'').localeCompare(String(z.date||''))||String(a.ser||'').localeCompare(String(z.ser||''))||((a.no||0)-(z.no||0))||String(a.name||'').localeCompare(String(z.name||'')));const last={};
+    T.forEach(t=>{const R=(G.tres||{})[t.id]||{};const gk=(t.grade||'')+'|'+(t.ser||'');const lk=last[gk]=last[gk]||{};const mx=t.max||100;const nm=t.ser&&t.sn&&!String(t.name||'').startsWith(t.sn)?`${t.sn} · ${t.name||''}`:String(t.name||'');
+      Object.entries(R).forEach(([sid,r])=>{if(!r||(r.sc==null&&!r.d&&!r.s))return;const p=lk[sid];const dl=r.sc!=null&&p?(p.mx===mx?Math.round((r.sc-p.sc)*10)/10:Math.round((r.sc/mx-p.sc/p.mx)*1000)/10):null;if(r.sc!=null)lk[sid]={sc:r.sc,mx};
+        if(!live.has(sid))return;(m[sid]=m[sid]||[]).push([nm,String(t.date||''),r.sc==null?null:r.sc,mx,t.cut||0,r.d?1:0,r.s?1:0,dl])})});
     Object.keys(m).forEach(sid=>{m[sid]=m[sid].sort((a,z)=>z[1].localeCompare(a[1])).slice(0,6)});return m};
   const tsOf=(b,ids)=>{const A=tsAll(b);const o={};ids.forEach(id=>{if(A[id])o[id]=A[id]});return o};
   const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
