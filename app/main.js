@@ -94,8 +94,16 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
     T.forEach(t=>{const R=(G.tres||{})[t.id]||{};const gk=(t.grade||'')+'|'+(t.ser||'');const lk=last[gk]=last[gk]||{};const mx=t.max||100;const nm=t.ser&&t.sn&&!String(t.name||'').startsWith(t.sn)?`${t.sn} · ${t.name||''}`:String(t.name||'');
       Object.entries(R).forEach(([sid,r])=>{if(!r||(r.sc==null&&!r.d&&!r.s))return;const p=lk[sid];const dl=r.sc!=null&&p?(p.mx===mx?Math.round((r.sc-p.sc)*10)/10:Math.round((r.sc/mx-p.sc/p.mx)*1000)/10):null;if(r.sc!=null)lk[sid]={sc:r.sc,mx};
         if(!live.has(sid))return;(m[sid]=m[sid]||[]).push([nm,String(t.date||''),r.sc==null?null:r.sc,mx,t.cut||0,r.d?1:0,r.s?1:0,dl])})});
-    Object.keys(m).forEach(sid=>{m[sid]=m[sid].sort((a,z)=>z[1].localeCompare(a[1])).slice(0,6)});return m};
-  const tsOf=(b,ids)=>{const A=tsAll(b);const o={};ids.forEach(id=>{if(A[id])o[id]=A[id]});return o};
+    Object.keys(m).forEach(sid=>{m[sid]=m[sid].sort((a,z)=>z[1].localeCompare(a[1])).slice(0,6)});
+    /* 3.80.1 정기시험 묶음(학생 학년의 묶음마다) — '~학생id' 칸에 [이름, 친 회 수, 밀린 회 수(목표 없으면 null), 전체 회 수, 기준(100점 환산·없으면 null), [[회차, 100점 환산 점수]…]] · 같은 사람 범위(tsOf가 그 학생 것만 같이 넘김) */
+    const td=(()=>{const d=new Date();return Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())})();const day=x=>{const p=String(x||'').split('-').map(Number);return p.length===3?Date.UTC(p[0],p[1]-1,p[2]):null};
+    const SR={};T.filter(t=>t.ser).forEach(t=>{const x=SR[t.ser]=SR[t.ser]||{name:t.sn||'정기시험',grade:t.grade||'',iv:0,s0:'',L:[]};x.L.push(t);if(t.sn)x.name=t.sn;if(t.iv!=null)x.iv=t.iv;if(t.s0)x.s0=t.s0});
+    Object.values(SR).forEach(x=>{x.L.sort((a,z)=>(a.no||0)-(z.no||0));if(!x.s0)x.s0=(x.L.find(t=>t.date)||{}).date||'';const l=x.L[x.L.length-1]||{};const cut=l.cut!=null&&l.cut!==''?Math.round(l.cut/(l.max||100)*1000)/10:null;
+      const s0=day(x.s0);const due=x.iv&&s0!=null?(td<s0?0:Math.min(x.L.length,Math.floor((td-s0)/864e5/x.iv)+1)):null;
+      (b.students||[]).filter(st=>st.status!=='퇴원'&&st.grade===x.grade).forEach(st=>{const pts=[];x.L.forEach(t=>{const r=((G.tres||{})[t.id]||{})[st.id];if(r&&r.sc!=null)pts.push([t.no||0,Math.round(r.sc/(t.max||100)*1000)/10])});
+        if(!pts.length&&!due)return;(m['~'+st.id]=m['~'+st.id]||[]).push([x.name,pts.length,due==null?null:Math.max(0,due-pts.length),x.L.length,cut,pts])})});
+    return m};
+  const tsOf=(b,ids)=>{const A=tsAll(b);const o={};ids.forEach(id=>{if(A[id])o[id]=A[id];if(A['~'+id])o['~'+id]=A['~'+id]});return o};
   const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||q.st==='cancel').map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.ph||'',pa:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
