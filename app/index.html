@@ -1001,6 +1001,10 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .tmsc{max-height:min(60vh,520px)}
 .tmt td,.tmt th{padding:5px 6px}.tmt input:not([type=checkbox]){padding:5px 7px;font-size:13px}.tmt .tmn{width:100%;min-width:200px;box-sizing:border-box}.tmt .tmd{width:140px}.tmt .tmx,.tmt .tmc{width:64px}
 .tmt td.l small{display:block;font-size:10.5px;margin-bottom:1px}.tmt input[type=checkbox]{width:15px;height:15px;accent-color:var(--navy)}
+/* 3.80.4 저장된 칸: 잠깐 은은한 초록 테두리 */
+.gri.gsv{animation:gsv 1.3s ease}.tck.gsv{animation:gsvl 1.3s ease;border-radius:6px}
+@keyframes gsv{0%{box-shadow:0 0 0 2px color-mix(in srgb,var(--ok) 45%,transparent);border-color:var(--ok)}100%{box-shadow:0 0 0 2px transparent}}
+@keyframes gsvl{0%{background:color-mix(in srgb,var(--ok) 18%,transparent)}100%{background:transparent}}
 </style>
 </head>
 <body>
@@ -3361,7 +3365,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.80.3', APPDATE='2026-10-25';
+const APPVER='3.80.4', APPDATE='2026-10-25';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4030,6 +4034,8 @@ function renderVPanel(){
 /* ================= 렌더 ================= */
 let ISS=[];
 function render(){
+  /* 3.80.4 성적 칸에 입력 중이면(동기화·자동 갱신 등) 통째로 다시 그리지 않고 바뀐 곳만 */
+  if(UI.view==='grades'&&UI._lastView==='grades'&&!UI.edit===!UI._grEdit&&document.activeElement&&document.activeElement.closest&&document.activeElement.closest('table.grt')&&typeof grPatch==='function'&&grPatch())return;UI._grEdit=UI.edit;
   _cnt=null;DUP=dupNames();
   const STF=typeof isStaff==='function'&&isStaff();document.documentElement.classList.toggle('staff',STF);
   if(STF&&UI.view==='admin')UI.view='grid'; /* 행정 PC = 지점장 PC와 같음(3.72.0): 자기 지점 수정 모드·설정 · 다른 지점은 시간표만 */
@@ -6640,16 +6646,17 @@ const SCHS=SH.schools.st;
 async function shPull(name,opt={}){const H=SH[name];if(!H||!bridge||!bridge.sharedPull||typeof syOn!=='function'||!syOn()||H.st.busy)return false;if(!opt.force&&Date.now()-H.st.last<60000)return false;H.st.busy=true;H.st.last=Date.now();let r;
   try{r=await bridge.sharedPull(name,DB[H.sha]||'')}catch(e){r={ok:false,err:e.message}}H.st.busy=false;if(!r||!r.ok){H.st.err=(r&&r.err)||'';return false}H.st.err='';if(r.same||r.none)return true;
   const ch=H.merge(H.get(),r.data);DB[H.sha]=r.sha;if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o[name]=DB[name];o[H.sha]=r.sha;ORIG=JSON.stringify(o)}catch(e){}}
-  await schPersist();if(ch&&['school','grid','settings','tasks','grades'].includes(UI.view)&&!(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render();return true}
+  await schPersist();if(ch&&name==='grades'&&UI.view==='grades'&&typeof grPatch==='function'&&grPatch())return true; /* 3.80.4 다른 PC 점수도 바뀐 칸만 */
+  if(ch&&['school','grid','settings','tasks','grades'].includes(UI.view)&&!(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render();return true}
 const schPull=async opt=>{const r=await shPull('schools',opt);try{await schAliasMigrate()}catch(e){}return r};const tkPull=opt=>shPull('tasks',opt);
 async function schPersist(){try{if(!bridge){localStorage.setItem(UI.edit?'ymt_draft':'ymt_db',JSON.stringify(DB));return}if(UI.edit){await bridge.saveDraft(JSON.stringify(DB));if(ORIG)await bridge.save(ORIG,{quiet:true})}else await bridge.save(JSON.stringify(DB),{quiet:true})}catch(e){}}
 async function shPush(name){const H=SH[name];if(!H||!bridge||!bridge.sharedPush||typeof syOn!=='function'||!syOn())return true;for(let i=0;i<3;i++){let r;try{r=await bridge.sharedPush(name,DB[name],DB[H.sha]||'')}catch(e){r={ok:false,err:e.message}}
     if(r&&r.ok){DB[H.sha]=r.sha;await schPersist();return true}if(!r||!r.conflict){H.st.err=(r&&r.err)||'';toast('공유 자료를 올리지 못했어요 · '+(H.st.err||'인터넷 확인'));return false}
     let p;try{p=await bridge.sharedPull(name,'')}catch(e){p=null}if(p&&p.ok&&p.data){H.merge(H.get(),p.data);DB[H.sha]=p.sha}}toast('공유 자료를 올리지 못했어요 · 잠시 뒤 다시 저장해 주세요');return false}
 const schPush=()=>shPush('schools');
-async function shSave(name,fn,msg){const H=SH[name];fn(H.get(),Date.now());
+async function shSave(name,fn,msg,opt){const H=SH[name];fn(H.get(),Date.now());
   if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o[name]=DB[name];ORIG=JSON.stringify(o)}catch(e){}}
-  await schPersist();if(msg)toast(msg);render();shPush(name);return true}
+  await schPersist();if(msg)toast(msg);if(!(opt&&opt.patch&&opt.patch()))render();shPush(name);return true}
 const schCanEdit=()=>true; /* 관리자·지점장·행정 선생님 모두 고침 (학교 정보·업무는 공유 자료) */
 /* 바꾸기: fn(schools)에서 고친 칸에 at을 찍고 → 저장 → 공유 올리기 (수정 모드 초안과 무관) */
 const schSave=(fn,msg)=>shSave('schools',fn,msg);
@@ -6974,6 +6981,24 @@ function grMergeInto(dst,src){let ch=false;if(!src||typeof src!=='object')return
   dst.mig=dst.mig||{};Object.keys(src.mig||{}).forEach(b=>{if(!dst.mig[b]){dst.mig[b]=1;ch=true}});return ch}
 const grPull=opt=>shPull('grades',opt);
 const grSave=(fn,msg)=>shSave('grades',fn,msg);
+/* 3.80.4 점수·체크 저장은 화면을 통째로 다시 그리지 않고 바뀐 곳만 고침(입력 칸·커서·스크롤 그대로) — 구조가 달라졌으면 그때만 다시 그림 */
+const grSaveQuiet=(fn,keys)=>shSave('grades',fn,'',{patch:()=>{const ok=grPatch();grFlash(keys);return ok}});
+function grFlash(keys){(keys||[]).forEach(k=>{const el=document.querySelector(`[data-gi="${CSS.escape(k)}"],[data-ti="${CSS.escape(k)}"]`);const t=el&&(el.type==='checkbox'?el.closest('label')||el:el);if(!t)return;t.classList.remove('gsv');void t.offsetWidth;t.classList.add('gsv');setTimeout(()=>t.classList.remove('gsv'),1300)})}
+function grPatch(){if(UI.view!=='grades')return false;const cur=$('view');let html;try{html=viewGrades()}catch(e){return false}const tp=document.createElement('div');tp.innerHTML=html;
+  const ta=[...cur.querySelectorAll('table.grt')],tb=[...tp.querySelectorAll('table.grt')];if(!ta.length||ta.length!==tb.length)return false;
+  for(let i=0;i<ta.length;i++){const ra=ta[i].rows,rb=tb[i].rows;if(ra.length!==rb.length||ta[i].className!==tb[i].className)return false;for(let r=0;r<ra.length;r++){if(ra[r].cells.length!==rb[r].cells.length||(ra[r].dataset.gsid||'')!==(rb[r].dataset.gsid||''))return false;for(let c=0;c<ra[r].cells.length;c++)if((ra[r].cells[c].dataset.id||'')!==(rb[r].cells[c].dataset.id||''))return false}}
+  const ae=document.activeElement;const pend=x=>!!((x.dataset.gi&&GRQ.pend[x.dataset.gi])||(x.dataset.ti&&TQ.pend[x.dataset.ti]));
+  ta.forEach((A,i)=>{const Bt=tb[i];[...A.rows].forEach((row,r)=>{[...row.cells].forEach((ca,c)=>{const cb=Bt.rows[r].cells[c];const ia=ca.querySelectorAll('input'),ib=cb.querySelectorAll('input');
+    if(!ia.length&&!ib.length){if(ca.innerHTML!==cb.innerHTML)ca.innerHTML=cb.innerHTML;return}
+    if(ia.length!==ib.length){if(!ca.contains(ae))ca.replaceWith(cb.cloneNode(true));return}
+    ia.forEach((x,k)=>{const y=ib[k];if(x!==ae&&!pend(x)){if(x.type==='checkbox')x.checked=y.hasAttribute('checked');else{const v=y.getAttribute('value')||'';if(x.value!==v)x.value=v}}['data-low','max','placeholder'].forEach(a=>{const v=y.getAttribute(a);if(v==null)x.removeAttribute(a);else if(x.getAttribute(a)!==v)x.setAttribute(a,v)});x.disabled=y.disabled});
+    ['.tdl','.tpc'].forEach(q=>{const da=ca.querySelector(q),db=cb.querySelector(q);if(da&&!db)da.remove();else if(db){if(!da)(q==='.tdl'?ia[0]:ca.lastElementChild).after(db.cloneNode(true));else if(da.outerHTML!==db.outerHTML)da.replaceWith(db.cloneNode(true))}})})})});
+  /* 표 밖: 머리글 안내 · 묶음 띠 · 통계 칸 */
+  const pairs=(sel)=>{const a=[...cur.querySelectorAll(sel)],b=[...tp.querySelectorAll(sel)];return a.length===b.length?a.map((x,i)=>[x,b[i]]):null};
+  (pairs('.card-h > .hint')||[]).forEach(([x,y])=>{if(x.innerHTML!==y.innerHTML)x.innerHTML=y.innerHTML});(pairs('.tser')||[]).forEach(([x,y])=>{if(x.innerHTML!==y.innerHTML)x.innerHTML=y.innerHTML});
+  (pairs('.grsec > h3')||[]).forEach(([x,y])=>{if(x.innerHTML!==y.innerHTML)x.innerHTML=y.innerHTML});
+  const sa=[...cur.querySelectorAll('.sec')].filter(x=>!x.querySelector('table.grt,input,select,textarea')),sb=[...tp.querySelectorAll('.sec')].filter(x=>!x.querySelector('table.grt,input,select,textarea'));if(sa.length===sb.length)sa.forEach((x,i)=>{const nb=sb[i].innerHTML;if(x.innerHTML!==nb){const h=x.querySelector(':scope > h3');x.innerHTML=nb}});
+  return true}
 /* 고칠 수 있는 지점: 연동 없으면 모두 · 관리자 PC 모두 · 지점장·행정 PC는 자기 지점 */
 const grCanEditB=id=>typeof syOn!=='function'||!syOn()||isOwner()||id===myBr();
 const grCanEdit=()=>grCanEditB(B().id);
@@ -7053,10 +7078,10 @@ document.addEventListener('mouseover',e=>{if(UI.view!=='grades')return;const tr=
 document.addEventListener('focusin',e=>{if(UI.view!=='grades')return;const tr=e.target.closest&&e.target.closest('table.grt tbody tr[data-gsid]');document.querySelectorAll('table.grt tr.grcur').forEach(x=>x.classList.remove('grcur'));if(tr)grRowMark(tr,'grcur',true)});
 document.addEventListener('keydown',e=>{if(UI.view!=='grades')return;if((e.ctrlKey||e.metaKey)&&(e.key==='f'||e.key==='F')){const i=$('grQ');if(i){e.preventDefault();i.focus();i.select()}return}
   if(e.target&&e.target.id==='grQ'){if(e.key==='Escape'&&e.target.value){e.preventDefault();e.stopPropagation();UI.gr.q='';render();const i=$('grQ');if(i)i.focus()}else if(e.key==='Enter'&&!e.isComposing){e.preventDefault();const f=document.querySelector('table.grt tbody input');if(f){f.focus();f.select&&f.select()}}}},true);
-function grQueue(el){const [sid,sj,f]=el.dataset.gi.split('|');GRQ.pend[el.dataset.gi]={sid,sj,f,v:grNum(el.value),ek:(UI.gr||{}).ek};clearTimeout(GRQ.timer);GRQ.timer=setTimeout(grFlush,900)}
+function grQueue(el){const [sid,sj,f]=el.dataset.gi.split('|');GRQ.pend[el.dataset.gi]={key:el.dataset.gi,sid,sj,f,v:grNum(el.value),ek:(UI.gr||{}).ek};clearTimeout(GRQ.timer);GRQ.timer=setTimeout(grFlush,900)}
 async function grFlush(next){clearTimeout(GRQ.timer);const P=Object.values(GRQ.pend).filter(x=>x.ek);GRQ.pend={};if(!P.length||!grCanEdit())return;const ae=document.activeElement;const fk=next||(ae&&ae.dataset&&ae.dataset.gi);const sel=!next&&fk&&ae.selectionStart;
-  const ok=await grSave((G,at)=>{P.forEach(({sid,sj,f,v,ek})=>{if(!S(sid))return;const vals={};vals[f]=v==null?null:(f==='gr'?Math.max(1,Math.min(9,Math.round(v))):Math.max(0,Math.min(100,v)));grPutRec(G,sid,ek,sj,vals,at)})},`점수 ${P.length}칸 저장`);
-  if(ok&&fk){const el=document.querySelector(`[data-gi="${CSS.escape(fk)}"]`);if(el){el.focus();try{if(sel!=null)el.setSelectionRange(sel,sel)}catch(e){}}}}
+  const ok=await grSaveQuiet((G,at)=>{P.forEach(({sid,sj,f,v,ek})=>{if(!S(sid))return;const vals={};vals[f]=v==null?null:(f==='gr'?Math.max(1,Math.min(9,Math.round(v))):Math.max(0,Math.min(100,v)));grPutRec(G,sid,ek,sj,vals,at)})},P.map(x=>x.key));
+  if(ok&&fk){const el=document.querySelector(`[data-gi="${CSS.escape(fk)}"]`);if(el&&document.activeElement!==el&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('table.grt,#grQ'))){el.focus();try{if(sel!=null)el.setSelectionRange(sel,sel)}catch(e){}}}}
 document.addEventListener('input',e=>{const t=e.target;if(!t||!t.dataset||UI.view!=='grades')return;if(t.dataset.gi)grQueue(t);if(t.id==='grQ'){UI.gr.q=t.value;clearTimeout(GRQ.qt);GRQ.qt=setTimeout(()=>{const el=document.activeElement;render();if(el&&el.id==='grQ'){const i=$('grQ');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}},350)}});
 document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.gi&&Object.keys(GRQ.pend).length){const n=e.relatedTarget&&e.relatedTarget.dataset&&e.relatedTarget.dataset.gi;grFlush(n||'')}});
 document.addEventListener('keydown',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.gi)return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const all=[...document.querySelectorAll(`[data-gi$="|${t.dataset.gi.split('|')[2]}"]`)];const i=all.indexOf(t);const n=all[i+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();n.focus();n.select()}}});
@@ -7216,10 +7241,10 @@ async function tstSave(id){const name=($('ttName').value||'').trim(),grade=($('t
   await grSave((G,at)=>{let t=id?G.tests[id]:null;if(!t){id=uid('t');t=G.tests[id]={id,br}}Object.assign(t,{name,grade,date,max,at});if(cut==null)delete t.cut;else t.cut=cut},was?'시험을 고쳤어요':`${grade} '${name}' 시험을 만들었어요`)}
 async function tstDel(id){if(!grCanEdit())return;$('modal').hidden=true;await grSave((G,at)=>{const t=G.tests[id];if(t){t.del=1;t.at=at}},'시험을 지웠어요')}
 const TQ={pend:{},timer:0};
-function tstQueue(el){const [tid,sid,f]=el.dataset.ti.split('|');TQ.pend[el.dataset.ti]={tid,sid,f,v:f==='sc'?grNum(el.value):el.checked?1:0};clearTimeout(TQ.timer);TQ.timer=setTimeout(tstFlush,f==='sc'?900:300)}
+function tstQueue(el){const [tid,sid,f]=el.dataset.ti.split('|');TQ.pend[el.dataset.ti]={key:el.dataset.ti,tid,sid,f,v:f==='sc'?grNum(el.value):el.checked?1:0};clearTimeout(TQ.timer);TQ.timer=setTimeout(tstFlush,f==='sc'?900:300)}
 async function tstFlush(next){clearTimeout(TQ.timer);const P=Object.values(TQ.pend);TQ.pend={};if(!P.length||!grCanEdit())return;const ae=document.activeElement;const fk=next||(ae&&ae.dataset&&ae.dataset.ti);const sel=!next&&fk&&ae.selectionStart;
-  const ok=await grSave((G,at)=>{P.forEach(({tid,sid,f,v})=>{const t=G.tests[tid];if(!t)return;const d=G.tres[tid]=G.tres[tid]||{};const r=d[sid]=Object.assign({},d[sid]||{});if(f==='sc'){if(v==null)delete r.sc;else r.sc=Math.max(0,Math.min(t.max||100,v))}else{if(v)r[f]=1;else delete r[f]}r.at=at})},`자체시험 ${P.length}칸 저장`);
-  if(ok&&fk){const el=document.querySelector(`[data-ti="${CSS.escape(fk)}"]`);if(el){el.focus();try{if(sel!=null&&el.type==='number')el.setSelectionRange(sel,sel)}catch(e){}}}}
+  const ok=await grSaveQuiet((G,at)=>{P.forEach(({tid,sid,f,v})=>{const t=G.tests[tid];if(!t)return;const d=G.tres[tid]=G.tres[tid]||{};const r=d[sid]=Object.assign({},d[sid]||{});if(f==='sc'){if(v==null)delete r.sc;else r.sc=Math.max(0,Math.min(t.max||100,v))}else{if(v)r[f]=1;else delete r[f]}r.at=at})},P.map(x=>x.key));
+  if(ok&&fk){const el=document.querySelector(`[data-ti="${CSS.escape(fk)}"]`);if(el&&document.activeElement!==el&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('table.grt,#grQ'))){el.focus();try{if(sel!=null&&el.type==='number')el.setSelectionRange(sel,sel)}catch(e){}}}}
 document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.ti&&UI.view==='grades')tstQueue(t)});
 document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.ti&&Object.keys(TQ.pend).length){const n=e.relatedTarget&&e.relatedTarget.dataset&&e.relatedTarget.dataset.ti;tstFlush(n||'')}});
 document.addEventListener('keydown',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.ti||t.type!=='number')return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){const tid=t.dataset.ti.split('|')[0];const all=[...document.querySelectorAll(`input[type=number][data-ti^="${CSS.escape(tid)}|"]`)];const i=all.indexOf(t);const n=all[i+(e.key==='ArrowUp'?-1:1)];if(n){e.preventDefault();n.focus();n.select()}}});
@@ -7409,7 +7434,7 @@ const HELP=[
   <li><b>시험 기간 자동</b>: [설정]의 시험 기간이 '학교 정보에서 자동'이면 학생들 학교 시험을 모아 <b>중등·고등 따로</b> 잡아요. 시험일은 실제 시험 치는 날만, <b>관리 기간</b>(기본 앞 14일·뒤 7일)이 정기 상담·응원·띠에 쓰여요. 달력에서 시험 기간 안의 토·일은 시험일로 안 보여요.</li></ul>`},
  {id:'grades',t:'성적 관리 · 자체시험',b:`
   ${HF('grades','성적 관리 — 시험을 고르고 예상·확정 점수를 적으면 바로 저장, 등락은 저절로')}
-  <ul><li>위에서 시험(연도·학기·중간/기말)을 고르고 학생마다 <b>예상·확정</b>을 적어요(Enter·↑↓로 아래위 칸 이동). <b>등락</b>은 같은 과목 바로 전 시험 확정 점수와 비교해 저절로, <b>등급</b>은 기말 줄에만. 2학기 중간을 고르면 <b>고3</b>, 2학기 기말을 고르면 <b>중3·고3</b>은 그 시험이 없어 명단에서 빠지고 머리글에 몇 명 뺐는지 떠요.</li>
+  <ul><li>위에서 시험(연도·학기·중간/기말)을 고르고 학생마다 <b>예상·확정</b>을 적어요(Enter·↑↓로 아래위 칸 이동). 적은 칸은 잠깐 초록 테두리로 저장된 걸 알려 주고, 저장·동기화 때 화면이 다시 그려지지 않아 계속 이어서 적으면 돼요(내신·자체시험 모두). <b>등락</b>은 같은 과목 바로 전 시험 확정 점수와 비교해 저절로, <b>등급</b>은 기말 줄에만. 2학기 중간을 고르면 <b>고3</b>, 2학기 기말을 고르면 <b>중3·고3</b>은 그 시험이 없어 명단에서 빠지고 머리글에 몇 명 뺐는지 떠요.</li>
   <li><b>줄 표시</b>: 마우스를 올린 줄은 옅게, <b>지금 점수를 적는 줄</b>은 주황빛 바탕에 이름 왼쪽 막대로 표시돼요. 한 학생이 여러 줄(과목별)이어도 그 학생 줄이 모두 같이 표시돼 줄이 헷갈리지 않아요.</li>
   <li><b>찾기</b>: 🔍 칸(<b>Ctrl+F</b>)에 이름이나 학교를 치면 그 학생만 남아요. <b>Enter</b>는 첫 점수 칸으로, <b>Esc</b>나 ×는 지우기. 자체시험 표에도 똑같이 있어요.</li>
   <li>고2·3은 선택과목마다 한 줄. 선택과목을 아직 안 정한 학생은 '과목 미정' 줄만 보이고 칸이 없어요 — 학교 정보에서 과목을 정하면 적을 수 있어요. <b>[한 줄로]</b>를 누르면 한 학생이 한 줄로 묶여요.</li>
