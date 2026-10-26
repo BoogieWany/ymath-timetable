@@ -1005,6 +1005,11 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .gri.gsv{animation:gsv 1.3s ease}.tck.gsv{animation:gsvl 1.3s ease;border-radius:6px}
 @keyframes gsv{0%{box-shadow:0 0 0 2px color-mix(in srgb,var(--ok) 45%,transparent);border-color:var(--ok)}100%{box-shadow:0 0 0 2px transparent}}
 @keyframes gsvl{0%{background:color-mix(in srgb,var(--ok) 18%,transparent)}100%{background:transparent}}
+/* 3.80.6 D-day 수학 시험일 기준 · 수학일 미정 경고 */
+.exw{display:inline-block;font-style:normal;font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-bg);border-radius:999px;padding:1px 7px;margin-top:3px;white-space:nowrap}
+.exw.sm{margin:0 0 0 4px;padding:0 6px;font-size:10px}
+.exchip.warn{border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+.exwarn{display:inline-block;margin-left:10px;font-size:11.5px;font-weight:700;color:var(--warn);background:var(--warn-bg);border-radius:999px;padding:2px 10px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -3365,7 +3370,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.80.5', APPDATE='2026-10-25';
+const APPVER='3.80.6', APPDATE='2026-10-26';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6689,9 +6694,16 @@ const examLab=p=>p?`${annMD(p.from)}~${annMD(p.to)}`:'없음';
 function schUpcoming(b,days){const td=todayStr();const lim=dPlus(td,days||60);const ks=new Set((b.students||[]).filter(s=>!offS(s)).map(s=>schNorm(s.school)).filter(k=>k&&schKind(k)!=='초'));const out=[];
   ks.forEach(k=>{const SS=schStudents(k,b);const EX=schExams(k);const XS=[];[...new Set(SS.map(s=>s.grade||''))].forEach(g=>{const x=EX.find(x=>x.to>=td&&exFor(g,x));if(x&&!XS.includes(x))XS.push(x)}); /* 3.79.2: 학년마다 다음 시험(중3 따로 기간이면 두 개) */XS.forEach(x=>{if(x.from<=lim)out.push(Object.assign({k,n:SS.filter(s=>exFor(s.grade,x)).length},x))})});return out.sort((a,z)=>a.from.localeCompare(z.from)||z.n-a.n)}
 const dDay=(d,td)=>Math.round((new Date(d+'T00:00:00')-new Date((td||todayStr())+'T00:00:00'))/864e5);
-function schStripHTML(b,inSch){const L=schUpcoming(b,inSch?90:45);if(!L.length)return inSch?'<div class="sec exstrip"><h3>다가오는 시험</h3><div class="hint">앞으로 90일 안에 잡힌 시험이 없어요 · 아래 학교 카드의 학사일정이나 [시트 불러오기]로 넣어 주세요</div></div>':'';const td=todayStr();
-  return `<div class="${inSch?'sec exstrip':'exstrip bar'}">${inSch?'<h3>다가오는 시험 <span class="hint">학생들이 다니는 학교 · 90일 안</span></h3>':'<b class="exl">다가오는 시험</b>'}<div class="exchips">${L.map(x=>{const dd=dDay(x.from,td);const on=x.from<=td;const math=x.dm.find(d=>/수학|공수|대수|미적|확통|기하/.test(d.t))||x.dm[0];
-    return `<button class="exchip${on?' on':dd<=7?' soon':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)} ${esc(annMD(x.from))}~${esc(annMD(x.to))}${math?' · 수학 '+esc(annMD(math.d)):''}"><b>${esc(schName(x.k))}</b><span>${esc(x.lab)}</span><em>${on?(x.to===td?'오늘 끝':'시험 중'):`D-${dd}`}</em><small>${esc(annMD(x.from))}${x.to!==x.from?'~'+esc(annMD(x.to)):''}${math?' · 수학 '+esc(annMD(math.d)):''} · ${x.n}명</small></button>`}).join('')}${inSch?'':'<button class="exchip excal" data-act="xcOpen" title="날마다 누가 시험을 치는지 · 인쇄"><b>시험 달력</b><span>날짜별 학생</span><em>열기</em><small>이름 보기 · 인쇄</small></button>'}</div></div>`}
+/* 3.80.6 D-day는 수학 시험일 기준(수학 시험일이 없으면 첫날 기준 + 경고) */
+const MATH_RX=/수학|공수|대수|미적|확통|기하/;
+const exMath=x=>{const L=x.dm||[];const m=L.find(d=>MATH_RX.test(d.t!=null?d.t:d[1]))||L[0];return m?(m.d||m[0]):''};
+function exDLab(x,td){td=td||todayStr();const md=exMath(x);if(x.to<td)return {t:'시험 끝',c:'end',md};
+  if(md){const n=dDay(md,td);if(n>0)return {t:(x.from<=td?'수학 ':'')+'D-'+n,c:x.from<=td?'on':n<=7?'soon':'',md,n};if(n===0)return {t:'오늘 수학',c:'on',md,n}}
+  if(x.from<=td)return {t:x.to===td?'오늘 끝':'시험 중',c:'on',md,warn:!md};const n=dDay(x.from,td);return {t:'D-'+n,c:n<=7?'soon':'',md,n,warn:!md}}
+const exWarnHTML=()=>'<i class="exw" title="수학 시험일이 아직 없어서 시험 첫날 기준으로 셌어요 · 학교 정보 학사일정의 수학 시험일에 넣어 주세요">수학일 미정</i>';
+function schStripHTML(b,inSch){const L=schUpcoming(b,inSch?90:45).sort((a,z)=>(exMath(a)||a.from).localeCompare(exMath(z)||z.from));if(!L.length)return inSch?'<div class="sec exstrip"><h3>다가오는 시험</h3><div class="hint">앞으로 90일 안에 잡힌 시험이 없어요 · 아래 학교 카드의 학사일정이나 [시트 불러오기]로 넣어 주세요</div></div>':'';const td=todayStr();
+  return `<div class="${inSch?'sec exstrip':'exstrip bar'}">${(()=>{const nw=L.filter(x=>exDLab(x,td).warn).length;const w=nw?`<span class="exwarn" title="수학 시험일이 없으면 첫날 기준으로 D-day를 세요 · 학교를 눌러 학사일정에 수학 시험일을 넣어 주세요">수학 시험일 없는 시험 ${nw}곳</span>`:'';return inSch?`<h3>다가오는 시험 <span class="hint">학생들이 다니는 학교 · 90일 안 · D-day는 수학 시험일 기준</span>${w}</h3>`:`<b class="exl">다가오는 시험</b>${w}`})()}<div class="exchips">${L.map(x=>{const D=exDLab(x,td);const on=D.c==='on';const math=D.md?{d:D.md}:null;
+    return `<button class="exchip${on?' on':D.c==='soon'?' soon':''}${D.warn?' warn':''}" data-act="schGo" data-k="${esc(x.k)}" title="${esc(schName(x.k))} ${esc(x.lab)} ${esc(annMD(x.from))}~${esc(annMD(x.to))}${math?' · 수학 '+esc(annMD(math.d))+' (D-day 기준)':' · 수학 시험일 미입력 — 첫날 기준'}"><b>${esc(schName(x.k))}</b><span>${esc(x.lab)}</span><em>${esc(D.t)}</em><small>${esc(annMD(x.from))}${x.to!==x.from?'~'+esc(annMD(x.to)):''}${math?' · 수학 '+esc(annMD(math.d)):''} · ${x.n}명</small>${D.warn?exWarnHTML():''}</button>`}).join('')}${inSch?'':'<button class="exchip excal" data-act="xcOpen" title="날마다 누가 시험을 치는지 · 인쇄"><b>시험 달력</b><span>날짜별 학생</span><em>열기</em><small>이름 보기 · 인쇄</small></button>'}</div></div>`}
 /* ===== 학교 정보 화면 ===== */
 function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI.sch))UI.sch=ks[0]||'';UI.schY=UI.schY||+todayStr().slice(0,4);const ed=schCanEdit();const td=todayStr();
   let h=`<div class="card-h"><h2>학교 정보</h2><span class="hint">모든 지점이 같이 써요 · 학생의 학교·학년에 따라 저절로 연결돼요${typeof syOn==='function'&&syOn()?SCHS.err?` · <span class="bad">공유 실패: ${esc(SCHS.err)}</span>`:' · 공유 중':''}</span><span class="sp"></span>
@@ -6700,7 +6712,7 @@ function viewSchool(){const b=B();const ks=schKeys();if(!UI.sch||!ks.includes(UI
   h+=schStripHTML(b,true);
   h+=schCalHTML(b);
   h+=`<div class="schwrap"><div class="schlist">${['중','고','초'].map(kd=>{const L=ks.filter(k=>schKindOf(k)===kd);if(!L.length)return '';return `<div class="schgrp"><h4>${kd==='중'?'중학교':kd==='고'?'고등학교':'초등학교'} <small>${L.length}</small></h4>${L.map(k=>{const nx=schNextExam(k,td);const n=schStudents(k,b).length,na=schStudents(k).length;
-      return `<button class="schitem${k===UI.sch?' on':''}" data-act="schPick" data-k="${esc(k)}"><b>${esc(schName(k))}</b><small>${n}명${na!==n?` · 전체 ${na}`:''}</small>${nx?`<em>${esc(nx.lab)} ${esc(annMD(nx.from))}${nx.from<=td?(nx.to===td?' 오늘 끝':' 시험 중'):' D-'+dDay(nx.from,td)}</em>`:'<em class="dim">다음 시험 없음</em>'}</button>`}).join('')}</div>`}).join('')||'<div class="hint" style="padding:12px">학생 관리에 학교가 적힌 학생이 있으면 여기 저절로 떠요 · [학교 추가]로 직접 넣어도 돼요</div>'}</div>
+      return `<button class="schitem${k===UI.sch?' on':''}" data-act="schPick" data-k="${esc(k)}"><b>${esc(schName(k))}</b><small>${n}명${na!==n?` · 전체 ${na}`:''}</small>${nx?(()=>{const D=exDLab(nx,td);return `<em>${esc(nx.lab)} ${esc(annMD(D.md||nx.from))}${D.md?'(수학)':''} ${esc(D.t)}${D.warn?' <i class="exw sm" title="수학 시험일 미입력 — 첫날 기준">수학일 미정</i>':''}</em>`})():'<em class="dim">다음 시험 없음</em>'}</button>`}).join('')}</div>`}).join('')||'<div class="hint" style="padding:12px">학생 관리에 학교가 적힌 학생이 있으면 여기 저절로 떠요 · [학교 추가]로 직접 넣어도 돼요</div>'}</div>
     <div class="schcard">${UI.sch?schCardHTML(UI.sch,b,ed):'<div class="hint" style="padding:20px">왼쪽에서 학교를 고르세요</div>'}</div></div>`;
   return h}
 /* 달력: 이번 달부터 2달 · 시험(중간·기말)만 표시 */
@@ -7350,7 +7362,7 @@ const HELP=[
   <li>한 학생은 <b>학생별</b> 탭에서 주간 시간표를 봐요. [찾기] 칸에 이름을 치면 돼요.</li>
   <li>아래 <b>자동 점검</b>에 겹침·빠진 수업·연강 아님 같은 문제가 떠요. 누르면 해당 카드가 강조돼요. 규칙은 경고일 뿐이라 예외는 그대로 둬도 돼요.</li>
   <li>시간표 말고도 챙길 일이 같이 떠요 — 누르면 그 화면으로 가요: <b>시험일 없는 학교</b>(이번 학기 기말 일정 없음) · <b>시험 범위 비어 있음</b>(3주 안 시험) · <b>선택과목 미정</b>(고2·3) · <b>상담 전 신입</b>(첫 수업 2주 지남) · <b>확정 점수 빠짐</b>(시험 끝나고 2주) · <b>기한 지난 업무</b> · <b>입학 문의 1주 지남</b> · <b>연락처 없음</b>.</li>
-  <li>위쪽 <b>다가오는 시험</b> 띠에 학생들 학교의 다음 시험이 D-day로 떠요(<a data-help="school">학교 정보</a>). 시험 기간 동안은 '시험 중', 마지막 날엔 '오늘 끝', 끝나는 날이 지나면 띠에서 빠져요(폰도 같아요).</li></ul>`},
+  <li>위쪽 <b>다가오는 시험</b> 띠에 학생들 학교의 다음 시험이 D-day로 떠요(<a data-help="school">학교 정보</a>). <b>D-day는 수학 시험일 기준</b>이에요 — 학사일정에 수학 시험일이 없으면 시험 첫날 기준으로 세고 <b>'수학일 미정'</b> 경고가 붙어요(띠 머리에 몇 곳인지도). 시험이 시작됐어도 수학 전이면 '수학 D-2', 그날은 '오늘 수학'. 선생님 폰도 같아요. 시험 기간 동안은 '시험 중', 마지막 날엔 '오늘 끝', 끝나는 날이 지나면 띠에서 빠져요(폰도 같아요).</li></ul>`},
  {id:'other',t:'다른 지점 보기',b:`
   <ul><li><b>지점장 PC·행정 PC</b>에서 위쪽 지점을 다른 지점으로 바꾸면 <b>지점 시간표·학생별·반 관리</b>만 참고용으로 보여요. 학생 관리·강사 관리·성적 탭과 학생 카드는 안 보여요 — 지점끼리 협조할 때 시간표만 참고하라는 뜻이에요.</li>
   ${HF('vo','다른 지점을 고르면 맨 위에 "참고용으로 시간표만" 줄이 뜨고 탭이 줄어요')}
