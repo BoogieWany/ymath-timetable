@@ -1022,6 +1022,10 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .exstrip.bar.shut{padding-top:5px;padding-bottom:5px}
 .exstrip.bar:not(.shut) .exchips{animation:exin .25s ease}
 @keyframes exin{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
+/* 3.80.8 명부에 없는 재원생 고르기 */
+.missbox .mbh{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.misst{width:100%;background:var(--panel);border-radius:8px}.misst td{padding:6px 8px;vertical-align:middle}.misst td:last-child{width:1%;white-space:nowrap}
+.mseg button{padding:4px 12px;font-size:12.5px}
 </style>
 </head>
 <body>
@@ -3382,7 +3386,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.80.7', APPDATE='2026-10-27';
+const APPVER='3.80.8', APPDATE='2026-10-27';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3944,7 +3948,7 @@ function viewStudents(){
   let h=`<div class="card-h"><h2>학생 관리 · ${esc(b.name)}</h2>${typeof isStaff==='function'&&isStaff()?'<button class="btn sm" data-act="statPop" title="실적 통계 (내 지점)">실적 통계</button>':''}<span class="hint">재원 ${nA}명 · 휴원 ${b.students.filter(s=>s.status==='휴원').length}명${nP?` · 예정 ${nP}명`:''}${nO?` · 퇴원 ${nO}명`:''}</span><span class="sp"></span>${b.gradeUndo?`<button class="btn" data-act="gradeUndo" data-label="학년 되돌리기" title="${esc(b.gradeUndo.at)}에 올린 학년을 그 전으로">학년 되돌리기</button>`:''}<button class="btn" data-act="gradeUp" title="이 지점 학생 전체를 한 학년씩 올리기 (미리 보고 확인)">학년 올리기</button><button class="btn" data-act="siOpen" title="구글 시트에서 받은 시간표 엑셀(.xlsx)로 새 시간표 만들기">시트 시간표 가져오기</button><button class="btn" data-act="xiOpen">주간 시간표 가져오기</button><button class="btn eokbtn" data-act="eokOpen" title="에듀OK에 로그인해서 재학생명부·입학희망생명부를 받아 바로 불러와요">에듀OK에서 받기</button><button class="btn pri" data-act="importRoster">재학생명부 가져오기</button></div>`;
   if(UI.importRes){const r=UI.importRes;h+=`<div class="sec"><div class="box"><b>명부 가져오기 결과 (${r.total}명)</b>
     <div>새로 추가 ${r.added.length}명${r.added.length?': '+esc(r.added.join(', ')):''}</div>${r.iqDone&&r.iqDone.length?`<div>입학 문의 → 입학 완료 ${r.iqDone.length}명: ${esc(r.iqDone.join(', '))}</div>`:''}${r.re&&r.re.length?`<div>재입학(퇴원 학생 되살림) ${r.re.length}명: ${esc(r.re.join(', '))}</div>`:''}${r.hasFrom?`<div>입학일 반영 ${r.from}명 · 지금 신입 ${(r.nNew||[]).length}명${(r.nNew||[]).length?' ('+esc(r.nNew.join(', '))+')':''} · 입학 예정 ${(r.nPre||[]).length}명${(r.nPre||[]).length?' ('+esc(r.nPre.join(', '))+')':''}${r.nCs?` · 신입 상담 전 ${r.nCs}명`:''}</div>`:''}<div>정보 바뀜 ${r.changed.length}명${r.changed.length?': '+esc(r.changed.join(', ')):''}</div>${r.ph!==undefined?`<div>연락처 들어 있는 학생 ${r.ph}명${r.ph?'':' · 명부에 연락처 칸이 없거나 비어 있어요'}</div>`:''}
-    ${r.missing.length?`<div class="box warn"><span>명부에 없는 재원생 ${r.missing.length}명: ${esc(r.missing.map(id=>sname(id)).join(', '))}</span><div class="row"><button class="btn" data-act="missingAway">모두 휴원으로 바꾸기</button><span class="hint">퇴원생이면 아래 표에서 직접 삭제하세요</span></div></div>`:''}
+    ${r.missing.length?missBoxHTML(b,r):''}
     ${r.added.length?'<div class="hint">새 학생은 반 관리에서 반 명단에 넣어 주세요. "명부 반" 칸에 명부의 반 이름이 보여요.</div>':''}<div><button class="btn" data-act="closeImport">닫기</button></div></div></div>`}
   h+=inqBoxHTML(b);h+=newBoxHTML(b);h+=cnBoxHTML(b);
   h+=`<div class="tools"><input id="fq" placeholder="이름·학교 검색" value="${esc(f.q)}" style="width:160px"><select id="fg"><option value="">전체 학년</option>${grades.map(g=>`<option ${g===f.g?'selected':''}>${esc(g)}</option>`).join('')}</select><select id="fst"><option value="">재원+휴원</option><option ${f.st==='재원'?'selected':''}>재원</option><option ${f.st==='휴원'?'selected':''}>휴원</option><option ${f.st==='예정'?'selected':''}>예정</option><option ${f.st==='퇴원'?'selected':''}>퇴원</option></select>
@@ -4050,6 +4054,16 @@ function renderVPanel(){
 
 /* ================= 렌더 ================= */
 let ISS=[];
+/* 3.80.8 명부(에듀OK)에 없는 재원생: 학생마다 퇴원·휴원·그대로 고르고 한 번에 반영(기본 퇴원 · 퇴원은 오늘 날짜로 모든 반·특강에서 빠짐) */
+const missCh=(r,id)=>((r.mc||{})[id])||'퇴원';
+function missLab(r){const c={퇴원:0,휴원:0};r.missing.forEach(id=>{const v=missCh(r,id);if(c[v]!=null)c[v]++});const L=[c.퇴원?`퇴원 ${c.퇴원}명`:'',c.휴원?`휴원 ${c.휴원}명`:''].filter(Boolean);return L.length?`반영 (${L.join(' · ')})`:'바꿀 학생이 없어요'}
+function missBoxHTML(b,r){const ids=r.missing.filter(id=>{const s=S(id);return s&&!offS(s)});if(!ids.length)return '';const cls=id=>typeof grCls==='function'?[...new Set(grCls(b,id).map(x=>x.c.name))].join(', '):'';
+  return `<div class="box warn missbox"><div class="mbh"><b>명부(에듀OK)에 없는 재원생 ${ids.length}명</b><span class="hint">학원을 그만둔 학생이면 퇴원, 잠깐 쉬면 휴원 · 퇴원은 오늘 날짜로 모든 반·특강 명단에서 빠지고 학생 관리 '퇴원'에 남아요(언제든 되돌려요)</span></div>
+    <table class="tbl misst"><tbody>${ids.map(id=>{const s=S(id);const v=missCh(r,id);return `<tr><td class="l"><b>${esc(s.name)}</b> <small class="hint">${esc([s.school,s.grade].filter(Boolean).join(' '))}</small></td><td class="l"><small>${esc(cls(id))||'<span class="hint">반 없음</span>'}</small></td><td><span class="seg mseg">${['퇴원','휴원','그대로'].map(x=>`<button data-mm="${esc(id)}|${x}" aria-pressed="${v===x}">${x}</button>`).join('')}</span></td></tr>`}).join('')}</tbody></table>
+    <div class="row" style="margin-top:8px"><span class="hint">모두</span><button class="btn sm" data-mmall="퇴원">퇴원</button><button class="btn sm" data-mmall="휴원">휴원</button><button class="btn sm" data-mmall="그대로">그대로</button><span class="sp"></span><button class="btn pri" id="missGo" data-act="missApply">${missLab(r)}</button></div></div>`}
+async function missApply(){const r=UI.importRes;if(!r)return;const td=todayStr();const out=r.missing.filter(id=>missCh(r,id)==='퇴원'&&S(id)),aw=r.missing.filter(id=>missCh(r,id)==='휴원'&&S(id));if(!out.length&&!aw.length){toast('바꿀 학생이 없어요');return}
+  await quickChange(()=>{const b=B();out.forEach(id=>{const s=b.students.find(x=>x.id===id);if(!s)return;s.status='퇴원';s.out=td;stOutApply(b,id)});aw.forEach(id=>{const s=b.students.find(x=>x.id===id);if(s)s.status='휴원'})},[out.length?`퇴원 ${out.length}명`:'',aw.length?`휴원 ${aw.length}명`:''].filter(Boolean).join(' · ')+' 반영했어요');
+  r.missing=[];r.mc={};render()}
 function render(){
   /* 3.80.4 성적 칸에 입력 중이면(동기화·자동 갱신 등) 통째로 다시 그리지 않고 바뀐 곳만 */
   if(UI.view==='grades'&&UI._lastView==='grades'&&!UI.edit===!UI._grEdit&&document.activeElement&&document.activeElement.closest&&document.activeElement.closest('table.grt')&&typeof grPatch==='function'&&grPatch())return;UI._grEdit=UI.edit;
@@ -4442,6 +4456,8 @@ document.addEventListener('click',async e=>{
   if(ds.stfpc){const r=stfById(ds.stfpc);if(!r)return;const code=await bridge.syncCode(r.b.id,{staff:r.a.name});if(!code){toast('코드를 만들 수 없어요 · 프로그램 관리자 PC에서 지점 연동이 켜져 있어야 해요');return}syCodeDlg(code,`${r.a.name} 행정 선생님 PC 연결`);return}
   if(ds.cnrdel){if(!armed(el,'cr'+ds.cnrdel,'한 번 더'))return;cnRecDel(ds.cnrdel);return}
   if(ds.cn){cnDlg(ds.cn);return}
+  if(ds.mm){const [id,v]=ds.mm.split('|');const r=UI.importRes;if(!r)return;r.mc=r.mc||{};r.mc[id]=v;el.parentElement.querySelectorAll('[data-mm]').forEach(x=>x.setAttribute('aria-pressed',String(x===el)));const t=$('missGo');if(t)t.textContent=missLab(r);return}
+  if(ds.mmall){const r=UI.importRes;if(!r)return;r.mc={};r.missing.forEach(id=>r.mc[id]=ds.mmall);render();return}
   if(ds.cnasg!==undefined){cnAsgDlg(ds.cnasg);return}
   if(ds.cnasgx){if(!armed(el,'cx'+ds.cnasgx,'취소할까요?'))return;$('modal').hidden=true;cnAsgX(ds.cnasgx);return}
   if(ds.iqreg){inqRegDlg(ds.iqreg);return}
@@ -4473,7 +4489,7 @@ document.addEventListener('click',async e=>{
   if(ds.vdiff){schedDiffDlg(ds.vdiff);return}
   if(ds.vcopy){const b=B();const src=b.versions.find(v=>v.id===ds.vcopy);commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nv.name=src.name+' 복사';const cmap={};nv.classes.forEach(c=>{const n=uid('c');cmap[c.id]=n;c.from=c.id;c.id=n});nv.sessions.forEach(o=>{o.id=uid('x');o.cls=cmap[o.cls]});b.versions.push(nv);UI.vv=UI.vv||{};UI.vv[b.id]=nv.id},'새 시간표를 만들었어요 · 지금 이 시간표을 고치는 중이고, 선생님들께는 지금 시간표가 그대로 보여요');UI.picked=null;UI.sel=null;UI.hl=new Set();UI.cls=null;return}
   if(ds.vdel){if(!armed(el,'v'+ds.vdel))return;if(ds.vdel===B().current){toast('지금 시간표는 지울 수 없어요 · 다른 시간표를 지금 시간표로 정한 뒤 지워 주세요',4500);return}commit(()=>{const b=B();b.versions=b.versions.filter(v=>v.id!==ds.vdel);if(b.sched&&b.sched.ver===ds.vdel)delete b.sched;if(UI.vv&&UI.vv[b.id]===ds.vdel)delete UI.vv[b.id]},'보관함에서 지웠어요');UI.cls=null;return}
-  UI.stOK=['missingAway','addStudent','rvSame','rvNew','rvrGo'].includes(ds.act)?1:0;try{
+  UI.stOK=['missingAway','missApply','addStudent','rvSame','rvNew','rvrGo'].includes(ds.act)?1:0;try{
   switch(ds.act){
     case 'avEdit':{if(UI._draft)await resumeDraft(true);else await enterEdit();renderAvail();break}
     case 'avClose':$('modal').hidden=true;UI.avStu=null;UI.avDraft=null;break;
@@ -4679,6 +4695,7 @@ document.addEventListener('click',async e=>{
     case 'importRoster':$('fileRoster').value='';$('fileRoster').click();break;
     case 'closeImport':UI.importRes=null;render();break;
     case 'missingAway':{const ids=UI.importRes.missing;commit(()=>ids.forEach(id=>{const s=S(id);if(s)s.status='휴원'}),`${ids.length}명을 휴원으로 바꿨어요`);UI.importRes.missing=[];render();break}
+    case 'missApply':missApply();break;
     case 'addStudent':{const n=$('nName').value.trim();if(!n){toast('이름을 넣어 주세요');return}const fd=($('nFrom')||{}).value||'';const pre=fd&&fd>todayStr();const q={name:n,school:$('nSchool').value.trim(),grade:$('nGrade').value.trim(),from:fd};
       const add=()=>commit(()=>{B().students.push({id:uid('s'),name:n,school:q.school,grade:q.grade,status:pre?'예정':'재원',...(fd?{from:fd}:{}),rosterClasses:[]})},pre?`${n} 학생을 입학 예정(${mdS(fd)}부터)으로 추가했어요`:`${n} 학생을 추가했어요`);
       const same=s0=>{commit(()=>{const s=S(s0.id);if(s)stuReviveDo(s,q)},`${n} · 퇴원했던 학생이라 재입학으로 이었어요 (성적·상담 기록 그대로)`)};
@@ -7500,7 +7517,7 @@ const HELP=[
  {id:'import',t:'가져오기 (시트 · 주간 · 명부 · 에듀OK)',b:`
   <ul><li><b>시트 시간표 가져오기</b>: 구글 시트에서 받은 .xlsx를 읽어 새 시간표로. 동명이인·명단에 없는 이름은 창에서 골라요.</li>
   <li><b>주간 시간표 가져오기</b>: 관리 프로그램의 강사별 주간 .xls를 지금 시간표와 비교해서 바뀐 것만 골라 반영해요.</li>
-  <li><b>재학생명부 가져오기</b>: 학생 추가·학년 갱신·연락처·입학일. 명부에 없는 재원생은 휴원으로 바꿀지 물어봐요.</li>
+  <li><b>재학생명부 가져오기</b>: 학생 추가·학년 갱신·연락처·입학일. <b>명부(에듀OK)에 없는 재원생</b>은 학생 관리 맨 위에 듣는 반과 함께 떠요 — 학생마다 <b>퇴원·휴원·그대로</b>를 고르고(기본 퇴원 · '모두'로 한꺼번에) [반영]. 퇴원은 오늘 날짜로 모든 반·특강 명단에서 빠지고 '퇴원'에 남아요(다음 명부에 다시 나오면 재입학으로 되살아나요).</li>
   <li><b>에듀OK에서 받기</b>: 처음 한 번 <b>그 지점 에듀OK 아이디·비밀번호</b>를 넣어 저장(이 PC에만 암호화 · 다른 PC로 안 넘어가요). 그다음부터 [재학생명부 받기]·[입학희망생명부 받기]로 10~20초 만에 바로 불러와요.</li>
   ${HF('eok','에듀OK에서 받기')}</ul>`},
  {id:'special',t:'방학 특강',b:`
