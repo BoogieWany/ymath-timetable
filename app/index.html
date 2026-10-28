@@ -1071,6 +1071,21 @@ tr[data-tkrow]:has([data-act="tkEdit"]){cursor:pointer}
 tr[data-tkrow]:has([data-act="tkEdit"]):hover td{background:color-mix(in srgb,var(--info) 5%,var(--panel))}
 /* 3.82.1 학교 목록 우리 지점 / 전체 학교 */
 .schlseg{display:flex;flex:none;margin:0 0 2px}.schlseg button{flex:1;padding:5px 6px;font-size:12px}.schlseg small{opacity:.7;margin-left:2px}
+/* 3.82.3 학교 정보: 왼쪽 학교 목록은 옆에 붙어 있고(카드를 내려도 그대로) 목록 휠은 얇고 은은하게 · 학교 이름 눌러 이름 바꾸기 */
+.schwrap{align-items:start}
+.schlist{position:sticky;top:12px;max-height:calc(100vh - 24px)}
+body.exe .schlist{top:48px;max-height:calc(100vh - 60px)}
+.schlist::-webkit-scrollbar{width:6px}
+.schlist::-webkit-scrollbar-track{background:transparent}
+.schlist::-webkit-scrollbar-thumb{background:transparent;border-radius:999px}
+.schlist:hover::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 40%,transparent)}
+.schlist::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--muted) 65%,transparent)}
+.schlist::-webkit-scrollbar-button{display:none;height:0}
+.schnm{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:7px;padding:1px 6px;margin:-1px -6px;transition:background-color .15s ease}
+.schnm svg{width:14px;height:14px;fill:none;stroke:var(--info);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .15s ease}
+.schnm:hover{background:color-mix(in srgb,var(--info) 8%,transparent)}.schnm:hover svg,.schnm:focus-visible svg{opacity:.85}
+.schnm:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 50%,transparent)}
+.schlist{border-right:0}.schcard{border-left:1px solid var(--line2)}
 </style>
 </head>
 <body>
@@ -3431,7 +3446,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.82.2', APPDATE='2026-10-28';
+const APPVER='3.82.3', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6854,7 +6869,7 @@ function schPubTxt(bs,keys){bs=bs||{};const pg=bs.pubg||{};const ord=[...(keys||
 const schPubOf=(k,g)=>{const bs=(schGet(k).base)||{};return ((bs.pubg||{})[g])||bs.pub||''};
 function schCardHTML(k,b,ed){const o=schGet(k);const kd=schKindOf(k);const y=UI.schY;const cal=(o.cal||{})[y]||{};const td=todayStr();const stu=schStudents(k,b);const grades=kd==='고'?['고1','고2','고3']:kd==='중'?['중1','중2','중3']:[];
   const dis=ed?'':' disabled';const inp=(mk,i)=>`<input type="date" data-scal="${y}|${mk}|${i}" value="${esc((cal[mk]||[])[i]||'')}"${dis}>`;
-  let h=`<div class="schhead"><h2>${esc(schName(k))} <small>${kd==='고'?'고등학교':kd==='중'?'중학교':'초등학교'} · ${esc(b.name)} ${stu.length}명${schPubTxt(o.base,grades)?` · 교과서 ${esc(schPubTxt(o.base,grades))}`:''}</small></h2><span class="sp"></span>${ed?`<button class="btn sm" data-act="schMerge" data-k="${esc(k)}" title="같은 학교가 두 이름으로 잡혔을 때 한쪽으로">합치기</button><button class="btn sm" data-act="schBase" data-k="${esc(k)}">이름</button>`:''}</div>${(o.base||{}).alias&&o.base.alias.length?`<div class="hint" style="padding:0 18px 8px">다른 이름: ${esc(o.base.alias.join(', '))} → 모두 이 학교로 들어와요</div>`:''}`;
+  let h=`<div class="schhead"><h2>${ed?`<button class="schnm" data-act="schBase" data-k="${esc(k)}" title="눌러서 보이는 이름 바꾸기 · 목록에서 숨기기"><span>${esc(schName(k))}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:esc(schName(k))} <small>${kd==='고'?'고등학교':kd==='중'?'중학교':'초등학교'} · ${esc(b.name)} ${stu.length}명${schPubTxt(o.base,grades)?` · 교과서 ${esc(schPubTxt(o.base,grades))}`:''}</small></h2><span class="sp"></span>${ed?`<button class="btn sm" data-act="schMerge" data-k="${esc(k)}" title="같은 학교가 두 이름으로 잡혔을 때 한쪽으로">합치기</button>`:''}</div>${(o.base||{}).alias&&o.base.alias.length?`<div class="hint" style="padding:0 18px 8px">다른 이름: ${esc(o.base.alias.join(', '))} → 모두 이 학교로 들어와요</div>`:''}`;
   if(kd==='초'){return h+'<div class="hint" style="padding:12px 18px">초등학교는 시험 정보를 따로 두지 않아요.</div>'}
   /* 학사일정 */
   h+=`<div class="sec"><h3>학사일정 <span class="hint">${y}년 · 시험은 시작~끝, 수학 시험일은 아래에 따로</span></h3><div class="calt">${['m1','f1','m2','f2'].concat(kd==='중'?['g3']:[],['camp','trip','sum','win']).map(mk=>`<div class="calr${/^[mfg]/.test(mk)?' ex':''}${mk==='g3'?' g3':''}"${mk==='g3'?' title="중3은 2학기 시험이 하나뿐이고 1·2학년과 기간이 다를 때만 · 넣으면 중3은 이 기간만, 1·2학년은 2학기 중간·기말"':''}><label>${CAL_LAB[mk]}</label>${inp(mk,0)}<span>~</span>${inp(mk,1)}</div>`).join('')}</div>
@@ -7574,8 +7589,8 @@ const HELP=[
   ${HF('staff','행정 선생님 칸 — 코드·복사·기기 끊기·PC 연결 코드')}</ul>`},
  {id:'school',t:'학교 정보 · 시험 기간',b:`
   ${HF('school','학교 정보 — 위쪽 다가오는 시험 띠와 달력, 학교 카드')}
-  <ul><li>학생들이 다니는 학교가 저절로 목록에 떠요(없으면 [학교 추가]). 목록 위 <b>[우리 지점 | 전체 학교]</b>로 이 지점 학생이 있는 학교만 보거나 모든 지점 학교를 다 봐요(이 PC에 기억). 학교를 고르면 <b>학사일정</b>(시험·방학·수련회, 수학 시험일), <b>시험 범위</b>, <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등학교는 <b>선택과목</b>, <b>메모</b>.</li>
-  <li><b>교과서</b>: 학교 카드의 '교과서' 칸에 출판사를 메모해요 — 중학교는 <b>학년마다</b>, 고등학교는 부교재처럼 <b>과목마다</b>(예: 비상(김원경)). 적은 건 학교 이름 옆 한 줄, 학생 정보 창 시험 칸(그 학생 학년·과목), 선생님 폰 학교 탭에 보여요. 학교 이름은 카드 위 [이름]에서.</li>
+  <ul><li>학생들이 다니는 학교가 저절로 목록에 떠요(없으면 [학교 추가]). 목록 위 <b>[우리 지점 | 전체 학교]</b>로 이 지점 학생이 있는 학교만 보거나 모든 지점 학교를 다 봐요(이 PC에 기억). 학교 목록은 카드를 아래로 내려도 왼쪽에 붙어 있어요(학교가 많으면 목록 위에서 휠). 학교를 고르면 <b>학사일정</b>(시험·방학·수련회, 수학 시험일), <b>시험 범위</b>, <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등학교는 <b>선택과목</b>, <b>메모</b>.</li>
+  <li><b>교과서</b>: 학교 카드의 '교과서' 칸에 출판사를 메모해요 — 중학교는 <b>학년마다</b>, 고등학교는 부교재처럼 <b>과목마다</b>(예: 비상(김원경)). 적은 건 학교 이름 옆 한 줄, 학생 정보 창 시험 칸(그 학생 학년·과목), 선생님 폰 학교 탭에 보여요. 학교 이름(보이는 이름)은 카드 맨 위 <b>학교 이름을 누르면</b> 바꾸거나 학생 없는 학교를 목록에서 숨겨요.</li>
   <li><b>등급컷</b>은 고등 과목마다 <b>1등급 최저 점수</b>만 적어요(선생님 폰에도 1등급만).</li>
   <li><b>선택과목</b>: 고2는 2학년 1·2학기(+2학기엔 3학년 1학기 조사), 고3은 3학년 1학기만 — 3학년 2학기는 시험이 없어 받지 않아요. 고1은 2학기에 <b>2학년 1·2학기 + 3학년 1학기</b>를 미리 조사해 두면 학년이 올라가도 그대로 이어져요.</li>
   ${HF('card','학교 카드 — 학사일정·범위·교과서·부교재·등급컷·기출 수거·선택과목')}
