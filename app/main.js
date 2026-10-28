@@ -164,7 +164,7 @@ function schPack(db,b){EXDB=db;const L=((db.schools||{}).list)||{};const td=exTd
     const books={};Object.entries(o.books||{}).forEach(([x,v])=>{if(v&&v.t)books[x]=v.t});
     const cuts={};Object.entries(o.cuts||{}).forEach(([ck,v])=>{if(!yrs.has(ck.split('|')[0])||!v||!v.c)return;const c={};Object.entries(v.c).forEach(([n,x])=>{if(x!=null&&x!=='')c[n]=x});if(Object.keys(c).length)cuts[ck]=c});
     const got=[];Object.entries(o.got||{}).forEach(([gk,v])=>{if(v&&v.v&&+gk.slice(0,4)>=y-3)got.push(gk)});
-    out.push({k,nm:base.name||k,kd:exKind(k),pub:base.pub||'',al:base.alias||[],cal,rng,...(Object.keys(rnn).length?{rnn}:{}),books,cuts,got})});
+    out.push({k,nm:base.name||k,kd:exKind(k),pub:base.pub||'',...(base.pubg&&Object.keys(base.pubg).length?{pubg:base.pubg}:{}),/* 3.81.6 교과서 학년별 */al:base.alias||[],cal,rng,...(Object.keys(rnn).length?{rnn}:{}),books,cuts,got})});
   return out}
 function exPack(db,b){EXDB=db;const td=exTd();const P=exPeriods(db,b);const both=[P.중,P.고].filter(x=>x&&x.from&&x.to);const exam=both.length?{from:both.map(x=>x.mf).sort()[0],to:both.map(x=>x.mt).sort().pop()}:null; /* 폰 응원·예전 폰: 관리 기간 합친 것 */
   const ks=new Set((b.students||[]).filter(s=>s.status!=='퇴원').map(s=>exNorm(s.school)).filter(k=>k&&exKind(k)));const lim=exPlus(td,60);const exl=[],rng={};
