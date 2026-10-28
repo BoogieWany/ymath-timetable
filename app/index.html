@@ -861,7 +861,7 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .rngv{flex:1;font-size:13px;min-width:0}.rngv.none{color:var(--muted);opacity:.75}
 .bkt{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px}.bkr{display:flex;align-items:center;gap:8px}.bkr label{min-width:60px;white-space:nowrap;font-size:12.5px;color:var(--muted)}.bkr input{flex:1;font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
 .cutt input,.gott input{font:inherit;font-size:12.5px}.cutt input{width:64px;padding:3px 4px;border:1px solid var(--line);border-radius:6px;text-align:center;background:var(--panel);color:var(--fg)}.cutt td.l,.gott td.l,.subt td.l{white-space:nowrap}
-.gott th{text-align:center;font-weight:600}.gott td.num input{width:15px;height:15px;accent-color:var(--navy)}
+.gott th{text-align:center;font-weight:600}.gott td.l i{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:2px}.gott tr.gsj:not(.g0) td.l b{visibility:hidden}.gott tr.gsj.g0 td{border-top:1px solid var(--line)}.gott tr.gleg td.l i{color:color-mix(in srgb,var(--muted) 75%,transparent)}.gott tr.gleg td.l b{visibility:hidden}.gott tr.gadd td{border:0;padding-top:2px;padding-bottom:8px}.gott tr.gadd select{font-size:12px;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:3px 8px;cursor:pointer}.gott tr.gadd select:hover{border-color:color-mix(in srgb,var(--navy) 40%,var(--line));color:var(--fg)}.gotx{border:0;background:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 4px;margin-left:2px;border-radius:6px;opacity:.55}.gotx:hover{opacity:1;background:color-mix(in srgb,var(--muted) 12%,transparent)}.gotx.arm{opacity:1;color:#c0392b;font-size:11px}.gott td.num input{width:15px;height:15px;accent-color:var(--navy)}
 .sjc{display:flex;flex-wrap:wrap;gap:3px}
 .sjb{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:1px 8px;font-size:11.5px;cursor:pointer;color:var(--muted)}.sjb.on{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}.sjb:disabled{cursor:default;opacity:.7}
 .schcard textarea[data-smemo]{width:100%;max-width:720px;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);resize:vertical}
@@ -1095,6 +1095,13 @@ body.exe .schlist{top:48px;max-height:calc(100vh - 60px)}
 html::-webkit-scrollbar{width:10px}
 html::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 30%,transparent)}
 html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 38%,transparent)}
+
+/* 3.82.7 선택과목 미정 */
+.subg h4 .sjmiss{margin-left:8px;font:inherit;font-size:11.5px;font-weight:600;color:#b7791f;background:color-mix(in srgb,#F4B860 16%,transparent);border:1px solid color-mix(in srgb,#F4B860 45%,transparent);border-radius:999px;padding:1px 9px;cursor:pointer;transition:background .2s}
+.subg h4 .sjmiss:hover{background:color-mix(in srgb,#F4B860 28%,transparent)}
+.subg h4 .sjall{margin-left:8px;font-size:11.5px;font-weight:500;color:var(--muted)}
+.subt tr.nosj td.l{box-shadow:inset 3px 0 0 color-mix(in srgb,#F4B860 70%,transparent)}
+.sjmt{font-weight:600;color:#b7791f}
 </style>
 </head>
 <body>
@@ -3455,7 +3462,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.82.4', APPDATE='2026-10-28';
+const APPVER='3.82.8', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4680,6 +4687,7 @@ document.addEventListener('click',async e=>{
     case 'schDmAdd':schDmAdd();break;
     case 'schDmX':schDmX(ds.d);break;
     case 'stSubj':stSubjTg(ds.sid,ds.t,ds.sj);break;
+    case 'sjMiss':sjMissGo(ds.g);break;
     case 'stiSubj':stiSubj(ds.sid,ds.t,ds.sj,el);break;
     case 'stiSch':stiGoSch(ds.k,ds.sjg||'');break;
     case 'rngDlg':rngDlg(ds.k,ds.rk);break;
@@ -6788,7 +6796,7 @@ const exFor=(g,x)=>{if(!x)return false;g=String(g||'');if(exSkip(g,x.mk))return 
 function schMergeInto(dst,src){let ch=false;if(!src||typeof src!=='object')return false;const L=dst.list,SL=src.list||{};
   const take=(o,k,v)=>{if(!v||typeof v!=='object')return;if(!o[k]||(v.at||0)>(o[k].at||0)){o[k]=v;ch=true}};
   Object.entries(SL).forEach(([key,s])=>{if(!s)return;const d=L[key]=L[key]||{};take(d,'base',s.base);take(d,'memo',s.memo);take(d,'hide',s.hide);
-    ['cal','rng','books','cuts','got'].forEach(sec=>{if(!s[sec])return;d[sec]=d[sec]||{};Object.entries(s[sec]).forEach(([k,v])=>take(d[sec],k,v))})});
+    ['cal','rng','books','cuts','got','gotsj'].forEach(sec=>{if(!s[sec])return;d[sec]=d[sec]||{};Object.entries(s[sec]).forEach(([k,v])=>take(d[sec],k,v))})});
   Object.entries(src.units||{}).forEach(([k,v])=>take(dst.units,k,v));return ch}
 /* ----- 공유 파일 받기·올리기 ----- */
 /* 공유 저장소 공통: name → {get(): 자료, merge(dst,src)→바뀜?, sha 키} · schools(학교 정보) · tasks(업무) */
@@ -6901,15 +6909,29 @@ function schCardHTML(k,b,ed){const o=schGet(k);const kd=schKindOf(k);const y=UI.
   if(kd==='고'){const cols=grades.filter(g=>!exSkipEk(g,curEk)).flatMap(g=>subjOf(g).filter(Boolean).map(sj=>({g,sj})));
     h+=`<div class="sec"><h3>등급컷 <span class="hint">${esc(ekLab(curEk))} · 1등급 최저 점수</span></h3>${cols.length?`<div class="scroll"><table class="tbl cutt"><thead><tr><th class="l">등급</th>${cols.map(c=>`<th>${esc(c.g)} ${esc(subjShort(c.sj))}</th>`).join('')}</tr></thead><tbody>${[1].map(n=>`<tr><td class="l"><b>${n}등급</b></td>${cols.map(c=>{const ck=`${curEk}|${c.g}|${c.sj}`;const v=(((o.cuts||{})[ck]||{}).c||{})[n];return `<td class="num"><input type="number" min="0" max="100" step="0.1" data-scut="${esc(ck)}|${n}" value="${v==null?'':v}"${dis}></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="hint">위 시험 범위에 과목이 잡히면 여기 칸이 생겨요</div>'}</div>`}
   const yrs=[y-3,y-2,y-1,y];
-  h+=`<div class="sec"><h3>기출 수거 <span class="hint">받아 둔 시험지에 체크 · 답지 유무는 따로 두지 않아요</span></h3><div class="scroll"><table class="tbl gott"><thead><tr><th class="l">학년</th>${yrs.map(yy=>`<th colspan="4">${yy}</th>`).join('')}</tr><tr><th></th>${yrs.map(()=>['1중','1기','2중','2기'].map(x=>`<th>${x}</th>`).join('')).join('')}</tr></thead><tbody>${grades.map(g=>`<tr><td class="l"><b>${esc(g)}</b></td>${yrs.flatMap(yy=>['m1','f1','m2','f2'].map(mk=>{if(exSkip(g,mk))return '<td class="num dim" title="이 학년엔 없는 시험">–</td>';const gk=`${ekOf(yy,mk)}|${g}`;const on=!!(((o.got||{})[gk]||{}).v);return `<td class="num"><input type="checkbox" data-sgot="${esc(gk)}" ${on?'checked':''}${dis}></td>`})).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+  h+=`<div class="sec"><h3>기출 수거 <span class="hint">받아 둔 시험지에 체크 · 답지 유무는 따로 두지 않아요${kd==='고'?(()=>{const se=(m=>m>=8||m<=2)(+td.slice(5,7))?2:1;const M=[['고2',`2-${se}`],['고3','3-1']].map(([g,t])=>[g,stu.filter(s=>s.grade===g&&!((s.subj||{})[t]||[]).length).length]).filter(x=>x[1]);return M.length?` · 과목 줄은 학생 선택과목 기준 — <b class="sjmt">${M.map(([g,n])=>`${g} ${n}명`).join(' · ')} 미정</b>`:''})():''}</span></h3><div class="scroll"><table class="tbl gott"><thead><tr><th class="l">학년</th>${yrs.map(yy=>`<th colspan="4">${yy}</th>`).join('')}</tr><tr><th></th>${yrs.map(()=>['1중','1기','2중','2기'].map(x=>`<th>${x}</th>`).join('')).join('')}</tr></thead><tbody>${grades.map(g=>{const sjs=gotSubj(k,o,g,stu);const cell=(yy,mk,sj,leg)=>{if(exSkip(g,mk))return '<td class="num dim" title="이 학년엔 없는 시험">–</td>';const gk=`${ekOf(yy,mk)}|${g}${sj?'|'+sj:''}`;const on=!!(((o.got||{})[gk]||{}).v);if(leg&&(!on||gotSubjOn(o,ekOf(yy,mk),g)))return '<td class="num"></td>';return `<td class="num"><input type="checkbox" data-sgot="${esc(gk)}" ${on?'checked':''}${dis}></td>`};
+    if(!sjs.length)return `<tr><td class="l"><b>${esc(g)}</b></td>${yrs.flatMap(yy=>['m1','f1','m2','f2'].map(mk=>cell(yy,mk,''))).join('')}</tr>`+(ed&&/^고[23]$/.test(g)?`<tr class="gadd"><td class="l" colspan="${yrs.length*4+1}"><select data-gotadd="${esc(k)}|${esc(g)}" aria-label="${esc(g)} 과목 추가"><option value="">+ ${esc(g)} 과목별로 나누기</option>${HS_SUBJ.filter(x=>!/^공통수학/.test(x)).map(x=>`<option value="${esc(x)}">${esc(subjShort(x))}</option>`).join('')}</select></td></tr>`:'');
+    /* 3.82.5: 고2·고3은 과목별 줄 · 예전에 학년 하나로 체크한 건 '과목 미구분' 줄로 남기고, 그 시험의 과목 체크가 하나라도 생기면 숨김 */
+    const leg=yrs.some(yy=>['m1','f1','m2','f2'].some(mk=>!exSkip(g,mk)&&(((o.got||{})[`${ekOf(yy,mk)}|${g}`]||{}).v)&&!gotSubjOn(o,ekOf(yy,mk),g)));
+    const stS=gotStuSubj(g,stu);const ncol=yrs.length*4;const addR=ed?(()=>{const left=HS_SUBJ.filter(x=>!sjs.includes(x)&&!/^공통수학/.test(x));return left.length?`<tr class="gadd"><td class="l" colspan="${ncol+1}"><select data-gotadd="${esc(k)}|${esc(g)}" aria-label="${esc(g)} 과목 추가"><option value="">+ ${esc(g)} 과목 추가</option>${left.map(x=>`<option value="${esc(x)}">${esc(subjShort(x))}</option>`).join('')}</select></td></tr>`:''})():'';
+    const canX=sj=>ed&&!stS.has(sj)&&!Object.entries(o.got||{}).some(([gk,v])=>v&&v.v&&gk.split('|')[3]===g&&gk.split('|')[4]===sj);
+    return sjs.map((sj,i)=>`<tr class="gsj${i?'':' g0'}"><td class="l"><b>${esc(g)}</b> <i>${esc(subjShort(sj))}</i>${canX(sj)?`<button class="gotx" data-act="gotSjDel" data-k="${esc(k)}" data-g="${esc(g)}" data-sj="${esc(sj)}" title="이 과목 줄 지우기 (두 번)" aria-label="지우기">×</button>`:''}</td>${yrs.flatMap(yy=>['m1','f1','m2','f2'].map(mk=>cell(yy,mk,sj))).join('')}</tr>`).join('')+(leg?`<tr class="gleg"><td class="l" title="예전에 과목 없이 학년으로 체크한 것 · 그 시험에 과목을 체크하면 사라져요"><b>${esc(g)}</b> <i>과목 미구분</i></td>${yrs.flatMap(yy=>['m1','f1','m2','f2'].map(mk=>cell(yy,mk,'',1))).join('')}</tr>`:'')+addR}).join('')}</tbody></table></div></div>`;
   /* 선택과목(고) */
   if(kd==='고'){const sem2=(m=>m>=8||m<=2)(+td.slice(5,7));/* 3.81.7: 3학년 2학기는 시험이 없어 선택과목도 안 받음 · 고1 조사에 3학년 1학기 과목도 */const grp=[['고2',['2-1','2-2'].concat(sem2?['3-1']:[]),'지금 듣는 과목'+(sem2?' · 3학년 1학기는 내년 조사':'')],['고3',['3-1'],'지금 듣는 과목(3학년 2학기는 시험이 없어 안 받아요)']].concat(sem2?[['고1',['2-1','2-2','3-1'],'2·3학년 과목 조사 (2학기에만 보여요 · 그대로 학년이 올라가면 이어져요)']]:[]);
-    const tbl=(g,cols,sub)=>{const L=stu.filter(s=>s.grade===g).sort((a,z)=>sortKo(a.name,z.name));if(!L.length)return '';return `<div class="subg"><h4>${esc(g)} <small>${esc(sub)}</small></h4><table class="tbl subt"><thead><tr><th class="l">학생</th>${cols.map(t=>`<th>${t.replace('-','학년 ')}학기</th>`).join('')}</tr></thead><tbody>${L.map(s=>`<tr data-sid="${esc(s.id)}"><td class="l"><b>${esc(s.name)}</b></td>${cols.map(t=>`<td><div class="sjc">${HS_SUBJ.slice(2).map(sj=>{const on=((s.subj||{})[t]||[]).includes(sj);return `<button class="sjb${on?' on':''}" data-act="stSubj" data-sid="${esc(s.id)}" data-t="${t}" data-sj="${esc(sj)}" ${ed?'':'disabled'}>${esc(subjShort(sj))}</button>`}).join('')}</div></td>`).join('')}</tr>`).join('')}</tbody></table></div>`};
+    /* 3.82.7: 지금 학기 과목을 안 정한 학생 수 — 고2는 지금 학기, 고3은 1학기, 고1은 2학년 1학기(조사) */
+    const curT=g=>g==='고2'?`2-${sem2?2:1}`:g==='고3'?'3-1':'2-1';const noSj=(s,g)=>!((s.subj||{})[curT(g)]||[]).length;
+    const tbl=(g,cols,sub)=>{const L=stu.filter(s=>s.grade===g).sort((a,z)=>sortKo(a.name,z.name));if(!L.length)return '';const nm=L.filter(s=>noSj(s,g)).length;return `<div class="subg"><h4>${esc(g)} <small>${esc(sub)}</small>${nm?`<button class="sjmiss" data-act="sjMiss" data-g="${esc(g)}" title="${esc(curT(g).replace('-','학년 '))}학기 과목을 안 정한 학생 · 누르면 차례로 찾아가요">${nm}명 미정</button>`:'<span class="sjall">모두 정함</span>'}</h4><table class="tbl subt"><thead><tr><th class="l">학생</th>${cols.map(t=>`<th>${t.replace('-','학년 ')}학기</th>`).join('')}</tr></thead><tbody>${L.map(s=>`<tr data-sid="${esc(s.id)}" data-sjg="${esc(g)}"${noSj(s,g)?' class="nosj"':''}><td class="l"><b>${esc(s.name)}</b></td>${cols.map(t=>`<td><div class="sjc">${HS_SUBJ.slice(2).map(sj=>{const on=((s.subj||{})[t]||[]).includes(sj);return `<button class="sjb${on?' on':''}" data-act="stSubj" data-sid="${esc(s.id)}" data-t="${t}" data-sj="${esc(sj)}" ${ed?'':'disabled'}>${esc(subjShort(sj))}</button>`}).join('')}</div></td>`).join('')}</tr>`).join('')}</tbody></table></div>`};
     const body=grp.map(([g,cols,sub])=>tbl(g,cols,sub)).join('');
-    h+=`<div class="sec"><h3>선택과목 <span class="hint">${esc(b.name)} 학생 · 학년·학기마다 듣는 과목 (범위·성적이 이 과목으로 연결돼요)</span></h3>${body||'<div class="hint">이 학교 학생이 없어요'+(sem2?'':' · 고1 조사는 2학기(8월~2월)에 보여요')+'</div>'}</div>`}
+    /* 3.82.8: 고1 미리 조사는 칸 제목에서 뺌 */const missT=['고2','고3'].map(g=>[g,stu.filter(s=>s.grade===g&&noSj(s,g)).length]).filter(x=>x[1]);
+    h+=`<div class="sec"><h3>선택과목 <span class="hint">${esc(b.name)} 학생 · 학년·학기마다 듣는 과목 (범위·성적이 이 과목으로 연결돼요)${missT.length?` · <b class="sjmt">${missT.map(([g,n])=>`${g} ${n}명`).join(' · ')} 미정</b>`:''}</span></h3>${body||'<div class="hint">이 학교 학생이 없어요'+(sem2?'':' · 고1 조사는 2학기(8월~2월)에 보여요')+'</div>'}</div>`}
   h+=`<div class="sec"><h3>메모 <span class="hint">출제 경향·특이사항 등</span></h3><textarea data-smemo="${esc(k)}" rows="3" maxlength="1000" placeholder="예: 서술형 비중 40% · 교과서 예제 그대로 많이 나옴"${dis}>${esc(((o.memo||{}).t)||'')}</textarea></div>`;
   return h}
 /* 학생의 선택과목: s.subj={'2-1':['대수'],...} · 시험 키(연도|학기)와 학년으로 해당 학기 과목 · 고1은 공통수학 */
+/* 3.82.5 기출 수거 과목 줄: 고2·고3만 · 이 학교 그 학년 학생들이 고른 선택과목(1·2학기) + [+ 과목]으로 넣은 과목 + 이미 체크한 과목 · 아무것도 없으면 학년 한 줄 */
+function gotStuSubj(g,stu){const m=/^고([23])$/.exec(g||'');const set=new Set();if(m)(stu||[]).filter(s=>s.grade===g).forEach(s=>['1','2'].forEach(se=>((s.subj||{})[`${m[1]}-${se}`]||[]).forEach(x=>set.add(x))));return set}
+function gotSubj(k,o,g,stu){if(!/^고[23]$/.test(g||''))return [];const set=gotStuSubj(g,stu);Object.entries(o.gotsj||{}).forEach(([gk,v])=>{const p=gk.split('|');if(p[0]===g&&p[1]&&v&&v.v)set.add(p[1])});Object.entries(o.got||{}).forEach(([gk,v])=>{const p=gk.split('|');if(p[3]===g&&p[4]&&v&&v.v)set.add(p[4])});return [...set].filter(x=>HS_SUBJ.includes(x)).sort((a,z)=>HS_SUBJ.indexOf(a)-HS_SUBJ.indexOf(z))}
+function sjMissGo(g){const L=[...document.querySelectorAll(`.subt tr.nosj[data-sjg="${CSS.escape(g)}"]`)];if(!L.length)return;UI.sjMissI=UI.sjMissI||{};const i=(UI.sjMissI[g]=((UI.sjMissI[g]??-1)+1)%L.length);const tr=L[i];tr.scrollIntoView({block:'center',behavior:'smooth'});tr.classList.remove('sjhit');void tr.offsetWidth;tr.classList.add('sjhit');setTimeout(()=>tr.classList.remove('sjhit'),2200)}
+function gotSubjOn(o,ek,g){return Object.entries(o.got||{}).some(([gk,v])=>v&&v.v&&gk.startsWith(`${ek}|${g}|`))}
 function stuSubj(s,ek){const g=/^고([123])$/.exec(s.grade||'');if(!g)return [];const sem=ek?ek.split('|')[1]:(+todayStr().slice(5,7)>=8?'2':'1');if(g[1]==='1')return [sem==='2'?'공통수학2':'공통수학1'];return ((s.subj||{})[`${g[1]}-${sem}`]||[]).slice()}
 /* ===== 범위 고르기 창 ===== */
 function rngDlg(k,rk){const o=schGet(k);const r=Object.assign({a:null,z:null,memo:'',free:''},(o.rng||{})[rk]||{});const [y,sem,mf,g,sj]=rk.split('|');const uk=unitKey(schKindOf(k),g,sem,sj);const tree=unitTree(uk);
@@ -6977,7 +6999,7 @@ function schMergeDlg(k){const ks=schKeys().filter(x=>x!==k&&schKindOf(x)===schKi
     <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="schMergeGo" data-k="${esc(k)}" ${ks.length?'':'disabled'}>합치기</button></div></div>`}
 async function schMergeGo(k){const to=$('smTo').value;if(!to||to===k)return;$('modal').hidden=true;
   await schSave((S,at)=>{const src=S.list[k]||{};const d=S.list[to]=S.list[to]||{};d.base=Object.assign({name:to,kind:schKind(to),pub:''},d.base||{},{at});d.base.alias=[...new Set([...(d.base.alias||[]),k,...((src.base||{}).alias||[])])];if(!d.base.pub&&src.base&&src.base.pub)d.base.pub=src.base.pub;
-    ['cal','rng','books','cuts','got'].forEach(sec=>{if(!src[sec])return;d[sec]=d[sec]||{};Object.entries(src[sec]).forEach(([kk,v])=>{if(!d[sec][kk])d[sec][kk]=Object.assign({},v,{at})})});if(!d.memo&&src.memo)d.memo=Object.assign({},src.memo,{at});
+    ['cal','rng','books','cuts','got','gotsj'].forEach(sec=>{if(!src[sec])return;d[sec]=d[sec]||{};Object.entries(src[sec]).forEach(([kk,v])=>{if(!d[sec][kk])d[sec][kk]=Object.assign({},v,{at})})});if(!d.memo&&src.memo)d.memo=Object.assign({},src.memo,{at});
     S.list[k]=Object.assign({},src,{hide:{v:1,at}})},'');
   const raw=x=>String(x||'').trim().replace('여자고등학교','여고').replace('고등학교','고').replace('중학교','중').replace('초등학교','초').replace(/\s+/g,'');const bids=DB.branches.filter(b=>canEditB(b.id)&&(b.students||[]).some(s=>raw(s.school)===k)).map(b=>b.id);let n=0;
   if(bids.length)await quickChange(()=>{DB.branches.forEach(b=>{if(!bids.includes(b.id))return;(b.students||[]).forEach(s=>{if(raw(s.school)===k){s.school=to;n++}});(b.inq||[]).forEach(q=>{if(raw(q.school)===k)q.school=to})})},`${k} → ${to}로 합쳤어요 · 학생 ${n}명의 학교 이름도 바꿨어요`,bids);else toast(`${k} → ${to}로 합쳤어요`);UI.sch=to;render()}
@@ -7059,7 +7081,7 @@ let SCH_MIG=false;
 async function schAliasMigrate(){if(SCH_MIG)return;SCH_MIG=true;try{await schAliasMigrate0()}finally{SCH_MIG=false}}
 async function schAliasMigrate0(){const S=SCH();const todo=Object.entries(SCH_ALIAS0).filter(([from])=>S.list[from]&&!(S.list[from].hide&&S.list[from].hide.v));if(!todo.length)return;
   await shSave('schools',(S,at)=>{todo.forEach(([k,to])=>{const src=S.list[k]||{};const d=S.list[to]=S.list[to]||{};d.base=Object.assign({name:to,kind:schKind(to),pub:''},d.base||{},{at});d.base.alias=[...new Set([...(d.base.alias||[]),k])];if(!d.base.pub&&src.base&&src.base.pub)d.base.pub=src.base.pub;
-    ['cal','rng','books','cuts','got'].forEach(sec=>{if(!src[sec])return;d[sec]=d[sec]||{};Object.entries(src[sec]).forEach(([kk,v])=>{if(!d[sec][kk])d[sec][kk]=Object.assign({},v,{at});else if(sec==='cal'){d[sec][kk]=Object.assign({},v,d[sec][kk],{at})}})});if(!d.memo&&src.memo)d.memo=Object.assign({},src.memo,{at});S.list[k]=Object.assign({},src,{hide:{v:1,at}})})},'')}
+    ['cal','rng','books','cuts','got','gotsj'].forEach(sec=>{if(!src[sec])return;d[sec]=d[sec]||{};Object.entries(src[sec]).forEach(([kk,v])=>{if(!d[sec][kk])d[sec][kk]=Object.assign({},v,{at});else if(sec==='cal'){d[sec][kk]=Object.assign({},v,d[sec][kk],{at})}})});if(!d.memo&&src.memo)d.memo=Object.assign({},src.memo,{at});S.list[k]=Object.assign({},src,{hide:{v:1,at}})})},'')}
 /* 학생 학교 이름도 바꿈(고칠 수 있는 지점 · 수정 중이 아닐 때) */
 /* ===== 자동 점검 (학생·학교·성적·업무·입학 문의) — 정보 줄 · 누르면 그 화면으로(go) =====
    예민한 비교(선생님별 등)는 넣지 않음 */
@@ -7133,6 +7155,11 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
   if(t.id==='xcNm')xcNames();else if(t.dataset.act==='xcMv')xcMv(+t.dataset.n);else if(t.dataset.act==='xcPrint')xcPrint();else if(t.dataset.act==='xcOpen')xcOpen();else{UI.xc&&(UI.xc.open=false);$('modal').hidden=true}},true);
 
 /* 3.75.6 시험 범위 과목 추가·지우기 (고등) — 추가는 빈 범위 줄을 만들고, 지우기는 지운 표시(del)를 남겨 다른 PC와 맞춤 */
+/* 3.82.5 기출 수거 과목 줄 넣기·지우기 */
+document.addEventListener('change',async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.gotadd||!t.value)return;const [k,g]=t.dataset.gotadd.split('|');const sj=t.value;
+  await schSave((S,at)=>{const o=S.list[k]=S.list[k]||{};o.gotsj=o.gotsj||{};o.gotsj[`${g}|${sj}`]={v:1,at}},`기출 수거에 ${g} ${subjShort(sj)} 줄을 넣었어요`)});
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-act="gotSjDel"]');if(!b)return;e.stopPropagation();if(!b.classList.contains('arm')){b.classList.add('arm');b.textContent='지울까요?';clearTimeout(b._t);b._t=setTimeout(()=>{b.classList.remove('arm');b.textContent='×'},2500);return}
+  const {k,g,sj}=b.dataset;await schSave((S,at)=>{const o=S.list[k]=S.list[k]||{};o.gotsj=o.gotsj||{};o.gotsj[`${g}|${sj}`]={v:0,at}},'과목 줄을 지웠어요')},true);
 document.addEventListener('change',async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.rngadd||!t.value)return;const [k,y,sem,mf,g]=t.dataset.rngadd.split('|');const sj=t.value;const rk=`${y}|${sem}|${mf}|${g}|${sj}`;
   await schSave((S,at)=>{const o=S.list[k]=S.list[k]||{};o.rng=o.rng||{};const cur=o.rng[rk];if(cur&&!cur.del&&(cur.a||cur.z||cur.free||cur.memo))return;o.rng[rk]={a:null,z:null,memo:'',free:'',at}},`${g} ${subjShort(sj)} 줄을 넣었어요 · [범위 넣기]로 단원을 골라요`)});
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-act="rngSjDel"]');if(!b)return;e.stopPropagation();if(!b.classList.contains('arm')){b.classList.add('arm');b.textContent='지울까요?';clearTimeout(b._t);b._t=setTimeout(()=>{b.classList.remove('arm');b.textContent='×'},2500);return}
@@ -7602,7 +7629,11 @@ const HELP=[
   <li><b>교과서</b>: 학교 카드의 '교과서' 칸에 출판사를 메모해요 — 중학교는 <b>학년마다</b>, 고등학교는 부교재처럼 <b>과목마다</b>(예: 비상(김원경)). 적은 건 학교 이름 옆 한 줄, 학생 정보 창 시험 칸(그 학생 학년·과목), 선생님 폰 학교 탭에 보여요. 학교 이름(보이는 이름)은 카드 맨 위 <b>학교 이름을 누르면</b> 바꾸거나 학생 없는 학교를 목록에서 숨겨요.</li>
   <li><b>등급컷</b>은 고등 과목마다 <b>1등급 최저 점수</b>만 적어요(선생님 폰에도 1등급만).</li>
   <li><b>선택과목</b>: 고2는 2학년 1·2학기(+2학기엔 3학년 1학기 조사), 고3은 3학년 1학기만 — 3학년 2학기는 시험이 없어 받지 않아요. 고1은 2학기에 <b>2학년 1·2학기 + 3학년 1학기</b>를 미리 조사해 두면 학년이 올라가도 그대로 이어져요.</li>
+  <li><b>선택과목 미정 표시</b>: 학년 제목 옆에 지금 학기 과목을 아직 안 정한 학생 수가 <b>[3명 미정]</b>으로 떠요(다 정했으면 '모두 정함'). 누르면 그 학생 줄로 차례로 찾아가고, 미정인 학생 줄은 이름 왼쪽에 노란 선. 칸 제목과 <b>기출 수거</b> 제목에도 '고2 3명 미정'처럼 같이 보여요(고1 2·3학년 과목 미리 조사는 꼭 채울 필요가 없어 고1 학년 제목 옆에만) — 과목 줄이 학생 선택과목으로 정해져서 빈 곳을 먼저 채우면 돼요.</li>
+  ${HF('sjmiss','선택과목 — 학년별 미정 학생 수 · 미정 학생 줄 표시')}
   ${HF('card','학교 카드 — 학사일정·범위·교과서·부교재·등급컷·기출 수거·선택과목')}
+  <li><b>기출 수거 — 고2·고3은 과목별</b>: 고등학교는 <b>고2·고3을 과목별 줄</b>(대수·미적1·확통 …)로 나눠 체크해요. 과목은 그 학교·학년 <b>학생들이 고른 선택과목만</b> 저절로 떠요. 학생 선택과목에 없는 과목은 표 아래 <b>[+ 고2 과목 추가]</b>로 넣고, 넣은 줄은 이름 옆 <b>×</b>(두 번)로 지워요(학생이 고른 과목·체크가 있는 과목은 안 지워져요). 과목을 하나도 모르면 학년 한 줄 + [과목별로 나누기]. 고1과 중학교는 지금처럼 학년 한 줄. 예전에 학년 하나로 체크해 둔 건 <b>'과목 미구분'</b> 줄에 남아 있다가, 그 시험에 과목을 하나라도 체크하면 그 칸이 사라지고, 다 처리되면 줄도 없어져요(기록은 지우지 않아요). 선생님 폰 학교 탭에도 과목별로 보여요.</li>
+  ${HF('gotsj','기출 수거 — 고2 과목별 줄 · 과목 미구분 줄')}
   <li><b>시험 달력 · 날짜별 학생</b>: 학교 정보의 시험 달력 [날짜별 학생 · 인쇄](또는 지점 시간표 위 다가오는 시험 띠의 [시험 달력]). 날마다 <b>학교+학년(중등)</b>·<b>학교+과목(고등)</b>과 인원이 떠요. <b>학생 이름</b> 스위치를 켜면 이름이 펼쳐지고, <b>[인쇄 · PDF]</b>는 지금 보이는 대로 A4 가로 한 장. 고2·고3은 학생 카드의 선택과목 기준(안 넣었으면 과목 기본 학년), 과목별 날짜가 없는 학교는 첫날에 기간으로 보여요. 지점 학생만 나와요.</li>
   ${HF('xcal','시험 달력 — 날짜별로 누가 무슨 시험을 치는지 · 학생 이름 켬')}
   <li><b>중3 2학기 시험 따로</b>: 중학교 학사일정에 <b>2학기 시험(중3)</b> 칸이 있어요. 중3이 2학기에 시험을 한 번만 보고 1·2학년과 기간이 다르면 여기 넣어요 — 그러면 중3은 이 기간만(다음 시험 D-day·시험 달력·상담 시험 기간·다가오는 시험 띠), 1·2학년은 원래 2학기 중간·기말로 잡혀요. 범위·등급컷·성적은 '2학기 중간'에 같이 넣어요. 비워 두면 지금처럼 중3도 2학기 중간을 같이 봐요.</li>
