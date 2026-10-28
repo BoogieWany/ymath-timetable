@@ -1075,17 +1075,26 @@ tr[data-tkrow]:has([data-act="tkEdit"]):hover td{background:color-mix(in srgb,va
 .schwrap{align-items:start}
 .schlist{position:sticky;top:12px;max-height:calc(100vh - 24px)}
 body.exe .schlist{top:48px;max-height:calc(100vh - 60px)}
-.schlist::-webkit-scrollbar{width:6px}
-.schlist::-webkit-scrollbar-track{background:transparent}
-.schlist::-webkit-scrollbar-thumb{background:transparent;border-radius:999px}
-.schlist:hover::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 40%,transparent)}
-.schlist::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--muted) 65%,transparent)}
-.schlist::-webkit-scrollbar-button{display:none;height:0}
+
 .schnm{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:7px;padding:1px 6px;margin:-1px -6px;transition:background-color .15s ease}
 .schnm svg{width:14px;height:14px;fill:none;stroke:var(--info);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .15s ease}
 .schnm:hover{background:color-mix(in srgb,var(--info) 8%,transparent)}.schnm:hover svg,.schnm:focus-visible svg{opacity:.85}
 .schnm:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 50%,transparent)}
 .schlist{border-right:0}.schcard{border-left:1px solid var(--line2)}
+
+/* 3.82.4 휠(스크롤 막대) 모양을 프로그램 전체에서 같게 — 얇고 둥글게 · 화살표 없음
+   안쪽 칸(세로)은 마우스를 올렸을 때만 은은히 · 가로 막대(넓은 표)는 늘 옅게 보여서 옆으로 더 있다는 걸 알 수 있게 · 화면 전체 막대는 늘 옅게 */
+::-webkit-scrollbar{width:8px;height:8px;background:transparent}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-button{display:none;width:0;height:0}
+::-webkit-scrollbar-thumb{border-radius:999px;border:2px solid transparent;background-clip:padding-box;background-color:transparent;transition:background-color .2s}
+:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 42%,transparent)}
+::-webkit-scrollbar-thumb:horizontal{background-color:color-mix(in srgb,var(--muted) 26%,transparent)}
+:hover::-webkit-scrollbar-thumb:horizontal{background-color:color-mix(in srgb,var(--muted) 45%,transparent)}
+::-webkit-scrollbar-thumb:hover,::-webkit-scrollbar-thumb:active{background-color:color-mix(in srgb,var(--muted) 68%,transparent)!important}
+html::-webkit-scrollbar{width:10px}
+html::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 30%,transparent)}
+html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 38%,transparent)}
 </style>
 </head>
 <body>
@@ -3446,7 +3455,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.82.3', APPDATE='2026-10-28';
+const APPVER='3.82.4', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
