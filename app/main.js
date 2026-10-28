@@ -163,7 +163,7 @@ function schPack(db,b){EXDB=db;const L=((db.schools||{}).list)||{};const td=exTd
     const rng={},rnn={};Object.entries(o.rng||{}).forEach(([rk,r])=>{if(!yrs.has(rk.split('|')[0]))return;const t=rt(r);if(t)rng[rk]=t;if(r&&!r.del&&r.note)rnn[rk]=String(r.note).slice(0,400)}); /* 3.78.9 출제 참고사항 */
     const books={};Object.entries(o.books||{}).forEach(([x,v])=>{if(v&&v.t)books[x]=v.t});
     const cuts={};Object.entries(o.cuts||{}).forEach(([ck,v])=>{if(!yrs.has(ck.split('|')[0])||!v||!v.c)return;const c={};Object.entries(v.c).forEach(([n,x])=>{if(x!=null&&x!=='')c[n]=x});if(Object.keys(c).length)cuts[ck]=c});
-    const got=[];Object.entries(o.got||{}).forEach(([gk,v])=>{if(v&&v.v&&+gk.slice(0,4)>=y-3)got.push(gk)});
+    const got=[];Object.entries(o.got||{}).forEach(([gk,v])=>{if(v&&v.v&&+gk.slice(0,4)>=y-3)got.push(gk)});{const sj=new Set(got.filter(x=>x.split('|').length>4).map(x=>x.split('|').slice(0,4).join('|')));for(let i=got.length-1;i>=0;i--)if(sj.has(got[i]))got.splice(i,1)} /* 3.82.5: 과목별로 체크한 시험은 학년 하나짜리(미구분) 체크 안 보냄 */
     out.push({k,nm:base.name||k,kd:exKind(k),pub:base.pub||'',...(base.pubg&&Object.keys(base.pubg).length?{pubg:base.pubg}:{}),/* 3.81.6 교과서 학년별 */al:base.alias||[],cal,rng,...(Object.keys(rnn).length?{rnn}:{}),books,cuts,got})});
   return out}
 function exPack(db,b){EXDB=db;const td=exTd();const P=exPeriods(db,b);const both=[P.중,P.고].filter(x=>x&&x.from&&x.to);const exam=both.length?{from:both.map(x=>x.mf).sort()[0],to:both.map(x=>x.mt).sort().pop()}:null; /* 폰 응원·예전 폰: 관리 기간 합친 것 */
