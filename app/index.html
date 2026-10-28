@@ -138,8 +138,8 @@ td.drophover.dropcopy{outline-color:#3f9a64;background:color-mix(in srgb,#3f9a64
 
 /* 오른쪽 */
 .side{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;align-items:stretch}
-.side > .card{display:flex;flex-direction:column;max-height:170px;min-height:0}
-.side > .card > .issues,.side > .card > .detail{overflow:auto;min-height:0}
+.side > .card{display:flex;flex-direction:column;min-height:0} /* 3.81.9: 안쪽 스크롤 없이 화면 전체로 굴림 */
+.side > .card > .issues,.side > .card > .detail{min-height:0}
 .side .sumrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .side .issues{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px;padding:8px 10px 10px}
 .side .issues li{margin-top:0}
@@ -1066,6 +1066,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .stinfo .sic.shut>h4{margin-bottom:0}.stinfo .sic.shut>h4 .sich{transform:rotate(-45deg)}
 .stinfo .sic.shut>:not(h4){display:none}
 .stinfo .sic>:not(h4){animation:exin .22s ease}
+/* 3.82.0 업무 줄 누르면 고치기 */
+tr[data-tkrow]:has([data-act="tkEdit"]){cursor:pointer}
+tr[data-tkrow]:has([data-act="tkEdit"]):hover td{background:color-mix(in srgb,var(--info) 5%,var(--panel))}
 </style>
 </head>
 <body>
@@ -3426,7 +3429,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.81.8', APPDATE='2026-10-28';
+const APPVER='3.82.0', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -7422,8 +7425,8 @@ function viewTasks(){const b=B();UI.tk=UI.tk||{kind:'',who:'',open:true,q:'',sum
     <select data-tko="who"><option value="">모든 담당</option>${names.map(n=>`<option value="${esc(n)}" ${G.who===n?'selected':''}>${esc(n)}T</option>`).join('')}</select><input id="tkQ" placeholder="학교·단원·비고 찾기" value="${esc(G.q)}" autocomplete="off" style="width:150px">
     </div>`;
   const tg=(t,f,on,lab)=>`<button class="tkt${on?' on':''}" data-tkt="${esc(t.id)}|${f}" ${ed?'':'disabled'} title="${lab}">${on?'✓':''}<span>${lab}</span></button>`;
-  const row=t=>`<tr class="${t.done?'done':''}"><td class="l"><span class="tkk k${esc(t.kind||'기타')}">${esc(TK_KIND[t.kind]||t.kind||'기타')}</span></td><td class="l">${esc(t.grade||'')}</td><td class="l">${esc(t.school||'')}</td><td class="l"><b>${esc(t.title||'')}</b>${t.due?`<small class="hint"> · ${esc(annMD(t.due))}까지</small>`:''}</td><td class="l">${esc(t.subj||'')}</td><td class="l">${t.who?esc(tkWho(t.who).split(',').map(n=>n+'T').join(', ')):'<span class="hint">미정</span>'}</td>${t.kind==='블로그'?`<td class="num" colspan="2">${tg(t,'pub',!!t.pub,'발행 완료')}</td>`:`<td class="num">${t.n||''}</td><td class="num">${tg(t,'ans',!!t.ans,'답안')}</td>`}<td class="num">${tg(t,'done',!!t.done,'완료')}${t.done&&t.doneBy?`<small class="hint tkby">${esc(t.doneBy)}${t.doneAt?' '+esc(annMD(t.doneAt)):''}</small>`:''}</td><td class="num">${tg(t,'chk',!!t.chk,'점검')}</td><td class="l"><small>${esc(t.memo||'')}</small></td><td class="num">${ed?`<button class="tedit" data-act="tkEdit" data-id="${esc(t.id)}" title="고치기·지우기">⋯</button>`:''}</td></tr>`;
-  h+=`<div class="sec grsec"><h3>업무 목록 <span class="hint">안 끝난 일 ${L.length}개${Dn.length?` · 완료 ${Dn.length}개는 맨 아래`:''} · 답안·완료·점검(블로그는 발행 완료)은 눌러서 바꿔요 · 줄 끝 ⋯로 고치기</span></h3><div class="scroll grscroll"><table class="tbl tkt-tbl"><thead><tr><th class="l">종류</th><th class="l">학년</th><th class="l">학교</th><th class="l">${G.kind==='블로그'?'글 제목 · 시험':'파일명 · 단원'}</th><th class="l">과목 · 회차</th><th class="l">담당</th>${G.kind==='블로그'?'<th colspan="2">발행</th>':'<th>문항</th><th>답안</th>'}<th>완료</th><th>점검</th><th class="l">비고</th><th></th></tr></thead><tbody>
+  const row=t=>`<tr class="${t.done?'done':''}" data-tkrow="${esc(t.id)}"><td class="l"><span class="tkk k${esc(t.kind||'기타')}">${esc(TK_KIND[t.kind]||t.kind||'기타')}</span></td><td class="l">${esc(t.grade||'')}</td><td class="l">${esc(t.school||'')}</td><td class="l"><b>${esc(t.title||'')}</b>${t.due?`<small class="hint"> · ${esc(annMD(t.due))}까지</small>`:''}</td><td class="l">${esc(t.subj||'')}</td><td class="l">${t.who?esc(tkWho(t.who).split(',').map(n=>n+'T').join(', ')):'<span class="hint">미정</span>'}</td>${t.kind==='블로그'?`<td class="num" colspan="2">${tg(t,'pub',!!t.pub,'발행 완료')}</td>`:`<td class="num">${t.n||''}</td><td class="num">${tg(t,'ans',!!t.ans,'답안')}</td>`}<td class="num">${tg(t,'done',!!t.done,'완료')}${t.done&&t.doneBy?`<small class="hint tkby">${esc(t.doneBy)}${t.doneAt?' '+esc(annMD(t.doneAt)):''}</small>`:''}</td><td class="num">${tg(t,'chk',!!t.chk,'점검')}</td><td class="l"><small>${esc(t.memo||'')}</small></td><td class="num">${ed?`<button class="tedit" data-act="tkEdit" data-id="${esc(t.id)}" title="고치기·지우기">⋯</button>`:''}</td></tr>`;
+  h+=`<div class="sec grsec"><h3>업무 목록 <span class="hint">안 끝난 일 ${L.length}개${Dn.length?` · 완료 ${Dn.length}개는 맨 아래`:''} · 답안·완료·점검(블로그는 발행 완료)은 눌러서 바꿔요 · <b>줄을 누르면 고치기</b></span></h3><div class="scroll grscroll"><table class="tbl tkt-tbl"><thead><tr><th class="l">종류</th><th class="l">학년</th><th class="l">학교</th><th class="l">${G.kind==='블로그'?'글 제목 · 시험':'파일명 · 단원'}</th><th class="l">과목 · 회차</th><th class="l">담당</th>${G.kind==='블로그'?'<th colspan="2">발행</th>':'<th>문항</th><th>답안</th>'}<th>완료</th><th>점검</th><th class="l">비고</th><th></th></tr></thead><tbody>
     ${L.map(row).join('')||'<tr><td colspan="12" class="hint">안 끝난 일이 없어요 · [+ 업무 추가]나 [시트 불러오기]</td></tr>'}
     ${Dn.length||nOld?`<tr class="tkfold"><td colspan="12"><button class="btn sm" data-tko="showDone" data-v="${G.showDone?'0':'1'}">${G.showDone?'완료된 일 숨기기':`완료된 일 ${Dn.length}개 펼치기`}</button>${nOld?`<span class="hint">3개월 지난 완료 ${nOld}개는 자동으로 숨겨요</span>`:''}</td></tr>`:''}${G.showDone?Dn.map(row).join(''):''}</tbody></table></div></div>`;
   /* 담당별 합계 */
@@ -7465,6 +7468,9 @@ async function tkImpParse(buf){const {z,sheets}=await readWorkbook(buf);const ou
     rows.filter(r=>r>hr).forEach(r=>{const title=str(r,C.t);if(!title)return;const g=str(r,C.g).replace(/학년$/,'').trim();const school=schNorm(str(r,C.s));const grade=/^\d$/.test(g)?(schKind(school)||'고')+g:g;out.push({kind,grade,school,title,subj:str(r,C.j),who:tkWho(str(r,C.w)),ans:o(str(r,C.a))?1:0,done:o(str(r,C.d))?1:0,n:+String(str(r,C.n)).replace(/\D/g,'')||0,memo:str(r,C.m)})})}
   return out}
 async function tkImportGo(){const nw=UI.tkImpNew||[];if(!nw.length)return;$('modal').hidden=true;await tkSave((S,at)=>{nw.forEach(x=>{const id=uid('k');S.list[id]=Object.assign({id,at,by:tkMe()},x,x.done?{doneAt:'',doneBy:''}:{})})},`업무 ${nw.length}개를 넣었어요`);UI.tkImp=null;UI.tkImpNew=null}
+
+/* 3.82.0 업무 줄 아무 데나 누르면 고치기 창(⋯ 버튼이 있는 줄만 · 답안·완료·점검 같은 버튼은 원래대로 · 글자 고르기 중엔 안 뜸) */
+document.addEventListener('click',e=>{if(UI.view!=='tasks')return;const tr=e.target.closest&&e.target.closest('tr[data-tkrow]');if(!tr||e.target.closest('button,a,input,select,textarea,label'))return;if(getSelection&&String(getSelection()).length)return;if(!tr.querySelector('[data-act="tkEdit"]'))return;tkDlg(tr.dataset.tkrow)});
 </script>
 <script>/* ================= 도움말 (사용 설명서 · 관리자 도움말) =================
    그림: 데모 자료로 찍은 화면(test/helpshots.js → app/helpimg.js, 처음 도움말 열 때만 불러옴) · F(이름,설명)
@@ -7599,6 +7605,7 @@ const HELP=[
   ${HF('tasks','업무 — 모든 지점이 같이 쓰는 일 목록 · 담당별 합계')}
   <ul><li>인강·자료 제작·<b>블로그 분석글</b>처럼 나눠서 하는 일을 <b>모든 지점이 같이</b> 봐요(지점 구분 없음).</li>
   <li><b>[+ 업무 추가]</b>(종류·학년·학교·파일명/단원·과목·담당·문항수·기한·비고 · 블로그 분석글은 제목 칸이 '글 제목 · 시험'으로 바뀌고, 목록에서 문항·답안 대신 <b>[발행 완료]</b> 하나를 눌러요) 또는 <b>[시트 불러오기]</b>에 '인강분배' 시트 엑셀. 담당은 강사 목록에서 여러 명도.</li>
+  <li><b>고치거나 지울 땐 그 줄 아무 데나 눌러요</b> — 고치기 창이 떠요(종류·학년·학교·제목·과목·담당·문항수·기한·비고 · [지우기]).</li>
   <li>표에서 <b>답안·완료·점검</b>을 눌러 바꿔요. 완료된 일은 맨 아래 접혀 있고, 3개월 지나면 자동으로 숨어요. 아래에 <b>담당별 합계</b>.</li>
   <li>폰: 담당 선생님은 [오늘] 탭에 <b>내 업무</b> → [완료]를 누르면 PC에 1~2분 뒤 반영. 지점장·행정·관리자 폰은 <b>전체 업무</b>(진행 중·끝난 일 2주·사람별)를 봐요(보기만).</li></ul>`},
  {id:'stats',t:'실적 통계',b:`
