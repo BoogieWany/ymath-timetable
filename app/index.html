@@ -1050,6 +1050,9 @@ button.st small{font-weight:400;font-size:10.5px;margin-left:2px}
 .scroll.stlist .tbl thead th{top:0;z-index:3;box-shadow:0 1px 0 var(--line2)}body.exe .scroll.stlist .tbl thead th{top:36px}
 /* 3.81.2 학생 카드([상태·정보 고치기])도 성적·자체시험 목록을 안쪽 스크롤 없이 창 하나로 */
 .dlg[data-stid] .scroll{max-height:none!important;overflow:visible!important}.dlg[data-stid] .scroll .tbl thead th{position:static}
+/* 3.81.4 학생 목록 줄 누르면 정보 창 */
+.stlist tbody tr[data-strow]{cursor:pointer;transition:background-color .12s ease}
+.stlist tbody tr[data-strow]:hover td{background:color-mix(in srgb,var(--info) 5%,var(--panel))}
 </style>
 </head>
 <body>
@@ -3410,7 +3413,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.81.3', APPDATE='2026-10-28';
+const APPVER='3.81.4', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3978,7 +3981,7 @@ function viewStudents(){
   h+=`<div class="tools"><input id="fq" placeholder="이름·학교 검색" value="${esc(f.q)}" style="width:160px"><select id="fg"><option value="">전체 학년</option>${grades.map(g=>`<option ${g===f.g?'selected':''}>${esc(g)}</option>`).join('')}</select><select id="fst"><option value="">재원+휴원</option><option ${f.st==='재원'?'selected':''}>재원</option><option ${f.st==='휴원'?'selected':''}>휴원</option><option ${f.st==='예정'?'selected':''}>예정</option><option ${f.st==='퇴원'?'selected':''}>퇴원</option></select>
   <span class="sp"></span><input id="nName" placeholder="이름" style="width:90px"><input id="nSchool" placeholder="학교" style="width:100px"><input id="nGrade" placeholder="학년(예: 중2)" style="width:100px"><input id="nFrom" type="date" title="첫 수업일 · 오늘 이후면 입학 예정으로 들어가요" style="width:140px"><button class="btn" data-act="addStudent">학생 추가</button></div>
   <div class="scroll stlist"><table class="tbl"><thead><tr><th>이름</th><th>학교</th><th>학년</th><th>상태</th><th class="num">주당</th><th>수강 반 (강사)</th><th>시간 조건</th><th>연락처</th><th>명부 반</th><th></th></tr></thead><tbody>`;
-  list.forEach(s=>{h+=`<tr data-q="${esc(s.name+' '+(s.school||''))}"${qm(s)?'':' hidden'}><td><button class="lnk stnm" data-sti="${s.id}" title="학생 정보 보기"><b>${s.key?'<i class="kst" title="주요 학생">★</i>':''}${esc(sname(s.id))}</b></button></td><td>${esc(s.school)}</td><td>${esc(s.grade)}</td><td><button class="st${s.status==='휴원'?' away':isOut(s)?' out':isPre(s)?' pre':''}" data-status="${s.id}">${s.status||'재원'}${isOut(s)&&s.out?` <small>${mdS(s.out)}</small>`:''}</button></td><td class="num">${cnt[s.id]||0}</td><td>${esc([...(inCls[s.id]||[])].join(', '))||'<span class="hint">없음</span>'}</td><td>${availCell(s)}</td><td>${phCell(s)}</td><td class="hint">${esc(rcShow(s))}</td><td><button class="btn danger" data-delstu="${s.id}">삭제</button></td></tr>`});
+  list.forEach(s=>{h+=`<tr data-q="${esc(s.name+' '+(s.school||''))}" data-strow="${s.id}"${qm(s)?'':' hidden'}><td><button class="lnk stnm" data-sti="${s.id}" title="학생 정보 보기"><b>${s.key?'<i class="kst" title="주요 학생">★</i>':''}${esc(sname(s.id))}</b></button></td><td>${esc(s.school)}</td><td>${esc(s.grade)}</td><td><button class="st${s.status==='휴원'?' away':isOut(s)?' out':isPre(s)?' pre':''}" data-status="${s.id}">${s.status||'재원'}${isOut(s)&&s.out?` <small>${mdS(s.out)}</small>`:''}</button></td><td class="num">${cnt[s.id]||0}</td><td>${esc([...(inCls[s.id]||[])].join(', '))||'<span class="hint">없음</span>'}</td><td>${availCell(s)}</td><td>${phCell(s)}</td><td class="hint">${esc(rcShow(s))}</td><td><button class="btn danger" data-delstu="${s.id}">삭제</button></td></tr>`});
   h+=`<tr id="fqEmpty"${list.some(qm)?' hidden':''}><td colspan="10" class="empty">조건에 맞는 학생이 없어요</td></tr>`;
   return h+'</tbody></table></div>';
 }
@@ -4088,6 +4091,8 @@ function missBoxHTML(b,r){const ids=r.missing.filter(id=>{const s=S(id);return s
 async function missApply(){const r=UI.importRes;if(!r)return;const td=todayStr();const out=r.missing.filter(id=>missCh(r,id)==='퇴원'&&S(id)),aw=r.missing.filter(id=>missCh(r,id)==='휴원'&&S(id));if(!out.length&&!aw.length){toast('바꿀 학생이 없어요');return}
   await quickChange(()=>{const b=B();out.forEach(id=>{const s=b.students.find(x=>x.id===id);if(!s)return;s.status='퇴원';s.out=td;stOutApply(b,id)});aw.forEach(id=>{const s=b.students.find(x=>x.id===id);if(s)s.status='휴원'})},[out.length?`퇴원 ${out.length}명`:'',aw.length?`휴원 ${aw.length}명`:''].filter(Boolean).join(' · ')+' 반영했어요');
   r.missing=[];r.mc={};render()}
+/* 3.81.4 학생 목록: 줄 아무 데나 누르면 학생 정보 창(버튼·입력 칸은 원래대로) */
+document.addEventListener('click',e=>{if(UI.view!=='students')return;const tr=e.target.closest&&e.target.closest('.stlist tr[data-strow]');if(!tr||e.target.closest('button,a,input,select,textarea,label'))return;if(getSelection&&String(getSelection()).length)return;stInfoDlg(tr.dataset.strow)});
 function render(){
   /* 3.80.4 성적 칸에 입력 중이면(동기화·자동 갱신 등) 통째로 다시 그리지 않고 바뀐 곳만 */
   if(UI.view==='grades'&&UI._lastView==='grades'&&!UI.edit===!UI._grEdit&&document.activeElement&&document.activeElement.closest&&document.activeElement.closest('table.grt')&&typeof grPatch==='function'&&grPatch())return;UI._grEdit=UI.edit;
@@ -7491,7 +7496,7 @@ const HELP=[
   ${HF('students','학생 관리 — 맨 위 입학 문의·신입, 정기 상담, 아래 학생 목록')}
   <ul><li>칸 제목(입학 문의, 정기 상담, 학생 목록 등)을 누르면 접히고 펼쳐져요. 이 PC에서 접어 둔 칸은 다음에도 접힌 채로. 학생 목록은 화면 전체와 같이 굴러가고, 내려가도 맨 위 제목 줄(이름·학교·학년…)이 붙어 있어요.</li>
   <li><b>상태</b>를 누르면 재원·휴원·<b>입학 예정</b>(첫 수업일)·<b>퇴원</b>(퇴원일)을 골라요(보기 모드에서도 바로 저장). 입학 예정은 첫 수업일이 되면 저절로 재원이 되고 <b>2주 동안 '신입'</b> 표시가 붙어요.</li>
-  <li><b>학생 이름</b>을 누르면 <b>학생 정보 창</b>이 떠요 — 수강 반과 요일·교시·시간(주 몇 회 · 특강 · 명부 반), 연락처([고치기]), 다음 시험(수학 시험일 기준 D-day · 그 학생 과목의 범위 · 출제 참고사항 · [학교 정보]로 바로), <b>선택과목</b>(고등 · 눌러서 바로 켜고 끄기), 상담(최근 기록 · [상담 완료·기록]), 특이사항, 성적 흐름·자체시험. 상태나 첫 수업일은 창 위 <b>[상태·정보 고치기]</b>(또는 상태 칸)를 눌러 학생 카드에서.</li>
+  <li><b>학생 줄</b>(이름이든 학교·반 칸이든)을 누르면 <b>학생 정보 창</b>이 떠요 — 상태·연락처·시간 조건·삭제 버튼은 원래대로 — 수강 반과 요일·교시·시간(주 몇 회 · 특강 · 명부 반), 연락처([고치기]), 다음 시험(수학 시험일 기준 D-day · 그 학생 과목의 범위 · 출제 참고사항 · [학교 정보]로 바로), <b>선택과목</b>(고등 · 눌러서 바로 켜고 끄기), 상담(최근 기록 · [상담 완료·기록]), 특이사항, 성적 흐름·자체시험. 상태나 첫 수업일은 창 위 <b>[상태·정보 고치기]</b>(또는 상태 칸)를 눌러 학생 카드에서.</li>
   ${HF('stinfo','학생 이름을 누르면 학생 정보 창 — 반·시간, 연락처, 시험, 선택과목, 상담, 성적')}
   ${HF('stdlg','[상태·정보 고치기] — 학생 카드: 상태, 성적 흐름, 특이사항(PC에만)')}
   <li><b>연락처</b> 칸을 누르면 학생·학부모(3명까지) 번호를 넣어요. 재학생명부를 가져오면 명부의 연락처 칸을 알아서 읽어요.</li>
