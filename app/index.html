@@ -1125,6 +1125,12 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .rdt{width:100%;font-size:12.5px}.rdt th{position:sticky;top:0;background:var(--panel);z-index:1}.rdt td{vertical-align:middle}.rdt td.r{text-align:right;white-space:nowrap}
 .rdt tr.pd td{color:var(--muted)}.rdt input[type=date]{font:inherit;font-size:12px;padding:2px 6px;border:1px solid var(--line);border-radius:7px;background:transparent;color:inherit}
 .btn .rfcnt{margin-left:4px;padding:0 7px;font-size:11px}
+.rdt tr.rdm td{background:color-mix(in srgb,var(--muted) 6%,var(--panel));padding-top:7px;padding-bottom:7px}
+/* 3.83.3 월별 신규생 · 학생 정보 소개 칸 */
+.rdmon{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line2);flex-wrap:wrap}.rdmon b{min-width:120px;text-align:center}
+.rdt tr.rdnew{cursor:pointer;transition:background .15s}.rdt tr.rdnew:hover td{background:color-mix(in srgb,var(--navy) 5%,transparent)}
+.sirf .rfin{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.sirf .rfin input{font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:170px}
+.sirf .sir{gap:8px}.sirf .lnk.arm{color:#c0392b}
 </style>
 </head>
 <body>
@@ -3485,7 +3491,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.83.1', APPDATE='2026-10-28';
+const APPVER='3.83.3', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4565,7 +4571,7 @@ document.addEventListener('click',async e=>{
   if(ds.cnasg!==undefined){cnAsgDlg(ds.cnasg);return}
   if(ds.cnasgx){if(!armed(el,'cx'+ds.cnasgx,'취소할까요?'))return;$('modal').hidden=true;cnAsgX(ds.cnasgx);return}
   if(ds.iqreg){inqRegDlg(ds.iqreg);return}
-  if(ds.iqnow){if(!armed(el,'iqn'+ds.iqnow,'한 번 더 누르면 재원'))return;inqReg(ds.iqnow,todayStr());return}
+  if(ds.iqnow){inqNowDlg(ds.iqnow);return} /* 3.83.2: 두 번 누르기 대신 작은 창(소개 칸) */
   if(ds.iqx){if(!armed(el,'iqx'+ds.iqx,'한 번 더 누르면 취소'))return;inqSet(ds.iqx,'cancel');return}
   if(ds.iqback){inqSet(ds.iqback,'open');return}
   if(ds.iqnadd){const i=document.querySelector(`[data-iqnin="${CSS.escape(ds.iqnadd)}"]`);inqNote(ds.iqnadd,i?i.value:'');return}
@@ -4727,6 +4733,7 @@ document.addEventListener('click',async e=>{
     case 'eokOpen':eokDlg();break;
     case 'refAdd':refAddDlg();break;
     case 'refList':refDlg();break;
+    case 'iqNowGo':inqNowGo();break;
     case 'refAddGo':refAddGo();break;
     case 'eokSave':eokSave();break;
     case 'eokMan':bridge&&bridge.eokOpen&&bridge.eokOpen();break;
@@ -6411,6 +6418,12 @@ function inqRegDlg(id){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;con
   <label class="qal">반 <span class="hint">여러 개 골라도 돼요 · 안 고르면 나중에 시간표 카드에서</span></label>${pkChipsPC('iqPk',q.grade)}
   <div class="row"><label for="iqRef">소개</label><input id="iqRef" list="refDL" placeholder="소개로 왔으면 소개해 준 학생 이름 (선택)" maxlength="30">${refDL(B())}<span class="hint">넣으면 소개비 칸에 미지급으로</span></div>
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqRegGo">입학 예정으로</button></div></div>`;setTimeout(()=>{const i=$('iqFrom');if(i)i.focus()},50)}
+function inqNowDlg(id){const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="inT" style="width:min(460px,100%)" data-ind="${id}"><h2 id="inT">바로 재원 · ${esc(q.name)}</h2>
+  <div class="hint">${esc([q.school,q.grade].filter(Boolean).join(' '))} · 오늘부터 재원 학생으로 옮겨요 (연락처까지)</div>
+  <div class="row"><label for="inRef">소개</label><input id="inRef" list="refDL" placeholder="소개로 왔으면 소개해 준 학생 이름 (선택)" maxlength="30">${refDL(B())}<span class="hint">넣으면 소개비 칸에 미지급으로</span></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="iqNowGo">재원으로</button></div></div>`;setTimeout(()=>{const i=$('inRef');if(i)i.focus()},50)}
+async function inqNowGo(){const d=document.querySelector('[data-ind]');if(!d)return;const rf=(($('inRef')||{}).value||'').trim();$('modal').hidden=true;await inqReg(d.dataset.ind,todayStr(),undefined,[],rf)}
 async function inqRegGo(){const d=document.querySelector('[data-iqd]');if(!d)return;const fd=$('iqFrom').value||'';if(!fd){toast('첫 수업일을 골라 주세요');$('iqFrom').focus();return}const pk=pkPickedPC('iqPk');const rf=(($('iqRef')||{}).value||'').trim();$('modal').hidden=true;await inqReg(d.dataset.iqd,fd,undefined,pk,rf)}
 async function inqReg(id,fd,rvId,pk,rf){pk=pk||[];rf=rf||'';const q=(B().inq||[]).find(x=>x.id===id);if(!q)return;const pre=fd&&fd>todayStr();const sid=uid('s');const qq={name:q.name,school:q.school||'',grade:q.grade||'',from:fd,ph:q.ph,pa:q.pa};
   /* 퇴원했던 학생과 같으면(이름+학교 또는 보호자 번호) 먼저 물어보고 → 같은 학생이면 재입학으로 잇기(rvId) · 아니면 새로 등록 */
@@ -6605,9 +6618,10 @@ function stInfoDlg(id){const b=B();const s=S(id);if(!s)return;const td=todayStr(
   const rs=cnRecs(b,id).slice(0,3);const hd=(cnCfg(b).hold||{})[id];
   const secCn=`<div class="sic"><h4>상담${hd?' <em class="sitag">보류 중</em>':''} <button class="lnk sm" data-cn="${id}">상담 완료·기록</button></h4>${rs.length?rs.map(r=>`<div class="sir"><span class="hint" style="min-width:42px">${mdS(r.at)}</span><span>${esc(r.by||'')}</span><small class="hint">${esc(r.memo||'')}</small></div>`).join(''):'<div class="hint">상담 기록이 없어요</div>'}${csTgt(s)?`<div class="hint" style="margin-top:4px">신입 상담: ${s.cs?'완료 '+mdS(s.cs):'<b>상담 전</b>'}</div>`:''}</div>`;
   const av=availCell(s);
-  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg stinfo" role="dialog" aria-modal="true" aria-labelledby="siT" style="width:min(780px,100%)" data-sti0="${id}">
-    <div class="sih"><div><h2 id="siT">${tag}${esc(sname(id))}</h2><div class="hint">${esc([s.school,s.grade].filter(Boolean).join(' · '))||'학교 없음'} · <b class="sist${s.status==='휴원'?' away':isOut(s)?' out':isPre(s)?' pre':''}">${esc(stl)}</b>${s.from&&!isPre(s)?` · 첫 수업 ${esc(mdS(s.from))}`:''}</div></div><span class="sp"></span><button class="btn sm" data-status="${id}">상태·정보 고치기</button><button class="btn sm" data-act="closeModal" aria-label="닫기">닫기</button></div>
-    <div class="sigrid">${secCls}${secPh}${secEx}${secSj}${secCn}${s.note?`<div class="sic"><h4>특이사항 <small>PC에서만</small></h4><div class="sinote2">${esc(s.note)}</div></div>`:''}${!Object.values(s.avail||{}).some(v=>v==='no'||v==='pref')?'':`<div class="sic"><h4>시간 조건</h4><div class="sir">${av}</div></div>`}</div>
+  const secRf=typeof refStiHTML==='function'?refStiHTML(b,s):'';const back=UI.stiBack;UI.stiBack=null;
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg stinfo" role="dialog" aria-modal="true" aria-labelledby="siT" style="width:min(780px,100%)" data-sti0="${id}"${back?` data-stiback="${esc(back)}"`:''}>
+    <div class="sih"><div><h2 id="siT">${tag}${esc(sname(id))}</h2><div class="hint">${esc([s.school,s.grade].filter(Boolean).join(' · '))||'학교 없음'} · <b class="sist${s.status==='휴원'?' away':isOut(s)?' out':isPre(s)?' pre':''}">${esc(stl)}</b>${s.from&&!isPre(s)?` · 첫 수업 ${esc(mdS(s.from))}`:''}</div></div><span class="sp"></span>${back==='ref'?'<button class="btn sm" data-act="refList" title="소개비 명단으로 돌아가기">← 소개비 명단</button>':''}<button class="btn sm" data-status="${id}">상태·정보 고치기</button><button class="btn sm" data-act="closeModal" aria-label="닫기">닫기</button></div>
+    <div class="sigrid">${secCls}${secPh}${secEx}${secSj}${secCn}${secRf}${s.note?`<div class="sic"><h4>특이사항 <small>PC에서만</small></h4><div class="sinote2">${esc(s.note)}</div></div>`:''}${!Object.values(s.avail||{}).some(v=>v==='no'||v==='pref')?'':`<div class="sic"><h4>시간 조건</h4><div class="sir">${av}</div></div>`}</div>
     <div class="sic sigr"><h4>성적</h4>${typeof grHistHTML==='function'?grHistHTML(s):''}${typeof tstHistHTML==='function'?tstHistHTML(b,s):''}</div></div>`;sifApply()}
 /* 3.81.5 선택과목: 누르면 바로 켜지고(기다림 없음) 저장은 뒤에서 */
 /* 3.81.7 학생 정보 칸마다 접기·펼치기(제목 줄 누르기 · 이 PC에 기억) */
@@ -6632,7 +6646,7 @@ function refBoxHTML(b){const L=refOf(b);const td=todayStr();const old=x=>x.pd&&x
     <div class="rfs">${r.pd?`<span class="rfok">지급 완료</span><input type="date" data-refpd="${r.id}" value="${esc(r.pd)}" title="지급일 고치기"><button class="btn sm" data-refun="${r.id}">되돌리기</button>`:`${s&&isPre(s)?'<span class="rfwait" title="첫 수업일이 지나 재원이 되면 미지급으로 세요">입학 전</span>':s&&isOut(s)?'<span class="rfwait">퇴원</span>':'<span class="rfno">미지급</span>'}<button class="btn sm${s&&isPre(s)?'':' pri'}" data-refpay="${r.id}">지급 완료</button>`}</div>
     <button class="rfx" data-refdel="${r.id}" title="이 기록 지우기 (두 번)" aria-label="지우기">×</button></div>`};
   return `<div class="sec refbox"><h3>소개비 ${(n=>n?`<span class="rfcnt">미지급 ${n}명</span>`:'')(un.filter(r=>{const x=(b.students||[]).find(y=>y.id===r.sid);return !x||(!isPre(x)&&!isOut(x))}).length)}<span class="hint">소개로 들어온 신입 → 소개해 준 학생 · 지점장·행정 선생님만 봐요(폰에는 안 나가요)</span><span class="sp"></span><button class="btn sm" data-act="refAdd">+ 소개 추가</button></h3>
-    ${L.length?`<div class="rfl">${un.map(row).join('')}${dn.map(row).join('')}</div>${od.length?`<details class="rfold"><summary>지급한 지 석 달 지난 기록 ${od.length}건</summary><div class="rfl">${od.map(row).join('')}</div></details>`:''}`:'<div class="hint rfemp">아직 없어요 · 신입을 넣을 때 \'소개\' 칸에 소개해 준 학생 이름을 쓰거나, [+ 소개 추가]로 넣어요</div>'}</div>`}
+    ${L.length?`<div class="rfl">${un.map(row).join('')}${dn.map(row).join('')}</div>${od.length?`<details class="rfold"><summary>지급한 지 석 달 지난 기록 ${od.length}건 · 모두 [업무 → 소개비 → 지급 내역]에 남아 있어요</summary><div class="rfl">${od.map(row).join('')}</div></details>`:''}`:'<div class="hint rfemp">아직 없어요 · 신입을 넣을 때 \'소개\' 칸에 소개해 준 학생 이름을 쓰거나, [+ 소개 추가]로 넣어요</div>'}</div>`}
 function refAddDlg(){UI.refBack=!!document.querySelector('.refdlg');const b=B();const L=(b.students||[]).filter(s=>!isOut(s)).sort((a,z)=>(z.from||z.at||'').localeCompare(a.from||a.at||'')||sortKo(a.name,z.name));
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rfT" style="width:min(460px,100%)"><h2 id="rfT">소개 추가 · <span class="iqbr">${esc(b.name)}</span></h2>
   <div class="row"><label for="rfSid">들어온 신입</label><select id="rfSid"><option value="">고르세요</option>${L.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${esc([s.school,s.grade].filter(Boolean).join(' '))}${s.from?' · '+mdS(s.from)+(isPre(s)?' 예정':' 입학'):''}</option>`).join('')}</select></div>
@@ -6644,8 +6658,8 @@ async function refAddGo(){const sid=$('rfSid').value,by=($('rfBy').value||'').tr
   const back=UI.refBack;UI.refBack=0;$('modal').hidden=true;await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).concat([refNew(bb,sid,by)])},`소개 기록을 넣었어요 · ${bs?bs.name:by} → ${(S(sid)||{}).name||''}`);if(back)refDlg()}
 async function refSet(id,fn,msg){const dl=!!document.querySelector('.refdlg');await quickChange(()=>{const r=(B().refs||[]).find(x=>x.id===id);if(r)fn(r)},msg);if(dl)refDlgDraw()}
 document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-refpay],[data-refun],[data-refdel]');if(!t)return;const d=t.dataset;
-  if(d.refpay){await refSet(d.refpay,r=>{r.pd=todayStr()},'지급 완료로 체크했어요');return}
-  if(d.refun){await refSet(d.refun,r=>{r.pd=''},'미지급으로 되돌렸어요');return}
+  if(d.refpay){await refSet(d.refpay,r=>{r.pd=todayStr();r.pby=cnMe()},'지급 완료로 체크했어요 · 지급 내역에 남아요');return}
+  if(d.refun){await refSet(d.refun,r=>{r.pd='';delete r.pby},'미지급으로 되돌렸어요');return}
   if(d.refdel){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='지울까요?';clearTimeout(t._t);t._t=setTimeout(()=>{t.classList.remove('arm');t.textContent='×'},2500);return}
     await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).filter(x=>x.id!==d.refdel)},'소개 기록을 지웠어요')}});
 document.addEventListener('change',async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.refpd)return;const v=t.value;if(!v)return;await refSet(t.dataset.refpd,r=>{r.pd=v},`지급일을 ${mdS(v)}로 고쳤어요`)});
@@ -6661,16 +6675,43 @@ function refDlgDraw(onlyBody){const b=B();const D=UI.refD||{f:'un',q:''};const L
     <td>${r.pd?'<span class="rfok">지급 완료</span>':wait(r)?'<span class="rfwait">입학 전</span>':s&&isOut(s)?'<span class="rfwait">신입 퇴원</span>':'<span class="rfno">미지급</span>'}</td>
     <td>${r.pd?`<input type="date" data-refpd="${r.id}" value="${esc(r.pd)}" title="지급일 고치기">`:''}</td>
     <td class="r">${r.pd?`<button class="btn sm" data-refun="${r.id}">되돌리기</button>`:`<button class="btn sm${wait(r)?'':' pri'}" data-refpay="${r.id}">지급 완료</button>`}</td></tr>`};
-  const body=F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>입학</th><th class="l">소개해 준 사람</th><th>상태</th><th>지급일</th><th></th></tr></thead><tbody>${F.map(tr).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 기록이 없어요':'아직 소개 기록이 없어요'}</div>`;
+  /* 3.83.2 지급 내역: 지급한 달별로 묶어서 · 누가 체크했는지 */
+  const hist=()=>{const M={};F.forEach(r=>{(M[r.pd.slice(0,7)]=M[r.pd.slice(0,7)]||[]).push(r)});return `<table class="tbl rdt"><thead><tr><th class="l">지급일</th><th class="l">소개해 준 사람</th><th class="l">신입</th><th>학교·학년</th><th>체크한 사람</th><th></th></tr></thead>${Object.keys(M).sort().reverse().map(m=>`<tbody><tr class="rdm"><td colspan="6"><b>${+m.slice(0,4)}년 ${+m.slice(5)}월</b> <span class="hint">${M[m].length}건</span></td></tr>${M[m].sort((a,z)=>z.pd.localeCompare(a.pd)).map(r=>{const s=SS(r.sid),bs=r.by?SS(r.by):null;return `<tr><td class="l"><input type="date" data-refpd="${r.id}" value="${esc(r.pd)}" title="지급일 고치기"></td><td class="l"><b>${esc(bs?bs.name:r.byNm||'—')}</b> <small class="hint">${esc(bs?[bs.school,bs.grade].filter(Boolean).join(' '):r.byNm?'학생 아님':'')}</small></td><td class="l">${esc(s?s.name:r.nm||'(지운 학생)')}</td><td>${esc(s?[s.school,s.grade].filter(Boolean).join(' '):'')}</td><td class="hint">${esc(r.pby||'')}</td><td class="r"><button class="btn sm" data-refun="${r.id}">되돌리기</button></td></tr>`}).join('')}</tbody>`).join('')}</table>`};
+  const body=D.f==='new'?refNewHTML(b,D):F.length&&D.f==='dn'?hist():F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>입학</th><th class="l">소개해 준 사람</th><th>상태</th><th>지급일</th><th></th></tr></thead><tbody>${F.map(tr).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 기록이 없어요':'아직 소개 기록이 없어요'}</div>`;
   if(onlyBody){const el=document.querySelector('.refdlg .rdsc');if(el){el.innerHTML=body;return}}
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg refdlg" role="dialog" aria-modal="true" aria-labelledby="rdT" style="width:min(940px,100%)"><h2 id="rdT">소개비 명단 ${brs.length>1?`<span class="seg rdbr">${brs.map(x=>`<button data-rdbr="${esc(x.id)}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:`· <span class="iqbr">${esc(b.name)}</span>`}</h2>
-  <div class="rdtop"><span class="seg">${[['un',`미지급 ${unN}`],['dn',`지급 완료 ${dnN}`],['all',`전체 ${L.length}`]].map(([k,t])=>`<button data-rdf="${k}" aria-pressed="${D.f===k}">${t}</button>`).join('')}</span><input id="rfQ" placeholder="이름·학교로 찾기" value="${esc(D.q||'')}"><span class="sp"></span><button class="btn sm" data-act="refAdd">+ 소개 추가</button></div>
+  <div class="rdtop"><span class="seg">${[['un',`미지급 ${unN}`],['dn',`지급 내역 ${dnN}`],['all',`전체 ${L.length}`],['new','월별 신규생']].map(([k,t])=>`<button data-rdf="${k}" aria-pressed="${D.f===k}">${t}</button>`).join('')}</span><input id="rfQ" placeholder="이름·학교로 찾기" value="${esc(D.q||'')}"><span class="sp"></span><button class="btn sm" data-act="refAdd">+ 소개 추가</button></div>
   <div class="rdsc">${body}</div>
   <div class="row" style="justify-content:space-between"><span class="hint">'입학 전'은 첫 수업일이 지나면 미지급으로 세요 · 기록 지우기는 [학생 관리] 소개비 칸에서</span><button class="btn" data-act="closeModal">닫기</button></div></div>`}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-rdf],[data-rdbr]');if(!t||!document.querySelector('.refdlg'))return;
   if(t.dataset.rdf){UI.refD.f=t.dataset.rdf;refDlgDraw();return}
   if(t.dataset.rdbr){const sel=$('brSel');if(sel&&sel.value!==t.dataset.rdbr){sel.value=t.dataset.rdbr;sel.dispatchEvent(new Event('change',{bubbles:true}))}else if(!sel){DB.currentBranch=t.dataset.rdbr;render()}refDlgDraw()}});
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='rfQ'&&document.querySelector('.refdlg')){UI.refD.q=e.target.value;refDlgDraw(1)}}); /* 표만 다시 그림 — 한글 입력 끊기지 않게 */
+
+/* 3.83.3 학생 정보 창의 '소개' 칸(지점장·행정 PC) · 소개비 명단의 '월별 신규생' 탭 */
+function refStiHTML(b,s){if(typeof pcViewOnly==='function'&&pcViewOnly(b))return '';const r=refOf(b).find(x=>x.sid===s.id);const mine=refOf(b).filter(x=>x.by===s.id);
+  const recent=s.from&&s.from>=new Date(Date.now()+9*3600e3-120*864e5).toISOString().slice(0,10);if(!r&&!mine.length&&!isPre(s)&&!recent&&s.from)return '';
+  const SS=id=>(b.students||[]).find(x=>x.id===id);const bs=r&&r.by?SS(r.by):null;
+  const st=r?(r.pd?`<span class="rfok">지급 완료 ${mdS(r.pd)}</span>`:isPre(s)?'<span class="rfwait">입학 전</span>':'<span class="rfno">미지급</span>'):'';
+  return `<div class="sic sirf"><h4>소개 <small>소개비 · 지점장·행정만</small></h4>
+    ${r?`<div class="sir"><span class="hint" style="min-width:56px">소개해 준</span><b>${esc(bs?bs.name:r.byNm||'—')}</b><small class="hint">${esc(bs?[bs.school,bs.grade].filter(Boolean).join(' '):r.byNm?'학생 아님':'')}</small>${st}</div>`:''}
+    ${r&&r.pd?'':`<div class="sir rfin"><input data-rfsti="${esc(s.id)}" list="refDL" placeholder="${r?'바꿀 이름':'소개해 준 학생 이름'}" maxlength="30">${refDL(b)}<button class="btn sm" data-rfstigo="${esc(s.id)}">${r?'바꾸기':'넣기'}</button>${r?`<button class="lnk sm" data-rfstix="${esc(r.id)}">빼기</button>`:''}</div>`}
+    ${mine.length?`<div class="sir"><span class="hint" style="min-width:56px">소개한 신입</span><span>${mine.map(x=>{const n=SS(x.sid);return `${esc(n?n.name:x.nm||'')} <small class="hint">${x.pd?'지급 '+mdS(x.pd):'미지급'}</small>`}).join(' · ')}</span></div>`:''}</div>`}
+async function refStiSave(sid){const i=document.querySelector(`[data-rfsti="${CSS.escape(sid)}"]`);const by=(i&&i.value||'').trim();if(!by){toast('소개해 준 학생 이름을 넣어 주세요');if(i)i.focus();return}
+  const b=B();const bs=refByName(b,by);if(bs&&bs.id===sid){toast('본인을 소개자로 넣을 수는 없어요');return}const back=(document.querySelector('[data-stiback]')||{}).dataset;const bk=back&&back.stiback;
+  await quickChange(()=>{const bb=B();bb.refs=bb.refs||[];const r=bb.refs.find(x=>x.sid===sid&&!x.del);if(r){const n=refNew(bb,sid,by);r.by=n.by;r.byNm=n.byNm}else bb.refs.push(refNew(bb,sid,by))},`소개를 넣었어요 · ${bs?bs.name:by}`);UI.stiBack=bk||null;stInfoDlg(sid)}
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-rfstigo],[data-rfstix],[data-rdnew]');if(!t)return;
+  if(t.dataset.rfstigo){await refStiSave(t.dataset.rfstigo);return}
+  if(t.dataset.rfstix){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='뺄까요?';setTimeout(()=>{t.classList.remove('arm');t.textContent='빼기'},2500);return}
+    const sid=(document.querySelector('[data-sti0]')||{}).dataset.sti0;const bk=(document.querySelector('[data-stiback]')||{dataset:{}}).dataset.stiback;await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).filter(x=>x.id!==t.dataset.rfstix)},'소개 기록을 뺐어요');UI.stiBack=bk||null;if(sid)stInfoDlg(sid);return}
+  if(t.dataset.rdnew){UI.stiBack='ref';stInfoDlg(t.dataset.rdnew)}});
+document.addEventListener('keydown',e=>{const t=e.target;if(e.key==='Enter'&&t&&t.dataset&&t.dataset.rfsti){e.preventDefault();refStiSave(t.dataset.rfsti)}});
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-rdmon]');if(!t||!document.querySelector('.refdlg'))return;const [y,m]=(UI.refD.m||todayStr().slice(0,7)).split('-').map(Number);const d=new Date(y,m-1+(+t.dataset.rdmon),1);UI.refD.m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;refDlgDraw()});
+function refNewHTML(b,D){const m=D.m||todayStr().slice(0,7);const R=refOf(b);const SS=id=>(b.students||[]).find(x=>x.id===id);
+  const L=(b.students||[]).filter(s=>(s.from||s.at||'').slice(0,7)===m).sort((a,z)=>(a.from||a.at||'').localeCompare(z.from||z.at||''));
+  const q=String(D.q||'').replace(/\s+/g,'');const F=L.filter(s=>!q||[s.name,s.school].some(x=>String(x||'').replace(/\s+/g,'').includes(q)));const nR=L.filter(s=>R.some(r=>r.sid===s.id)).length;
+  return `<div class="rdmon"><button class="btn sm" data-rdmon="-1" aria-label="이전 달">‹</button><b>${+m.slice(0,4)}년 ${+m.slice(5)}월 신규생</b><button class="btn sm" data-rdmon="1" aria-label="다음 달"${m>=todayStr().slice(0,7)?' disabled':''}>›</button><span class="hint">${L.length}명 · 소개 ${nR}명 · 줄을 누르면 학생 정보 창에서 소개를 넣어요</span></div>
+  ${F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>첫 수업</th><th>상태</th><th class="l">소개</th></tr></thead><tbody>${F.map(s=>{const r=R.find(x=>x.sid===s.id);const bs=r&&r.by?SS(r.by):null;return `<tr class="rdnew" data-rdnew="${esc(s.id)}" title="학생 정보 창 열기"><td class="l"><b>${esc(s.name)}</b></td><td>${esc([s.school,s.grade].filter(Boolean).join(' '))}</td><td>${s.from?mdS(s.from):'<span class="hint">—</span>'}</td><td>${isOut(s)?'<span class="rfwait">퇴원</span>':isPre(s)?'<span class="rfwait">입학 예정</span>':esc(s.status||'재원')}</td><td class="l">${r?`<b>${esc(bs?bs.name:r.byNm||'')}</b> <small class="hint">${r.pd?'지급 '+mdS(r.pd):'미지급'}</small>`:'<span class="hint">—</span>'}</td></tr>`}).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 학생이 없어요':'이 달에 들어온 학생이 없어요'}</div>`}`}
 </script>
 <script>/* ===== 내 폰 관리 모드 (프로그램 관리자 전용) =====
    b.own={ck:10자리 코드, ak:서명 키, nm, at} — 모든 지점에 같은 값으로 둠(어느 PC가 시간표를 올려도 같은 묶음이 나가게)
@@ -7686,17 +7727,22 @@ const HELP=[
   <ul><li>[학생 관리] 맨 위 칸. <b>입학희망생명부</b> 엑셀을 [입학희망생명부 불러오기](또는 에듀OK에서 받기)로 넣으면 <b>어느 지점에 넣을지 한 번 확인</b>하고 들어가요. 같은 사람(이름이 같고 학교나 연락처가 같음 · 에듀OK에서 '대연고1' 같은 임시 이름이 실제 이름으로 바뀌어도 연락처·학교가 같으면 같은 사람)은 다시 안 넣고 <b>바뀐 정보(학교·학년·희망일·연락처)만 덮어써요</b> — 형제는 보호자 번호가 같아도 이름이 달라 따로 들어가요.</li>
   <li>다시 불러올 때 <b>에듀OK에서 빠진 사람</b>(입학 처리·취소 등)은 확인 창에 따로 보여 주고, 체크된 채로 반영하면 <b>입학취소</b>로 옮겨요(취소된 문의에 '에듀OK에서 빠짐' 표시 · 되돌리기 가능). 명부를 기간·조건으로 걸러 받았으면 체크를 풀어요. 직접 넣은 문의는 해당 없어요.</li>
   <li>이미 학생이 된 문의(입학희망생·재학생명부를 불러올 때 같은 사람이 학생 관리에 있으면)는 저절로 <b>입학 완료</b>로 옮겨요.</li>
-  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도 · 학생 학년에 맞는 반이 먼저 보이고 나머지는 [더 보기]) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b>(두 번) = 오늘부터 재원으로(연락처 그대로) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
+  <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도 · 학생 학년에 맞는 반이 먼저 보이고 나머지는 [더 보기]) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b> = 작은 창에서 [재원으로] → 오늘부터 재원(연락처 그대로 · <b>소개</b> 칸도 있어요) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
   <li><b>메모</b>: 통화 내용·약속을 줄 아래 칸에 적고 [남기기](또는 Enter). ×를 두 번 누르면 지워져요. 폰 [관리] 탭의 입학 문의 카드에서도 같은 메모를 보고 남겨요.</li>
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
  {id:'refs',t:'소개비 (지점장·행정)',b:`
   ${HF('refs','소개비 — 소개로 들어온 신입과 소개해 준 학생 · 미지급/지급 완료')}
   <ul><li>[학생 관리]의 <b>소개비</b> 칸. 소개로 들어온 신입마다 <b>소개해 준 학생</b>과 <b>지급 여부</b>를 적어 둬요. 제목 옆 <b>[미지급 n명]</b>이 아직 안 준 사람 수예요.</li>
-  <li><b>넣는 법</b>: ① 학생 추가 줄의 <b>소개(선택)</b> 칸에 소개해 준 학생 이름 ② 입학 문의 [입학 예정으로] 창의 <b>소개</b> 칸 ③ 소개비 칸의 <b>[+ 소개 추가]</b>로 신입과 소개한 사람을 골라서. 학생 이름이면 학교·학년이 같이 보이고, 학생이 아니어도(학부모 등) 이름만 써서 넣을 수 있어요.</li>
+  <li><b>넣는 법</b>: ① 학생 추가 줄의 <b>소개(선택)</b> 칸에 소개해 준 학생 이름 ② 입학 문의 [입학 예정으로]·[바로 재원] 창의 <b>소개</b> 칸 ③ 소개비 칸의 <b>[+ 소개 추가]</b>로 신입과 소개한 사람을 골라서. 학생 이름이면 학교·학년이 같이 보이고, 학생이 아니어도(학부모 등) 이름만 써서 넣을 수 있어요.</li>
   <li>들어오면 바로 <b>미지급</b>이에요. 아직 첫 수업 전(입학 예정)이면 '입학 전'으로 보이고 미지급 수에는 안 세요.</li>
   <li><b>[지급 완료]</b>를 누르면 오늘 날짜로 체크되고, 날짜 칸에서 지급일을 고칠 수 있어요. 잘못 눌렀으면 [되돌리기], 기록을 지우려면 ×를 두 번. 지급한 지 석 달 지난 기록은 아래로 접혀요.</li>
   <li><b>명단 창</b>: [업무] 화면 위 <b>[소개비]</b> 버튼(숫자 = 미지급 수)을 누르면 이 지점 소개 기록 전체가 한 창에 떠요. <b>미지급 · 지급 완료 · 전체</b>로 나눠 보고, 이름·학교로 찾고, 창에서 바로 [지급 완료]·[되돌리기]·지급일 고치기·[+ 소개 추가]. 관리자 PC는 창 제목에서 지점을 바꿔 봐요.</li>
   ${HF('refdlg','소개비 명단 창 — 업무 화면 [소개비] 버튼')}
+  <li><b>지급 내역</b>: 명단 창의 [지급 내역] 탭에 지급한 기록이 <b>달별로</b> 모두 남아요(지급일 · 소개해 준 사람 · 신입 · 누가 체크했는지). 학생 관리 칸에서는 석 달 지나면 접히지만 지급 내역에서는 지워지지 않아요.</li>
+  ${HF('refhist','지급 내역 — 달별 · 체크한 사람')}
+  <li><b>월별 신규생</b>: 명단 창의 [월별 신규생] 탭에 그달 들어온 학생(첫 수업일 기준)이 모여요. ‹ › 로 달을 넘기고, 소개가 있는 학생은 소개해 준 사람과 지급 여부가 같이 보여요. 줄을 누르면 <b>학생 정보 창</b>이 열려요.</li>
+  <li><b>학생 정보 창의 소개 칸</b>: 최근 넉 달 안에 들어온 학생(또는 입학 예정·소개 기록이 있는 학생)은 학생 정보 창에 <b>소개</b> 칸이 있어요. 이름을 넣고 [넣기](또는 Enter) — 바꾸기·빼기도 여기서(지급 완료된 건 명단 창에서 [되돌리기] 후). 그 학생이 소개해 준 신입도 같이 보여요. 명단에서 열었으면 위의 <b>[← 소개비 명단]</b>으로 돌아가요.</li>
+  ${HF('refnew','월별 신규생 — 줄을 누르면 학생 정보 창')}${HF('refsti','학생 정보 창의 소개 칸')}
   <li><b>지점장·행정 선생님(과 관리자) PC에서만</b> 보여요. 선생님 폰·지점장 폰 어디에도 안 나가요.</li></ul>`},
  {id:'cns',t:'정기 상담',b:`
   ${HF('cns','정기 상담 — 이번 기간 남은 학생, [주기]·[학년 단위]·지정 대기')}
