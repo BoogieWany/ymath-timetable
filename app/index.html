@@ -1118,6 +1118,13 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .rfx{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;opacity:.45;border-radius:6px;padding:2px 4px;white-space:nowrap}.rfx:hover{opacity:1;background:color-mix(in srgb,var(--muted) 12%,transparent)}.rfx.arm{opacity:1;color:#c0392b;font-size:11px}
 .rfold{margin-top:8px;max-width:980px}.rfold summary{cursor:pointer;font-size:12px;color:var(--muted);padding:4px 2px}.rfold .rfl{margin-top:6px}
 .rfemp{padding:6px 2px}
+/* 3.83.1 소개비 명단 창 */
+.refdlg h2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.refdlg .rdbr{font-size:12.5px;font-weight:500}
+.rdtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px}.rdtop input{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:180px}
+.rdsc{max-height:min(62vh,640px);overflow:auto;border:1px solid var(--line2);border-radius:12px}
+.rdt{width:100%;font-size:12.5px}.rdt th{position:sticky;top:0;background:var(--panel);z-index:1}.rdt td{vertical-align:middle}.rdt td.r{text-align:right;white-space:nowrap}
+.rdt tr.pd td{color:var(--muted)}.rdt input[type=date]{font:inherit;font-size:12px;padding:2px 6px;border:1px solid var(--line);border-radius:7px;background:transparent;color:inherit}
+.btn .rfcnt{margin-left:4px;padding:0 7px;font-size:11px}
 </style>
 </head>
 <body>
@@ -3478,7 +3485,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.83.0', APPDATE='2026-10-28';
+const APPVER='3.83.1', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4719,6 +4726,7 @@ document.addEventListener('click',async e=>{
     case 'cnGrpGo':cnGrpGo();break;
     case 'eokOpen':eokDlg();break;
     case 'refAdd':refAddDlg();break;
+    case 'refList':refDlg();break;
     case 'refAddGo':refAddGo();break;
     case 'eokSave':eokSave();break;
     case 'eokMan':bridge&&bridge.eokOpen&&bridge.eokOpen();break;
@@ -6625,7 +6633,7 @@ function refBoxHTML(b){const L=refOf(b);const td=todayStr();const old=x=>x.pd&&x
     <button class="rfx" data-refdel="${r.id}" title="이 기록 지우기 (두 번)" aria-label="지우기">×</button></div>`};
   return `<div class="sec refbox"><h3>소개비 ${(n=>n?`<span class="rfcnt">미지급 ${n}명</span>`:'')(un.filter(r=>{const x=(b.students||[]).find(y=>y.id===r.sid);return !x||(!isPre(x)&&!isOut(x))}).length)}<span class="hint">소개로 들어온 신입 → 소개해 준 학생 · 지점장·행정 선생님만 봐요(폰에는 안 나가요)</span><span class="sp"></span><button class="btn sm" data-act="refAdd">+ 소개 추가</button></h3>
     ${L.length?`<div class="rfl">${un.map(row).join('')}${dn.map(row).join('')}</div>${od.length?`<details class="rfold"><summary>지급한 지 석 달 지난 기록 ${od.length}건</summary><div class="rfl">${od.map(row).join('')}</div></details>`:''}`:'<div class="hint rfemp">아직 없어요 · 신입을 넣을 때 \'소개\' 칸에 소개해 준 학생 이름을 쓰거나, [+ 소개 추가]로 넣어요</div>'}</div>`}
-function refAddDlg(){const b=B();const L=(b.students||[]).filter(s=>!isOut(s)).sort((a,z)=>(z.from||z.at||'').localeCompare(a.from||a.at||'')||sortKo(a.name,z.name));
+function refAddDlg(){UI.refBack=!!document.querySelector('.refdlg');const b=B();const L=(b.students||[]).filter(s=>!isOut(s)).sort((a,z)=>(z.from||z.at||'').localeCompare(a.from||a.at||'')||sortKo(a.name,z.name));
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rfT" style="width:min(460px,100%)"><h2 id="rfT">소개 추가 · <span class="iqbr">${esc(b.name)}</span></h2>
   <div class="row"><label for="rfSid">들어온 신입</label><select id="rfSid"><option value="">고르세요</option>${L.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${esc([s.school,s.grade].filter(Boolean).join(' '))}${s.from?' · '+mdS(s.from)+(isPre(s)?' 예정':' 입학'):''}</option>`).join('')}</select></div>
   <div class="row"><label for="rfBy">소개해 준 학생</label><input id="rfBy" list="refDL" placeholder="이름 (학생이 아니어도 돼요)" maxlength="30">${refDL(b)}</div>
@@ -6633,14 +6641,36 @@ function refAddDlg(){const b=B();const L=(b.students||[]).filter(s=>!isOut(s)).s
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="refAddGo">넣기</button></div></div>`;setTimeout(()=>{const i=$('rfSid');if(i)i.focus()},50)}
 async function refAddGo(){const sid=$('rfSid').value,by=($('rfBy').value||'').trim();if(!sid){toast('들어온 신입을 골라 주세요');return}if(!by){toast('소개해 준 학생 이름을 넣어 주세요');$('rfBy').focus();return}
   const b=B();if(refOf(b).some(r=>r.sid===sid)){toast('이 학생은 이미 소개 기록이 있어요');return}const bs=refByName(b,by);if(bs&&bs.id===sid){toast('본인을 소개자로 넣을 수는 없어요');return}
-  $('modal').hidden=true;await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).concat([refNew(bb,sid,by)])},`소개 기록을 넣었어요 · ${bs?bs.name:by} → ${(S(sid)||{}).name||''}`)}
-async function refSet(id,fn,msg){await quickChange(()=>{const r=(B().refs||[]).find(x=>x.id===id);if(r)fn(r)},msg)}
+  const back=UI.refBack;UI.refBack=0;$('modal').hidden=true;await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).concat([refNew(bb,sid,by)])},`소개 기록을 넣었어요 · ${bs?bs.name:by} → ${(S(sid)||{}).name||''}`);if(back)refDlg()}
+async function refSet(id,fn,msg){const dl=!!document.querySelector('.refdlg');await quickChange(()=>{const r=(B().refs||[]).find(x=>x.id===id);if(r)fn(r)},msg);if(dl)refDlgDraw()}
 document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-refpay],[data-refun],[data-refdel]');if(!t)return;const d=t.dataset;
   if(d.refpay){await refSet(d.refpay,r=>{r.pd=todayStr()},'지급 완료로 체크했어요');return}
   if(d.refun){await refSet(d.refun,r=>{r.pd=''},'미지급으로 되돌렸어요');return}
   if(d.refdel){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='지울까요?';clearTimeout(t._t);t._t=setTimeout(()=>{t.classList.remove('arm');t.textContent='×'},2500);return}
     await quickChange(()=>{const bb=B();bb.refs=(bb.refs||[]).filter(x=>x.id!==d.refdel)},'소개 기록을 지웠어요')}});
 document.addEventListener('change',async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.refpd)return;const v=t.value;if(!v)return;await refSet(t.dataset.refpd,r=>{r.pd=v},`지급일을 ${mdS(v)}로 고쳤어요`)});
+/* 3.83.1 소개비 명단 창: 업무 화면 [소개비] 버튼 → 이 지점 소개 기록 전체를 한 창에서 · 미지급/지급 완료/전체 · 이름 찾기 · 지점장·행정·관리자 PC만 */
+function refDlg(){UI.refD=UI.refD||{f:'un',q:''};refDlgDraw();setTimeout(()=>{const i=$('rfQ');if(i)i.focus()},50)}
+function refDlgDraw(onlyBody){const b=B();const D=UI.refD||{f:'un',q:''};const L=refOf(b);const SS=id=>(b.students||[]).find(x=>x.id===id);
+  const brs=DB.branches.filter(x=>!(typeof pcViewOnly==='function'&&pcViewOnly(x)));
+  const wait=r=>{const s=SS(r.sid);return !r.pd&&s&&isPre(s)};const unN=L.filter(r=>!r.pd&&!wait(r)).length,dnN=L.filter(r=>r.pd).length;
+  const q=String(D.q||'').replace(/\s+/g,'');const hit=r=>{if(!q)return true;const s=SS(r.sid),bs=r.by?SS(r.by):null;return [s?s.name:r.nm,bs?bs.name:r.byNm,s&&s.school].some(x=>String(x||'').replace(/\s+/g,'').includes(q))};
+  const F=L.filter(r=>(D.f==='un'?!r.pd:D.f==='dn'?!!r.pd:true)&&hit(r)).sort((a,z)=>(a.pd?1:0)-(z.pd?1:0)||(a.pd?z.pd.localeCompare(a.pd):(a.at||'').localeCompare(z.at||'')));
+  const tr=r=>{const s=SS(r.sid),bs=r.by?SS(r.by):null;return `<tr class="${r.pd?'pd':''}"><td class="l"><b>${esc(s?s.name:r.nm||'(지운 학생)')}</b></td><td>${esc(s?[s.school,s.grade].filter(Boolean).join(' '):'')}</td><td>${s&&s.from?mdS(s.from):'<span class="hint">—</span>'}</td>
+    <td class="l"><b>${esc(bs?bs.name:r.byNm||'—')}</b> <small class="hint">${esc(bs?[bs.school,bs.grade].filter(Boolean).join(' ')+(isOut(bs)?' · 퇴원':''):r.byNm?'학생 아님':'')}</small></td>
+    <td>${r.pd?'<span class="rfok">지급 완료</span>':wait(r)?'<span class="rfwait">입학 전</span>':s&&isOut(s)?'<span class="rfwait">신입 퇴원</span>':'<span class="rfno">미지급</span>'}</td>
+    <td>${r.pd?`<input type="date" data-refpd="${r.id}" value="${esc(r.pd)}" title="지급일 고치기">`:''}</td>
+    <td class="r">${r.pd?`<button class="btn sm" data-refun="${r.id}">되돌리기</button>`:`<button class="btn sm${wait(r)?'':' pri'}" data-refpay="${r.id}">지급 완료</button>`}</td></tr>`};
+  const body=F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>입학</th><th class="l">소개해 준 사람</th><th>상태</th><th>지급일</th><th></th></tr></thead><tbody>${F.map(tr).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 기록이 없어요':'아직 소개 기록이 없어요'}</div>`;
+  if(onlyBody){const el=document.querySelector('.refdlg .rdsc');if(el){el.innerHTML=body;return}}
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg refdlg" role="dialog" aria-modal="true" aria-labelledby="rdT" style="width:min(940px,100%)"><h2 id="rdT">소개비 명단 ${brs.length>1?`<span class="seg rdbr">${brs.map(x=>`<button data-rdbr="${esc(x.id)}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:`· <span class="iqbr">${esc(b.name)}</span>`}</h2>
+  <div class="rdtop"><span class="seg">${[['un',`미지급 ${unN}`],['dn',`지급 완료 ${dnN}`],['all',`전체 ${L.length}`]].map(([k,t])=>`<button data-rdf="${k}" aria-pressed="${D.f===k}">${t}</button>`).join('')}</span><input id="rfQ" placeholder="이름·학교로 찾기" value="${esc(D.q||'')}"><span class="sp"></span><button class="btn sm" data-act="refAdd">+ 소개 추가</button></div>
+  <div class="rdsc">${body}</div>
+  <div class="row" style="justify-content:space-between"><span class="hint">'입학 전'은 첫 수업일이 지나면 미지급으로 세요 · 기록 지우기는 [학생 관리] 소개비 칸에서</span><button class="btn" data-act="closeModal">닫기</button></div></div>`}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-rdf],[data-rdbr]');if(!t||!document.querySelector('.refdlg'))return;
+  if(t.dataset.rdf){UI.refD.f=t.dataset.rdf;refDlgDraw();return}
+  if(t.dataset.rdbr){const sel=$('brSel');if(sel&&sel.value!==t.dataset.rdbr){sel.value=t.dataset.rdbr;sel.dispatchEvent(new Event('change',{bubbles:true}))}else if(!sel){DB.currentBranch=t.dataset.rdbr;render()}refDlgDraw()}});
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='rfQ'&&document.querySelector('.refdlg')){UI.refD.q=e.target.value;refDlgDraw(1)}}); /* 표만 다시 그림 — 한글 입력 끊기지 않게 */
 </script>
 <script>/* ===== 내 폰 관리 모드 (프로그램 관리자 전용) =====
    b.own={ck:10자리 코드, ak:서명 키, nm, at} — 모든 지점에 같은 값으로 둠(어느 PC가 시간표를 올려도 같은 묶음이 나가게)
@@ -7529,7 +7559,7 @@ function viewTasks(){const b=B();UI.tk=UI.tk||{kind:'',who:'',open:true,q:'',sum
   const old90=dPlus(todayStr(),-90);const F=tkAll().filter(t=>(!G.kind||t.kind===G.kind)&&(!G.who||tkWho(t.who).split(',').includes(G.who))&&(!G.q||[t.title,t.school,t.subj,t.memo,t.grade].some(x=>String(x||'').includes(G.q.trim()))));
   const srt=(a,z)=>GRADE_ORDER(a.grade)-GRADE_ORDER(z.grade)||sortKo(a.school||'',z.school||'')||tkBorn(a)-tkBorn(z)||sortKo(a.id||'',z.id||'');/* 3.82.2 완료해도 그 자리에(흐리게) — 완료한 지 7일 지나면 맨 아래 '완료된 일'로 */const d7=dPlus(todayStr(),-7);const L=F.filter(t=>!t.done||(t.doneAt||'')>=d7).sort(srt);const Dn=F.filter(t=>t.done&&(t.doneAt||'')<d7&&(t.doneAt||'')>=old90).sort((a,z)=>(z.doneAt||'').localeCompare(a.doneAt||'')||srt(a,z));const nOld=F.filter(t=>t.done&&(t.doneAt||'')<old90).length;
   const nOpen=tkAll().filter(t=>!t.done).length;
-  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
+  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${(typeof refDlg==='function'&&!(typeof pcViewOnly==='function'&&pcViewOnly(B())))?`<button class="btn" data-act="refList" title="소개로 들어온 신입 · 소개비 지급 명단 (지점장·행정만)">소개비 ${(n=>n?`<span class="rfcnt">${n}</span>`:'')(refOf(B()).filter(r=>{const x=(B().students||[]).find(y=>y.id===r.sid);return !r.pd&&(!x||(!isPre(x)&&!isOut(x)))}).length)}</button>`:''}${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
   <div class="tools grtools"><span class="seg"><button data-tko="kind" data-v="" aria-pressed="${!G.kind}">전체</button>${Object.entries(TK_KIND).map(([k,l])=>`<button data-tko="kind" data-v="${k}" aria-pressed="${G.kind===k}">${l} <small>${tkAll().filter(t=>t.kind===k&&!t.done).length}</small></button>`).join('')}</span>
     <select data-tko="who"><option value="">모든 담당</option>${names.map(n=>`<option value="${esc(n)}" ${G.who===n?'selected':''}>${esc(n)}T</option>`).join('')}</select><input id="tkQ" placeholder="학교·단원·비고 찾기" value="${esc(G.q)}" autocomplete="off" style="width:150px">
     </div>`;
@@ -7665,6 +7695,8 @@ const HELP=[
   <li><b>넣는 법</b>: ① 학생 추가 줄의 <b>소개(선택)</b> 칸에 소개해 준 학생 이름 ② 입학 문의 [입학 예정으로] 창의 <b>소개</b> 칸 ③ 소개비 칸의 <b>[+ 소개 추가]</b>로 신입과 소개한 사람을 골라서. 학생 이름이면 학교·학년이 같이 보이고, 학생이 아니어도(학부모 등) 이름만 써서 넣을 수 있어요.</li>
   <li>들어오면 바로 <b>미지급</b>이에요. 아직 첫 수업 전(입학 예정)이면 '입학 전'으로 보이고 미지급 수에는 안 세요.</li>
   <li><b>[지급 완료]</b>를 누르면 오늘 날짜로 체크되고, 날짜 칸에서 지급일을 고칠 수 있어요. 잘못 눌렀으면 [되돌리기], 기록을 지우려면 ×를 두 번. 지급한 지 석 달 지난 기록은 아래로 접혀요.</li>
+  <li><b>명단 창</b>: [업무] 화면 위 <b>[소개비]</b> 버튼(숫자 = 미지급 수)을 누르면 이 지점 소개 기록 전체가 한 창에 떠요. <b>미지급 · 지급 완료 · 전체</b>로 나눠 보고, 이름·학교로 찾고, 창에서 바로 [지급 완료]·[되돌리기]·지급일 고치기·[+ 소개 추가]. 관리자 PC는 창 제목에서 지점을 바꿔 봐요.</li>
+  ${HF('refdlg','소개비 명단 창 — 업무 화면 [소개비] 버튼')}
   <li><b>지점장·행정 선생님(과 관리자) PC에서만</b> 보여요. 선생님 폰·지점장 폰 어디에도 안 나가요.</li></ul>`},
  {id:'cns',t:'정기 상담',b:`
   ${HF('cns','정기 상담 — 이번 기간 남은 학생, [주기]·[학년 단위]·지정 대기')}
