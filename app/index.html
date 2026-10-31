@@ -1133,6 +1133,24 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .sirf .sir{gap:8px}.sirf .lnk.arm{color:#c0392b}
 /* 3.83.5 보강 삭제 요청 */
 .rqi.rqnd{border-color:color-mix(in srgb,#c0392b 30%,var(--line))}.rqi .ndtag{font-style:normal;font-size:11px;font-weight:700;color:#c0392b;background:color-mix(in srgb,#c0392b 9%,transparent);border-radius:999px;padding:1px 8px}
+/* 3.84.0 메모 시트 */
+.mshdlg{width:min(1240px,100%);max-height:calc(100vh - 60px);display:flex;flex-direction:column}
+.msh-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.msh-h h2{margin:0;display:flex;gap:8px;align-items:center}
+.mstabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0 8px}
+.mstab{font:inherit;font-size:12.5px;border:1px solid var(--line);background:transparent;color:inherit;border-radius:999px;padding:4px 12px;cursor:pointer;transition:background .15s,border-color .15s}
+.mstab[aria-pressed="true"]{background:color-mix(in srgb,var(--navy) 10%,transparent);border-color:color-mix(in srgb,var(--navy) 45%,var(--line));font-weight:600}
+.mstool{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.mstool #msNm{font:inherit;font-size:14px;font-weight:600;padding:4px 8px;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;width:240px}.mstool #msNm:hover,.mstool #msNm:focus{border-color:var(--line)}
+.mswrap{flex:1;min-height:260px;max-height:calc(100vh - 290px);overflow:auto;border:1px solid var(--line2);border-radius:10px}
+.msg{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:12.5px}
+.msg th{position:sticky;top:0;z-index:2;background:color-mix(in srgb,var(--muted) 8%,var(--panel));font-weight:500;color:var(--muted);font-size:11.5px;height:24px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);user-select:none}
+.msg thead th{position:sticky;top:0}.msg th.msc0{position:sticky;left:0;z-index:1;text-align:center}.msg thead th.msc0{z-index:3}
+.msg th[data-mshc]{position:sticky;top:0}.msg .msrz{position:absolute;right:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:4}.msg thead th{position:sticky}.msg thead th[data-mshc]{position:sticky}
+.msg td{height:26px;padding:3px 7px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);white-space:pre-wrap;overflow:hidden;text-overflow:ellipsis;vertical-align:top;cursor:cell;background:var(--panel)}
+.msg td.on{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--navy) 70%,transparent);background:color-mix(in srgb,var(--navy) 4%,var(--panel))}
+.msg td.ed{padding:0;box-shadow:inset 0 0 0 2px var(--navy)}.msg td.ed textarea{width:100%;height:100%;min-height:26px;border:0;outline:0;resize:none;font:inherit;padding:3px 7px;background:transparent;color:inherit}
+.msfoot{margin-top:8px}.mshemp{padding:30px;text-align:center}
+.mstool .btn.arm{color:#c0392b}
+.mswrap{position:relative}.msin{position:absolute;z-index:5;opacity:0;pointer-events:none;border:0;outline:0;resize:none;font:inherit;font-size:12.5px;padding:3px 7px;margin:0;background:var(--panel);color:inherit;box-shadow:inset 0 0 0 2px var(--navy);overflow:hidden;line-height:1.45}.msin.on{opacity:1;pointer-events:auto}
 </style>
 </head>
 <body>
@@ -3493,7 +3511,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.83.6', APPDATE='2026-10-28';
+const APPVER='3.84.0', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4735,6 +4753,7 @@ document.addEventListener('click',async e=>{
     case 'eokOpen':eokDlg();break;
     case 'refAdd':refAddDlg();break;
     case 'refList':refDlg();break;
+    case 'mshOpen':mshOpen();break;
     case 'iqNowGo':inqNowGo();break;
     case 'refAddGo':refAddGo();break;
     case 'eokSave':eokSave();break;
@@ -7613,7 +7632,7 @@ function viewTasks(){const b=B();UI.tk=UI.tk||{kind:'',who:'',open:true,q:'',sum
   const old90=dPlus(todayStr(),-90);const F=tkAll().filter(t=>(!G.kind||t.kind===G.kind)&&(!G.who||tkWho(t.who).split(',').includes(G.who))&&(!G.q||[t.title,t.school,t.subj,t.memo,t.grade].some(x=>String(x||'').includes(G.q.trim()))));
   const srt=(a,z)=>GRADE_ORDER(a.grade)-GRADE_ORDER(z.grade)||sortKo(a.school||'',z.school||'')||tkBorn(a)-tkBorn(z)||sortKo(a.id||'',z.id||'');/* 3.82.2 완료해도 그 자리에(흐리게) — 완료한 지 7일 지나면 맨 아래 '완료된 일'로 */const d7=dPlus(todayStr(),-7);const L=F.filter(t=>!t.done||(t.doneAt||'')>=d7).sort(srt);const Dn=F.filter(t=>t.done&&(t.doneAt||'')<d7&&(t.doneAt||'')>=old90).sort((a,z)=>(z.doneAt||'').localeCompare(a.doneAt||'')||srt(a,z));const nOld=F.filter(t=>t.done&&(t.doneAt||'')<old90).length;
   const nOpen=tkAll().filter(t=>!t.done).length;
-  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${(typeof refDlg==='function'&&!(typeof pcViewOnly==='function'&&pcViewOnly(B())))?`<button class="btn" data-act="refList" title="소개로 들어온 신입 · 소개비 지급 명단 (지점장·행정만)">소개비 ${(n=>n?`<span class="rfcnt">${n}</span>`:'')(refOf(B()).filter(r=>{const x=(B().students||[]).find(y=>y.id===r.sid);return !r.pd&&(!x||(!isPre(x)&&!isOut(x)))}).length)}</button>`:''}${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
+  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${!(typeof pcViewOnly==='function'&&pcViewOnly(B()))?`<button class="btn" data-act="mshOpen" title="행정·지점장이 잠깐 쓰는 표 (이 지점 PC만)">메모 시트${mshList(B()).length?` <span class="hint">${mshList(B()).length}</span>`:''}</button>`:''}${(typeof refDlg==='function'&&!(typeof pcViewOnly==='function'&&pcViewOnly(B())))?`<button class="btn" data-act="refList" title="소개로 들어온 신입 · 소개비 지급 명단 (지점장·행정만)">소개비 ${(n=>n?`<span class="rfcnt">${n}</span>`:'')(refOf(B()).filter(r=>{const x=(B().students||[]).find(y=>y.id===r.sid);return !r.pd&&(!x||(!isPre(x)&&!isOut(x)))}).length)}</button>`:''}${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
   <div class="tools grtools"><span class="seg"><button data-tko="kind" data-v="" aria-pressed="${!G.kind}">전체</button>${Object.entries(TK_KIND).map(([k,l])=>`<button data-tko="kind" data-v="${k}" aria-pressed="${G.kind===k}">${l} <small>${tkAll().filter(t=>t.kind===k&&!t.done).length}</small></button>`).join('')}</span>
     <select data-tko="who"><option value="">모든 담당</option>${names.map(n=>`<option value="${esc(n)}" ${G.who===n?'selected':''}>${esc(n)}T</option>`).join('')}</select><input id="tkQ" placeholder="학교·단원·비고 찾기" value="${esc(G.q)}" autocomplete="off" style="width:150px">
     </div>`;
@@ -7664,6 +7683,84 @@ async function tkImportGo(){const nw=UI.tkImpNew||[];if(!nw.length)return;$('mod
 
 /* 3.82.0 업무 줄 아무 데나 누르면 고치기 창(⋯ 버튼이 있는 줄만 · 답안·완료·점검 같은 버튼은 원래대로 · 글자 고르기 중엔 안 뜸) */
 document.addEventListener('click',e=>{if(UI.view!=='tasks')return;const tr=e.target.closest&&e.target.closest('tr[data-tkrow]');if(!tr||e.target.closest('button,a,input,select,textarea,label'))return;if(getSelection&&String(getSelection()).length)return;if(!tr.querySelector('[data-act="tkEdit"]'))return;tkDlg(tr.dataset.tkrow)});
+/* ===== 3.84.0 메모 시트: 행정·지점장이 잠깐 쓰는 엑셀 같은 표 (지점마다 · PC만 · 폰으로 안 나감) =====
+   b.msh=[{id,nm,rows:[[...]],w:[열 너비],at,by}] · 칸 고치기는 잠깐 모았다가 한 번에 저장 · 엑셀(.xlsx) 불러오기 */
+const MSH={cur:'',sel:{r:0,c:0},ed:null,pend:null,tm:0};
+const mshList=b=>(b.msh||[]).filter(x=>x&&!x.del);
+const mshCol=i=>{let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
+const MSH_MAXR=500,MSH_MAXC=40;
+function mshNew(nm){return {id:uid('m'),nm:nm||'새 시트',rows:Array.from({length:20},()=>Array(8).fill('')),w:Array(8).fill(110),at:todayStr(),by:typeof cnMe==='function'?cnMe():''}}
+function mshOpen(){const b=B();if(!mshList(b).length)MSH.cur='';const L=mshList(b);if(!L.some(x=>x.id===MSH.cur))MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};mshDraw()}
+function mshCur(){return mshList(B()).find(x=>x.id===MSH.cur)||null}
+function mshDraw(keep){const b=B();const L=mshList(b);const x=mshCur();
+  const tabs=L.map(s=>`<button class="mstab" data-msh="${esc(s.id)}" aria-pressed="${s.id===MSH.cur}" title="두 번 눌러 이름 바꾸기">${esc(s.nm)}</button>`).join('');
+  const nc=x?Math.max(...x.rows.map(r=>r.length),1):0;
+  const grid=x?`<table class="msg"><colgroup><col style="width:44px">${Array.from({length:nc},(_,c)=>`<col style="width:${(x.w||[])[c]||110}px">`).join('')}</colgroup>
+    <thead><tr><th class="msc0"></th>${Array.from({length:nc},(_,c)=>`<th data-mshc="${c}">${mshCol(c)}<i class="msrz" data-msrz="${c}" aria-hidden="true"></i></th>`).join('')}</tr></thead>
+    <tbody>${x.rows.map((r,ri)=>`<tr><th class="msc0" data-mshr="${ri}">${ri+1}</th>${Array.from({length:nc},(_,c)=>`<td data-r="${ri}" data-c="${c}"${MSH.sel.r===ri&&MSH.sel.c===c?' class="on"':''}>${esc(r[c]==null?'':String(r[c]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<div class="hint mshemp">아직 시트가 없어요 · [+ 새 시트]나 [엑셀 불러오기]로 시작해요</div>`;
+  const html=`<div class="dlg mshdlg" role="dialog" aria-modal="true" aria-labelledby="msT"><div class="msh-h"><h2 id="msT">메모 시트 <span class="iqbr">${esc(b.name)}</span></h2><span class="hint">행정·지점장이 잠깐 쓰는 표 · 이 지점 PC에서만 · 폰으로 안 나가요</span><span class="sp"></span><button class="btn sm" data-act="closeModal">닫기</button></div>
+    <div class="mstabs">${tabs}<button class="btn sm" data-act="mshAdd">+ 새 시트</button><button class="btn sm" data-act="mshImp" title="엑셀(.xlsx)의 시트를 그대로 가져와요">엑셀 불러오기</button></div>
+    ${x?`<div class="mstool"><input id="msNm" value="${esc(x.nm)}" maxlength="40" aria-label="시트 이름"><span class="hint">${esc(x.by||'')}${x.at?' · '+mdS(x.at):''}</span><span class="sp"></span><button class="btn sm" data-act="mshRow">+ 행</button><button class="btn sm" data-act="mshColAdd">+ 열</button><button class="btn sm" data-act="mshRowDel" title="고른 칸의 행 지우기">행 지우기</button><button class="btn sm" data-act="mshColDel" title="고른 칸의 열 지우기">열 지우기</button><button class="btn sm danger" data-act="mshDel" title="이 시트 지우기 (두 번)">시트 지우기</button></div>`:''}
+    <div class="mswrap" id="msWrap">${grid}${x?'<textarea id="msIn" class="msin" rows="1" spellcheck="false" aria-label="칸 입력"></textarea>':''}</div>
+    <div class="hint msfoot">칸을 누르고 바로 입력 · Enter 아래로 · Tab 옆으로 · 방향키로 움직이기 · Delete 지우기 · 엑셀에서 복사한 칸을 Ctrl+V로 붙여넣기 · 열 머리 끝을 끌어 너비 조절</div></div>`;
+  const sc=keep&&$('msWrap')?[$('msWrap').scrollLeft,$('msWrap').scrollTop]:null;$('modal').hidden=false;$('modal').innerHTML=html;if(sc){$('msWrap').scrollLeft=sc[0];$('msWrap').scrollTop=sc[1]}MSH.ed=null;if(x)requestAnimationFrame(mshPlace)}
+/* 저장: 칸 고치기를 모았다가 0.7초 쉬면 한 번에 */
+function mshSet(fn,msg,now){const id=MSH.cur;const b=B();const x=mshList(b).find(s=>s.id===id);if(!x)return;fn(x);x.at=todayStr();x.by=typeof cnMe==='function'?cnMe():'';
+  MSH.pend=MSH.pend||{};MSH.pend[id]=JSON.parse(JSON.stringify(x));clearTimeout(MSH.tm);MSH.tm=setTimeout(()=>mshFlush(msg),now?0:700)}
+async function mshFlush(msg){const P=MSH.pend;MSH.pend=null;if(!P)return;await quickChange(()=>{const bb=B();bb.msh=bb.msh||[];Object.values(P).forEach(s=>{const i=bb.msh.findIndex(y=>y.id===s.id);if(i>=0)bb.msh[i]=s;else bb.msh.push(s)})},msg||'메모 시트를 저장했어요');if(document.querySelector('.mshdlg')&&!MSH.ed)mshPlace()}
+function mshCell(r,c){return document.querySelector(`.msg td[data-r="${r}"][data-c="${c}"]`)}
+/* 입력칸 하나(#msIn)를 고른 칸 위에 늘 올려 두고 초점을 줌 — 그냥 치면(한글 포함) 바로 그 칸 입력이 시작됨 */
+function mshPlace(){const i=$('msIn'),td=mshCell(MSH.sel.r,MSH.sel.c);if(!i||!td)return;const tb=td.closest('table');i.style.left=(tb.offsetLeft+td.offsetLeft)+'px';i.style.top=(tb.offsetTop+td.offsetTop)+'px';i.style.width=td.offsetWidth+'px';i.style.minHeight=td.offsetHeight+'px';if(document.activeElement!==i&&!(document.activeElement&&document.activeElement.id==='msNm'))i.focus({preventScroll:true})}
+function mshSel(r,c){const x=mshCur();if(!x)return;const nc=Math.max(...x.rows.map(q=>q.length));r=Math.max(0,Math.min(x.rows.length-1,r));c=Math.max(0,Math.min(nc-1,c));const o=mshCell(MSH.sel.r,MSH.sel.c);if(o)o.classList.remove('on');MSH.sel={r,c};const n=mshCell(r,c);if(n){n.classList.add('on');n.scrollIntoView({block:'nearest',inline:'nearest'})}mshPlace()}
+function mshEdit(fill){const x=mshCur();const i=$('msIn');if(!x||!i)return;const {r,c}=MSH.sel;MSH.ed={r,c};if(fill)i.value=String(x.rows[r][c]==null?'':x.rows[r][c]);i.classList.add('on');mshPlace();i.focus();i.setSelectionRange(i.value.length,i.value.length)}
+function mshCommit(move){const e=MSH.ed;const i=$('msIn');if(!e){if(move)mshSel(MSH.sel.r+(move==='d'?1:0),MSH.sel.c+(move==='r'?1:0));return}const v=i?i.value:'';MSH.ed=null;if(i){i.value='';i.classList.remove('on')}
+  const x=mshCur();const old=x&&x.rows[e.r]?x.rows[e.r][e.c]:'';const td=mshCell(e.r,e.c);if(td)td.textContent=v;
+  if(String(old==null?'':old)!==v)mshSet(s=>{s.rows[e.r][e.c]=v});if(move)mshSel(e.r+(move==='d'?1:0),e.c+(move==='r'?1:0));else mshPlace()}
+function mshCancel(){const i=$('msIn');MSH.ed=null;if(i){i.value='';i.classList.remove('on')}}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='msIn'&&!MSH.ed)mshEdit(false)});
+document.addEventListener('compositionstart',e=>{if(e.target&&e.target.id==='msIn'&&!MSH.ed)mshEdit(false)});
+document.addEventListener('mousedown',e=>{if(!document.querySelector('.mshdlg'))return;const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(!td)return;e.preventDefault();if(MSH.ed)mshCommit();mshSel(+td.dataset.r,+td.dataset.c)});
+document.addEventListener('dblclick',e=>{if(!document.querySelector('.mshdlg'))return;const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(td){mshSel(+td.dataset.r,+td.dataset.c);mshEdit(true);return}
+  const tb=e.target.closest&&e.target.closest('.mstab');if(tb){const i=$('msNm');if(i){i.focus();i.select()}}});
+document.addEventListener('keydown',e=>{if(!document.querySelector('.mshdlg'))return;const t=e.target;if(t&&t.id==='msNm'){if(e.key==='Enter'){e.preventDefault();t.blur();mshPlace()}return}
+  if(!t||t.id!=='msIn')return;if(e.isComposing)return;
+  if(MSH.ed){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mshCommit('d')}else if(e.key==='Tab'){e.preventDefault();mshCommit('r')}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();mshCancel()}return}
+  const s=MSH.sel;const mv={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+  if(mv){e.preventDefault();mshSel(s.r+mv[0],s.c+mv[1]);return}if(e.key==='Enter'||e.key==='F2'){e.preventDefault();if(e.key==='F2')mshEdit(true);else mshSel(s.r+1,s.c);return}if(e.key==='Tab'){e.preventDefault();mshSel(s.r,s.c+(e.shiftKey?-1:1));return}
+  if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();const td=mshCell(s.r,s.c);if(td)td.textContent='';mshSet(x=>{x.rows[s.r][s.c]=''});return}
+  if(e.key==='Escape'){return}},true);
+document.addEventListener('paste',e=>{if(!document.querySelector('.mshdlg')||MSH.ed)return;const t=e.target;if(!t||t.id!=='msIn')return;const txt=(e.clipboardData||window.clipboardData).getData('text');if(!txt)return;e.preventDefault();
+  const L=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));const {r,c}=MSH.sel;
+  mshSet(x=>{L.forEach((row,i)=>{const R=r+i;if(R>=MSH_MAXR)return;while(x.rows.length<=R)x.rows.push(Array(x.rows[0].length).fill(''));row.forEach((v,j)=>{const C=c+j;if(C>=MSH_MAXC)return;x.rows.forEach(q=>{while(q.length<=C)q.push('')});x.w=x.w||[];while(x.w.length<=C)x.w.push(110);x.rows[R][C]=v})})},`${L.length}줄을 붙여넣었어요`);mshDraw(true)});
+document.addEventListener('copy',e=>{if(!document.querySelector('.mshdlg')||MSH.ed)return;const t=e.target;if(!t||t.id!=='msIn')return;const x=mshCur();if(!x)return;e.preventDefault();e.clipboardData.setData('text/plain',String(x.rows[MSH.sel.r][MSH.sel.c]||''))});
+document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.id==='msNm'){const v=t.value.trim().slice(0,40)||'시트';const x=mshCur();if(x&&x.nm!==v){mshSet(s=>{s.nm=v},'시트 이름을 바꿨어요',1);const tb=document.querySelector(`.mstab[data-msh="${CSS.escape(x.id)}"]`);if(tb)tb.textContent=v}}
+  if(t&&t.id==='msIn'&&MSH.ed)setTimeout(()=>{const a=document.activeElement;if(MSH.ed&&(!a||a.id!=='msIn'))mshCommit()},0)});
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('.mshdlg [data-msh],.mshdlg [data-act^="msh"]');if(!t)return;if(MSH.ed)mshCommit();
+  if(t.dataset.msh){if(MSH.pend)await mshFlush();MSH.cur=t.dataset.msh;MSH.sel={r:0,c:0};mshDraw();return}
+  const a=t.dataset.act;const x=mshCur();
+  if(a==='mshAdd'){const n=mshNew(`시트 ${mshList(B()).length+1}`);await quickChange(()=>{const bb=B();bb.msh=(bb.msh||[]).concat([n])},'새 시트를 만들었어요');MSH.cur=n.id;MSH.sel={r:0,c:0};mshDraw();setTimeout(()=>{const i=$('msNm');if(i){i.focus();i.select()}},50);return}
+  if(a==='mshImp'){let i=$('fileMsh');if(!i){i=document.createElement('input');i.type='file';i.id='fileMsh';i.accept='.xlsx';i.hidden=true;document.body.appendChild(i)}i.value='';i.click();return}
+  if(!x)return;
+  if(a==='mshRow'){mshSet(s=>{if(s.rows.length<MSH_MAXR)s.rows.push(Array(s.rows[0].length).fill(''))});mshDraw(true);return}
+  if(a==='mshColAdd'){mshSet(s=>{if(s.rows[0].length<MSH_MAXC){s.rows.forEach(r=>r.push(''));(s.w=s.w||[]).push(110)}});mshDraw(true);return}
+  if(a==='mshRowDel'){if(x.rows.length<=1)return;const r=MSH.sel.r;mshSet(s=>{s.rows.splice(r,1)},`${r+1}행을 지웠어요`);MSH.sel.r=Math.min(r,x.rows.length-1);mshDraw(true);return}
+  if(a==='mshColDel'){if(x.rows[0].length<=1)return;const c=MSH.sel.c;mshSet(s=>{s.rows.forEach(q=>q.splice(c,1));(s.w||[]).splice(c,1)},`${mshCol(c)}열을 지웠어요`);MSH.sel.c=Math.min(c,x.rows[0].length-1);mshDraw(true);return}
+  if(a==='mshDel'){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='한 번 더 누르면 지워요';setTimeout(()=>{t.classList.remove('arm');t.textContent='시트 지우기'},2500);return}
+    const id=x.id;MSH.pend=null;clearTimeout(MSH.tm);await quickChange(()=>{const bb=B();const s=(bb.msh||[]).find(y=>y.id===id);if(s){s.del=1;s.rows=[];s.at=todayStr()}},`'${x.nm}' 시트를 지웠어요`);MSH.cur='';mshOpen()}});
+/* 열 너비 끌기 */
+document.addEventListener('mousedown',e=>{const h=e.target.closest&&e.target.closest('.mshdlg [data-msrz]');if(!h)return;e.preventDefault();const c=+h.dataset.msrz;const col=document.querySelectorAll('.msg col')[c+1];const x0=e.clientX,w0=col?col.getBoundingClientRect().width||parseInt(col.style.width):110;
+  const mv=ev=>{const w=Math.max(50,Math.min(600,Math.round(w0+ev.clientX-x0)));if(col)col.style.width=w+'px';h.dataset.w=w};
+  const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);const w=+h.dataset.w;if(w)mshSet(s=>{s.w=s.w||[];while(s.w.length<=c)s.w.push(110);s.w[c]=w})};
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)});
+/* 엑셀 불러오기: 보이는 시트마다 새 메모 시트로 (최대 500행 × 40열) */
+document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='fileMsh')return;const f=e.target.files[0];if(!f)return;
+  try{const {z,sheets}=await readWorkbook(await f.arrayBuffer());const vis=sheets.filter(s=>!s.hidden);const fn=f.name.replace(/\.xlsx$/i,'');const add=[];
+    for(const sh of vis){const cells=await readSheet(z,sh.path);let mr=0,mc=0;cells.forEach((v,k)=>{if(v.v==null||v.v==='')return;mr=Math.max(mr,Math.floor(k/1000));mc=Math.max(mc,k%1000)});if(!mr)continue;
+      mr=Math.min(mr,MSH_MAXR);mc=Math.min(mc,MSH_MAXC);const rows=Array.from({length:mr},(_,r)=>Array.from({length:mc},(_,c)=>{const x=cells.get((r+1)*1000+c+1);return x&&x.v!=null?String(x.v):''}));
+      const n=mshNew((vis.length>1?fn+' · '+sh.name:fn).slice(0,40));n.rows=rows;n.w=Array(mc).fill(110);add.push(n)}
+    if(!add.length){toast('불러올 내용이 없어요');return}
+    await quickChange(()=>{const bb=B();bb.msh=(bb.msh||[]).concat(add)},`엑셀에서 시트 ${add.length}개를 불러왔어요`);MSH.cur=add[0].id;MSH.sel={r:0,c:0};mshDraw()}
+  catch(err){toast('엑셀을 읽지 못했어요: '+err.message,4500)}});
 </script>
 <script>/* ================= 도움말 (사용 설명서 · 관리자 도움말) =================
    그림: 데모 자료로 찍은 화면(test/helpshots.js → app/helpimg.js, 처음 도움말 열 때만 불러옴) · F(이름,설명)
@@ -7743,6 +7840,13 @@ const HELP=[
   <li><b>[입학 예정으로]</b> = 첫 수업일을 골라 입학 예정 학생으로 · 반도 <b>여러 개</b> 골라 한 번에 넣어요(PC·폰 관리 탭 · 폰 [+ 학생]도 · 학생 학년에 맞는 반이 먼저 보이고 나머지는 [더 보기]) · 첫 수업일이 <b>오늘이거나 지난 날</b>이면 그날부터 재원(입학일 = 첫 수업일) · <b>[바로 재원]</b> = 작은 창에서 [재원으로] → 오늘부터 재원(연락처 그대로 · <b>소개</b> 칸도 있어요) · <b>[입학취소]</b>(두 번) = '취소된 문의'로, [되돌리기]도 돼요.</li>
   <li><b>메모</b>: 통화 내용·약속을 줄 아래 칸에 적고 [남기기](또는 Enter). ×를 두 번 누르면 지워져요. 폰 [관리] 탭의 입학 문의 카드에서도 같은 메모를 보고 남겨요.</li>
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
+ {id:'msh',t:'메모 시트 (지점장·행정)',b:`
+  ${HF('msh','메모 시트 — 엑셀처럼 칸에 바로 적는 표')}
+  <ul><li>[업무] 화면 위 <b>[메모 시트]</b>. 행정·지점장이 잠깐 쓰는 표(교재 주문, 특강 신청, 정산 메모 같은 것)를 엑셀처럼 적어 둬요. <b>지점마다 따로</b>이고, 그 지점 지점장·행정 PC(와 관리자 PC)에서 같이 보고 고쳐요. 폰으로는 안 나가요.</li>
+  <li><b>적기</b>: 칸을 누르고 바로 입력(한글도) · <b>Enter</b> 아래로 · <b>Tab</b> 옆으로 · 방향키로 움직이기 · 두 번 누르거나 <b>F2</b>로 있던 글 고치기 · <b>Delete</b> 비우기 · <b>Esc</b> 입력 취소. 엑셀·구글 시트에서 여러 칸을 복사해 <b>Ctrl+V</b>로 한 번에 붙여넣어요.</li>
+  <li><b>[+ 행]·[+ 열]</b>, 고른 칸의 <b>[행 지우기]·[열 지우기]</b>, 열 머리 오른쪽 끝을 끌어 너비 조절. 시트 이름은 위 이름 칸에서 바꿔요.</li>
+  <li><b>[+ 새 시트]</b>로 여러 개 만들고 위 탭으로 오가요. <b>[엑셀 불러오기]</b>는 .xlsx의 보이는 시트마다 새 시트로 가져와요(최대 500행 × 40열). <b>[시트 지우기]</b>는 두 번.</li>
+  <li>적은 내용은 잠깐 모았다가 저절로 저장·공유돼요. 프로그램 자료(학생·성적 등)에는 영향을 주지 않는 메모용이에요.</li></ul>`},
  {id:'refs',t:'소개비 (지점장·행정)',b:`
   ${HF('refs','소개비 — 소개로 들어온 신입과 소개해 준 학생 · 미지급/지급 완료')}
   <ul><li>[학생 관리]의 <b>소개비</b> 칸. 소개로 들어온 신입마다 <b>소개해 준 학생</b>과 <b>지급 여부</b>를 적어 둬요. 제목 옆 <b>[미지급 n명]</b>이 아직 안 준 사람 수예요.</li>
