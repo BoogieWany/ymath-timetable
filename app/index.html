@@ -1131,6 +1131,8 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .rdt tr.rdnew{cursor:pointer;transition:background .15s}.rdt tr.rdnew:hover td{background:color-mix(in srgb,var(--navy) 5%,transparent)}
 .sirf .rfin{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.sirf .rfin input{font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:170px}
 .sirf .sir{gap:8px}.sirf .lnk.arm{color:#c0392b}
+/* 3.83.5 보강 삭제 요청 */
+.rqi.rqnd{border-color:color-mix(in srgb,#c0392b 30%,var(--line))}.rqi .ndtag{font-style:normal;font-size:11px;font-weight:700;color:#c0392b;background:color-mix(in srgb,#c0392b 9%,transparent);border-radius:999px;padding:1px 8px}
 </style>
 </head>
 <body>
@@ -3491,7 +3493,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.83.3', APPDATE='2026-10-28';
+const APPVER='3.83.6', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -5593,7 +5595,7 @@ const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br)
 async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
   pcHandle((r.list||[]).filter(x=>x.kind==='pc'));
-  const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.tk=all.filter(x=>x.kind==='tk');RQS.list=all.filter(x=>!x.kind);csApply();await cnApply();cnxApply();adApply();if(typeof tkApply==='function')tkApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
+  const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.tk=all.filter(x=>x.kind==='tk');RQS.list=all.filter(x=>!x.kind||x.kind==='nd');csApply();await cnApply();cnxApply();adApply();if(typeof tkApply==='function')tkApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
 /* 신입 상담 완료(선생님이 강사용에서 누름): 이 PC가 고칠 수 있는 지점이면 원본 학생에 바로 적고 등록 목록에서 정리 (승인 없음) */
 async function csApply(){const L=(RQS.cs||[]).filter(x=>!x.bad);if(!L.length||RQS.csBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.csBusy=true;
@@ -5622,9 +5624,16 @@ async function cnxApply(){const L=(RQS.cnx||[]).filter(x=>!x.bad);if(!L.length||
 function rqBar(){let el=$('rqBar');const n=RQS.list.filter(x=>!x.bad).length;
   if(!n){if(el&&!el.hidden){el.hidden=true;if(typeof fitGrid==='function')fitGrid()}return}
   if(!el){el=document.createElement('div');el.id='rqBar';el.className='draftbar rqbar';document.querySelector('.top').appendChild(el)}
-  const labs=[...new Set(RQS.list.filter(x=>!x.bad).map(rqKind))].join('·');const was=el.hidden!==false||!el.innerHTML;
-  el.hidden=false;el.innerHTML=`<b>선생님 보강 등록 ${n}건</b><span class="hint">승인한 것만 시간표 빈 칸에 들어가요</span><button class="btn pri" data-act="rqOpen">확인하기</button>`;if(was&&typeof fitGrid==='function')fitGrid()}
-function rqRow(x){if(x.bad)return `<div class="rqi"><div class="rqm"><b>알 수 없는 등록</b><small>${fmtT(x.at)} · 내용을 풀지 못했어요 (번호를 바꾸기 전 등록이거나 잘못 들어온 것)</small></div><div class="rqb"><button class="btn" data-act="rqNo" data-n="${x.num}">지우기</button></div></div>`;
+  const nND=RQS.list.filter(x=>!x.bad&&x.kind==='nd').length;const was=el.hidden!==false||!el.innerHTML;
+  el.hidden=false;el.innerHTML=`<b>선생님 보강 ${n-nND?`등록 ${n-nND}건`:''}${n-nND&&nND?' · ':''}${nND?`삭제 요청 ${nND}건`:''}</b><span class="hint">승인한 것만 시간표에 반영돼요</span><button class="btn pri" data-act="rqOpen">확인하기</button>`;if(was&&typeof fitGrid==='function')fitGrid()}
+/* 3.83.5 보강 삭제 요청 줄 */
+const rqNdNote=(b,x)=>(b.notes||[]).find(n=>n.d===x.d&&n.p===+x.p&&n.t===x.t&&(n.k||b.noteLabel||'보강')===(x.k||'보강')&&(n.cls||'')===(x.cls||'')&&(n.until||'')===(x.until||'')&&noteLive(n));
+function rqNdRow(x){const b=DB.branches.find(i=>i.id===x.br);if(!b)return '';const pp=((b.days||{})[x.d]||[])[+x.p];const t=b.teachers.find(i=>i.id===x.t);const n=rqNdNote(b,x);const xc=rqClsOf(b,x.cls);
+  const rm=x.all?null:String(x.names||'').split(/,\s*/).filter(Boolean);const left=n&&rm?(n.names||'').split(/,\s*/).filter(v=>v&&!rm.includes(v)):[];
+  return `<div class="rqi rqnd" data-rqn="${x.num}"><div class="rqm"><div class="rqh"><b>${esc(t?t.name:x.tn||'?')}T</b>${DB.branches.length>1?`<span class="rqbr">${esc(b.name)}</span>`:''}<span>${esc(x.d)}요일 ${esc(pp?pp.name:'')} <span class="mono">${esc(pp?pp.time:'')}</span></span><i class="ndtag">삭제 요청</i><i>${esc(x.k||'보강')}${xc?` · <b>${esc(xc.name)}</b>`:''}</i>${x.until?`<span class="rqcnt">${x.from===x.until?ntMd(x.from):ntMd(x.from)+'~'+ntMd(x.until)}</span>`:''}</div>
+    <div class="rqn">${x.all?'<b>보강 통째로 지우기</b>':`<b>${esc(rm.join(', '))}</b> 빼기${n?` → 남는 명단: ${esc(left.join(', ')||'(없음 · 보강 지움)')}`:''}`}</div><small>${fmtT(x.at)} 요청${n?` · 지금 명단: ${esc(n.names||'(없음)')}`:' · <span class="rqw soft">이 보강이 이미 시간표에 없어요 · 승인하면 요청만 정리돼요</span>'}</small></div>
+    <div class="rqb"><button class="btn" data-act="rqNo" data-n="${x.num}">거절</button><button class="btn pri" data-act="rqOk" data-n="${x.num}">승인 · 지우기</button></div></div>`}
+function rqRow(x){if(x.kind==='nd'&&!x.bad)return rqNdRow(x);if(x.bad)return `<div class="rqi"><div class="rqm"><b>알 수 없는 등록</b><small>${fmtT(x.at)} · 내용을 풀지 못했어요 (번호를 바꾸기 전 등록이거나 잘못 들어온 것)</small></div><div class="rqb"><button class="btn" data-act="rqNo" data-n="${x.num}">지우기</button></div></div>`;
   const b=DB.branches.find(i=>i.id===x.br);const ps=(b.days||{})[x.d]||[];const pp=ps[+x.p];const t=b.teachers.find(i=>i.id===x.t);
   const v=b.versions.find(i=>i.id===b.current)||b.versions[0]||{sessions:[]};const busy=(v.sessions||[]).some(o=>o.d===x.d&&o.p===+x.p&&o.t===x.t);
   const ex=(b.notes||[]).find(n=>n.d===x.d&&n.p===+x.p&&n.t===x.t&&(n.k||b.noteLabel||'보강')===rqKind(x)&&(n.cls||'')===(x.cls||'')&&(n.until||'')===(x.until||'')&&noteLive(n));const xc=rqClsOf(b,x.cls);
@@ -5633,7 +5642,7 @@ function rqRow(x){if(x.bad)return `<div class="rqi"><div class="rqm"><b>알 수 
     <div class="rqn">${esc(x.names||(xc?'(명단 없음 · 수업만 연결)':''))}</div><small>${fmtT(x.at)} 등록${warn?' · ':''}${warn}</small></div>
     <div class="rqb"><button class="btn" data-act="rqNo" data-n="${x.num}">거절</button><button class="btn pri" data-act="rqOk" data-n="${x.num}" ${!t||!pp?'disabled':''}>승인</button></div></div>`}
 function rqDlg(){const m=$('modal');m.hidden=false;
-  m.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rqT" style="width:min(680px,100%)"><h2 id="rqT">선생님 보강 등록</h2>
+  m.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rqT" style="width:min(680px,100%)"><h2 id="rqT">선생님 보강 등록 · 삭제 요청</h2>
   <div class="hint" style="margin:-4px 0 12px">브라우저 시간표 '내 시간표'에서 선생님이 빈 칸에 적어 보낸 명단이에요. 승인하면 그 칸의 빈 칸 메모로 들어가고 선생님들 화면에 1~2분 뒤 보여요.${isOwner()&&syOn()?' 지점 보강 등록은 그 지점 관리자도 승인할 수 있어요.':''}</div>
   <div class="rql">${RQS.list.length?RQS.list.map(rqRow).join(''):'<div class="empty">남은 보강 등록이 없어요</div>'}</div>
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-act="rqClose">닫기</button></div></div>`}
@@ -5644,12 +5653,13 @@ async function rqDecide(num,ok){const x=RQS.list.find(i=>i.num===+num);if(!x||RQ
   try{if(ok){if(syOn()){await syncPull({silent:true});const l=await bridge.syncLock(x.br);
         if(!l.ok){toast(l.offline?'인터넷에 연결되지 않아 승인하지 못했어요':`${l.by||'다른 관리자'} 님이 ${syBName(x.br)}을(를) 고치고 있어요 · 끝나면 승인할 수 있어요`,5000);return}SYNC.mine.add(x.br)}
       const b=DB.branches.find(i=>i.id===x.br);if(!b){toast('지점을 찾지 못했어요');return}
+      if(x.kind==='nd'){const n=rqNdNote(b,x);if(n){if(x.all)b.notes=b.notes.filter(y=>y!==n);else{const rm=String(x.names||'').split(/,\s*/).filter(Boolean);n.names=(n.names||'').split(/,\s*/).filter(v=>v&&!rm.includes(v)).join(', ');if(!n.names&&!n.cls)b.notes=b.notes.filter(y=>y!==n)}}}else{
       b.notes=b.notes||[];const k=rqKind(x),cls=x.cls||'';const ex=b.notes.find(n=>n.d===x.d&&n.p===+x.p&&n.t===x.t&&(n.k||b.noteLabel||'보강')===k&&(n.cls||'')===cls&&(n.until||'')===(x.until||'')&&noteLive(n));const dt=x.cnt&&x.from&&x.until?{cnt:x.cnt,from:x.from,until:x.until}:{};const add=String(x.names||'').split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
-      if(ex){const have=(ex.names||'').split(/,\s*/).filter(Boolean);ex.names=have.concat(add.filter(n=>!have.includes(n))).join(', ');ex.k=k;ex.cls=cls}else b.notes.push(Object.assign({id:uid('n'),d:x.d,p:+x.p,t:x.t,k,cls,names:add.join(', ')},dt));b.notes=b.notes.filter(noteLive);
+      if(ex){const have=(ex.names||'').split(/,\s*/).filter(Boolean);ex.names=have.concat(add.filter(n=>!have.includes(n))).join(', ');ex.k=k;ex.cls=cls}else b.notes.push(Object.assign({id:uid('n'),d:x.d,p:+x.p,t:x.t,k,cls,names:add.join(', ')},dt));b.notes=b.notes.filter(noteLive)}
       DB.updated=new Date().toISOString();await saveNow();if(syOn())await syncAfterApply()}
     const c=await bridge.rqClose(x.num,ok);if(!c.ok&&ok)toast('시간표엔 넣었는데 등록 정리를 못 했어요 · '+(c.err||''),5000);else if(!c.ok){toast('거절하지 못했어요 · '+(c.err||''),5000);return}
     RQS.list=RQS.list.filter(i=>i.num!==x.num);RQS.n=RQS.list.filter(i=>!i.bad).length;render();rqBar();
-    toast(ok?`${tnB(x)}T ${rqKind(x)} 보강 등록을 승인했어요 · 선생님 화면에 1~2분 뒤 보여요`:x.bad?'지웠어요':`거절했어요 · 선생님 화면에서 등록이 사라져요`,4000)}
+    toast(ok&&x.kind==='nd'?`${tnB(x)}T 보강 삭제 요청을 승인했어요 · ${x.all?'보강을 지웠어요':'고른 학생을 뺐어요'}`:ok?`${tnB(x)}T ${rqKind(x)} 보강 등록을 승인했어요 · 선생님 화면에 1~2분 뒤 보여요`:x.bad?'지웠어요':`거절했어요 · 선생님 화면에서 등록이 사라져요`,4000)}
   finally{RQS.busy=false;if($('rqT')&&!$('modal').hidden)rqDlg()}}
 const tnB=x=>{const b=DB.branches.find(i=>i.id===x.br);const t=b&&b.teachers.find(i=>i.id===x.t);return t?t.name:(x.tn||'')};
 async function rqRender(){const el=$('rqBox');if(!el)return;if(!bridge||!bridge.rqInfo){el.innerHTML='<h3>선생님 보강 등록</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
@@ -6708,10 +6718,13 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
 document.addEventListener('keydown',e=>{const t=e.target;if(e.key==='Enter'&&t&&t.dataset&&t.dataset.rfsti){e.preventDefault();refStiSave(t.dataset.rfsti)}});
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-rdmon]');if(!t||!document.querySelector('.refdlg'))return;const [y,m]=(UI.refD.m||todayStr().slice(0,7)).split('-').map(Number);const d=new Date(y,m-1+(+t.dataset.rdmon),1);UI.refD.m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;refDlgDraw()});
 function refNewHTML(b,D){const m=D.m||todayStr().slice(0,7);const R=refOf(b);const SS=id=>(b.students||[]).find(x=>x.id===id);
-  const L=(b.students||[]).filter(s=>(s.from||s.at||'').slice(0,7)===m).sort((a,z)=>(a.from||a.at||'').localeCompare(z.from||z.at||''));
+  /* 3.83.4: 첫 수업일 기준 · 첫 수업일이 없으면 넣은 날로 따로 묶음 — 같은 날 10명 넘게 들어온 건 명부 한꺼번에 넣기라 뺌 */
+  const atN={};(b.students||[]).forEach(s=>{if(!s.from&&s.at)atN[s.at]=(atN[s.at]||0)+1});
+  const L0=(b.students||[]).filter(s=>s.from&&s.from.slice(0,7)===m);const L1=(b.students||[]).filter(s=>!s.from&&s.at&&s.at.slice(0,7)===m&&atN[s.at]<10);const nBulk=(b.students||[]).filter(s=>!s.from&&s.at&&s.at.slice(0,7)===m&&atN[s.at]>=10).length;
+  const L=L0.sort((a,z)=>a.from.localeCompare(z.from)).concat(L1.sort((a,z)=>a.at.localeCompare(z.at)));
   const q=String(D.q||'').replace(/\s+/g,'');const F=L.filter(s=>!q||[s.name,s.school].some(x=>String(x||'').replace(/\s+/g,'').includes(q)));const nR=L.filter(s=>R.some(r=>r.sid===s.id)).length;
-  return `<div class="rdmon"><button class="btn sm" data-rdmon="-1" aria-label="이전 달">‹</button><b>${+m.slice(0,4)}년 ${+m.slice(5)}월 신규생</b><button class="btn sm" data-rdmon="1" aria-label="다음 달"${m>=todayStr().slice(0,7)?' disabled':''}>›</button><span class="hint">${L.length}명 · 소개 ${nR}명 · 줄을 누르면 학생 정보 창에서 소개를 넣어요</span></div>
-  ${F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>첫 수업</th><th>상태</th><th class="l">소개</th></tr></thead><tbody>${F.map(s=>{const r=R.find(x=>x.sid===s.id);const bs=r&&r.by?SS(r.by):null;return `<tr class="rdnew" data-rdnew="${esc(s.id)}" title="학생 정보 창 열기"><td class="l"><b>${esc(s.name)}</b></td><td>${esc([s.school,s.grade].filter(Boolean).join(' '))}</td><td>${s.from?mdS(s.from):'<span class="hint">—</span>'}</td><td>${isOut(s)?'<span class="rfwait">퇴원</span>':isPre(s)?'<span class="rfwait">입학 예정</span>':esc(s.status||'재원')}</td><td class="l">${r?`<b>${esc(bs?bs.name:r.byNm||'')}</b> <small class="hint">${r.pd?'지급 '+mdS(r.pd):'미지급'}</small>`:'<span class="hint">—</span>'}</td></tr>`}).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 학생이 없어요':'이 달에 들어온 학생이 없어요'}</div>`}`}
+  return `<div class="rdmon"><button class="btn sm" data-rdmon="-1" aria-label="이전 달">‹</button><b>${+m.slice(0,4)}년 ${+m.slice(5)}월 신규생</b><button class="btn sm" data-rdmon="1" aria-label="다음 달"${m>=todayStr().slice(0,7)?' disabled':''}>›</button><span class="hint">${L.length}명 · 소개 ${nR}명 · 줄을 누르면 학생 정보 창에서 소개를 넣어요${L1.length?` · 첫 수업일 없는 ${L1.length}명은 넣은 날 기준`:''}${nBulk?` · 명부로 한꺼번에 들어온 ${nBulk}명은 뺐어요`:''}</span></div>
+  ${F.length?`<table class="tbl rdt"><thead><tr><th class="l">신입</th><th>학교·학년</th><th>첫 수업</th><th>상태</th><th class="l">소개</th></tr></thead><tbody>${F.map(s=>{const r=R.find(x=>x.sid===s.id);const bs=r&&r.by?SS(r.by):null;return `<tr class="rdnew" data-rdnew="${esc(s.id)}" title="학생 정보 창 열기"><td class="l"><b>${esc(s.name)}</b></td><td>${esc([s.school,s.grade].filter(Boolean).join(' '))}</td><td>${s.from?mdS(s.from):`<span class="hint" title="첫 수업일이 없어 프로그램에 넣은 날로 묶었어요 · 학생 정보 창 [상태·정보 고치기]에서 첫 수업일을 넣으면 정확해져요">${s.at?mdS(s.at)+' 넣음':'—'}</span>`}</td><td>${isOut(s)?'<span class="rfwait">퇴원</span>':isPre(s)?'<span class="rfwait">입학 예정</span>':esc(s.status||'재원')}</td><td class="l">${r?`<b>${esc(bs?bs.name:r.byNm||'')}</b> <small class="hint">${r.pd?'지급 '+mdS(r.pd):'미지급'}</small>`:'<span class="hint">—</span>'}</td></tr>`}).join('')}</tbody></table>`:`<div class="hint rfemp">${L.length?'조건에 맞는 학생이 없어요':'이 달에 들어온 학생이 없어요'}</div>`}`}
 </script>
 <script>/* ===== 내 폰 관리 모드 (프로그램 관리자 전용) =====
    b.own={ck:10자리 코드, ak:서명 키, nm, at} — 모든 지점에 같은 값으로 둠(어느 PC가 시간표를 올려도 같은 묶음이 나가게)
@@ -7740,7 +7753,7 @@ const HELP=[
   ${HF('refdlg','소개비 명단 창 — 업무 화면 [소개비] 버튼')}
   <li><b>지급 내역</b>: 명단 창의 [지급 내역] 탭에 지급한 기록이 <b>달별로</b> 모두 남아요(지급일 · 소개해 준 사람 · 신입 · 누가 체크했는지). 학생 관리 칸에서는 석 달 지나면 접히지만 지급 내역에서는 지워지지 않아요.</li>
   ${HF('refhist','지급 내역 — 달별 · 체크한 사람')}
-  <li><b>월별 신규생</b>: 명단 창의 [월별 신규생] 탭에 그달 들어온 학생(첫 수업일 기준)이 모여요. ‹ › 로 달을 넘기고, 소개가 있는 학생은 소개해 준 사람과 지급 여부가 같이 보여요. 줄을 누르면 <b>학생 정보 창</b>이 열려요.</li>
+  <li><b>월별 신규생</b>: 명단 창의 [월별 신규생] 탭에 그달 들어온 학생(첫 수업일 기준)이 모여요. 첫 수업일이 없는 학생은 프로그램에 넣은 날로 따로 묶고('10/4 넣음'), 명부로 같은 날 한꺼번에 들어온 학생은 빼요. ‹ › 로 달을 넘기고, 소개가 있는 학생은 소개해 준 사람과 지급 여부가 같이 보여요. 줄을 누르면 <b>학생 정보 창</b>이 열려요.</li>
   <li><b>학생 정보 창의 소개 칸</b>: 최근 넉 달 안에 들어온 학생(또는 입학 예정·소개 기록이 있는 학생)은 학생 정보 창에 <b>소개</b> 칸이 있어요. 이름을 넣고 [넣기](또는 Enter) — 바꾸기·빼기도 여기서(지급 완료된 건 명단 창에서 [되돌리기] 후). 그 학생이 소개해 준 신입도 같이 보여요. 명단에서 열었으면 위의 <b>[← 소개비 명단]</b>으로 돌아가요.</li>
   ${HF('refnew','월별 신규생 — 줄을 누르면 학생 정보 창')}${HF('refsti','학생 정보 창의 소개 칸')}
   <li><b>지점장·행정 선생님(과 관리자) PC에서만</b> 보여요. 선생님 폰·지점장 폰 어디에도 안 나가요.</li></ul>`},
@@ -7832,7 +7845,9 @@ const HELP=[
   <ul><li>수정 모드에서 <b>빈 칸</b>에 마우스를 올리면 <b>[+ 메모]</b>. <b>종류</b>(보강 / 추가수업 / 조교시간)를 고르고 이름을 쳐요(쉼표나 띄어쓰기로 여러 명). Enter = 저장.</li>
   <li><b>연결할 수업</b>을 고르면 카드에 반 이름과 색이 붙고 [반 명단 채우기]로 학생을 한 번에 넣어요. <b>횟수</b>(예: 3회)를 고르면 그만큼만 보이고 끝나면 사라져요.</li>
   <li>시간표 위 <b>[메모 보기]</b>로 모든 메모를 보이기/가리기.</li>
-  <li><b>선생님 보강 등록</b>: 선생님이 폰의 <b>전체 → 내 시간표</b>에서 빈 칸을 눌러 보강을 등록하면 위쪽에 <b>선생님 보강 등록 ○건</b>이 떠요. [확인하기] → [승인]하면 빈 칸 메모로 들어가요. 지점장은 자기 지점 것을 승인해요.</li></ul>`},
+  <li><b>선생님 보강 등록</b>: 선생님이 폰의 <b>전체 → 내 시간표</b>에서 빈 칸을 눌러 보강을 등록하면 위쪽에 <b>선생님 보강 등록 ○건</b>이 떠요. [확인하기] → [승인]하면 빈 칸 메모로 들어가요. 지점장은 자기 지점 것을 승인해요.</li>
+  <li><b>보강 삭제 요청</b>: 선생님이 내 시간표에서 <b>보강이 적힌 자기 칸</b>을 누르면 '이 칸의 보강' 아래 <b>[삭제 요청]</b>이 있어요. 학생을 안 고르면 <b>보강 통째</b>, 몇 명을 고르면 <b>그 학생만 빼기</b>로 요청해요. 위쪽 띠에 <b>삭제 요청 ○건</b>이 같이 뜨고, 창에서 지금 명단과 <b>남는 명단</b>을 보고 [승인 · 지우기] 또는 [거절]. 승인 전까지 선생님 폰엔 그 보강에 '삭제 요청 중'이 붙고, 선생님이 [요청 취소]도 할 수 있어요. 승인되면 새 시간표 파일을 기다리지 않고 선생님 폰에서 바로 빠져요.</li>
+  ${HF('m-nd','폰 — 보강 삭제 요청 (학생 골라 빼기)')}</ul>`},
  {id:'ex',t:'당일 변경 (휴강 · 대강 · 시간 이동)',b:`
   ${HF('ex','당일 변경 — 날짜를 고르고 휴강·대강·시간 이동')}
   <ul><li>수업 카드를 누르면 명단 창 아래 <b>[당일 변경]</b>. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 1~2분 뒤 보여요.</li>
