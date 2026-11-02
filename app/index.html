@@ -1146,11 +1146,28 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .msg thead th{position:sticky;top:0}.msg th.msc0{position:sticky;left:0;z-index:1;text-align:center}.msg thead th.msc0{z-index:3}
 .msg th[data-mshc]{position:sticky;top:0}.msg .msrz{position:absolute;right:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:4}.msg thead th{position:sticky}.msg thead th[data-mshc]{position:sticky}
 .msg td{height:26px;padding:3px 7px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);white-space:pre-wrap;overflow:hidden;text-overflow:ellipsis;vertical-align:top;cursor:cell;background:var(--panel)}
-.msg td.on{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--navy) 70%,transparent);background:color-mix(in srgb,var(--navy) 4%,var(--panel))}
+.msg td.on{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--navy) 70%,transparent)}
 .msg td.ed{padding:0;box-shadow:inset 0 0 0 2px var(--navy)}.msg td.ed textarea{width:100%;height:100%;min-height:26px;border:0;outline:0;resize:none;font:inherit;padding:3px 7px;background:transparent;color:inherit}
 .msfoot{margin-top:8px}.mshemp{padding:30px;text-align:center}
 .mstool .btn.arm{color:#c0392b}
 .mswrap{position:relative}.msin{position:absolute;z-index:5;opacity:0;pointer-events:none;border:0;outline:0;resize:none;font:inherit;font-size:12.5px;padding:3px 7px;margin:0;background:var(--panel);color:inherit;box-shadow:inset 0 0 0 2px var(--navy);overflow:hidden;line-height:1.45}.msin.on{opacity:1;pointer-events:auto}
+/* 3.85.0 메모 시트 서식 */
+.msfmt{display:flex;align-items:center;gap:2px;flex-wrap:wrap;position:relative;margin:0 0 8px;padding:4px;border:1px solid var(--line2);border-radius:10px;background:color-mix(in srgb,var(--muted) 4%,var(--panel));width:max-content;max-width:100%}
+.msf{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:28px;padding:0 6px;border:0;border-radius:7px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer;transition:background .15s}
+.msf:hover{background:color-mix(in srgb,var(--muted) 12%,transparent)}.msf.on,.msf.open{background:color-mix(in srgb,var(--navy) 13%,transparent);color:var(--navy)}
+.msf svg{width:17px;height:17px;fill:none}.msf svg path[fill="currentColor"]{fill:currentColor}
+.msfs{width:1px;height:18px;background:var(--line);margin:0 4px}
+.mscol{flex-direction:column;gap:1px;padding-top:2px}.mscol .msa{font-weight:700;font-size:13px;line-height:1}.mscol svg{width:15px;height:15px}.msbar{display:block;width:16px;height:3px;border-radius:2px;background:currentColor}#msBgBar{box-shadow:inset 0 0 0 1px var(--line)}
+.mspal{position:absolute;top:36px;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.16);padding:10px;width:248px;animation:mspalIn .14s ease}
+@keyframes mspalIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.mspn{width:100%;text-align:left;border:1px solid var(--line);background:transparent;color:inherit;border-radius:8px;padding:5px 8px;font:inherit;font-size:12px;cursor:pointer;margin-bottom:8px}.mspn:hover{background:color-mix(in srgb,var(--muted) 8%,transparent)}
+.mssw{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}.mssw button{width:100%;aspect-ratio:1;border:1px solid color-mix(in srgb,#000 12%,transparent);border-radius:50%;cursor:pointer;padding:0;transition:transform .12s}.mssw button:hover{transform:scale(1.18)}
+.mscus{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}.mscus input{width:34px;height:24px;border:0;background:none;padding:0;cursor:pointer}
+.msbd{width:150px;display:flex;flex-direction:column;gap:2px;padding:6px}.msbd button{text-align:left;border:0;background:transparent;color:inherit;font:inherit;font-size:12.5px;padding:6px 8px;border-radius:7px;cursor:pointer}.msbd button:hover{background:color-mix(in srgb,var(--muted) 10%,transparent)}
+.msg td{white-space:nowrap}
+.msg td.rg{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--navy) 9%,transparent)}
+.msg td.on.rg{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--navy) 70%,transparent),inset 0 0 0 999px color-mix(in srgb,var(--navy) 6%,transparent)}
+.msg tr{height:26px}
 </style>
 </head>
 <body>
@@ -3511,7 +3528,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.84.1', APPDATE='2026-10-28';
+const APPVER='3.85.0', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -7683,20 +7700,22 @@ async function tkImportGo(){const nw=UI.tkImpNew||[];if(!nw.length)return;$('mod
 
 /* 3.82.0 업무 줄 아무 데나 누르면 고치기 창(⋯ 버튼이 있는 줄만 · 답안·완료·점검 같은 버튼은 원래대로 · 글자 고르기 중엔 안 뜸) */
 document.addEventListener('click',e=>{if(UI.view!=='tasks')return;const tr=e.target.closest&&e.target.closest('tr[data-tkrow]');if(!tr||e.target.closest('button,a,input,select,textarea,label'))return;if(getSelection&&String(getSelection()).length)return;if(!tr.querySelector('[data-act="tkEdit"]'))return;tkDlg(tr.dataset.tkrow)});
-/* ===== 3.84.1 메모 시트(구조 새로): 행정·지점장이 잠깐 쓰는 엑셀 같은 표 · 지점마다 · PC만(폰으로 안 나감)
-   공유 자료 'msheets'(지점 시간표 파일과 따로) → 고칠 때 화면 전체를 다시 그리지 않고 그 칸만 · 0.6초 모았다가 저장·공유
-   칸마다 시각(at)을 찍어 합쳐서 두 사람이 같은 시트를 고쳐도 각자 고친 칸이 다 남음 · 행·열은 고유 번호로 순서만 합침
-   시트 = {id,br,by,at, nm:{v,at}, del:{v,at}, rows:[행id], ro, cols:[열id], co, rdel:{id:{v,at}}, cdel:{...}, w:{열id:{v,at}}, c:{'행|열':{v,at}}} */
+/* ===== 3.85.0 메모 시트: 행정·지점장이 잠깐 쓰는 엑셀 같은 표 · 지점마다 · PC만(폰으로 안 나감)
+   공유 자료 'msheets'(지점 시간표 파일과 따로) · 칸만 바꿔 그림 · 0.6초 모아 저장 · 칸마다 시각(at)으로 합침(같이 고쳐도 다 남음)
+   서식: 칸 색·글자색·굵게·기울임·밑줄·정렬·테두리·병합·열 너비·행 높이 — 엑셀을 불러오면 서식 그대로, 엑셀로 저장해도 서식 그대로
+   시트 = {id,br,by,at,made, nm:{v,at}, del:{v,at}, rows:[행id], ro, cols:[열id], co, rdel,cdel:{id:{v,at}}, w:{열id:{v,at}}, rh:{행id:{v,at}},
+           c:{'행|열':{v,at}}(값), s:{'행|열':{v:{bg,fg,b,i,u,al,va,wr,fs,bb,br,bt,bl},at}}(서식), mg:{'행|열':{v:{rs,cs}|null,at}}(병합)} */
 const msOn=()=>!$('modal').hidden&&!!document.querySelector('#modal .mshdlg');
 const MS=()=>{if(!DB.msheets||typeof DB.msheets!=='object')DB.msheets={list:{}};DB.msheets.list=DB.msheets.list||{};return DB.msheets};
 const msId=p=>p+Math.random().toString(36).slice(2,9);
 const msNow=()=>Date.now();
 const msLww=(d,s)=>{let ch=false;Object.entries(s||{}).forEach(([k,v])=>{if(v&&(!d[k]||(v.at||0)>(d[k].at||0))){d[k]=v;ch=true}});return ch};
-function msOrd(a,aAt,b,bAt){/* 새 순서를 기준으로, 다른 쪽에만 있는 id는 그쪽 앞 칸 뒤에 끼움 */const [base,other]=(bAt||0)>(aAt||0)?[b.slice(),a]:[a.slice(),b];
+function msOrd(a,aAt,b,bAt){const [base,other]=(bAt||0)>(aAt||0)?[b.slice(),a]:[a.slice(),b];
   other.forEach((id,i)=>{if(base.includes(id))return;let j=-1;for(let k=i-1;k>=0;k--){j=base.indexOf(other[k]);if(j>=0)break}base.splice(j+1,0,id)});return base}
+const MS_MAPS=['rdel','cdel','w','rh','c','s','mg'];
 function msMergeInto(dst,src){let ch=false;if(!src||!src.list)return false;dst.list=dst.list||{};if(src.mig){dst.mig=dst.mig||{};Object.keys(src.mig).forEach(k=>{if(!dst.mig[k]){dst.mig[k]=1;ch=true}})}
   Object.entries(src.list).forEach(([id,s])=>{if(!s||typeof s!=='object')return;const d=dst.list[id];if(!d){dst.list[id]=s;ch=true;return}const before=JSON.stringify(d);
-    ['nm','del'].forEach(k=>{if(s[k]&&(!d[k]||(s[k].at||0)>(d[k].at||0)))d[k]=s[k]});['rdel','cdel','w','c'].forEach(k=>{d[k]=d[k]||{};msLww(d[k],s[k])});
+    ['nm','del'].forEach(k=>{if(s[k]&&(!d[k]||(s[k].at||0)>(d[k].at||0)))d[k]=s[k]});MS_MAPS.forEach(k=>{d[k]=d[k]||{};msLww(d[k],s[k])});
     d.rows=msOrd(d.rows||[],d.ro,s.rows||[],s.ro);d.ro=Math.max(d.ro||0,s.ro||0);d.cols=msOrd(d.cols||[],d.co,s.cols||[],s.co);d.co=Math.max(d.co||0,s.co||0);
     if((s.at||0)>(d.at||0)){d.at=s.at;d.by=s.by}if(JSON.stringify(d)!==before)ch=true});
   if(ch)setTimeout(msRemote,0);return ch}
@@ -7708,109 +7727,248 @@ const mshList=b=>msOfBr(b.id);
 const msR=x=>(x.rows||[]).filter(id=>!((x.rdel||{})[id]||{}).v);
 const msC=x=>(x.cols||[]).filter(id=>!((x.cdel||{})[id]||{}).v);
 const msGet=(x,r,c)=>{const o=(x.c||{})[r+'|'+c];return o&&o.v!=null?String(o.v):''};
+const msSt=(x,r,c)=>{const o=(x.s||{})[r+'|'+c];return o&&o.v||null};
 const mshCol=i=>{let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
 const MSH_MAXR=500,MSH_MAXC=40;
-const MSH={cur:'',sel:{r:0,c:0},ed:null,tm:0,R:[],C:[],undo:[],redo:[]};
+const MSH={cur:'',sel:{r:0,c:0},an:{r:0,c:0},ed:null,tm:0,R:[],C:[],cov:new Map(),span:new Map(),undo:[],drag:false};
 const msMe=()=>typeof cnMe==='function'?cnMe():'';
-function msMake(br,nm,nr,nc){const t=msNow();const rows=Array.from({length:nr||20},()=>msId('r')),cols=Array.from({length:nc||8},()=>msId('c'));return {id:msId('m'),br,by:msMe(),at:t,made:t,nm:{v:nm||'새 시트',at:t},rows,ro:t,cols,co:t,rdel:{},cdel:{},w:{},c:{}}}
-/* 저장: 화면은 이미 바뀌어 있으니 파일 저장·공유만 0.6초 모았다가 */
+function msMake(br,nm,nr,nc){const t=msNow();const rows=Array.from({length:nr||20},()=>msId('r')),cols=Array.from({length:nc||8},()=>msId('c'));return {id:msId('m'),br,by:msMe(),at:t,made:t,nm:{v:nm||'새 시트',at:t},rows,ro:t,cols,co:t,rdel:{},cdel:{},w:{},rh:{},c:{},s:{},mg:{}}}
 function msTouch(x){x.at=msNow();x.by=msMe();clearTimeout(MSH.tm);MSH.tm=setTimeout(msFlush,600)}
 async function msFlush(){clearTimeout(MSH.tm);MSH.tm=0;if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o.msheets=DB.msheets;ORIG=JSON.stringify(o)}catch(e){}}await schPersist();shPush('msheets')}
-/* 예전(3.84.0) 지점 파일 안의 시트 → 공유 자료로 한 번 옮김 */
 async function msMigrate(){const b=B();const S=MS();S.mig=S.mig||{};if(S.mig[b.id])return;const old=(b.msh||[]).filter(x=>x&&!x.del);if(!old.length)return;S.mig[b.id]=1;
   old.forEach(o=>{const nc=Math.max(1,...(o.rows||[[]]).map(r=>r.length));const x=msMake(b.id,o.nm,(o.rows||[]).length||1,nc);x.by=o.by||x.by;(o.rows||[]).forEach((r,ri)=>r.forEach((v,ci)=>{if(v!==''&&v!=null)x.c[x.rows[ri]+'|'+x.cols[ci]]={v:String(v),at:x.at}}));(o.w||[]).forEach((w,ci)=>{if(x.cols[ci]&&w)x.w[x.cols[ci]]={v:w,at:x.at}});S.list[x.id]=x});
   msTouch(old[0]||{});await msFlush()}
-async function mshOpen(){MSH.undo=[];MSH.redo=[];try{await msMigrate()}catch(e){}const L=mshList(B());if(!L.some(x=>x.id===MSH.cur))MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};mshDraw();msPull({force:true})}
+async function mshOpen(){MSH.undo=[];try{await msMigrate()}catch(e){}const L=mshList(B());if(!L.some(x=>x.id===MSH.cur))MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();msPull({force:true})}
 function mshCur(){const x=MS().list[MSH.cur];return msLive(x)&&x.br===B().id?x:null}
-function msRowHTML(x,ri){const r=MSH.R[ri];return `<tr><th class="msc0">${ri+1}</th>${MSH.C.map((c,ci)=>`<td data-r="${ri}" data-c="${ci}"${MSH.sel.r===ri&&MSH.sel.c===ci?' class="on"':''}>${esc(msGet(x,r,c))}</td>`).join('')}</tr>`}
-function mshDraw(keep){const b=B();const L=mshList(b);const x=mshCur();if(x){MSH.R=msR(x);MSH.C=msC(x)}else{MSH.R=[];MSH.C=[]}
+/* ---- 서식 → css ---- */
+const MS_AL={l:'left',c:'center',r:'right'},MS_VA={t:'top',m:'middle',b:'bottom'};
+function msCss(st,rh){let c='';if(rh)c+=`height:${rh}px;`;if(!st)return c;if(st.bg)c+=`background:${st.bg};`;if(st.fg)c+=`color:${st.fg};`;if(st.b)c+='font-weight:700;';if(st.i)c+='font-style:italic;';if(st.u)c+='text-decoration:underline;';
+  if(st.al)c+=`text-align:${MS_AL[st.al]};`;if(st.va)c+=`vertical-align:${MS_VA[st.va]};`;if(st.wr)c+='white-space:pre-wrap;';if(st.fs)c+=`font-size:${st.fs}px;`;
+  if(st.bb)c+=`border-bottom:${st.bb};`;if(st.br)c+=`border-right:${st.br};`;if(st.bt)c+=`border-top:${st.bt};`;if(st.bl)c+=`border-left:${st.bl};`;return c}
+/* 병합: 보이는 행·열 순서로 덮이는 칸 표 만들기 */
+function msSpans(x){MSH.cov=new Map();MSH.span=new Map();const ri=new Map(MSH.R.map((r,i)=>[r,i])),ci=new Map(MSH.C.map((c,i)=>[c,i]));
+  Object.entries(x.mg||{}).forEach(([k,o])=>{if(!o||!o.v)return;const [r,c]=k.split('|');if(!ri.has(r)||!ci.has(c))return;const r0=ri.get(r),c0=ci.get(c);const r1=Math.min(MSH.R.length-1,r0+(o.v.rs||1)-1),c1=Math.min(MSH.C.length-1,c0+(o.v.cs||1)-1);if(r1===r0&&c1===c0)return;
+    MSH.span.set(r0+','+c0,[r1-r0+1,c1-c0+1]);for(let a=r0;a<=r1;a++)for(let b=c0;b<=c1;b++)if(a!==r0||b!==c0)MSH.cov.set(a+','+b,[r0,c0])})}
+const msAnc=(r,c)=>MSH.cov.get(r+','+c)||[r,c];
+function msTd(x,ri,ci){if(MSH.cov.has(ri+','+ci))return '';const r=MSH.R[ri],c=MSH.C[ci];const sp=MSH.span.get(ri+','+ci);return `<td data-r="${ri}" data-c="${ci}"${sp?` rowspan="${sp[0]}" colspan="${sp[1]}"`:''} style="${msCss(msSt(x,r,c))}">${esc(msGet(x,r,c))}</td>`}
+function msRowHTML(x,ri){const r=MSH.R[ri];const h=((x.rh||{})[r]||{}).v;return `<tr${h?` style="height:${h}px"`:''}><th class="msc0">${ri+1}</th>${MSH.C.map((c,ci)=>msTd(x,ri,ci)).join('')}</tr>`}
+/* ---- 서식 막대 ---- */
+const MS_PAL=['#000000','#434343','#666666','#999999','#b7b7b7','#cccccc','#d9d9d9','#efefef','#f3f3f3','#ffffff',
+  '#980000','#ff0000','#ff9900','#ffff00','#00ff00','#00ffff','#4a86e8','#0000ff','#9900ff','#ff00ff',
+  '#e6b8af','#f4cccc','#fce5cd','#fff2cc','#d9ead3','#d0e0e3','#c9daf8','#cfe2f3','#d9d2e9','#ead1dc',
+  '#dd7e6b','#ea9999','#f9cb9c','#ffe599','#b6d7a8','#a2c4c9','#a4c2f4','#9fc5e8','#b4a7d6','#d5a6bd',
+  '#cc4125','#e06666','#f6b26b','#ffd966','#93c47d','#76a5af','#6d9eeb','#6fa8dc','#8e7cc3','#c27ba0',
+  '#a61c00','#cc0000','#e69138','#f1c232','#6aa84f','#45818e','#3c78d8','#3d85c6','#674ea7','#a64d79'];
+const msIcon={b:'<b>가</b>',i:'<i style="font-family:serif">가</i>',u:'<u>가</u>'};
+function msFmtBar(){return `<div class="msfmt" role="toolbar" aria-label="서식">
+  <button class="msf" data-msf="b" title="굵게 (Ctrl+B)">${msIcon.b}</button><button class="msf" data-msf="i" title="기울임 (Ctrl+I)">${msIcon.i}</button><button class="msf" data-msf="u" title="밑줄 (Ctrl+U)">${msIcon.u}</button><i class="msfs"></i>
+  <button class="msf mscol" data-mspal="fg" title="글자색"><span class="msa">가</span><i class="msbar" id="msFgBar"></i></button><button class="msf mscol" data-mspal="bg" title="칸 색"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14l7-7 6 6-7 7H4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19 15c0 1.5 1 2.6 1 3.6a1 1 0 01-2 0c0-1 1-2.1 1-3.6z" fill="currentColor"/></svg><i class="msbar" id="msBgBar"></i></button><i class="msfs"></i>
+  <button class="msf" data-msf="al:l" title="왼쪽 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h10M4 14h16M4 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="al:c" title="가운데 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 10h10M4 14h16M7 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="al:r" title="오른쪽 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M10 10h10M4 14h16M10 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="wr" title="자동 줄 바꿈"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h13a3 3 0 010 6h-4m2-2l-2 2 2 2M4 18h5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><i class="msfs"></i>
+  <button class="msf" data-mspal="bd" title="테두리"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/></svg></button>
+  <button class="msf" data-msf="merge" title="칸 합치기 · 다시 누르면 풀기"><svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 12h8M8 12l2-2M8 12l2 2M16 12l-2-2M16 12l-2 2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button><i class="msfs"></i>
+  <button class="msf" data-msf="clr" title="서식 지우기"><svg viewBox="0 0 24 24"><path d="M6 6h12M12 6l-3 12M15 15l5 5M20 15l-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button></div>`}
+function msPalHTML(k){if(k==='bd')return `<div class="mspal msbd" data-palk="bd">${[['all','모든 테두리'],['out','바깥 테두리'],['bot','아래쪽만'],['thick','바깥 굵게'],['none','테두리 없음']].map(([v,t])=>`<button data-msbd="${v}">${t}</button>`).join('')}</div>`;
+  return `<div class="mspal" data-palk="${k}"><button class="mspn" data-mscol="">${k==='bg'?'칸 색 없음':'기본 글자색'}</button><div class="mssw">${MS_PAL.map(c=>`<button data-mscol="${c}" style="background:${c}" title="${c}" aria-label="${c}"></button>`).join('')}</div><label class="mscus">다른 색 <input type="color" data-mscus="${k}" value="${k==='bg'?'#fff2cc':'#c00000'}"></label></div>`}
+function mshDraw(keep){const b=B();const L=mshList(b);const x=mshCur();if(x){MSH.R=msR(x);MSH.C=msC(x);msSpans(x)}else{MSH.R=[];MSH.C=[]}
   const tabs=L.map(s=>`<button class="mstab" data-msh="${esc(s.id)}" aria-pressed="${s.id===MSH.cur}">${esc(s.nm.v)}</button>`).join('');
   const grid=x?`<table class="msg"><colgroup><col style="width:44px">${MSH.C.map(c=>`<col style="width:${((x.w||{})[c]||{}).v||110}px">`).join('')}</colgroup>
     <thead><tr><th class="msc0"></th>${MSH.C.map((c,ci)=>`<th>${mshCol(ci)}<i class="msrz" data-msrz="${ci}" aria-hidden="true"></i></th>`).join('')}</tr></thead>
     <tbody>${MSH.R.map((r,ri)=>msRowHTML(x,ri)).join('')}</tbody></table><textarea id="msIn" class="msin" rows="1" spellcheck="false" aria-label="칸 입력"></textarea>`:`<div class="hint mshemp">아직 시트가 없어요 · [+ 새 시트]나 [엑셀 불러오기]로 시작해요</div>`;
   const sc=keep&&$('msWrap')?[$('msWrap').scrollLeft,$('msWrap').scrollTop]:null;
   $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg mshdlg" role="dialog" aria-modal="true" aria-labelledby="msT"><div class="msh-h"><h2 id="msT">메모 시트 <span class="iqbr">${esc(b.name)}</span></h2><span class="hint">행정·지점장이 잠깐 쓰는 표 · 이 지점 PC에서만 · 폰으로 안 나가요</span><span class="sp"></span><button class="btn sm" data-act="closeModal">닫기</button></div>
-    <div class="mstabs">${tabs}<button class="btn sm" data-act="mshAdd">+ 새 시트</button><button class="btn sm" data-act="mshImp" title="엑셀(.xlsx)의 시트를 그대로 가져와요">엑셀 불러오기</button></div>
-    ${x?`<div class="mstool"><input id="msNm" value="${esc(x.nm.v)}" maxlength="40" aria-label="시트 이름"><span class="hint" id="msBy">${esc(x.by||'')}${x.at?' · '+mdS(new Date(x.at+9*3600e3).toISOString().slice(0,10)):''}</span><span class="sp"></span><button class="btn sm" data-act="mshUndo" title="되돌리기 (Ctrl+Z)" ${MSH.undo.length?'':'disabled'}>↶ 되돌리기</button><button class="btn sm" data-act="mshRow">+ 행</button><button class="btn sm" data-act="mshColAdd">+ 열</button><button class="btn sm" data-act="mshRowDel" title="고른 칸의 행 지우기">행 지우기</button><button class="btn sm" data-act="mshColDel" title="고른 칸의 열 지우기">열 지우기</button><button class="btn sm" data-act="mshXlsx" title="이 시트를 엑셀 파일로">엑셀로 저장</button><button class="btn sm danger" data-act="mshDel" title="이 시트 지우기 (두 번)">시트 지우기</button></div>`:''}
+    <div class="mstabs">${tabs}<button class="btn sm" data-act="mshAdd">+ 새 시트</button><button class="btn sm" data-act="mshImp" title="엑셀(.xlsx)의 시트를 서식까지 그대로 가져와요">엑셀 불러오기</button></div>
+    ${x?`<div class="mstool"><input id="msNm" value="${esc(x.nm.v)}" maxlength="40" aria-label="시트 이름"><span class="hint" id="msBy">${esc(x.by||'')}${x.at?' · '+mdS(new Date(x.at+9*3600e3).toISOString().slice(0,10)):''}</span><span class="sp"></span><button class="btn sm" data-act="mshUndo" title="되돌리기 (Ctrl+Z)" ${MSH.undo.length?'':'disabled'}>↶ 되돌리기</button><button class="btn sm" data-act="mshRow">+ 행</button><button class="btn sm" data-act="mshColAdd">+ 열</button><button class="btn sm" data-act="mshRowDel" title="고른 칸의 행 지우기">행 지우기</button><button class="btn sm" data-act="mshColDel" title="고른 칸의 열 지우기">열 지우기</button><button class="btn sm" data-act="mshXlsx" title="이 시트를 서식까지 엑셀 파일로">엑셀로 저장</button><button class="btn sm danger" data-act="mshDel" title="이 시트 지우기 (두 번)">시트 지우기</button></div>${msFmtBar()}`:''}
     <div class="mswrap" id="msWrap">${grid}</div>
-    <div class="hint msfoot">칸을 누르고 바로 입력 · Enter 아래로 · Tab 옆으로 · 방향키 · F2·두 번 눌러 고치기 · Delete 지우기 · Ctrl+Z 되돌리기 · 엑셀에서 복사한 칸을 Ctrl+V · 열 머리 끝을 끌어 너비 조절 · 같이 고쳐도 칸마다 합쳐져요</div></div>`;
-  if(sc){$('msWrap').scrollLeft=sc[0];$('msWrap').scrollTop=sc[1]}MSH.ed=null;if(x)requestAnimationFrame(mshPlace)}
+    <div class="hint msfoot">칸을 누르고 바로 입력 · 끌거나 Shift로 여러 칸 고르기 · Enter 아래로 · Tab 옆으로 · F2·두 번 눌러 고치기 · Delete 지우기 · Ctrl+Z 되돌리기 · Ctrl+V 붙여넣기 · 같이 고쳐도 칸마다 합쳐져요</div></div>`;
+  if(sc){$('msWrap').scrollLeft=sc[0];$('msWrap').scrollTop=sc[1]}MSH.ed=null;if(x){msPaintSel();requestAnimationFrame(mshPlace)}}
 function msUndoBtn(){const u=document.querySelector('[data-act="mshUndo"]');if(u)u.disabled=!MSH.undo.length;const by=$('msBy'),x=mshCur();if(by&&x)by.textContent=(x.by||'')+(x.at?' · '+mdS(new Date(x.at+9*3600e3).toISOString().slice(0,10)):'')}
-/* 칸 바꾸기(되돌리기 기록 포함) — ch:[[행id,열id,새 값]] */
-function msSetCells(x,ch,noUndo){const t=msNow();x.c=x.c||{};const prev=[];ch.forEach(([r,c,v])=>{const k=r+'|'+c;const o=x.c[k];const pv=o&&o.v!=null?String(o.v):'';if(pv===String(v))return;prev.push([r,c,pv]);x.c[k]={v:String(v),at:t}});
-  if(!prev.length)return false;if(!noUndo){MSH.undo.push({id:x.id,cells:prev});if(MSH.undo.length>80)MSH.undo.shift()}msTouch(x);msUndoBtn();return true}
-function msPaintCells(x,list){list.forEach(([r,c])=>{const ri=MSH.R.indexOf(r),ci=MSH.C.indexOf(c);const td=mshCell(ri,ci);if(td&&!(MSH.ed&&MSH.ed.r===ri&&MSH.ed.c===ci))td.textContent=msGet(x,r,c)})}
-function msUndo(){const u=MSH.undo.pop();if(!u){msUndoBtn();return}const x=MS().list[u.id];if(!x){msUndoBtn();return}const t=msNow();
-  if(u.cells){u.cells.forEach(([r,c,v])=>{x.c[r+'|'+c]={v,at:t}});msTouch(x);if(x.id===MSH.cur)msPaintCells(x,u.cells)}
-  if(u.rdel){x.rdel[u.rdel]={v:u.v,at:t};msTouch(x);if(x.id===MSH.cur)mshDraw(true)}
-  if(u.cdel){x.cdel[u.cdel]={v:u.v,at:t};msTouch(x);if(x.id===MSH.cur)mshDraw(true)}
-  msUndoBtn();toast('되돌렸어요',1200)}
-function mshCell(r,c){return document.querySelector(`.msg td[data-r="${r}"][data-c="${c}"]`)}
-/* 입력칸 하나(#msIn)를 고른 칸 위에 늘 올려 두고 초점 — 그냥 치면(한글 포함) 바로 그 칸 입력 */
-function mshPlace(){const i=$('msIn'),td=mshCell(MSH.sel.r,MSH.sel.c);if(!i||!td)return;const tb=td.closest('table');i.style.left=(tb.offsetLeft+td.offsetLeft)+'px';i.style.top=(tb.offsetTop+td.offsetTop)+'px';i.style.width=td.offsetWidth+'px';i.style.minHeight=td.offsetHeight+'px';const a=document.activeElement;if(a!==i&&!(a&&a.id==='msNm'))i.focus({preventScroll:true})}
-function mshSel(r,c){if(!MSH.R.length)return;r=Math.max(0,Math.min(MSH.R.length-1,r));c=Math.max(0,Math.min(MSH.C.length-1,c));const o=mshCell(MSH.sel.r,MSH.sel.c);if(o)o.classList.remove('on');MSH.sel={r,c};const n=mshCell(r,c);if(n){n.classList.add('on');n.scrollIntoView({block:'nearest',inline:'nearest'})}mshPlace()}
-function mshEdit(fill){const x=mshCur();const i=$('msIn');if(!x||!i)return;const {r,c}=MSH.sel;MSH.ed={r,c};if(fill)i.value=msGet(x,MSH.R[r],MSH.C[c]);i.classList.add('on');mshPlace();i.focus();i.setSelectionRange(i.value.length,i.value.length)}
-function mshCommit(move){const e=MSH.ed;const i=$('msIn');if(!e){if(move)mshSel(MSH.sel.r+(move==='d'?1:0),MSH.sel.c+(move==='r'?1:0));return}const v=i?i.value:'';MSH.ed=null;if(i){i.value='';i.classList.remove('on')}
+/* 값·서식·병합 바꾸기 공통 — ch:[[키,새 값]] · 되돌리기 기록 */
+function msPut(x,map,ch,rec){const t=msNow();x[map]=x[map]||{};const prev=[];ch.forEach(([k,v])=>{const o=x[map][k];const pv=o?o.v:(map==='c'?'':null);const nv=map==='c'?String(v==null?'':v):(v&&Object.keys(v).length?v:null);
+    if(JSON.stringify(pv==null?(map==='c'?'':null):pv)===JSON.stringify(nv))return;prev.push([k,pv==null?(map==='c'?'':null):pv]);x[map][k]={v:nv,at:t}});
+  if(!prev.length)return false;if(rec!==false){const u=(rec&&typeof rec==='object')?rec:{id:x.id,m:{}};(u.m[map]=u.m[map]||[]).push(...prev);if(!(rec&&typeof rec==='object')){MSH.undo.push(u);if(MSH.undo.length>80)MSH.undo.shift()}}msTouch(x);msUndoBtn();return true}
+function msSetCells(x,ch,noUndo){return msPut(x,'c',ch.map(([r,c,v])=>[r+'|'+c,v]),noUndo?false:undefined)}
+function msPaintKeys(x,keys){keys.forEach(k=>{const [r,c]=k.split('|');const ri=MSH.R.indexOf(r),ci=MSH.C.indexOf(c);if(ri<0||ci<0||MSH.cov.has(ri+','+ci))return;const td=document.querySelector(`.msg td[data-r="${ri}"][data-c="${ci}"]`);if(!td)return;
+  if(!(MSH.ed&&MSH.ed.r===ri&&MSH.ed.c===ci))td.textContent=msGet(x,r,c);td.setAttribute('style',msCss(msSt(x,r,c)))})}
+function msUndo(){const u=MSH.undo.pop();if(!u){msUndoBtn();return}const x=MS().list[u.id];if(!x){msUndoBtn();return}const t=msNow();let full=false;const keys=[];
+  Object.entries(u.m||{}).forEach(([map,list])=>{list.slice().reverse().forEach(([k,v])=>{x[map][k]={v,at:t};keys.push(k)});if(map!=='c'&&map!=='s')full=true});
+  if(u.rdel){x.rdel[u.rdel]={v:u.v,at:t};full=true}if(u.cdel){x.cdel[u.cdel]={v:u.v,at:t};full=true}
+  msTouch(x);if(x.id===MSH.cur){if(full)mshDraw(true);else msPaintKeys(x,keys)}msUndoBtn();toast('되돌렸어요',1200)}
+/* ---- 고르기(여러 칸) ---- */
+function msRange(){let r0=Math.min(MSH.an.r,MSH.sel.r),r1=Math.max(MSH.an.r,MSH.sel.r),c0=Math.min(MSH.an.c,MSH.sel.c),c1=Math.max(MSH.an.c,MSH.sel.c);
+  for(let g=0;g<4;g++){let ch=false;MSH.span.forEach(([rs,cs],k)=>{const [a,b]=k.split(',').map(Number);const a1=a+rs-1,b1=b+cs-1;if(a<=r1&&a1>=r0&&b<=c1&&b1>=c0){if(a<r0){r0=a;ch=true}if(a1>r1){r1=a1;ch=true}if(b<c0){c0=b;ch=true}if(b1>c1){c1=b1;ch=true}}});if(!ch)break}return {r0,r1,c0,c1}}
+function msCellsIn(g){const out=[];for(let r=g.r0;r<=g.r1;r++)for(let c=g.c0;c<=g.c1;c++)out.push([r,c]);return out}
+function msPaintSel(){document.querySelectorAll('.msg td.on,.msg td.rg').forEach(t=>t.classList.remove('on','rg'));const g=msRange();const multi=g.r0!==g.r1||g.c0!==g.c1;
+  if(multi)msCellsIn(g).forEach(([r,c])=>{if(MSH.cov.has(r+','+c))return;const td=document.querySelector(`.msg td[data-r="${r}"][data-c="${c}"]`);if(td)td.classList.add('rg')});
+  const a=mshCell(MSH.sel.r,MSH.sel.c);if(a)a.classList.add('on');msFmtState()}
+function msFmtState(){const x=mshCur();if(!x)return;const st=msSt(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c])||{};document.querySelectorAll('.msfmt [data-msf]').forEach(b=>{const k=b.dataset.msf;const on=k.includes(':')?st[k.split(':')[0]]===k.split(':')[1]:k==='merge'?MSH.span.has(msAnc(MSH.sel.r,MSH.sel.c).join(',')):!!st[k];b.classList.toggle('on',on&&k!=='clr')});
+  const f=$('msFgBar'),g=$('msBgBar');if(f)f.style.background=st.fg||'currentColor';if(g)g.style.background=st.bg||'transparent'}
+function mshCell(r,c){const [a,b]=msAnc(r,c);return document.querySelector(`.msg td[data-r="${a}"][data-c="${b}"]`)}
+function mshPlace(){const i=$('msIn'),td=mshCell(MSH.sel.r,MSH.sel.c);if(!i||!td)return;const tb=td.closest('table');i.style.left=(tb.offsetLeft+td.offsetLeft)+'px';i.style.top=(tb.offsetTop+td.offsetTop)+'px';i.style.width=td.offsetWidth+'px';i.style.minHeight=td.offsetHeight+'px';
+  const x=mshCur();const st=x&&msSt(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c]);i.setAttribute('style',i.getAttribute('style').replace(/;?(font-weight|font-style|text-align|color|background|font-size):[^;]*/g,'')+(st?((st.b?';font-weight:700':'')+(st.i?';font-style:italic':'')+(st.al?`;text-align:${MS_AL[st.al]}`:'')+(st.fg?`;color:${st.fg}`:'')+(st.bg?`;background:${st.bg}`:'')+(st.fs?`;font-size:${st.fs}px`:'')):''));
+  const a=document.activeElement;if(a!==i&&!(a&&(a.id==='msNm'||a.closest&&a.closest('.mspal'))))i.focus({preventScroll:true})}
+function mshSel(r,c,ext){if(!MSH.R.length)return;r=Math.max(0,Math.min(MSH.R.length-1,r));c=Math.max(0,Math.min(MSH.C.length-1,c));const [a,b]=msAnc(r,c);MSH.sel={r:a,c:b};if(!ext)MSH.an={r:a,c:b};msPaintSel();const n=mshCell(a,b);if(n)n.scrollIntoView({block:'nearest',inline:'nearest'});mshPlace()}
+function msMove(dr,dc,ext){const sp=MSH.span.get(MSH.sel.r+','+MSH.sel.c)||[1,1];mshSel(MSH.sel.r+(dr>0?sp[0]:dr),MSH.sel.c+(dc>0?sp[1]:dc),ext)}
+function mshEdit(fill){const x=mshCur();const i=$('msIn');if(!x||!i)return;MSH.an={...MSH.sel};msPaintSel();const {r,c}=MSH.sel;MSH.ed={r,c};if(fill)i.value=msGet(x,MSH.R[r],MSH.C[c]);i.classList.add('on');mshPlace();i.focus();i.setSelectionRange(i.value.length,i.value.length)}
+function mshCommit(move){const e=MSH.ed;const i=$('msIn');if(!e){if(move)msMove(move==='d'?1:0,move==='r'?1:0);return}const v=i?i.value:'';MSH.ed=null;if(i){i.value='';i.classList.remove('on')}
   const x=mshCur();if(x){const r=MSH.R[e.r],c=MSH.C[e.c];msSetCells(x,[[r,c,v]]);const td=mshCell(e.r,e.c);if(td)td.textContent=v}
-  if(move)mshSel(e.r+(move==='d'?1:0),e.c+(move==='r'?1:0));else mshPlace()}
+  if(move)msMove(move==='d'?1:0,move==='r'?1:0);else mshPlace()}
 function mshCancel(){const i=$('msIn');MSH.ed=null;if(i){i.value='';i.classList.remove('on')}}
-/* 다른 PC에서 고친 것: 입력 중인 칸은 두고 나머지만 바꿈 (행·열 구성이 달라졌으면 표를 다시 그림) */
-function msRemote(){if(!msOn())return;const x=mshCur();if(!x){if(!MSH.ed)mshDraw(true);return}const R=msR(x),C=msC(x);
-  if(R.join()!==MSH.R.join()||C.join()!==MSH.C.join()){if(!MSH.ed)mshDraw(true);return}
-  MSH.R.forEach((r,ri)=>MSH.C.forEach((c,ci)=>{if(MSH.ed&&MSH.ed.r===ri&&MSH.ed.c===ci)return;const td=mshCell(ri,ci);const v=msGet(x,r,c);if(td&&td.textContent!==v)td.textContent=v}));
-  const nm=$('msNm');if(nm&&document.activeElement!==nm&&nm.value!==x.nm.v)nm.value=x.nm.v;msUndoBtn()}
+/* ---- 서식 넣기 ---- */
+function msStyleRange(fn,msg){const x=mshCur();if(!x)return;const g=msRange();const ch=msCellsIn(g).map(([ri,ci])=>{const k=MSH.R[ri]+'|'+MSH.C[ci];const st=Object.assign({},msSt(x,MSH.R[ri],MSH.C[ci])||{});fn(st,ri,ci,g);Object.keys(st).forEach(q=>{if(st[q]===''||st[q]==null||st[q]===false)delete st[q]});return [k,st]});
+  if(msPut(x,'s',ch))msPaintKeys(x,ch.map(q=>q[0]));msFmtState();mshPlace()}
+function msFmt(k){const x=mshCur();if(!x)return;const st0=msSt(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c])||{};
+  if(k==='b'||k==='i'||k==='u'||k==='wr'){const on=!st0[k];msStyleRange(s=>{s[k]=on?1:''});return}
+  if(k.startsWith('al:')){const v=k.slice(3);const on=st0.al!==v;msStyleRange(s=>{s.al=on?v:''});return}
+  if(k==='clr'){msStyleRange(s=>{Object.keys(s).forEach(q=>delete s[q])});return}
+  if(k==='merge'){const g=msRange();const [a,b]=msAnc(MSH.sel.r,MSH.sel.c);const k0=MSH.R[g.r0]+'|'+MSH.C[g.c0];
+    const inside=[...MSH.span.keys()].filter(q=>{const [r,c]=q.split(',').map(Number);return r>=g.r0&&r<=g.r1&&c>=g.c0&&c<=g.c1}).map(q=>{const [r,c]=q.split(',').map(Number);return MSH.R[r]+'|'+MSH.C[c]});
+    if(g.r0===g.r1&&g.c0===g.c1){if(MSH.span.has(a+','+b)){msPut(x,'mg',[[MSH.R[a]+'|'+MSH.C[b],null]]);mshDraw(true);toast('칸 합치기를 풀었어요',1200)}else toast('합칠 칸을 끌어서 여러 개 골라 주세요',1800);return}
+    const u={id:x.id,m:{}};msPut(x,'mg',inside.map(q=>[q,null]).concat([[k0,{rs:g.r1-g.r0+1,cs:g.c1-g.c0+1}]]),u);MSH.undo.push(u);MSH.sel={r:g.r0,c:g.c0};MSH.an={...MSH.sel};mshDraw(true);toast('칸을 합쳤어요 · 글은 왼쪽 위 칸 것이 보여요',1600);return}}
+const MS_LN='1px solid #5f6368',MS_LN2='2px solid #202124';
+function msBorder(kind){const x=mshCur();if(!x)return;const g=msRange();const ch=new Map();const st=(ri,ci)=>{const k=MSH.R[ri]+'|'+MSH.C[ci];if(!ch.has(k))ch.set(k,Object.assign({},msSt(x,MSH.R[ri],MSH.C[ci])||{}));return ch.get(k)};
+  const ln=kind==='thick'?MS_LN2:MS_LN;
+  const top=(ci,v)=>{if(g.r0>0)st(g.r0-1,ci).bb=v;else st(g.r0,ci).bt=v},left=(ri,v)=>{if(g.c0>0)st(ri,g.c0-1).br=v;else st(ri,g.c0).bl=v};
+  for(let ri=g.r0;ri<=g.r1;ri++)for(let ci=g.c0;ci<=g.c1;ci++){const s=st(ri,ci);const isB=ri===g.r1,isR=ci===g.c1;
+    if(kind==='all'){s.bb=ln;s.br=ln}else if(kind==='none'){delete s.bb;delete s.br;delete s.bt;delete s.bl}else if(kind==='bot'){if(isB)s.bb=ln}else{if(isB)s.bb=ln;if(isR)s.br=ln}}
+  if(kind==='all'||kind==='out'||kind==='thick'){for(let ci=g.c0;ci<=g.c1;ci++)top(ci,ln);for(let ri=g.r0;ri<=g.r1;ri++)left(ri,ln)}
+  if(kind==='none'){for(let ci=g.c0;ci<=g.c1;ci++)top(ci,'');for(let ri=g.r0;ri<=g.r1;ri++)left(ri,'')}
+  const list=[...ch.entries()].map(([k,s])=>{Object.keys(s).forEach(q=>{if(s[q]==='')delete s[q]});return [k,s]});if(msPut(x,'s',list))msPaintKeys(x,list.map(q=>q[0]));mshPlace()}
+function msPalOpen(btn){msPalClose();const k=btn.dataset.mspal;btn.classList.add('open');btn.insertAdjacentHTML('afterend',msPalHTML(k));const p=document.querySelector('.mspal');const r=btn.getBoundingClientRect(),pr=btn.parentElement.getBoundingClientRect();p.style.left=(r.left-pr.left)+'px'}
+function msPalClose(){document.querySelectorAll('.mspal').forEach(p=>p.remove());document.querySelectorAll('[data-mspal].open').forEach(b=>b.classList.remove('open'))}
+/* 다른 PC에서 고친 것: 입력 중인 칸은 두고 나머지만 */
+function msRemote(){if(!msOn())return;const x=mshCur();if(!x){if(!MSH.ed)mshDraw(true);return}const R=msR(x),C=msC(x);const mg=JSON.stringify(x.mg||{});
+  if(R.join()!==MSH.R.join()||C.join()!==MSH.C.join()||mg!==MSH.mgSig){MSH.mgSig=mg;if(!MSH.ed)mshDraw(true);return}
+  msPaintKeys(x,MSH.R.flatMap(r=>MSH.C.map(c=>r+'|'+c)));const nm=$('msNm');if(nm&&document.activeElement!==nm&&nm.value!==x.nm.v)nm.value=x.nm.v;msUndoBtn()}
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='msIn'&&!MSH.ed)mshEdit(false)});
 document.addEventListener('compositionstart',e=>{if(e.target&&e.target.id==='msIn'&&!MSH.ed)mshEdit(false)});
-document.addEventListener('mousedown',e=>{if(!msOn())return;const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(!td)return;e.preventDefault();if(MSH.ed)mshCommit();mshSel(+td.dataset.r,+td.dataset.c)});
+document.addEventListener('mousedown',e=>{if(!msOn())return;if(!(e.target.closest&&e.target.closest('.mspal,[data-mspal]')))msPalClose();const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(!td)return;e.preventDefault();if(MSH.ed)mshCommit();
+  const r=+td.dataset.r,c=+td.dataset.c;if(e.shiftKey){mshSel(r,c,true);return}mshSel(r,c);MSH.drag=true});
+document.addEventListener('mouseover',e=>{if(!MSH.drag||!msOn())return;const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(!td)return;const r=+td.dataset.r,c=+td.dataset.c;if(r===MSH.sel.r&&c===MSH.sel.c)return;MSH.sel={r,c};msPaintSel()});
+document.addEventListener('mouseup',()=>{if(MSH.drag){MSH.drag=false;if(msOn())mshPlace()}});
 document.addEventListener('dblclick',e=>{if(!msOn())return;const td=e.target.closest&&e.target.closest('.msg td[data-r]');if(td){mshSel(+td.dataset.r,+td.dataset.c);mshEdit(true);return}
   const tb=e.target.closest&&e.target.closest('.mstab');if(tb){const i=$('msNm');if(i){i.focus();i.select()}}});
 document.addEventListener('keydown',e=>{if(!msOn())return;const t=e.target;if(t&&t.id==='msNm'){if(e.key==='Enter'){e.preventDefault();t.blur();mshPlace()}return}
   if(!t||t.id!=='msIn')return;if(e.isComposing)return;
-  if(MSH.ed){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mshCommit('d')}else if(e.key==='Tab'){e.preventDefault();mshCommit('r')}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();mshCancel()}return}
-  if((e.ctrlKey||e.metaKey)&&(e.key==='z'||e.key==='Z')){e.preventDefault();msUndo();return}
-  const s=MSH.sel;const mv={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
-  if(mv){e.preventDefault();mshSel(s.r+mv[0],s.c+mv[1]);return}if(e.key==='F2'){e.preventDefault();mshEdit(true);return}if(e.key==='Enter'){e.preventDefault();mshSel(s.r+1,s.c);return}if(e.key==='Tab'){e.preventDefault();mshSel(s.r,s.c+(e.shiftKey?-1:1));return}
-  if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();const x=mshCur();if(!x)return;msSetCells(x,[[MSH.R[s.r],MSH.C[s.c],'']]);const td=mshCell(s.r,s.c);if(td)td.textContent='';return}},true);
+  if(MSH.ed){if(e.key==='Enter'&&!e.shiftKey&&!e.altKey){e.preventDefault();mshCommit('d')}else if(e.key==='Tab'){e.preventDefault();mshCommit('r')}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();mshCancel()}return}
+  const ck=e.ctrlKey||e.metaKey;if(ck&&/^[zZ]$/.test(e.key)){e.preventDefault();msUndo();return}if(ck&&/^[bB]$/.test(e.key)){e.preventDefault();msFmt('b');return}if(ck&&/^[iI]$/.test(e.key)){e.preventDefault();msFmt('i');return}if(ck&&/^[uU]$/.test(e.key)){e.preventDefault();msFmt('u');return}
+  if(e.key==='Escape'&&document.querySelector('.mspal')){e.preventDefault();e.stopPropagation();msPalClose();return}
+  const mv={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+  if(mv){e.preventDefault();msMove(mv[0],mv[1],e.shiftKey);return}if(e.key==='F2'){e.preventDefault();mshEdit(true);return}if(e.key==='Enter'){e.preventDefault();msMove(1,0);return}if(e.key==='Tab'){e.preventDefault();msMove(0,e.shiftKey?-1:1);return}
+  if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();const x=mshCur();if(!x)return;const g=msRange();const ch=msCellsIn(g).map(([r,c])=>[MSH.R[r],MSH.C[c],'']);if(msSetCells(x,ch))msPaintKeys(x,ch.map(q=>q[0]+'|'+q[1]));return}},true);
 document.addEventListener('paste',e=>{if(!msOn()||MSH.ed)return;const t=e.target;if(!t||t.id!=='msIn')return;const txt=(e.clipboardData||window.clipboardData).getData('text');if(!txt)return;e.preventDefault();const x=mshCur();if(!x)return;
-  const L=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));const {r,c}=MSH.sel;const t0=msNow();let grow=false;
+  const L=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));const g=msRange();const r=g.r0,c=g.c0;const t0=msNow();let grow=false;
   const needR=Math.min(MSH_MAXR,r+L.length),needC=Math.min(MSH_MAXC,c+Math.max(...L.map(q=>q.length)));
   while(msR(x).length<needR){x.rows.push(msId('r'));x.ro=t0;grow=true}while(msC(x).length<needC){x.cols.push(msId('c'));x.co=t0;grow=true}
   const R=msR(x),C=msC(x);const ch=[];L.forEach((row,i)=>row.forEach((v,j)=>{if(R[r+i]&&C[c+j])ch.push([R[r+i],C[c+j],v])}));msSetCells(x,ch);
-  if(grow)mshDraw(true);else{MSH.R=R;MSH.C=C;msPaintCells(x,ch)}toast(`${L.length}줄을 붙여넣었어요`,1400)});
-document.addEventListener('copy',e=>{if(!msOn()||MSH.ed)return;const t=e.target;if(!t||t.id!=='msIn')return;const x=mshCur();if(!x)return;e.preventDefault();e.clipboardData.setData('text/plain',msGet(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c]))});
+  if(grow)mshDraw(true);else msPaintKeys(x,ch.map(q=>q[0]+'|'+q[1]));toast(`${L.length}줄을 붙여넣었어요`,1400)});
+document.addEventListener('copy',e=>{if(!msOn()||MSH.ed)return;const t=e.target;if(!t||t.id!=='msIn')return;const x=mshCur();if(!x)return;e.preventDefault();const g=msRange();const rows=[];for(let r=g.r0;r<=g.r1;r++){const a=[];for(let c=g.c0;c<=g.c1;c++)a.push(msGet(x,MSH.R[r],MSH.C[c]));rows.push(a.join('\t'))}e.clipboardData.setData('text/plain',rows.join('\n'))});
 document.addEventListener('focusout',e=>{const t=e.target;if(t&&t.id==='msNm'){const v=t.value.trim().slice(0,40)||'시트';const x=mshCur();if(x&&x.nm.v!==v){x.nm={v,at:msNow()};msTouch(x);const tb=document.querySelector(`.mstab[data-msh="${CSS.escape(x.id)}"]`);if(tb)tb.textContent=v}}
   if(t&&t.id==='msIn'&&MSH.ed)setTimeout(()=>{const a=document.activeElement;if(MSH.ed&&(!a||a.id!=='msIn'))mshCommit()},0)});
+/* 서식 막대·색 고르기 */
+document.addEventListener('mousedown',e=>{const b=e.target.closest&&e.target.closest('.msfmt button,.mspal button,.mspal label');if(b&&msOn()&&!e.target.matches('input'))e.preventDefault()},true); /* 누를 때 고른 칸·입력칸 초점 그대로 */
+document.addEventListener('click',e=>{if(!msOn())return;const t=e.target.closest&&e.target.closest('[data-msf],[data-mspal],[data-mscol],[data-msbd]');if(!t)return;if(MSH.ed)mshCommit();
+  if(t.dataset.mspal!=null){if(t.classList.contains('open'))msPalClose();else msPalOpen(t);return}
+  if(t.dataset.mscol!=null){const k=t.closest('.mspal').dataset.palk;const v=t.dataset.mscol;msStyleRange(s=>{s[k]=v});msPalClose();return}
+  if(t.dataset.msbd){msBorder(t.dataset.msbd);msPalClose();return}
+  if(t.dataset.msf)msFmt(t.dataset.msf)});
+document.addEventListener('change',e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.mscus)return;const k=t.dataset.mscus,v=t.value;msStyleRange(s=>{s[k]=v});msPalClose()});
 document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('.mshdlg [data-msh],.mshdlg [data-act^="msh"]');if(!t)return;if(MSH.ed)mshCommit();
-  if(t.dataset.msh){MSH.cur=t.dataset.msh;MSH.sel={r:0,c:0};mshDraw();return}
+  if(t.dataset.msh){MSH.cur=t.dataset.msh;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();return}
   const a=t.dataset.act;const x=mshCur();const now=msNow();
-  if(a==='mshAdd'){const n=msMake(B().id,`시트 ${mshList(B()).length+1}`);MS().list[n.id]=n;msTouch(n);MSH.cur=n.id;MSH.sel={r:0,c:0};mshDraw();setTimeout(()=>{const i=$('msNm');if(i){i.focus();i.select()}},50);return}
+  if(a==='mshAdd'){const n=msMake(B().id,`시트 ${mshList(B()).length+1}`);MS().list[n.id]=n;msTouch(n);MSH.cur=n.id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();setTimeout(()=>{const i=$('msNm');if(i){i.focus();i.select()}},50);return}
   if(a==='mshImp'){let i=$('fileMsh');if(!i){i=document.createElement('input');i.type='file';i.id='fileMsh';i.accept='.xlsx';i.hidden=true;document.body.appendChild(i)}i.value='';i.click();return}
   if(!x)return;
   if(a==='mshUndo'){msUndo();return}
   if(a==='mshRow'){if(msR(x).length>=MSH_MAXR)return;const id=msId('r');x.rows.push(id);x.ro=now;msTouch(x);MSH.R.push(id);const tb=document.querySelector('.msg tbody');if(tb)tb.insertAdjacentHTML('beforeend',msRowHTML(x,MSH.R.length-1));MSH.undo.push({id:x.id,rdel:id,v:1});msUndoBtn();return}
   if(a==='mshColAdd'){if(msC(x).length>=MSH_MAXC)return;const id=msId('c');x.cols.push(id);x.co=now;msTouch(x);MSH.undo.push({id:x.id,cdel:id,v:1});mshDraw(true);return}
-  if(a==='mshRowDel'){if(MSH.R.length<=1)return;const id=MSH.R[MSH.sel.r];x.rdel[id]={v:1,at:now};msTouch(x);MSH.undo.push({id:x.id,rdel:id,v:0});MSH.sel.r=Math.min(MSH.sel.r,MSH.R.length-2);mshDraw(true);toast(`행을 지웠어요 · Ctrl+Z로 되돌려요`,1600);return}
-  if(a==='mshColDel'){if(MSH.C.length<=1)return;const id=MSH.C[MSH.sel.c];x.cdel[id]={v:1,at:now};msTouch(x);MSH.undo.push({id:x.id,cdel:id,v:0});MSH.sel.c=Math.min(MSH.sel.c,MSH.C.length-2);mshDraw(true);toast(`열을 지웠어요 · Ctrl+Z로 되돌려요`,1600);return}
-  if(a==='mshXlsx'){const R=msR(x),C=msC(x);let lr=0,lc=0;R.forEach((r,ri)=>C.forEach((c,ci)=>{if(msGet(x,r,c)!==''){lr=Math.max(lr,ri+1);lc=Math.max(lc,ci+1)}}));
-    const rows=Array.from({length:Math.max(1,lr)},(_,ri)=>Array.from({length:Math.max(1,lc)},(_,ci)=>{const v=msGet(x,R[ri],C[ci]);return v!==''&&!isNaN(+v)&&!/^0\d/.test(v)?+v:v}));
-    const u8=xlsxMake([{name:x.nm.v.replace(/[\\\/?*\[\]:]/g,' ').slice(0,31)||'시트',rows,w:C.slice(0,Math.max(1,lc)).map(c=>Math.round((((x.w||{})[c]||{}).v||110)/7))}]);const el=document.createElement('a');el.href=URL.createObjectURL(new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));el.download=`${x.nm.v}.xlsx`;document.body.appendChild(el);el.click();setTimeout(()=>{URL.revokeObjectURL(el.href);el.remove()},1000);return}
+  if(a==='mshRowDel'){if(MSH.R.length<=1)return;const id=MSH.R[MSH.sel.r];x.rdel[id]={v:1,at:now};msTouch(x);MSH.undo.push({id:x.id,rdel:id,v:0});MSH.sel.r=Math.min(MSH.sel.r,MSH.R.length-2);MSH.an={...MSH.sel};mshDraw(true);toast(`행을 지웠어요 · Ctrl+Z로 되돌려요`,1600);return}
+  if(a==='mshColDel'){if(MSH.C.length<=1)return;const id=MSH.C[MSH.sel.c];x.cdel[id]={v:1,at:now};msTouch(x);MSH.undo.push({id:x.id,cdel:id,v:0});MSH.sel.c=Math.min(MSH.sel.c,MSH.C.length-2);MSH.an={...MSH.sel};mshDraw(true);toast(`열을 지웠어요 · Ctrl+Z로 되돌려요`,1600);return}
+  if(a==='mshXlsx'){const u8=msXlsx(x);const el=document.createElement('a');el.href=URL.createObjectURL(new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));el.download=`${x.nm.v}.xlsx`;document.body.appendChild(el);el.click();setTimeout(()=>{URL.revokeObjectURL(el.href);el.remove()},1500);return}
   if(a==='mshDel'){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='한 번 더 누르면 지워요';setTimeout(()=>{t.classList.remove('arm');t.textContent='시트 지우기'},2500);return}
-    x.del={v:1,at:now};msTouch(x);toast(`'${x.nm.v}' 시트를 지웠어요`);MSH.cur='';MSH.undo=MSH.undo.filter(u=>u.id!==x.id);const L=mshList(B());MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};mshDraw()}});
+    x.del={v:1,at:now};msTouch(x);toast(`'${x.nm.v}' 시트를 지웠어요`);MSH.undo=MSH.undo.filter(u=>u.id!==x.id);const L=mshList(B());MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw()}});
 /* 열 너비 끌기 */
 document.addEventListener('mousedown',e=>{const h=e.target.closest&&e.target.closest('.mshdlg [data-msrz]');if(!h)return;e.preventDefault();e.stopPropagation();const ci=+h.dataset.msrz;const col=document.querySelectorAll('.msg col')[ci+1];const x0=e.clientX,w0=col?parseInt(col.style.width)||110:110;let w=0;
-  const mv=ev=>{w=Math.max(50,Math.min(600,Math.round(w0+ev.clientX-x0)));if(col)col.style.width=w+'px'};
+  const mv=ev=>{w=Math.max(30,Math.min(600,Math.round(w0+ev.clientX-x0)));if(col)col.style.width=w+'px'};
   const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);const x=mshCur();if(w&&x){x.w=x.w||{};x.w[MSH.C[ci]]={v:w,at:msNow()};msTouch(x);mshPlace()}};
   document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)},true);
-/* 엑셀 불러오기: 보이는 시트마다 새 메모 시트로 (최대 500행 × 40열) */
-document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='fileMsh')return;const f=e.target.files[0];if(!f)return;
-  try{const {z,sheets}=await readWorkbook(await f.arrayBuffer());const vis=sheets.filter(s=>!s.hidden);const fn=f.name.replace(/\.xlsx$/i,'');const add=[];
-    for(const sh of vis){const cells=await readSheet(z,sh.path);let mr=0,mc=0;cells.forEach((v,k)=>{if(v.v==null||v.v==='')return;mr=Math.max(mr,Math.floor(k/1000));mc=Math.max(mc,k%1000)});if(!mr)continue;
-      mr=Math.min(mr,MSH_MAXR);mc=Math.min(mc,MSH_MAXC);const n=msMake(B().id,(vis.length>1?fn+' · '+sh.name:fn).slice(0,40),Math.max(mr,20),Math.max(mc,8));
-      cells.forEach((v,k)=>{const r=Math.floor(k/1000)-1,c=k%1000-1;if(r<0||c<0||r>=mr||c>=mc||v.v==null||v.v==='')return;n.c[n.rows[r]+'|'+n.cols[c]]={v:String(v.v),at:n.at}});add.push(n)}
-    if(!add.length){toast('불러올 내용이 없어요');return}add.forEach(n=>{MS().list[n.id]=n});msTouch(add[0]);toast(`엑셀에서 시트 ${add.length}개를 불러왔어요`);MSH.cur=add[0].id;MSH.sel={r:0,c:0};mshDraw()}
-  catch(err){toast('엑셀을 읽지 못했어요: '+err.message,4500)}});
-/* 창을 닫을 때 남은 저장은 바로 */
 document.addEventListener('click',e=>{if(MSH.tm&&e.target.closest&&e.target.closest('.mshdlg [data-act="closeModal"]'))msFlush()},true);
+/* ===== 엑셀 읽기(서식까지): 값·숫자 형식(날짜·%·천 단위)·칸 색·글자색·굵게·기울임·밑줄·글자 크기·정렬·줄 바꿈·테두리·병합·열 너비·행 높이 ===== */
+const MS_IDX=['000000','FFFFFF','FF0000','00FF00','0000FF','FFFF00','FF00FF','00FFFF','000000','FFFFFF','FF0000','00FF00','0000FF','FFFF00','FF00FF','00FFFF','800000','008000','000080','808000','800080','008080','C0C0C0','808080','9999FF','993366','FFFFCC','CCFFFF','660066','FF8080','0066CC','CCCCFF','000080','FF00FF','FFFF00','00FFFF','800080','800000','008080','0000FF','00CCFF','CCFFFF','CCFFCC','FFFF99','99CCFF','FF99CC','CC99FF','FFCC99','3366FF','33CCCC','99CC00','FFCC00','FF9900','FF6600','666699','969696','003366','339966','003300','333300','993300','993366','333399','333333'];
+function msTint(hex,t){if(!t)return hex;let r=parseInt(hex.slice(0,2),16)/255,g=parseInt(hex.slice(2,4),16)/255,b=parseInt(hex.slice(4,6),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;
+  if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6}l=t<0?l*(1+t):l*(1-t)+t;
+  const f=(p,q,x)=>{if(x<0)x+=1;if(x>1)x-=1;return x<1/6?p+(q-p)*6*x:x<1/2?q:x<2/3?p+(q-p)*(2/3-x)*6:p};let R,G,Bv;if(!s){R=G=Bv=l}else{const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;R=f(p,q,h+1/3);G=f(p,q,h);Bv=f(p,q,h-1/3)}
+  return [R,G,Bv].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('').toUpperCase()}
+function msColor(el,theme){if(!el)return null;if(el.getAttribute('auto')==='1')return null;let hex=null;const rgb=el.getAttribute('rgb'),th=el.getAttribute('theme'),ix=el.getAttribute('indexed');
+  if(rgb)hex=rgb.slice(-6);else if(th!=null)hex=theme[+th]||null;else if(ix!=null){if(+ix===64)return null;hex=MS_IDX[+ix]||null}if(!hex)return null;return '#'+msTint(hex.toUpperCase(),+(el.getAttribute('tint')||0)).toLowerCase()}
+async function msStyles(z){const T=[];try{const tx=await z.text('xl/theme/theme1.xml');if(tx){const d=xmlDoc(tx);const cs=tagsNS(d,'clrScheme')[0];if(cs){const kids=[...cs.children].map(n=>{const c=n.firstElementChild;return c?(c.getAttribute('lastClr')||c.getAttribute('val')||'').slice(-6):''});
+    /* 엑셀 순서: 0 lt1 · 1 dk1 · 2 lt2 · 3 dk2 · 4~ accent */T.push(kids[1],kids[0],kids[3],kids[2],...kids.slice(4))}}}catch(e){}
+  const sx=await z.text('xl/styles.xml');if(!sx)return {xf:[],theme:T};const d=xmlDoc(sx);const fmts={};tagsNS(d,'numFmt').forEach(n=>fmts[n.getAttribute('numFmtId')]=n.getAttribute('formatCode')||'');
+  const kids=n=>{const e=tagsNS(d,n)[0];return e?[...e.children]:[]};
+  const fonts=kids('fonts').map(f=>{const g=n=>tagsNS(f,n)[0];const o={};if(g('b')&&g('b').getAttribute('val')!=='0')o.b=1;if(g('i')&&g('i').getAttribute('val')!=='0')o.i=1;if(g('u')&&g('u').getAttribute('val')!=='none')o.u=1;const c=msColor(g('color'),T);if(c&&c!=='#000000')o.fg=c;const sz=g('sz');if(sz){const v=+sz.getAttribute('val');if(v&&Math.abs(v-11)>.4&&Math.abs(v-10)>.4)o.fs=Math.round(v*1.15)}return o});
+  const fills=kids('fills').map(f=>{const p=tagsNS(f,'patternFill')[0];if(!p||!p.getAttribute('patternType')||p.getAttribute('patternType')==='none')return null;const c=msColor(tagsNS(p,'fgColor')[0],T)||msColor(tagsNS(p,'bgColor')[0],T);return c&&c!=='#ffffff'?c:null});
+  const W={thin:1,hair:1,dotted:1,dashed:1,medium:2,mediumDashed:2,thick:3,double:3};const SS={dotted:'dotted',dashed:'dashed',mediumDashed:'dashed',double:'double',hair:'dotted'};
+  const borders=kids('borders').map(bd=>{const o={};[['left','bl'],['right','br'],['top','bt'],['bottom','bb']].forEach(([n,k])=>{const e=tagsNS(bd,n)[0];const s=e&&e.getAttribute('style');if(!s||s==='none')return;o[k]=`${W[s]||1}px ${SS[s]||'solid'} ${msColor(tagsNS(e,'color')[0],T)||'#000000'}`});return o});
+  const xf=kids('cellXfs').map(x=>{const o=Object.assign({},fonts[+(x.getAttribute('fontId')||0)]||{},borders[+(x.getAttribute('borderId')||0)]||{});const fl=fills[+(x.getAttribute('fillId')||0)];if(fl)o.bg=fl;
+    const al=tagsNS(x,'alignment')[0];if(al){const h=al.getAttribute('horizontal'),v=al.getAttribute('vertical');if(h==='center'||h==='centerContinuous')o.al='c';else if(h==='right')o.al='r';else if(h==='left')o.al='l';if(v==='center')o.va='m';else if(v==='top')o.va='t';if(al.getAttribute('wrapText')==='1')o.wr=1}
+    const nid=x.getAttribute('numFmtId')||'0';return {st:o,nf:{id:+nid,code:fmts[nid]||''}}});return {xf,theme:T}}
+function msFmtVal(v,nf){if(typeof v!=='number'||!nf)return v;const id=nf.id,code=String(nf.code||'').replace(/"[^"]*"|\[[^\]]*\]|\\./g,'');
+  const isDate=(id>=14&&id<=22)||(id>=45&&id<=47)||(id>=27&&id<=36)||(id>=50&&id<=58)||(/[yd]/i.test(code)||/m/i.test(code)&&/[hs:]/i.test(code)===false&&/[yd]/i.test(code));
+  if(isDate||/[yYdD]/.test(code)||(/[hH]/.test(code)&&/:/.test(code))){const d=new Date(Math.round((v-25569)*864e5));const p=n=>String(n).padStart(2,'0');const ymd=`${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())}`,hm=`${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+    if(v<1)return hm;return /[hH]/.test(code)||id===22?ymd+' '+hm:ymd}
+  if(/%/.test(code)||id===9||id===10){const dp=(code.split('.')[1]||'').replace(/[^0]/g,'').length;return (v*100).toFixed(dp)+'%'}
+  if(/#,##0|,0/.test(code)||id===3||id===4){const dp=(code.split('.')[1]||'').replace(/[^0]/g,'').length;return v.toLocaleString('ko-KR',{minimumFractionDigits:dp,maximumFractionDigits:dp})}
+  if(/0\.0/.test(code)||id===2){const dp=(code.split('.')[1]||'').replace(/[^0]/g,'').length;return v.toFixed(dp)}
+  return Math.abs(v)<1e15&&!Number.isInteger(v)?String(+v.toPrecision(12)):String(v)}
+async function msReadFull(z,path,S){const ssx=await z.text('xl/sharedStrings.xml');const ss=ssx?tagsNS(xmlDoc(ssx),'si').map(si=>tagsNS(si,'t').map(t=>t.textContent).join('')):[];
+  const doc=xmlDoc(await z.text(path));const cn=s=>{let n=0;for(const ch of s)n=n*26+ch.charCodeAt(0)-64;return n};const cells=new Map();let mr=0,mc=0;
+  tagsNS(doc,'c').forEach(c=>{const m=/^([A-Z]+)(\d+)$/.exec(c.getAttribute('r')||'');if(!m)return;const r=+m[2],cc=cn(m[1]);if(r>MSH_MAXR||cc>MSH_MAXC)return;const t=c.getAttribute('t');const v=tagsNS(c,'v')[0];let val=null;
+    if(t==='s'&&v)val=ss[+v.textContent];else if(t==='inlineStr')val=tagsNS(c,'t').map(x=>x.textContent).join('');else if(t==='b'&&v)val=v.textContent==='1'?'TRUE':'FALSE';else if(v)val=t==='str'||t==='e'?v.textContent:(isNaN(+v.textContent)?v.textContent:+v.textContent);
+    const x=S.xf[+(c.getAttribute('s')||0)]||{st:{},nf:null};if(val!=null)val=msFmtVal(val,x.nf);const st=Object.keys(x.st).length?x.st:null;if((val==null||val==='')&&!st)return;
+    cells.set(r*1000+cc,{v:val==null?'':String(val),st});if(val!=null&&val!==''||(st&&(st.bg||st.bb||st.br||st.bt||st.bl))){mr=Math.max(mr,r);mc=Math.max(mc,cc)}});
+  const cw={};tagsNS(doc,'col').forEach(c=>{const a=+c.getAttribute('min'),b=+c.getAttribute('max'),w=+c.getAttribute('width');if(!w||c.getAttribute('hidden')==='1')return;for(let i=a;i<=Math.min(b,MSH_MAXC);i++)cw[i]=Math.max(30,Math.round(w*7.2+5))});
+  const df=tagsNS(doc,'sheetFormatPr')[0];const dw=df&&+df.getAttribute('defaultColWidth');
+  const rh={};tagsNS(doc,'row').forEach(r=>{const h=+r.getAttribute('ht');if(h&&r.getAttribute('customHeight')==='1'&&Math.abs(h-15)>1)rh[+r.getAttribute('r')]=Math.round(h*1.33)});
+  const mg=tagsNS(doc,'mergeCell').map(m=>{const q=/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/.exec(m.getAttribute('ref')||'');return q?[+q[2],cn(q[1]),+q[4],cn(q[3])]:null}).filter(Boolean);
+  mg.forEach(([r0,c0,r1,c1])=>{if(r0<=MSH_MAXR&&c0<=MSH_MAXC){mr=Math.max(mr,Math.min(r1,MSH_MAXR));mc=Math.max(mc,Math.min(c1,MSH_MAXC))}});
+  return {cells,cw,dw:dw?Math.round(dw*7.2+5):0,rh,mg,mr,mc}}
+/* 위·왼쪽 테두리는 옆 칸의 아래·오른쪽으로 옮겨 두 줄로 겹쳐 그려지지 않게 */
+function msNormBd(n){const R=n.rows,C=n.cols;R.forEach((r,ri)=>C.forEach((c,ci)=>{const k=r+'|'+c;const o=n.s[k];if(!o)return;const s=o.v;
+  if(s.bt&&ri>0){const up=R[ri-1]+'|'+c;n.s[up]=n.s[up]||{v:{},at:o.at};if(!n.s[up].v.bb)n.s[up].v.bb=s.bt;delete s.bt}
+  if(s.bl&&ci>0){const lf=r+'|'+C[ci-1];n.s[lf]=n.s[lf]||{v:{},at:o.at};if(!n.s[lf].v.br)n.s[lf].v.br=s.bl;delete s.bl}}))}
+document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='fileMsh')return;const f=e.target.files[0];if(!f)return;
+  try{const {z,sheets}=await readWorkbook(await f.arrayBuffer());const S=await msStyles(z);const vis=sheets.filter(s=>!s.hidden);const fn=f.name.replace(/\.xlsx$/i,'');const add=[];
+    for(const sh of vis){const X=await msReadFull(z,sh.path,S);if(!X.mr)continue;const nr=Math.max(X.mr,20),nc=Math.max(X.mc,8);const n=msMake(B().id,(vis.length>1?fn+' · '+sh.name:fn).slice(0,40),Math.min(nr,MSH_MAXR),Math.min(nc,MSH_MAXC));const at=n.at;
+      X.cells.forEach((v,k)=>{const r=Math.floor(k/1000)-1,c=k%1000-1;if(r<0||c<0||r>=n.rows.length||c>=n.cols.length)return;const key=n.rows[r]+'|'+n.cols[c];if(v.v!=='')n.c[key]={v:v.v,at};if(v.st)n.s[key]={v:Object.assign({},v.st),at}});
+      n.cols.forEach((c,ci)=>{const w=X.cw[ci+1]||X.dw;if(w&&w!==110)n.w[c]={v:w,at}});Object.entries(X.rh).forEach(([r,h])=>{const id=n.rows[+r-1];if(id)n.rh[id]={v:h,at}});
+      X.mg.forEach(([r0,c0,r1,c1])=>{const id=n.rows[r0-1],cd=n.cols[c0-1];if(id&&cd)n.mg[id+'|'+cd]={v:{rs:Math.min(r1,n.rows.length)-r0+1,cs:Math.min(c1,n.cols.length)-c0+1},at}});
+      msNormBd(n);add.push(n)}
+    if(!add.length){toast('불러올 내용이 없어요');return}add.forEach(n=>{MS().list[n.id]=n});msTouch(add[0]);toast(`엑셀에서 시트 ${add.length}개를 서식까지 불러왔어요`);MSH.cur=add[0].id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw()}
+  catch(err){console.error(err);toast('엑셀을 읽지 못했어요: '+err.message,4500)}});
+/* ===== 엑셀로 저장(서식까지) ===== */
+function msXlsx(x){const X=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const R=msR(x),C=msC(x);let lr=0,lc=0;
+  R.forEach((r,ri)=>C.forEach((c,ci)=>{const st=msSt(x,r,c);if(msGet(x,r,c)!==''||(st&&Object.keys(st).length)){lr=Math.max(lr,ri+1);lc=Math.max(lc,ci+1)}}));
+  Object.entries(x.mg||{}).forEach(([k,o])=>{if(!o||!o.v)return;const [r,c]=k.split('|');const ri=R.indexOf(r),ci=C.indexOf(c);if(ri<0||ci<0)return;lr=Math.max(lr,ri+o.v.rs);lc=Math.max(lc,ci+o.v.cs)});lr=Math.max(lr,1);lc=Math.max(lc,1);
+  const hx=c=>'FF'+String(c||'#000000').replace('#','').toUpperCase().padStart(6,'0').slice(-6);const fonts=['<font><sz val="11"/><name val="맑은 고딕"/></font>'],fills=['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>'],bds=['<border><left/><right/><top/><bottom/><diagonal/></border>'],xfs=['<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'];
+  const idx=(arr,s)=>{let i=arr.indexOf(s);if(i<0){arr.push(s);i=arr.length-1}return i};const BS=v=>{if(!v)return '';const m=/^(\d)px (\w+) (#[0-9a-f]{6})/i.exec(v);if(!m)return '';const w=+m[1],t=m[2];const st=t==='dashed'?(w>1?'mediumDashed':'dashed'):t==='dotted'?'dotted':t==='double'?'double':w>=3?'thick':w===2?'medium':'thin';return ` style="${st}"><color rgb="${hx(m[3])}"/`};
+  const xfOf=st=>{if(!st)return 0;const f=idx(fonts,`<font>${st.b?'<b/>':''}${st.i?'<i/>':''}${st.u?'<u/>':''}<sz val="${st.fs?Math.round(st.fs/1.15):11}"/>${st.fg?`<color rgb="${hx(st.fg)}"/>`:''}<name val="맑은 고딕"/></font>`);
+    const fl=st.bg?idx(fills,`<fill><patternFill patternType="solid"><fgColor rgb="${hx(st.bg)}"/><bgColor indexed="64"/></patternFill></fill>`):0;
+    const e=(n,v)=>{const a=BS(v);return a?`<${n}${a}></${n}>`:`<${n}/>`};const bd=(st.bb||st.br||st.bt||st.bl)?idx(bds,`<border>${e('left',st.bl)}${e('right',st.br)}${e('top',st.bt)}${e('bottom',st.bb)}<diagonal/></border>`):0;
+    const al=(st.al||st.va||st.wr)?`<alignment${st.al?` horizontal="${MS_AL[st.al]}"`:''}${st.va?` vertical="${{t:'top',m:'center',b:'bottom'}[st.va]}"`:''}${st.wr?' wrapText="1"':''}/>`:'';
+    return idx(xfs,`<xf numFmtId="0" fontId="${f}" fillId="${fl}" borderId="${bd}" xfId="0"${f?' applyFont="1"':''}${fl?' applyFill="1"':''}${bd?' applyBorder="1"':''}${al?' applyAlignment="1">'+al+'</xf>':'/>'}`)};
+  /* 테두리: 화면은 아래·오른쪽만 갖고 있으니 엑셀에선 이웃 칸의 위·왼쪽도 같이 */
+  const stAt=(ri,ci)=>{const s=Object.assign({},msSt(x,R[ri],C[ci])||{});if(ri>0){const u=msSt(x,R[ri-1],C[ci]);if(u&&u.bb&&!s.bt)s.bt=u.bb}if(ci>0){const l=msSt(x,R[ri],C[ci-1]);if(l&&l.br&&!s.bl)s.bl=l.br}return Object.keys(s).length?s:null};
+  const rows=[];for(let ri=0;ri<lr;ri++){const h=((x.rh||{})[R[ri]]||{}).v;const cs=[];for(let ci=0;ci<lc;ci++){const v=msGet(x,R[ri],C[ci]);const s=xfOf(stAt(ri,ci));const ref=mshCol(ci)+(ri+1);
+      if(v===''){if(s)cs.push(`<c r="${ref}" s="${s}"/>`);continue}const num=/^-?\d+(\.\d+)?$/.test(v)&&!/^0\d/.test(v)&&v.length<16;cs.push(num?`<c r="${ref}"${s?` s="${s}"`:''}><v>${v}</v></c>`:`<c r="${ref}" t="inlineStr"${s?` s="${s}"`:''}><is><t xml:space="preserve">${X(v)}</t></is></c>`)}
+    rows.push(`<row r="${ri+1}"${h?` ht="${Math.round(h/1.33*10)/10}" customHeight="1"`:''}>${cs.join('')}</row>`)}
+  const mgs=Object.entries(x.mg||{}).filter(([k,o])=>o&&o.v).map(([k,o])=>{const [r,c]=k.split('|');const ri=R.indexOf(r),ci=C.indexOf(c);if(ri<0||ci<0)return '';return `<mergeCell ref="${mshCol(ci)}${ri+1}:${mshCol(ci+o.v.cs-1)}${ri+o.v.rs}"/>`}).filter(Boolean);
+  const sheet=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${C.slice(0,lc).map((c,i)=>`<col min="${i+1}" max="${i+1}" width="${Math.max(2,Math.round(((((x.w||{})[c]||{}).v||110)-5)/7.2*100)/100)}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData>${mgs.length?`<mergeCells count="${mgs.length}">${mgs.join('')}</mergeCells>`:''}</worksheet>`;
+  const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="${fonts.length}">${fonts.join('')}</fonts><fills count="${fills.length}">${fills.join('')}</fills><borders count="${bds.length}">${bds.join('')}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs></styleSheet>`;
+  const nm=X(x.nm.v.replace(/[\\\/?*\[\]:]/g,' ').slice(0,31)||'시트');
+  return zipStore([['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'],
+    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+    ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${nm}" sheetId="1" r:id="rId1"/></sheets></workbook>`],
+    ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+    ['xl/styles.xml',styles],['xl/worksheets/sheet1.xml',sheet]])}
 </script>
 <script>/* ================= 도움말 (사용 설명서 · 관리자 도움말) =================
    그림: 데모 자료로 찍은 화면(test/helpshots.js → app/helpimg.js, 처음 도움말 열 때만 불러옴) · F(이름,설명)
@@ -7894,11 +8052,14 @@ const HELP=[
   ${HF('msh','메모 시트 — 엑셀처럼 칸에 바로 적는 표 · 되돌리기 · 엑셀로 저장')}
   <ul><li>[업무] 화면 위 <b>[메모 시트]</b>. 행정·지점장이 잠깐 쓰는 표(교재 주문, 특강 신청, 정산 메모 같은 것)를 엑셀처럼 적어 둬요. <b>지점마다 따로</b>이고, 그 지점 지점장·행정 PC(와 관리자 PC)에서 같이 보고 고쳐요. 폰으로는 안 나가요.</li>
   <li><b>적기</b>: 칸을 누르고 바로 입력(한글도) · <b>Enter</b> 아래로 · <b>Tab</b> 옆으로 · 방향키로 움직이기 · 두 번 누르거나 <b>F2</b>로 있던 글 고치기 · <b>Delete</b> 비우기 · <b>Esc</b> 입력 취소. 엑셀·구글 시트에서 여러 칸을 복사해 <b>Ctrl+V</b>로 한 번에 붙여넣어요.</li>
+  <li><b>여러 칸 고르기</b>: 칸을 누른 채 끌거나, Shift를 누르고 다른 칸을 누르거나, Shift+방향키. 고른 칸 전체에 서식·지우기(Delete)·복사(Ctrl+C)가 돼요.</li>
+  <li><b>서식 막대</b>: <b>굵게·기울임·밑줄</b>(Ctrl+B/I/U) · <b>글자색</b>·<b>칸 색</b>(색 고르기 · '다른 색'으로 아무 색이나) · <b>왼쪽·가운데·오른쪽 맞춤</b> · <b>자동 줄 바꿈</b> · <b>테두리</b>(모든 · 바깥 · 아래쪽만 · 바깥 굵게 · 없음) · <b>칸 합치기</b>(여러 칸 고르고 누름 · 합친 칸에서 다시 누르면 풀림) · <b>서식 지우기</b>. 서식도 Ctrl+Z로 되돌려요.</li>
+  ${HF('mshpal','메모 시트 — 서식 막대와 색 고르기')}
   <li><b>[+ 행]·[+ 열]</b>, 고른 칸의 <b>[행 지우기]·[열 지우기]</b>, 열 머리 오른쪽 끝을 끌어 너비 조절. 시트 이름은 위 이름 칸에서 바꿔요.</li>
   <li><b>되돌리기</b>: <b>Ctrl+Z</b>(또는 [↶ 되돌리기])로 방금 고친 칸·붙여넣기·지운 행/열을 하나씩 되돌려요(창을 열어 둔 동안 80번까지).</li>
   <li><b>같이 고치기</b>: 지점장과 행정 선생님이 같은 시트를 동시에 고쳐도 <b>칸마다</b> 합쳐져서 각자 고친 칸과 새로 넣은 행이 다 남아요(같은 칸을 둘이 고치면 나중 것). 다른 PC에서 고친 칸은 1~2분 안에 열린 창에도 바뀌어 보여요.</li>
-  <li><b>[엑셀로 저장]</b>: 지금 시트를 .xlsx 파일로 내려받아요(적힌 곳까지만).</li>
-  <li><b>[+ 새 시트]</b>로 여러 개 만들고 위 탭으로 오가요. <b>[엑셀 불러오기]</b>는 .xlsx의 보이는 시트마다 새 시트로 가져와요(최대 500행 × 40열). <b>[시트 지우기]</b>는 두 번.</li>
+  <li><b>[엑셀로 저장]</b>: 지금 시트를 서식(색·굵게·정렬·테두리·합친 칸·너비·높이)까지 .xlsx 파일로 내려받아요(적힌 곳까지만).</li>
+  <li><b>[+ 새 시트]</b>로 여러 개 만들고 위 탭으로 오가요. <b>[엑셀 불러오기]</b>는 .xlsx의 보이는 시트마다 새 시트로 <b>서식까지 그대로</b> 가져와요 — 칸 색·글자색·굵게·글자 크기·정렬·줄 바꿈·테두리·칸 합치기·열 너비·행 높이, 날짜·천 단위·% 표시(최대 500행 × 40열). 그림·차트·수식 계산은 가져오지 않고 보이던 값만 들어와요. <b>[시트 지우기]</b>는 두 번.</li>
   <li>적은 내용은 잠깐 모았다가 저절로 저장·공유돼요. 프로그램 자료(학생·성적 등)에는 영향을 주지 않는 메모용이에요.</li></ul>`},
  {id:'refs',t:'소개비 (지점장·행정)',b:`
   ${HF('refs','소개비 — 소개로 들어온 신입과 소개해 준 학생 · 미지급/지급 완료')}
