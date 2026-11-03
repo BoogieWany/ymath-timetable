@@ -1168,6 +1168,9 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .msg td.rg{box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--navy) 9%,transparent)}
 .msg td.on.rg{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--navy) 70%,transparent),inset 0 0 0 999px color-mix(in srgb,var(--navy) 6%,transparent)}
 .msg tr{height:26px}
+/* 3.85.1 글자 크기 · 행 높이 */
+.msfsz{font:inherit;font-size:12.5px;height:28px;border:1px solid transparent;border-radius:7px;background:transparent;color:inherit;padding:0 4px;margin-left:2px;cursor:pointer}.msfsz:hover,.msfsz:focus{border-color:var(--line);outline:0}
+.msg th.msc0{position:sticky}.msg .msrhz{position:absolute;left:0;right:0;bottom:-3px;height:7px;cursor:row-resize;z-index:4}
 </style>
 </head>
 <body>
@@ -3528,7 +3531,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.85.0', APPDATE='2026-10-28';
+const APPVER='3.85.1', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -7706,23 +7709,32 @@ document.addEventListener('click',e=>{if(UI.view!=='tasks')return;const tr=e.tar
    시트 = {id,br,by,at,made, nm:{v,at}, del:{v,at}, rows:[행id], ro, cols:[열id], co, rdel,cdel:{id:{v,at}}, w:{열id:{v,at}}, rh:{행id:{v,at}},
            c:{'행|열':{v,at}}(값), s:{'행|열':{v:{bg,fg,b,i,u,al,va,wr,fs,bb,br,bt,bl},at}}(서식), mg:{'행|열':{v:{rs,cs}|null,at}}(병합)} */
 const msOn=()=>!$('modal').hidden&&!!document.querySelector('#modal .mshdlg');
-const MS=()=>{if(!DB.msheets||typeof DB.msheets!=='object')DB.msheets={list:{}};DB.msheets.list=DB.msheets.list||{};return DB.msheets};
+/* 3.85.1: 지점마다 파일 따로(ms_지점id) — 자기 지점 PC에만 내려감 · 관리자 PC는 모든 지점 */
+const msBox=br=>{const k='ms_'+br;if(!DB[k]||typeof DB[k]!=='object')DB[k]={list:{}};DB[k].list=DB[k].list||{};return DB[k]};
+const msBrs=()=>{const all=(DB.branches||[]).map(b=>b.id);if(typeof syOn!=='function'||!syOn())return all;return SYNC.info.role==='owner'?all:[myBr()].filter(Boolean)};
+const MS=()=>({list:Object.assign({},...(DB.branches||[]).map(b=>(DB['ms_'+b.id]||{}).list||{}))});
+const msAdd=n=>{msBox(n.br).list[n.id]=n};
+const msFind=id=>{for(const b of DB.branches||[]){const L=(DB['ms_'+b.id]||{}).list;if(L&&L[id])return L[id]}return null};
+function msSH(br){const k='ms_'+br;if(!SH[k])SH[k]={get:()=>msBox(br),merge:(d,s)=>msMergeInto(d,s),sha:'msSha_'+br,st:{busy:false,last:0,err:''}};return k}
 const msId=p=>p+Math.random().toString(36).slice(2,9);
 const msNow=()=>Date.now();
 const msLww=(d,s)=>{let ch=false;Object.entries(s||{}).forEach(([k,v])=>{if(v&&(!d[k]||(v.at||0)>(d[k].at||0))){d[k]=v;ch=true}});return ch};
 function msOrd(a,aAt,b,bAt){const [base,other]=(bAt||0)>(aAt||0)?[b.slice(),a]:[a.slice(),b];
   other.forEach((id,i)=>{if(base.includes(id))return;let j=-1;for(let k=i-1;k>=0;k--){j=base.indexOf(other[k]);if(j>=0)break}base.splice(j+1,0,id)});return base}
 const MS_MAPS=['rdel','cdel','w','rh','c','s','mg'];
-function msMergeInto(dst,src){let ch=false;if(!src||!src.list)return false;dst.list=dst.list||{};if(src.mig){dst.mig=dst.mig||{};Object.keys(src.mig).forEach(k=>{if(!dst.mig[k]){dst.mig[k]=1;ch=true}})}
+function msMergeInto(dst,src){let ch=false;if(!src||!src.list)return false;dst.list=dst.list||{};if(src.mig&&typeof src.mig!=='object'&&!dst.mig){dst.mig=1;ch=true}
   Object.entries(src.list).forEach(([id,s])=>{if(!s||typeof s!=='object')return;const d=dst.list[id];if(!d){dst.list[id]=s;ch=true;return}const before=JSON.stringify(d);
     ['nm','del'].forEach(k=>{if(s[k]&&(!d[k]||(s[k].at||0)>(d[k].at||0)))d[k]=s[k]});MS_MAPS.forEach(k=>{d[k]=d[k]||{};msLww(d[k],s[k])});
     d.rows=msOrd(d.rows||[],d.ro,s.rows||[],s.ro);d.ro=Math.max(d.ro||0,s.ro||0);d.cols=msOrd(d.cols||[],d.co,s.cols||[],s.co);d.co=Math.max(d.co||0,s.co||0);
     if((s.at||0)>(d.at||0)){d.at=s.at;d.by=s.by}if(JSON.stringify(d)!==before)ch=true});
   if(ch)setTimeout(msRemote,0);return ch}
-SH.msheets={get:()=>MS(),merge:(d,s)=>msMergeInto(d,s),sha:'msSha',st:{busy:false,last:0,err:''}};
-const msPull=opt=>shPull('msheets',opt);
+/* 예전(3.84.1~3.85.0) 한 파일(msheets)에 모든 지점이 같이 있던 것 → 지점 파일로 옮기고, 관리자 PC가 옛 파일을 비움 */
+SH.msheets={get:()=>{if(!DB.msheets||typeof DB.msheets!=='object')DB.msheets={list:{}};DB.msheets.list=DB.msheets.list||{};return DB.msheets},merge:(d,s)=>{let ch=false;Object.values((s&&s.list)||{}).forEach(x=>{if(x&&x.br&&msMergeInto(msBox(x.br),{list:{[x.id]:x}}))ch=true});return ch},sha:'msSha',st:{busy:false,last:0,err:''}};
+function msMoveOld(){const o=DB.msheets;if(!o||!o.list)return [];const brs=new Set();Object.values(o.list).forEach(x=>{if(x&&x.br){msMergeInto(msBox(x.br),{list:{[x.id]:x}});brs.add(x.br)}});if(o.mig)Object.keys(o.mig).forEach(b=>{msBox(b).mig=1});o.list={};delete o.mig;return [...brs]}
+async function msPull(opt){if(!DB.msMoved){let ok=true;if(typeof syOn==='function'&&syOn())ok=await shPull('msheets',{force:true});if(ok){const brs=msMoveOld();DB.msMoved=1;await schPersist();if(typeof syOn==='function'&&syOn()){brs.forEach(b=>{msSH(b);shPush('ms_'+b)});if(SYNC.info.role==='owner'){DB.msheets={list:{},moved:1};shPush('msheets')}}}}
+  for(const br of msBrs()){await shPull(msSH(br),opt)}}
 const msLive=x=>x&&!(x.del&&x.del.v);
-const msOfBr=br=>Object.values(MS().list).filter(x=>msLive(x)&&x.br===br).sort((a,z)=>(a.made||0)-(z.made||0));
+const msOfBr=br=>Object.values(msBox(br).list).filter(x=>msLive(x)&&x.br===br).sort((a,z)=>(a.made||0)-(z.made||0));
 const mshList=b=>msOfBr(b.id);
 const msR=x=>(x.rows||[]).filter(id=>!((x.rdel||{})[id]||{}).v);
 const msC=x=>(x.cols||[]).filter(id=>!((x.cdel||{})[id]||{}).v);
@@ -7733,13 +7745,13 @@ const MSH_MAXR=500,MSH_MAXC=40;
 const MSH={cur:'',sel:{r:0,c:0},an:{r:0,c:0},ed:null,tm:0,R:[],C:[],cov:new Map(),span:new Map(),undo:[],drag:false};
 const msMe=()=>typeof cnMe==='function'?cnMe():'';
 function msMake(br,nm,nr,nc){const t=msNow();const rows=Array.from({length:nr||20},()=>msId('r')),cols=Array.from({length:nc||8},()=>msId('c'));return {id:msId('m'),br,by:msMe(),at:t,made:t,nm:{v:nm||'새 시트',at:t},rows,ro:t,cols,co:t,rdel:{},cdel:{},w:{},rh:{},c:{},s:{},mg:{}}}
-function msTouch(x){x.at=msNow();x.by=msMe();clearTimeout(MSH.tm);MSH.tm=setTimeout(msFlush,600)}
-async function msFlush(){clearTimeout(MSH.tm);MSH.tm=0;if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o.msheets=DB.msheets;ORIG=JSON.stringify(o)}catch(e){}}await schPersist();shPush('msheets')}
-async function msMigrate(){const b=B();const S=MS();S.mig=S.mig||{};if(S.mig[b.id])return;const old=(b.msh||[]).filter(x=>x&&!x.del);if(!old.length)return;S.mig[b.id]=1;
-  old.forEach(o=>{const nc=Math.max(1,...(o.rows||[[]]).map(r=>r.length));const x=msMake(b.id,o.nm,(o.rows||[]).length||1,nc);x.by=o.by||x.by;(o.rows||[]).forEach((r,ri)=>r.forEach((v,ci)=>{if(v!==''&&v!=null)x.c[x.rows[ri]+'|'+x.cols[ci]]={v:String(v),at:x.at}}));(o.w||[]).forEach((w,ci)=>{if(x.cols[ci]&&w)x.w[x.cols[ci]]={v:w,at:x.at}});S.list[x.id]=x});
+function msTouch(x){x.at=msNow();x.by=msMe();if(x.br)(MSH.dirty=MSH.dirty||new Set()).add(x.br);clearTimeout(MSH.tm);MSH.tm=setTimeout(msFlush,600)}
+async function msFlush(){clearTimeout(MSH.tm);MSH.tm=0;const D0=[...(MSH.dirty||[])];MSH.dirty=new Set();if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);D0.forEach(b=>{o['ms_'+b]=DB['ms_'+b]});ORIG=JSON.stringify(o)}catch(e){}}await schPersist();D0.forEach(b=>shPush(msSH(b)))}
+async function msMigrate(){const b=B();const S=msBox(b.id);if(S.mig||(DB.msheets&&DB.msheets.mig&&DB.msheets.mig[b.id]))return;const old=(b.msh||[]).filter(x=>x&&!x.del);if(!old.length)return;S.mig=1;
+  old.forEach(o=>{const nc=Math.max(1,...(o.rows||[[]]).map(r=>r.length));const x=msMake(b.id,o.nm,(o.rows||[]).length||1,nc);x.by=o.by||x.by;(o.rows||[]).forEach((r,ri)=>r.forEach((v,ci)=>{if(v!==''&&v!=null)x.c[x.rows[ri]+'|'+x.cols[ci]]={v:String(v),at:x.at}}));(o.w||[]).forEach((w,ci)=>{if(x.cols[ci]&&w)x.w[x.cols[ci]]={v:w,at:x.at}});msAdd(x)});
   msTouch(old[0]||{});await msFlush()}
-async function mshOpen(){MSH.undo=[];try{await msMigrate()}catch(e){}const L=mshList(B());if(!L.some(x=>x.id===MSH.cur))MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();msPull({force:true})}
-function mshCur(){const x=MS().list[MSH.cur];return msLive(x)&&x.br===B().id?x:null}
+async function mshOpen(){MSH.undo=[];if(!DB.msMoved&&!(typeof syOn==='function'&&syOn())){msMoveOld();DB.msMoved=1}try{await msMigrate()}catch(e){}const L=mshList(B());if(!L.some(x=>x.id===MSH.cur))MSH.cur=(L[0]||{}).id||'';MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();msPull({force:true})}
+function mshCur(){const x=msFind(MSH.cur);return msLive(x)&&x.br===B().id?x:null}
 /* ---- 서식 → css ---- */
 const MS_AL={l:'left',c:'center',r:'right'},MS_VA={t:'top',m:'middle',b:'bottom'};
 function msCss(st,rh){let c='';if(rh)c+=`height:${rh}px;`;if(!st)return c;if(st.bg)c+=`background:${st.bg};`;if(st.fg)c+=`color:${st.fg};`;if(st.b)c+='font-weight:700;';if(st.i)c+='font-style:italic;';if(st.u)c+='text-decoration:underline;';
@@ -7751,7 +7763,7 @@ function msSpans(x){MSH.cov=new Map();MSH.span=new Map();const ri=new Map(MSH.R.
     MSH.span.set(r0+','+c0,[r1-r0+1,c1-c0+1]);for(let a=r0;a<=r1;a++)for(let b=c0;b<=c1;b++)if(a!==r0||b!==c0)MSH.cov.set(a+','+b,[r0,c0])})}
 const msAnc=(r,c)=>MSH.cov.get(r+','+c)||[r,c];
 function msTd(x,ri,ci){if(MSH.cov.has(ri+','+ci))return '';const r=MSH.R[ri],c=MSH.C[ci];const sp=MSH.span.get(ri+','+ci);return `<td data-r="${ri}" data-c="${ci}"${sp?` rowspan="${sp[0]}" colspan="${sp[1]}"`:''} style="${msCss(msSt(x,r,c))}">${esc(msGet(x,r,c))}</td>`}
-function msRowHTML(x,ri){const r=MSH.R[ri];const h=((x.rh||{})[r]||{}).v;return `<tr${h?` style="height:${h}px"`:''}><th class="msc0">${ri+1}</th>${MSH.C.map((c,ci)=>msTd(x,ri,ci)).join('')}</tr>`}
+function msRowHTML(x,ri){const r=MSH.R[ri];const h=((x.rh||{})[r]||{}).v;return `<tr${h?` style="height:${h}px"`:''}><th class="msc0">${ri+1}<i class="msrhz" data-msrh="${ri}" aria-hidden="true"></i></th>${MSH.C.map((c,ci)=>msTd(x,ri,ci)).join('')}</tr>`}
 /* ---- 서식 막대 ---- */
 const MS_PAL=['#000000','#434343','#666666','#999999','#b7b7b7','#cccccc','#d9d9d9','#efefef','#f3f3f3','#ffffff',
   '#980000','#ff0000','#ff9900','#ffff00','#00ff00','#00ffff','#4a86e8','#0000ff','#9900ff','#ff00ff',
@@ -7759,9 +7771,10 @@ const MS_PAL=['#000000','#434343','#666666','#999999','#b7b7b7','#cccccc','#d9d9
   '#dd7e6b','#ea9999','#f9cb9c','#ffe599','#b6d7a8','#a2c4c9','#a4c2f4','#9fc5e8','#b4a7d6','#d5a6bd',
   '#cc4125','#e06666','#f6b26b','#ffd966','#93c47d','#76a5af','#6d9eeb','#6fa8dc','#8e7cc3','#c27ba0',
   '#a61c00','#cc0000','#e69138','#f1c232','#6aa84f','#45818e','#3c78d8','#3d85c6','#674ea7','#a64d79'];
+const MS_FSZ=[8,9,10,11,12,14,16,18,20,24,28,36];const msPt=fs=>fs?Math.round(fs/1.15):11;
 const msIcon={b:'<b>가</b>',i:'<i style="font-family:serif">가</i>',u:'<u>가</u>'};
 function msFmtBar(){return `<div class="msfmt" role="toolbar" aria-label="서식">
-  <button class="msf" data-msf="b" title="굵게 (Ctrl+B)">${msIcon.b}</button><button class="msf" data-msf="i" title="기울임 (Ctrl+I)">${msIcon.i}</button><button class="msf" data-msf="u" title="밑줄 (Ctrl+U)">${msIcon.u}</button><i class="msfs"></i>
+  <button class="msf" data-msf="b" title="굵게 (Ctrl+B)">${msIcon.b}</button><button class="msf" data-msf="i" title="기울임 (Ctrl+I)">${msIcon.i}</button><button class="msf" data-msf="u" title="밑줄 (Ctrl+U)">${msIcon.u}</button><select class="msfsz" id="msFsz" title="글자 크기" aria-label="글자 크기">${MS_FSZ.map(p=>`<option value="${p}">${p}</option>`).join('')}</select><i class="msfs"></i>
   <button class="msf mscol" data-mspal="fg" title="글자색"><span class="msa">가</span><i class="msbar" id="msFgBar"></i></button><button class="msf mscol" data-mspal="bg" title="칸 색"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14l7-7 6 6-7 7H4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19 15c0 1.5 1 2.6 1 3.6a1 1 0 01-2 0c0-1 1-2.1 1-3.6z" fill="currentColor"/></svg><i class="msbar" id="msBgBar"></i></button><i class="msfs"></i>
   <button class="msf" data-msf="al:l" title="왼쪽 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h10M4 14h16M4 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="al:c" title="가운데 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 10h10M4 14h16M7 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="al:r" title="오른쪽 맞춤"><svg viewBox="0 0 24 24"><path d="M4 6h16M10 10h10M4 14h16M10 18h10" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="msf" data-msf="wr" title="자동 줄 바꿈"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h13a3 3 0 010 6h-4m2-2l-2 2 2 2M4 18h5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><i class="msfs"></i>
   <button class="msf" data-mspal="bd" title="테두리"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/></svg></button>
@@ -7789,7 +7802,7 @@ function msPut(x,map,ch,rec){const t=msNow();x[map]=x[map]||{};const prev=[];ch.
 function msSetCells(x,ch,noUndo){return msPut(x,'c',ch.map(([r,c,v])=>[r+'|'+c,v]),noUndo?false:undefined)}
 function msPaintKeys(x,keys){keys.forEach(k=>{const [r,c]=k.split('|');const ri=MSH.R.indexOf(r),ci=MSH.C.indexOf(c);if(ri<0||ci<0||MSH.cov.has(ri+','+ci))return;const td=document.querySelector(`.msg td[data-r="${ri}"][data-c="${ci}"]`);if(!td)return;
   if(!(MSH.ed&&MSH.ed.r===ri&&MSH.ed.c===ci))td.textContent=msGet(x,r,c);td.setAttribute('style',msCss(msSt(x,r,c)))})}
-function msUndo(){const u=MSH.undo.pop();if(!u){msUndoBtn();return}const x=MS().list[u.id];if(!x){msUndoBtn();return}const t=msNow();let full=false;const keys=[];
+function msUndo(){const u=MSH.undo.pop();if(!u){msUndoBtn();return}const x=msFind(u.id);if(!x){msUndoBtn();return}const t=msNow();let full=false;const keys=[];
   Object.entries(u.m||{}).forEach(([map,list])=>{list.slice().reverse().forEach(([k,v])=>{x[map][k]={v,at:t};keys.push(k)});if(map!=='c'&&map!=='s')full=true});
   if(u.rdel){x.rdel[u.rdel]={v:u.v,at:t};full=true}if(u.cdel){x.cdel[u.cdel]={v:u.v,at:t};full=true}
   msTouch(x);if(x.id===MSH.cur){if(full)mshDraw(true);else msPaintKeys(x,keys)}msUndoBtn();toast('되돌렸어요',1200)}
@@ -7801,7 +7814,7 @@ function msPaintSel(){document.querySelectorAll('.msg td.on,.msg td.rg').forEach
   if(multi)msCellsIn(g).forEach(([r,c])=>{if(MSH.cov.has(r+','+c))return;const td=document.querySelector(`.msg td[data-r="${r}"][data-c="${c}"]`);if(td)td.classList.add('rg')});
   const a=mshCell(MSH.sel.r,MSH.sel.c);if(a)a.classList.add('on');msFmtState()}
 function msFmtState(){const x=mshCur();if(!x)return;const st=msSt(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c])||{};document.querySelectorAll('.msfmt [data-msf]').forEach(b=>{const k=b.dataset.msf;const on=k.includes(':')?st[k.split(':')[0]]===k.split(':')[1]:k==='merge'?MSH.span.has(msAnc(MSH.sel.r,MSH.sel.c).join(',')):!!st[k];b.classList.toggle('on',on&&k!=='clr')});
-  const f=$('msFgBar'),g=$('msBgBar');if(f)f.style.background=st.fg||'currentColor';if(g)g.style.background=st.bg||'transparent'}
+  const fz=$('msFsz');if(fz&&document.activeElement!==fz){const pt=msPt(st.fs);fz.value=MS_FSZ.includes(pt)?pt:11}const f=$('msFgBar'),g=$('msBgBar');if(f)f.style.background=st.fg||'currentColor';if(g)g.style.background=st.bg||'transparent'}
 function mshCell(r,c){const [a,b]=msAnc(r,c);return document.querySelector(`.msg td[data-r="${a}"][data-c="${b}"]`)}
 function mshPlace(){const i=$('msIn'),td=mshCell(MSH.sel.r,MSH.sel.c);if(!i||!td)return;const tb=td.closest('table');i.style.left=(tb.offsetLeft+td.offsetLeft)+'px';i.style.top=(tb.offsetTop+td.offsetTop)+'px';i.style.width=td.offsetWidth+'px';i.style.minHeight=td.offsetHeight+'px';
   const x=mshCur();const st=x&&msSt(x,MSH.R[MSH.sel.r],MSH.C[MSH.sel.c]);i.setAttribute('style',i.getAttribute('style').replace(/;?(font-weight|font-style|text-align|color|background|font-size):[^;]*/g,'')+(st?((st.b?';font-weight:700':'')+(st.i?';font-style:italic':'')+(st.al?`;text-align:${MS_AL[st.al]}`:'')+(st.fg?`;color:${st.fg}`:'')+(st.bg?`;background:${st.bg}`:'')+(st.fs?`;font-size:${st.fs}px`:'')):''));
@@ -7875,7 +7888,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!t||!t.dataset||!t.da
 document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('.mshdlg [data-msh],.mshdlg [data-act^="msh"]');if(!t)return;if(MSH.ed)mshCommit();
   if(t.dataset.msh){MSH.cur=t.dataset.msh;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();return}
   const a=t.dataset.act;const x=mshCur();const now=msNow();
-  if(a==='mshAdd'){const n=msMake(B().id,`시트 ${mshList(B()).length+1}`);MS().list[n.id]=n;msTouch(n);MSH.cur=n.id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();setTimeout(()=>{const i=$('msNm');if(i){i.focus();i.select()}},50);return}
+  if(a==='mshAdd'){const n=msMake(B().id,`시트 ${mshList(B()).length+1}`);msAdd(n);msTouch(n);MSH.cur=n.id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw();setTimeout(()=>{const i=$('msNm');if(i){i.focus();i.select()}},50);return}
   if(a==='mshImp'){let i=$('fileMsh');if(!i){i=document.createElement('input');i.type='file';i.id='fileMsh';i.accept='.xlsx';i.hidden=true;document.body.appendChild(i)}i.value='';i.click();return}
   if(!x)return;
   if(a==='mshUndo'){msUndo();return}
@@ -7942,7 +7955,7 @@ document.addEventListener('change',async e=>{if(!e.target||e.target.id!=='fileMs
       n.cols.forEach((c,ci)=>{const w=X.cw[ci+1]||X.dw;if(w&&w!==110)n.w[c]={v:w,at}});Object.entries(X.rh).forEach(([r,h])=>{const id=n.rows[+r-1];if(id)n.rh[id]={v:h,at}});
       X.mg.forEach(([r0,c0,r1,c1])=>{const id=n.rows[r0-1],cd=n.cols[c0-1];if(id&&cd)n.mg[id+'|'+cd]={v:{rs:Math.min(r1,n.rows.length)-r0+1,cs:Math.min(c1,n.cols.length)-c0+1},at}});
       msNormBd(n);add.push(n)}
-    if(!add.length){toast('불러올 내용이 없어요');return}add.forEach(n=>{MS().list[n.id]=n});msTouch(add[0]);toast(`엑셀에서 시트 ${add.length}개를 서식까지 불러왔어요`);MSH.cur=add[0].id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw()}
+    if(!add.length){toast('불러올 내용이 없어요');return}add.forEach(msAdd);msTouch(add[0]);toast(`엑셀에서 시트 ${add.length}개를 서식까지 불러왔어요`);MSH.cur=add[0].id;MSH.sel={r:0,c:0};MSH.an={r:0,c:0};mshDraw()}
   catch(err){console.error(err);toast('엑셀을 읽지 못했어요: '+err.message,4500)}});
 /* ===== 엑셀로 저장(서식까지) ===== */
 function msXlsx(x){const X=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const R=msR(x),C=msC(x);let lr=0,lc=0;
@@ -7969,6 +7982,13 @@ function msXlsx(x){const X=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;
     ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${nm}" sheetId="1" r:id="rId1"/></sheets></workbook>`],
     ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
     ['xl/styles.xml',styles],['xl/worksheets/sheet1.xml',sheet]])}
+
+/* 3.85.1 글자 크기 · 행 높이 끌기 */
+document.addEventListener('change',e=>{const t=e.target;if(!t||t.id!=='msFsz'||!msOn())return;const pt=+t.value;msStyleRange(s=>{s.fs=pt===11?'':Math.round(pt*1.15)});const i=$('msIn');if(i)i.focus({preventScroll:true})});
+document.addEventListener('mousedown',e=>{const h=e.target.closest&&e.target.closest('.mshdlg [data-msrh]');if(!h)return;e.preventDefault();e.stopPropagation();const ri=+h.dataset.msrh;const tr=h.closest('tr');const y0=e.clientY,h0=tr.getBoundingClientRect().height;let v=0;
+  const mv=ev=>{v=Math.max(20,Math.min(400,Math.round(h0+ev.clientY-y0)));tr.style.height=v+'px'};
+  const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);const x=mshCur();if(v&&x){x.rh=x.rh||{};const id=MSH.R[ri];const pv=(x.rh[id]||{}).v||null;x.rh[id]={v:Math.abs(v-26)<2?null:v,at:msNow()};MSH.undo.push({id:x.id,m:{rh:[[id,pv]]}});msTouch(x);msUndoBtn();mshPlace()}};
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)},true);
 </script>
 <script>/* ================= 도움말 (사용 설명서 · 관리자 도움말) =================
    그림: 데모 자료로 찍은 화면(test/helpshots.js → app/helpimg.js, 처음 도움말 열 때만 불러옴) · F(이름,설명)
@@ -8050,12 +8070,12 @@ const HELP=[
   <li>지점장·행정 PC에서만 보이고 선생님 폰에는 안 나가요.</li></ul>`},
  {id:'msh',t:'메모 시트 (지점장·행정)',b:`
   ${HF('msh','메모 시트 — 엑셀처럼 칸에 바로 적는 표 · 되돌리기 · 엑셀로 저장')}
-  <ul><li>[업무] 화면 위 <b>[메모 시트]</b>. 행정·지점장이 잠깐 쓰는 표(교재 주문, 특강 신청, 정산 메모 같은 것)를 엑셀처럼 적어 둬요. <b>지점마다 따로</b>이고, 그 지점 지점장·행정 PC(와 관리자 PC)에서 같이 보고 고쳐요. 폰으로는 안 나가요.</li>
+  <ul><li>[업무] 화면 위 <b>[메모 시트]</b>. 행정·지점장이 잠깐 쓰는 표(교재 주문, 특강 신청, 정산 메모 같은 것)를 엑셀처럼 적어 둬요. <b>지점마다 따로</b>이고, 그 지점 지점장·행정 PC(와 관리자 PC)에서 같이 보고 고쳐요. 지점마다 파일이 따로라 <b>다른 지점 PC에는 내려가지도 않아요</b>. 폰으로는 안 나가요.</li>
   <li><b>적기</b>: 칸을 누르고 바로 입력(한글도) · <b>Enter</b> 아래로 · <b>Tab</b> 옆으로 · 방향키로 움직이기 · 두 번 누르거나 <b>F2</b>로 있던 글 고치기 · <b>Delete</b> 비우기 · <b>Esc</b> 입력 취소. 엑셀·구글 시트에서 여러 칸을 복사해 <b>Ctrl+V</b>로 한 번에 붙여넣어요.</li>
   <li><b>여러 칸 고르기</b>: 칸을 누른 채 끌거나, Shift를 누르고 다른 칸을 누르거나, Shift+방향키. 고른 칸 전체에 서식·지우기(Delete)·복사(Ctrl+C)가 돼요.</li>
-  <li><b>서식 막대</b>: <b>굵게·기울임·밑줄</b>(Ctrl+B/I/U) · <b>글자색</b>·<b>칸 색</b>(색 고르기 · '다른 색'으로 아무 색이나) · <b>왼쪽·가운데·오른쪽 맞춤</b> · <b>자동 줄 바꿈</b> · <b>테두리</b>(모든 · 바깥 · 아래쪽만 · 바깥 굵게 · 없음) · <b>칸 합치기</b>(여러 칸 고르고 누름 · 합친 칸에서 다시 누르면 풀림) · <b>서식 지우기</b>. 서식도 Ctrl+Z로 되돌려요.</li>
+  <li><b>서식 막대</b>: <b>굵게·기울임·밑줄</b>(Ctrl+B/I/U) · <b>글자 크기</b> · <b>글자색</b>·<b>칸 색</b>(색 고르기 · '다른 색'으로 아무 색이나) · <b>왼쪽·가운데·오른쪽 맞춤</b> · <b>자동 줄 바꿈</b> · <b>테두리</b>(모든 · 바깥 · 아래쪽만 · 바깥 굵게 · 없음) · <b>칸 합치기</b>(여러 칸 고르고 누름 · 합친 칸에서 다시 누르면 풀림) · <b>서식 지우기</b>. 서식도 Ctrl+Z로 되돌려요.</li>
   ${HF('mshpal','메모 시트 — 서식 막대와 색 고르기')}
-  <li><b>[+ 행]·[+ 열]</b>, 고른 칸의 <b>[행 지우기]·[열 지우기]</b>, 열 머리 오른쪽 끝을 끌어 너비 조절. 시트 이름은 위 이름 칸에서 바꿔요.</li>
+  <li><b>[+ 행]·[+ 열]</b>, 고른 칸의 <b>[행 지우기]·[열 지우기]</b>, 열 머리 오른쪽 끝을 끌어 너비 조절, 행 번호 아래 끝을 끌어 높이 조절. 시트 이름은 위 이름 칸에서 바꿔요.</li>
   <li><b>되돌리기</b>: <b>Ctrl+Z</b>(또는 [↶ 되돌리기])로 방금 고친 칸·붙여넣기·지운 행/열을 하나씩 되돌려요(창을 열어 둔 동안 80번까지).</li>
   <li><b>같이 고치기</b>: 지점장과 행정 선생님이 같은 시트를 동시에 고쳐도 <b>칸마다</b> 합쳐져서 각자 고친 칸과 새로 넣은 행이 다 남아요(같은 칸을 둘이 고치면 나중 것). 다른 PC에서 고친 칸은 1~2분 안에 열린 창에도 바뀌어 보여요.</li>
   <li><b>[엑셀로 저장]</b>: 지금 시트를 서식(색·굵게·정렬·테두리·합친 칸·너비·높이)까지 .xlsx 파일로 내려받아요(적힌 곳까지만).</li>
