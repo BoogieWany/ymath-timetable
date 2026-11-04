@@ -506,7 +506,24 @@ ipcMain.handle('win',(e,a)=>{const w=BrowserWindow.fromWebContents(e.sender);if(
   return {max:w.isMaximized(),full:w.isFullScreen()}});
 ipcMain.handle('openFolder',(e,w)=>shell.openPath(w==='out'?OUT:DATA));
 ipcMain.handle('zoom',(e,d)=>{zoom=d===0?0:Math.max(-4,Math.min(4,zoom+d));win.webContents.setZoomLevel(zoom*0.5);return zoom});
-app.whenReady().then(()=>{
+
+/* 3.85.4 작업 표시줄 이름 'Electron' → 'Y시간표'(회사 Y-Math): 켜진 뒤 잠깐 있다가 exe 사본의 이름 글자만 바꿔 바꿔치기 — 다음에 켤 때부터 · 윈도우가 기억한 옛 이름도 지움 */
+/* exe 안의 버전 정보 글자(작업 표시줄 이름 = FileDescription)를 바꿈 — 길이는 그대로 두고 남는 자리는 0으로 */
+const VER_SET={FileDescription:'Y시간표',ProductName:'Y시간표',CompanyName:'Y-Math',InternalName:'Y시간표',OriginalFilename:'Y시간표.exe',LegalCopyright:'Y-Math'};
+function verPatch(b,set){set=set||VER_SET;let n=0;
+  for(const [k,v] of Object.entries(set)){const kk=Buffer.from(k+'\0','utf16le');let i=b.indexOf(kk);
+    while(i>=0){if(i>=6){const wl=b.readUInt16LE(i-6),wv=b.readUInt16LE(i-4),wt=b.readUInt16LE(i-2);let j=i+kk.length;while(j%4)j++;
+        if(wt===1&&wv>0&&wl>=wv*2&&v.length+1<=wv){const cur=b.slice(j,j+wv*2).toString('utf16le').replace(/\0.*$/s,'');if(cur!==v){b.fill(0,j,j+wv*2);b.write(v,j,'utf16le');n++}}}
+      i=b.indexOf(kk,i+1)}}
+  return n}
+function verGet(b,k){const kk=Buffer.from(k+'\0','utf16le');let i=b.indexOf(kk);while(i>=0){if(i>=6&&b.readUInt16LE(i-2)===1){const wv=b.readUInt16LE(i-4);let j=i+kk.length;while(j%4)j++;return b.slice(j,j+wv*2).toString('utf16le').replace(/\0.*$/s,'')}i=b.indexOf(kk,i+1)}return null}
+async function exeRename(){if(process.platform!=='win32'||!app.isPackaged||process.env.YMT_NOEXEPATCH)return;const exe=process.execPath,old=exe+'.old',nw=exe+'.new';
+  try{if(fs.existsSync(old))try{fs.unlinkSync(old)}catch(e){}
+    const b=await fs.promises.readFile(exe);if(verGet(b,'FileDescription')===VER_SET.FileDescription)return;if(!verPatch(b))return;
+    await fs.promises.writeFile(nw,b);fs.renameSync(exe,old);try{fs.renameSync(nw,exe)}catch(e){fs.renameSync(old,exe);throw e}
+    const K='HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache';for(const v of ['.FriendlyAppName','.ApplicationCompany'])require('child_process').execFile('reg',['delete',K,'/v',exe+v,'/f'],()=>{});
+  }catch(e){try{if(fs.existsSync(nw))fs.unlinkSync(nw)}catch(_){}}}
+app.whenReady().then(()=>{setTimeout(()=>{exeRename()},20000);
   startServer();setTimeout(()=>{try{publishNas()}catch(e){}if(!(mob.sync&&mob.sync.on))try{publishGh()}catch(e){}},4000); // 연동 PC는 먼저 받은 뒤 올림(렌더러 ghLater)
   Menu.setApplicationMenu(null);
   win=new BrowserWindow({width:1500,height:940,minWidth:900,minHeight:600,title:'Y-MATH 시간표',backgroundColor:'#17243F',
