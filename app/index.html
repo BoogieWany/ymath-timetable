@@ -1177,6 +1177,16 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 /* 3.85.5 연동 표시: 보강 반영 중 뱅글뱅글 */
 .syncb.busy{display:inline-flex;align-items:center;gap:6px}.sbspin{width:11px;height:11px;border-radius:50%;border:2px solid color-mix(in srgb,currentColor 25%,transparent);border-top-color:currentColor;animation:sbspin .8s linear infinite;flex:none}
 @keyframes sbspin{to{transform:rotate(360deg)}}
+
+/* 3.86.0 결근 신청 */
+.lvw{display:inline-block;font-size:11.5px;font-weight:700;color:#7a4a12;background:#fbefdc;border-radius:999px;padding:1px 8px;vertical-align:1px}
+.lvm{color:var(--fg)}.lvdlg .rqi .rqn{min-height:20px}.lvdlg .rqb{align-items:center}.lvt td{vertical-align:middle}
+.lvpv{position:fixed;inset:0;z-index:1000;background:rgba(14,18,28,.86);backdrop-filter:blur(3px);display:flex;flex-direction:column;opacity:0;transition:opacity .2s ease}.lvpv.on{opacity:1}
+.lvpvh{display:flex;align-items:center;gap:10px;padding:14px 20px;color:#fff}.lvpvh b{font-size:15px}.lvpvh .sp{flex:1}
+.lvpvb{flex:1;overflow:auto;padding:4px 20px 28px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.lvpvb figure{margin:0;max-width:min(980px,100%);display:flex;flex-direction:column;gap:8px}.lvpvb img{max-width:100%;max-height:calc(100vh - 150px);object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.lvpvb figcaption{display:flex;align-items:center;justify-content:space-between;color:#c9d0de;font-size:12.5px}.lvpve{color:#dfe4ee;margin-top:20vh;font-size:15px}
+.lvt .btn.arm{background:var(--err);color:#fff;border-color:var(--err)}
 </style>
 </head>
 <body>
@@ -3537,7 +3547,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.85.8', APPDATE='2026-10-28';
+const APPVER='3.86.0', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -5642,7 +5652,7 @@ const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br)
 async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
   pcHandle((r.list||[]).filter(x=>x.kind==='pc'));
-  const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.tk=all.filter(x=>x.kind==='tk');RQS.list=all.filter(x=>(!x.kind||x.kind==='nd')&&!(RQS.going&&RQS.going.has(x.num)));csApply();await cnApply();cnxApply();adApply();if(typeof tkApply==='function')tkApply();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
+  const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.tk=all.filter(x=>x.kind==='tk');RQS.lv=all.filter(x=>x.kind==='lv');RQS.list=all.filter(x=>(!x.kind||x.kind==='nd')&&!(RQS.going&&RQS.going.has(x.num)));csApply();await cnApply();cnxApply();adApply();if(typeof tkApply==='function')tkApply();if(typeof lvTick==='function')lvTick();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
   if(RQS.n!==n0&&typeof renderIssues==='function'&&$('issues')&&!$('side').hidden){ISS=analyze();renderIssues()}}
 /* 신입 상담 완료(선생님이 강사용에서 누름): 이 PC가 고칠 수 있는 지점이면 원본 학생에 바로 적고 등록 목록에서 정리 (승인 없음) */
 async function csApply(){const L=(RQS.cs||[]).filter(x=>!x.bad);if(!L.length||RQS.csBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale)return;RQS.csBusy=true;
@@ -7687,7 +7697,7 @@ function viewTasks(){const b=B();UI.tk=UI.tk||{kind:'',who:'',open:true,q:'',sum
   const old90=dPlus(todayStr(),-90);const F=tkAll().filter(t=>(!G.kind||t.kind===G.kind)&&(!G.who||tkWho(t.who).split(',').includes(G.who))&&(!G.q||[t.title,t.school,t.subj,t.memo,t.grade].some(x=>String(x||'').includes(G.q.trim()))));
   const srt=(a,z)=>GRADE_ORDER(a.grade)-GRADE_ORDER(z.grade)||sortKo(a.school||'',z.school||'')||tkBorn(a)-tkBorn(z)||sortKo(a.id||'',z.id||'');/* 3.82.2 완료해도 그 자리에(흐리게) — 완료한 지 7일 지나면 맨 아래 '완료된 일'로 */const d7=dPlus(todayStr(),-7);const L=F.filter(t=>!t.done||(t.doneAt||'')>=d7).sort(srt);const Dn=F.filter(t=>t.done&&(t.doneAt||'')<d7&&(t.doneAt||'')>=old90).sort((a,z)=>(z.doneAt||'').localeCompare(a.doneAt||'')||srt(a,z));const nOld=F.filter(t=>t.done&&(t.doneAt||'')<old90).length;
   const nOpen=tkAll().filter(t=>!t.done).length;
-  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${!(typeof pcViewOnly==='function'&&pcViewOnly(B()))?`<button class="btn" data-act="mshOpen" title="행정·지점장이 잠깐 쓰는 표 (이 지점 PC만)">메모 시트${mshList(B()).length?` <span class="hint">${mshList(B()).length}</span>`:''}</button>`:''}${(typeof refDlg==='function'&&!(typeof pcViewOnly==='function'&&pcViewOnly(B())))?`<button class="btn" data-act="refList" title="소개로 들어온 신입 · 소개비 지급 명단 (지점장·행정만)">소개비 ${(n=>n?`<span class="rfcnt">${n}</span>`:'')(refOf(B()).filter(r=>{const x=(B().students||[]).find(y=>y.id===r.sid);return !r.pd&&(!x||(!isPre(x)&&!isOut(x)))}).length)}</button>`:''}${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
+  let h=`<div class="card-h"><h2>업무</h2><span class="hint">인강·자료 제작·블로그 분석글처럼 나눠서 하는 일 · 모든 지점이 같이 봐요${typeof syOn==='function'&&syOn()?SH.tasks.st.err?` · <span class="bad">공유 실패: ${esc(SH.tasks.st.err)}</span>`:' · 공유 중':''} · 안 끝난 일 ${nOpen}개</span><span class="sp"></span>${!(typeof pcViewOnly==='function'&&pcViewOnly(B()))?`<button class="btn" data-act="mshOpen" title="행정·지점장이 잠깐 쓰는 표 (이 지점 PC만)">메모 시트${mshList(B()).length?` <span class="hint">${mshList(B()).length}</span>`:''}</button>`:''}${(typeof refDlg==='function'&&!(typeof pcViewOnly==='function'&&pcViewOnly(B())))?`<button class="btn" data-act="refList" title="소개로 들어온 신입 · 소개비 지급 명단 (지점장·행정만)">소개비 ${(n=>n?`<span class="rfcnt">${n}</span>`:'')(refOf(B()).filter(r=>{const x=(B().students||[]).find(y=>y.id===r.sid);return !r.pd&&(!x||(!isPre(x)&&!isOut(x)))}).length)}</button>`:''}${(typeof lvCan==='function'&&lvCan(B()))?`<button class="btn" data-lvact="open" title="선생님이 폰 [업무] 탭에서 보낸 결근·서류 (지점장·부원장 PC만)">결근 신청${LVS.list.length?` <span class="rfcnt">${LVS.list.length}</span>`:''}</button>`:''}${ed?`<button class="btn" data-act="tkImport" title="구글 시트 '인강분배' 시트(.xlsx)를 넣으면 한 번에 들어와요">시트 불러오기</button><button class="btn pri" data-act="tkAdd">+ 업무 추가</button>`:''}</div>
   <div class="tools grtools"><span class="seg"><button data-tko="kind" data-v="" aria-pressed="${!G.kind}">전체</button>${Object.entries(TK_KIND).map(([k,l])=>`<button data-tko="kind" data-v="${k}" aria-pressed="${G.kind===k}">${l} <small>${tkAll().filter(t=>t.kind===k&&!t.done).length}</small></button>`).join('')}</span>
     <select data-tko="who"><option value="">모든 담당</option>${names.map(n=>`<option value="${esc(n)}" ${G.who===n?'selected':''}>${esc(n)}T</option>`).join('')}</select><input id="tkQ" placeholder="학교·단원·비고 찾기" value="${esc(G.q)}" autocomplete="off" style="width:150px">
     </div>`;
@@ -8024,6 +8034,86 @@ document.addEventListener('mousedown',e=>{const h=e.target.closest&&e.target.clo
   const mv=ev=>{v=Math.max(20,Math.min(400,Math.round(h0+ev.clientY-y0)));tr.style.height=v+'px'};
   const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);const x=mshCur();if(v&&x){x.rh=x.rh||{};const id=MSH.R[ri];const pv=(x.rh[id]||{}).v||null;x.rh[id]={v:Math.abs(v-26)<2?null:v,at:msNow()};MSH.undo.push({id:x.id,m:{rh:[[id,pv]]}});msTouch(x);msUndoBtn();mshPlace()}};
   document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)},true);
+
+/* ================= 3.86.0 결근 신청 · 서류 제출 (선생님 폰 → 지점장·부원장 PC) =================
+   폰 업무 탭 맨 아래 [결근 신청] → 요청(kind 'lv'). 사유·메모·서류 사진은 그 지점 공개키(b.lvk.pub · ECDH P-256)로 암호화돼 와서
+   지점 개인키(b.lvk.prv)가 있는 PC에서만 풀림 · 행정 PC·다른 지점 PC 화면엔 안 보임. 사진은 요청 댓글에 조각으로(GitHub 글 길이 한도).
+   [확인]/[반려] → b.lv 기록(선생님 폰엔 결과만) · 서류 원본은 GitHub 요청(닫힌 글)에 암호문으로 남고, 볼 때마다 받아서 풂 */
+const LVS={list:[],dec:{},going:new Set(),kBusy:false,f:'wait',t:''};
+const lvCan=b=>!!b&&!(typeof isStaff==='function'&&isStaff())&&!(typeof pcViewOnly==='function'&&pcViewOnly(b))&&(typeof canEditB!=='function'||canEditB(b.id));
+const lvBrs=()=>DB.branches.filter(lvCan);
+const lvU8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const lvDays=(a,z)=>Math.round((Date.parse(z||a)-Date.parse(a))/864e5)+1;
+const lvRng=(a,z)=>{const f=d=>`${mdS(d)}(${'일월화수목금토'[new Date(d+'T00:00:00').getDay()]})`;return !z||z===a?f(a):`${f(a)} ~ ${f(z)} <small class="hint">${lvDays(a,z)}일</small>`};
+const lvTn=(b,x)=>{const t=b&&b.teachers.find(i=>i.id===x.t);return t?t.name:(x.tn||'?')};
+/* 지점 키: 지점장·관리자 PC가 처음 한 번 만들어 지점 자료에 넣음 → 폰엔 공개키만 감 */
+async function lvKeyEnsure(){if(LVS.kBusy||UI.edit||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)||UI.stale||!(window.crypto&&crypto.subtle))return;
+  const L=lvBrs().filter(b=>!(b.lvk&&b.lvk.pub&&b.lvk.prv));if(!L.length)return;LVS.kBusy=true;
+  try{for(const b of L){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);const pu=await crypto.subtle.exportKey('jwk',kp.publicKey),pr=await crypto.subtle.exportKey('jwk',kp.privateKey);
+      await quickChange(()=>{const bb=DB.branches.find(i=>i.id===b.id);if(bb&&!(bb.lvk&&bb.lvk.pub))bb.lvk={pub:{kty:'EC',crv:'P-256',x:pu.x,y:pu.y},prv:{kty:'EC',crv:'P-256',x:pr.x,y:pr.y,d:pr.d},at:Date.now()}},`${b.name} 결근 서류용 암호 키를 만들었어요`,b.id)}}
+  catch(e){}finally{LVS.kBusy=false}}
+/* rqTick이 받은 목록에서 결근 신청만 */
+function lvTick(){LVS.list=(RQS.lv||[]).filter(x=>!x.bad&&lvCan(DB.branches.find(b=>b.id===x.br))&&!LVS.going.has(x.num)).sort((a,z)=>a.at-z.at);lvBar();if(document.querySelector('.lvdlg'))lvDraw();lvKeyEnsure()}
+function lvBar(){let el=$('lvBar');const n=LVS.list.length;
+  if(!n){if(el&&!el.hidden){el.hidden=true;if(typeof fitGrid==='function')fitGrid()}return}
+  if(!el){el=document.createElement('div');el.id='lvBar';el.className='draftbar rqbar lvbar';document.querySelector('.top').appendChild(el)}const was=el.hidden!==false||!el.innerHTML;
+  el.hidden=false;el.innerHTML=`<b>결근 신청 ${n}건</b><span class="hint">선생님이 폰으로 보낸 결근·서류예요 · 확인하면 선생님 폰에 '확인됨'으로 보여요</span><button class="btn pri" data-lvact="open">확인하기</button>`;if(was&&typeof fitGrid==='function')fitGrid()}
+/* 암호 풀기: 지점 개인키 + 보낸 폰의 임시 공개키 → AES-GCM */
+async function lvOpen(b,x){if(!b||!b.lvk||!b.lvk.prv)throw new Error('이 PC에 지점 서류 키가 없어요');
+  const prv=await crypto.subtle.importKey('jwk',b.lvk.prv,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);const epk=await crypto.subtle.importKey('jwk',x.epk,{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},prv,{name:'AES-GCM',length:256},false,['decrypt']);let ct=x.ct;
+  if(!ct){const r=await bridge.rqCm(x.iss||x.num);if(!r||!r.ok)throw new Error((r&&r.err)||'서류를 받지 못했어요');const P=[];(r.list||[]).forEach(s=>{try{const j=JSON.parse(s);if(j&&j.lv===1&&Number.isInteger(j.i)&&j.i>=0&&j.i<(x.nc|0)&&P[j.i]==null&&typeof j.c==='string')P[j.i]=j.c}catch(e){}});
+    if(P.filter(v=>v!=null).length<(x.nc|0)){const e=new Error('서류가 아직 다 올라오지 않았어요');e.wait=1;throw e}ct=P.join('')}
+  try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:lvU8(x.iv)},k,lvU8(ct));const o=JSON.parse(new TextDecoder().decode(pt));return {why:String(o.why||'').slice(0,20),memo:String(o.memo||'').slice(0,200),ph:(o.ph||[]).filter(p=>/^data:image\/(jpeg|png|webp);base64,/.test(p)).slice(0,4)}}
+  catch(e){throw new Error('서류를 풀지 못했어요 (키가 바뀌기 전에 보낸 것일 수 있어요)')}}
+async function lvLoad(key,b,x){const c=LVS.dec[key];if(c&&(c.ok||c.busy))return;LVS.dec[key]={busy:1};
+  try{LVS.dec[key]=Object.assign({ok:1},await lvOpen(b,x))}catch(e){LVS.dec[key]={err:e.message,wait:!!e.wait}}if(document.querySelector('.lvdlg'))lvDraw(1);if($('lvPv')&&LVS.pvKey===key)lvPv(key)}
+function lvDlg(){LVS.f=LVS.list.length?'wait':LVS.f||'wait';lvDraw()}
+function lvDraw(onlyBody){const brs=lvBrs();const many=brs.length>1;const bn=b=>many?`<span class="rqbr">${esc(b.name)}</span>`:'';
+  const W=LVS.list.map(x=>({x,b:DB.branches.find(i=>i.id===x.br)})).filter(o=>o.b);
+  const R=brs.flatMap(b=>(b.lv||[]).map(r=>({r,b}))).filter(o=>!LVS.t||o.r.t===LVS.t).sort((a,z)=>(z.r.from||'').localeCompare(a.r.from||'')||(z.r.at||0)-(a.r.at||0));
+  const sec=(key,b,x)=>{const d=LVS.dec[key];if(!d){lvLoad(key,b,x);return '<span class="hint">여는 중…</span>'}if(d.busy)return '<span class="hint">여는 중…</span>';if(d.err)return `<span class="${d.wait?'hint':'rqw'}">${esc(d.err)}</span>${d.wait?` <button class="lnk" data-lvact="re" data-k="${esc(key)}">다시 보기</button>`:''}`;
+    return `${d.why?`<span class="lvw">${esc(d.why)}</span>`:''}${d.memo?` <span class="lvm">${esc(d.memo)}</span>`:''}`};
+  const phB=(key,np)=>np?`<button class="btn sm" data-lvact="pv" data-k="${esc(key)}">서류 ${np}장 보기</button>`:'<span class="hint">서류 없음</span>';
+  const wRow=({x,b})=>{const k='n'+x.num;return `<div class="rqi lvi"><div class="rqm"><div class="rqh"><b>${esc(lvTn(b,x))}T</b>${bn(b)}<span>${lvRng(x.from,x.until)}</span></div><div class="rqn">${sec(k,b,x)}</div><small>${fmtT(x.at)} 신청</small></div>
+    <div class="rqb">${phB(k,x.np|0)}<button class="btn" data-lvact="no" data-n="${x.num}">반려</button><button class="btn pri" data-lvact="ok" data-n="${x.num}">확인</button></div></div>`};
+  const hRow=({r,b})=>{const k='r'+r.id;return `<tr><td class="l"><b>${esc(lvTn(b,r))}T</b>${many?` <small class="hint">${esc(b.name)}</small>`:''}</td><td class="l">${lvRng(r.from,r.until)}</td><td class="l">${r.why?`<span class="lvw">${esc(r.why)}</span>`:''}${r.memo?` <small>${esc(r.memo)}</small>`:''}</td><td>${(r.np|0)&&(r.nc||r.ct)?phB(k,r.np):'<span class="hint">—</span>'}</td>
+    <td>${r.st==='no'?'<span class="rfno">반려</span>':'<span class="rfok">확인</span>'}</td><td><small class="hint">${esc(r.by||'')} ${r.dAt?esc(mdS(r.dAt)):''}</small></td><td class="r"><button class="btn sm" data-lvact="del" data-id="${esc(r.id)}" data-br="${esc(b.id)}" title="이 기록 지우기 (두 번 · 선생님 폰 결과에서도 사라져요)">지우기</button></td></tr>`};
+  const ts=[...new Map(brs.flatMap(b=>(b.lv||[]).map(r=>[r.t,lvTn(b,r)]))).entries()].sort((a,z)=>sortKo(a[1],z[1]));
+  const body=LVS.f==='wait'?(W.length?`<div class="rql">${W.map(wRow).join('')}</div>`:'<div class="empty">기다리는 결근 신청이 없어요</div>')
+    :R.length?`<table class="tbl rdt lvt"><thead><tr><th class="l">강사</th><th class="l">날짜</th><th class="l">사유·메모</th><th>서류</th><th>결과</th><th>처리</th><th></th></tr></thead><tbody>${R.slice(0,200).map(hRow).join('')}</tbody></table>`:'<div class="hint rfemp">아직 결근 기록이 없어요</div>';
+  if(onlyBody){const el=document.querySelector('.lvdlg .rdsc');if(el){el.innerHTML=body;return}}
+  $('modal').hidden=false;$('modal').innerHTML=`<div class="dlg refdlg lvdlg" role="dialog" aria-modal="true" aria-labelledby="lvT" style="width:min(900px,100%)"><h2 id="lvT">결근 신청</h2>
+  <div class="hint" style="margin:-4px 0 12px">선생님이 폰 [업무] 탭에서 보낸 결근·서류예요. 사유와 서류는 암호화돼 와서 지점장·부원장 PC에서만 열려요.</div>
+  <div class="rdtop"><span class="seg">${[['wait',`기다리는 신청 ${W.length}`],['rec',`기록 ${brs.reduce((n,b)=>n+(b.lv||[]).length,0)}`]].map(([k,t])=>`<button data-lvf="${k}" aria-pressed="${LVS.f===k}">${t}</button>`).join('')}</span>${LVS.f==='rec'&&ts.length>1?`<select data-lvsel="t"><option value="">모든 강사</option>${ts.map(([id,n])=>`<option value="${esc(id)}" ${LVS.t===id?'selected':''}>${esc(n)}T</option>`).join('')}</select>`:''}</div>
+  <div class="rdsc">${body}</div><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-lvact="close">닫기</button></div></div>`}
+/* 서류 보기: 어두운 창에 크게 · 한 장씩 저장 */
+function lvPv(key){LVS.pvKey=key;let el=$('lvPv');if(!el){el=document.createElement('div');el.id='lvPv';el.className='lvpv';document.body.appendChild(el)}const d=LVS.dec[key];
+  const lab=(()=>{const n=key[0]==='n'?LVS.list.find(x=>'n'+x.num===key):null;let b,o;if(n){b=DB.branches.find(i=>i.id===n.br);o=n}else{for(const bb of lvBrs()){const r=(bb.lv||[]).find(r=>'r'+r.id===key);if(r){b=bb;o=r;break}}}return o?{tn:lvTn(b,o),from:o.from,until:o.until,b,o}:null})();
+  if(!d&&lab){lvLoad(key,lab.b,key[0]==='n'?lab.o:Object.assign({},lab.o,{num:lab.o.iss}))}
+  const ph=d&&d.ok?d.ph:[];const nm=lab?`${lab.tn}T · ${lab.from}${lab.until&&lab.until!==lab.from?'~'+lab.until:''}`:'';
+  el.innerHTML=`<div class="lvpvh"><b>${esc(nm)}</b>${d&&d.why?`<span class="lvw">${esc(d.why)}</span>`:''}<span class="sp"></span><button class="btn" data-lvact="pvx">닫기</button></div><div class="lvpvb">${!d||d.busy?'<div class="lvpve">서류를 받아서 푸는 중…</div>':d.err?`<div class="lvpve">${esc(d.err)}</div>`:ph.length?ph.map((p,i)=>`<figure><img src="${p}" alt="서류 ${i+1}"><figcaption><span>${i+1} / ${ph.length}</span><a class="btn sm" href="${p}" download="결근서류_${esc((lab&&lab.tn)||'')}_${esc((lab&&lab.from)||'')}_${i+1}.jpg">저장</a></figcaption></figure>`).join(''):'<div class="lvpve">서류 사진이 없어요</div>'}</div>`;
+  el.hidden=false;requestAnimationFrame(()=>el.classList.add('on'))}
+function lvPvClose(){const el=$('lvPv');if(!el)return;el.classList.remove('on');LVS.pvKey='';setTimeout(()=>{el.hidden=true;el.innerHTML=''},200)}
+/* 확인·반려: 누르면 바로 목록에서 빠지고, 기록 쓰기·요청 닫기는 뒤에서 */
+async function lvDecide(num,ok){const x=LVS.list.find(i=>i.num===+num);if(!x)return;const b=DB.branches.find(i=>i.id===x.br);if(!b)return;
+  if(UI.edit){toast('수정 모드를 끝낸 뒤 확인해 주세요',3500);return}if(UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)){toast('지금 보고 있는 미리보기를 먼저 닫아 주세요');return}
+  const d=LVS.dec['n'+x.num]||{};LVS.list=LVS.list.filter(i=>i!==x);LVS.going.add(x.num);lvBar();if(document.querySelector('.lvdlg'))lvDraw();
+  const rec={id:uid('lv'),t:x.t,tn:x.tn||'',from:x.from,until:x.until||x.from,why:d.why||'',memo:d.memo||'',np:x.np|0,iss:x.num,epk:x.epk,iv:x.iv,...(x.ct?((x.np|0)?{ct:x.ct}:{}):{nc:x.nc|0}),at:x.at,st:ok?'ok':'no',by:(SYNC.info&&SYNC.info.name)||'',dAt:todayStr()};
+  try{const done=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===b.id);bb.lv=(bb.lv||[]).filter(r=>r.iss!==x.num).concat([rec])},`${lvTn(b,x)}T 결근 신청(${mdS(x.from)}) ${ok?'확인':'반려'}`,b.id);
+    if(!done)throw new Error('기록하지 못했어요');const c=await bridge.rqClose(x.num,ok);if(!c||!c.ok)toast('기록은 했는데 요청 정리를 못 했어요 · '+((c&&c.err)||''),4000);
+    LVS.dec['r'+rec.id]=LVS.dec['n'+x.num];toast(`${lvTn(b,x)}T 결근 ${ok?'확인':'반려'} · 선생님 폰에 1~2분 뒤 보여요`,2400)}
+  catch(e){if(!LVS.list.some(i=>i.num===x.num))LVS.list.push(x);LVS.list.sort((a,z)=>a.at-z.at);toast((e.message||'처리하지 못했어요')+' · 다시 목록에 넣었어요',4000)}
+  finally{LVS.going.delete(x.num);lvBar();if(document.querySelector('.lvdlg'))lvDraw()}}
+async function lvDel(br,id){const b=DB.branches.find(i=>i.id===br);const r=b&&(b.lv||[]).find(i=>i.id===id);if(!r)return;
+  await quickChange(()=>{const bb=DB.branches.find(i=>i.id===br);bb.lv=(bb.lv||[]).filter(i=>i.id!==id)},`${lvTn(b,r)}T 결근 기록(${mdS(r.from)})을 지웠어요`,br);if(document.querySelector('.lvdlg'))lvDraw()}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-lvact],[data-lvf]');if(!t)return;const a=t.dataset.lvact;
+  if(t.dataset.lvf){LVS.f=t.dataset.lvf;lvDraw();return}
+  if(a==='open'){lvDlg();return}if(a==='close'){$('modal').hidden=true;$('modal').innerHTML='';return}
+  if(a==='ok'||a==='no'){lvDecide(t.dataset.n,a==='ok');return}if(a==='pv'){lvPv(t.dataset.k);return}if(a==='pvx'){lvPvClose();return}
+  if(a==='re'){delete LVS.dec[t.dataset.k];lvDraw(1);return}if(a==='del'){if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='지울까요?';clearTimeout(t._t);t._t=setTimeout(()=>{t.classList.remove('arm');t.textContent='지우기'},2500);return}lvDel(t.dataset.br,t.dataset.id);return}});
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.lvsel==='t'&&document.querySelector('.lvdlg')){LVS.t=t.value;lvDraw(1)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('lvPv')&&!$('lvPv').hidden){e.stopPropagation();lvPvClose()}},true);
 </script>
 <script>/* ================= 도움말 (사용 설명서 · 관리자 도움말) =================
    그림: 데모 자료로 찍은 화면(test/helpshots.js → app/helpimg.js, 처음 도움말 열 때만 불러옴) · F(이름,설명)
@@ -8130,6 +8220,15 @@ const HELP=[
   <li><b>학생 정보 창의 소개 칸</b>: 최근 넉 달 안에 들어온 학생(또는 입학 예정·소개 기록이 있는 학생)은 학생 정보 창에 <b>소개</b> 칸이 있어요. 이름을 넣고 [넣기](또는 Enter) — 바꾸기·빼기도 여기서(지급 완료된 건 명단 창에서 [되돌리기] 후). 그 학생이 소개해 준 신입도 같이 보여요. 명단에서 열었으면 위의 <b>[← 소개비 명단]</b>으로 돌아가요.</li>
   ${HF('refnew','월별 신규생 — 줄을 누르면 학생 정보 창')}${HF('refsti','학생 정보 창의 소개 칸')}
   <li><b>지점장·행정 선생님(과 관리자) PC에서만</b> 보여요. 선생님 폰·지점장 폰 어디에도 안 나가요.</li></ul>`},
+ {id:'leave',t:'결근 신청 · 서류 (지점장·부원장)',b:`
+  ${HF('lvdlg','결근 신청 창 — 사유·메모·서류 · [확인]/[반려]')}
+  <ul><li>선생님이 폰 <b>[업무]</b> 탭 맨 아래 <b>[결근 신청 · 서류 제출]</b>로 날짜·사유(병가·경조사·개인 사정·기타)·메모·<b>서류 사진</b>(진단서 등, 최대 4장)을 보내요.</li>
+  <li>들어오면 위쪽에 <b>결근 신청 n건 [확인하기]</b> 띠가 떠요. [업무] 화면 위 <b>[결근 신청]</b> 버튼으로도 열려요.</li>
+  <li>창에서 사유·메모를 보고 <b>[서류 n장 보기]</b>로 사진을 크게 봐요(한 장씩 [저장]). <b>[확인]</b>이나 <b>[반려]</b>를 누르면 기록에 남고, 선생님 폰에 1~2분 뒤 <b>확인됨 / 반려</b>로 보여요. 시간표(휴강·대강)는 바뀌지 않아요 — 필요하면 따로 고쳐 주세요.</li>
+  <li><b>[기록]</b> 탭: 지금까지 처리한 결근(강사별로 거르기 · 서류 다시 보기 · 지우기는 두 번).</li>
+  <li><b>누가 보나</b>: 사유·메모·서류는 폰에서 <b>지점 암호 키로 잠가서</b> 보내요. 그 지점 지점장 PC와 관리자 PC에서만 열리고, 행정 PC·다른 선생님 폰엔 안 보여요. 선생님 폰엔 자기 신청의 날짜·사유·결과만 가요. 지점 암호 키는 지점장·관리자 PC가 처음 켜질 때 저절로 만들어져요(그 전엔 폰 버튼이 꺼져 있어요).</li>
+  <li>서류 사진은 폰에서 글씨가 읽힐 만큼 줄여서 보내요(긴 쪽 1600px).</li></ul>
+  <div class="hrow">${HF('m-lv','폰 [업무] 탭 — 내 업무 · 결근 신청 결과')}${HF('m-lvnew','폰 결근 신청 창 — 날짜 · 사유 · 메모 · 서류 사진')}</div>`},
  {id:'cns',t:'정기 상담',b:`
   ${HF('cns','정기 상담 — 이번 기간 남은 학생, [주기]·[학년 단위]·지정 대기')}
   <ul><li>지점장이 [주기]를 정해요 — 기본 주기(매달·두 달마다) + 시험 기간마다 한 번 더. <b>시작</b> 달을 정하면 그 달부터 상담 기간이 열려요.</li>
@@ -8246,7 +8345,8 @@ const HELP=[
   ${HF('m-xcal','폰 시험 달력 — 날짜를 누르면 그날 시험 띠, 이름 켬')}
   ${HF('m-sch','폰 학교 탭 — 학교 칩 · 시험 일정 · 범위 · 부교재 · 선택과목')}
   <li>아래 빈 곳: <b>다가오는 시험</b>, <b>새로 오는 학생</b>(선생님은 담당 반만), <b>학원 공지</b>, <b>내 메모</b>(그 폰에만). 화면 아래엔 하루 한 줄 응원(내 수업이 없는 날엔 시험 기간이어도 쉬는 날 문구만). 강사 관리에서 휴무 요일로 정한 날엔 오늘 탭에 <b>오늘은 휴일이에요</b>가 떠요.</li>
-  <li>[오늘] 탭 띠: <b>내 업무</b>([완료] → PC 반영), <b>정기 상담</b>(남은 학생), 지점장·행정·관리자는 <b>전체 업무</b>.</li>
+  <li>[오늘] 탭 띠: <b>내 업무</b>(누르면 [업무] 탭으로), <b>정기 상담</b>(남은 학생), 지점장·행정·관리자는 <b>전체 업무</b>.</li>
+  <li><b>[업무]</b> 탭: 내 업무 목록(바로 [완료] → PC 반영), 지점장·행정·관리자는 [전체 업무], 맨 아래 <b>[결근 신청 · 서류 제출]</b> — 자세한 건 '결근 신청 · 서류' 도움말.</li>
   <div class="hrow">${HF('m-tka','전체 업무 — 진행 중·끝난 일, 사람별 거르기')}${HF('m-new','신입·입학 예정 — 상담 전이면 빨간 테두리와 [상담 완료]')}</div>
   <li><b>누가 무엇을 보나</b>: 선생님 — 이름 있는 지점, 담당 학생 연락처 · 지점장 — 자기 지점 전부(신입·상담 지점 전체 — 담당이 아닌 신입·학생도 폰에서 [상담 완료], 연락처 전체, [관리] 탭), 다른 지점은 전체 시간표만 · 행정 — 소속 지점 전부, 다른 지점은 전체 시간표만.</li>
   <li><b>지점장 폰 [관리] 탭</b>(자기 지점만): 학생(추가·상태·연락처·반 넣기/빼기), 입학 문의(카드를 누르면 전화·정보·메모), 정기 상담(주기·지정·보류), 공지. 보낸 건 켜져 있는 PC가 받아 1~2분 안에 반영해요.</li>
