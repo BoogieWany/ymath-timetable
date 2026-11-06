@@ -47,6 +47,7 @@ contextBridge.exposeInMainWorld('api',{
   rqList:()=>ipcRenderer.invoke('rqList'),
   rqClose:(n,ok)=>ipcRenderer.invoke('rqClose',n,ok),
   rqComment:(n,o)=>ipcRenderer.invoke('rqComment',n,o),
+  rqCm:n=>ipcRenderer.invoke('rqCm',n),
   syncLogout:o=>ipcRenderer.invoke('syncLogout',o),
   sharedPull:(n,k)=>ipcRenderer.invoke('sharedPull',n,k),
   sharedPush:(n,d,sha)=>ipcRenderer.invoke('sharedPush',n,d,sha),
