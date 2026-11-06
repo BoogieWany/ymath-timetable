@@ -522,8 +522,20 @@ async function exeRename(){if(process.platform!=='win32'||!app.isPackaged||proce
     const b=await fs.promises.readFile(exe);if(verGet(b,'FileDescription')===VER_SET.FileDescription)return;if(!verPatch(b))return;
     await fs.promises.writeFile(nw,b);fs.renameSync(exe,old);try{fs.renameSync(nw,exe)}catch(e){fs.renameSync(old,exe);throw e}
     const K='HKCU\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache';for(const v of ['.FriendlyAppName','.ApplicationCompany'])require('child_process').execFile('reg',['delete',K,'/v',exe+v,'/f'],()=>{});
+    iconRefresh();
   }catch(e){try{if(fs.existsSync(nw))fs.unlinkSync(nw)}catch(_){}}}
-app.whenReady().then(()=>{setTimeout(()=>{exeRename()},20000);
+// exe를 바꿔 끼우면 탐색기가 옛 아이콘 캐시를 못 찾아 빈 아이콘이 뜸 → 아이콘 캐시 새로고침 (PC당 1회)
+const ICONFIX_V='1';
+function iconRefresh(){if(process.platform!=='win32')return;const cp=require('child_process'),sr=process.env.SystemRoot||'C:\\Windows';
+  try{cp.execFile(path.join(sr,'System32','ie4uinit.exe'),['-show'],{windowsHide:true},()=>{})}catch(e){}
+  try{cp.execFile(path.join(sr,'System32','ie4uinit.exe'),['-ClearIconCache'],{windowsHide:true},()=>{})}catch(e){}
+  const ps="Add-Type -Namespace W -Name S -MemberDefinition '[DllImport(\"shell32.dll\")] public static extern void SHChangeNotify(int e,int f,System.IntPtr a,System.IntPtr b);';[W.S]::SHChangeNotify(0x08000000,0,[System.IntPtr]::Zero,[System.IntPtr]::Zero)";
+  try{cp.execFile('powershell.exe',['-NoProfile','-NonInteractive','-WindowStyle','Hidden','-Command',ps],{windowsHide:true},()=>{})}catch(e){}
+  try{fs.mkdirSync(DATA,{recursive:true});fs.writeFileSync(path.join(DATA,'iconfix.flag'),ICONFIX_V)}catch(e){}}
+async function iconFixOnce(){if(process.platform!=='win32'||!app.isPackaged||process.env.YMT_NOEXEPATCH)return;
+  try{const f=path.join(DATA,'iconfix.flag');if(fs.existsSync(f)&&fs.readFileSync(f,'utf8').trim()===ICONFIX_V)return;
+    const b=await fs.promises.readFile(process.execPath);if(verGet(b,'FileDescription')!==VER_SET.FileDescription)return;iconRefresh()}catch(e){}}
+app.whenReady().then(()=>{setTimeout(()=>{exeRename().then(iconFixOnce)},20000);
   startServer();setTimeout(()=>{try{publishNas()}catch(e){}if(!(mob.sync&&mob.sync.on))try{publishGh()}catch(e){}},4000); // 연동 PC는 먼저 받은 뒤 올림(렌더러 ghLater)
   Menu.setApplicationMenu(null);
   win=new BrowserWindow({width:1500,height:940,minWidth:900,minHeight:600,title:'Y-MATH 시간표',backgroundColor:'#17243F',
