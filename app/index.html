@@ -1187,6 +1187,9 @@ html:hover::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--mut
 .lvpvb figure{margin:0;max-width:min(980px,100%);display:flex;flex-direction:column;gap:8px}.lvpvb img{max-width:100%;max-height:calc(100vh - 150px);object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .lvpvb figcaption{display:flex;align-items:center;justify-content:space-between;color:#c9d0de;font-size:12.5px}.lvpve{color:#dfe4ee;margin-top:20vh;font-size:15px}
 .lvt .btn.arm{background:var(--err);color:#fff;border-color:var(--err)}
+
+/* 3.87.0 나스 */
+.nsrow .nsp{max-width:440px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--fg)}.nsrow .nsok{font-size:11.5px;font-weight:700;color:#2e6a3a;background:#e2f1e4;border-radius:999px;padding:1px 8px}
 </style>
 </head>
 <body>
@@ -3547,7 +3550,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.86.1', APPDATE='2026-10-28';
+const APPVER='3.87.1', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4680,6 +4683,8 @@ document.addEventListener('click',async e=>{
     case 'updNow':updReload();break;
     case 'syJoinDlg':syJoinDlg();break;
     case 'syJoin':syJoin();break;
+    case 'nsPick':{const fp=await bridge.nsPick();if(!fp)break;const r=await bridge.nsSet({path:fp});if(!r.ok){toast(r.err||'바꾸지 못했어요');break}toast(r.info&&r.info.ok?'나스 폴더로 동기화해요 · 지점 PC도 몇 분 안에 따라와요':'폴더를 저장했는데 지금 열리지 않아요 · 경로와 쓰기 권한을 확인해 주세요',3500);syncRender();break}
+    case 'nsOff':{if(!armed(el,'nsoff'))return;await bridge.nsSet({path:'',off:true});toast('나스 동기화를 껐어요 · GitHub로만 주고받아요');syncRender();break}
     case 'syName':{SYNC.info=await bridge.syncName($('syName').value.trim());toast('이름을 저장했어요');break}
     case 'syPull':{toast('받는 중…');const ok=await syncPull({full:true});toast(ok?'최신으로 받았어요':'받지 못했어요 · '+SYNC.err);syncRender();break}
     case 'updChk':updChk();break; /* 3.78.1: 업데이트 지금 확인(올리기·받기) */
@@ -5459,8 +5464,9 @@ const syPend=()=>DB.syncPending||[];
 function syMerge(target,r,known){const present=new Set(r.present.map(x=>x.id));const names=[];
   r.changed.forEach(c=>{if(c.err||!c.data)return;if(UI.edit&&SYNC.mine.has(c.id))return;if(syPend().includes(c.id))return;const i=target.branches.findIndex(b=>b.id===c.id);
     migB(c.data);if(i>=0){if(JSON.stringify(target.branches[i])!==JSON.stringify(c.data)){target.branches[i]=c.data;names.push(c.data)}}else{target.branches.push(c.data);names.push(c.data)}});
-  const before=target.branches.length;target.branches=target.branches.filter(b=>!(known[b.id]&&!present.has(b.id)&&!(UI.edit&&SYNC.mine.has(b.id))));
-  if(!target.branches.length&&before)return names;
+  const before=target.branches.length;const keep=target.branches.filter(b=>!(known[b.id]&&!present.has(b.id)&&!(UI.edit&&SYNC.mine.has(b.id))));
+  if(!keep.length&&before)return names; /* 3.87.1 받은 쪽이 텅 비었으면(새 저장소·빈 나스 등) 지점을 다 지우지 않음 */
+  target.branches=keep;
   if(!target.branches.some(b=>b.id===target.currentBranch)&&target.branches[0])target.currentBranch=target.branches[0].id;
   return names}
 async function syncPull(opt={}){if(!syOn()||SYNC.busy||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev))return false;SYNC.busy=true;let r;
@@ -5557,7 +5563,9 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
   let h=`<h3>지점 연동 <span class="hint">${owner?'프로그램 관리자':'지점 관리자 · '+esc(syBName(i.branch))}</span></h3>
   <div class="row"><label for="syName">내 이름</label><input id="syName" value="${esc(i.name)}" style="width:120px"><button class="btn" data-act="syName">저장</button><span class="hint">잠금에 "○○ 수정 중"으로 보여요</span><span class="sp"></span>
     <span class="hint">${i.last?'마지막 동기화 '+fmtT(i.last):''}</span><button class="btn" data-act="syPull">지금 받기</button></div>
-  ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}`;
+  ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}
+  ${(()=>{const n=i.nas;const can=i.role==='owner'&&!admLocked();if(!n&&!can)return '';return `<div class="row nsrow"><label>나스 폴더</label>${n&&!n.off?`<span class="nsp" title="${esc(n.unc||n.path)}">${esc(n.path)}</span>${n.ok?'<span class="nsok">빠른 동기화 중</span>':`<span class="hint">지금 안 열려요 · GitHub로 받고 있어요</span>`}`:'<span class="hint">안 씀 · GitHub로만 동기화</span>'}<span class="sp"></span>${can?`<button class="btn" data-act="nsPick">${n&&!n.off?'바꾸기':'폴더 고르기'}</button>${n&&!n.off?'<button class="btn" data-act="nsOff">끄기</button>':''}`:''}</div>
+  <div class="hint" style="margin:-4px 0 8px">학원 나스에 같은 암호 파일을 두고 PC끼리 몇 초 안에 주고받아요. GitHub엔 뒤에서 똑같이 올라가요(폰 보기·백업·나스가 안 될 때).</div>`})()}`;
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
     <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
@@ -5600,6 +5608,13 @@ function syncStartTimer(){clearInterval(SYNC.timer);if(syOn())SYNC.timer=setInte
 async function syncInit(){if(!bridge||!bridge.syncInfo){SYNC.ready=true;render();return}try{SYNC.info=await bridge.syncInfo()}catch(e){SYNC.ready=true;render();return}SYNC.ready=true;if(!syOn()){render();return}render();if(admLocked()||isStaff()||SYNC.info.role==='branch'){const mb=myBr();if(mb&&DB.branches.some(b=>b.id===mb)&&DB.currentBranch!==mb&&!UI.edit){DB.currentBranch=mb;render()}} /* 켜면 내 지점부터 (지점장·행정·잠근 관리자 PC) */
   await syncPull({silent:true});try{if(bridge.ghLater)bridge.ghLater()}catch(e){} // 받은 뒤에 올림 — 옛 시간표가 먼저 올라가지 않게
   syncStartTimer();window.addEventListener('focus',()=>{syncPull().then(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}})});renderSyncState();setTimeout(updTick,3000);setTimeout(()=>{try{if(typeof ckAlign==='function')ckAlign()}catch(e){}},6000) /* 3.78.4 지점장이 바꾼 자기 코드 맞추기 */}
+/* 3.87.0 나스 동기화: 4초마다 나스 파일 판 번호만 훑어서(가벼움) 바뀐 게 있으면 그때 받기 · 나스가 안 열리면 아무것도 안 함(2분 GitHub 받기 그대로) */
+setInterval(async()=>{if(!bridge||!bridge.syncPeek||typeof syOn!=='function'||!syOn()||SYNC.pk||SYNC.busy)return;SYNC.pk=1;
+  try{const p=await bridge.syncPeek();SYNC.nas=!!p;if(!p)return;const bs=JSON.stringify(p.b)+'|'+p.l;const first=SYNC.pkB===undefined;
+    const need=first?(Object.entries(p.b).some(([id,sh])=>(DB.syncKnown||{})[id]!==sh)||p.l!==Object.entries(SYNC.locks||{}).map(([id,l])=>id+':'+l.sha).join(',')):bs!==SYNC.pkB;
+    if(need&&(!document.hidden||(typeof realOwner==='function'&&realOwner()))){const ok=await syncPull({silent:document.hidden});if(ok===false&&SYNC.busy)return}SYNC.pkB=bs;
+    if(typeof SH!=='undefined')for(const [n,sh] of Object.entries(p.s||{})){const H=SH[n];if(H&&DB[H.sha]!==sh&&!H.st.busy)shPull(n,{force:true})}}
+  catch(e){}finally{SYNC.pk=0}},4000);
 setTimeout(()=>keyExpCheck(),5000);setInterval(()=>keyExpCheck(),6*3600*1000);
 
 /* ---- 자동 업데이트 ----
@@ -5649,7 +5664,7 @@ const RQS={list:[],info:null,busy:false,last:0};
 const rqKind=x=>x.k||'보강';
 const rqClsOf=(b,id)=>{if(!b||!id)return null;const v=b.versions.find(i=>i.id===b.current)||b.versions[0];return v&&(v.classes||[]).find(c=>c.id===id)||null};
 const rqMine=x=>x.bad?isOwner():DB.branches.some(b=>b.id===x.br)&&canEditB(x.br);
-async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<30000)return;RQS.last=Date.now();
+async function rqTick(force){if(!bridge||!bridge.rqList)return;if(!force&&Date.now()-RQS.last<14000)return;RQS.last=Date.now();
   let r;try{r=await bridge.rqList()}catch(e){return}if(!r||!r.ok)return;
   pcHandle((r.list||[]).filter(x=>x.kind==='pc'));
   const n0=RQS.n|0;const all=(r.list||[]).filter(x=>x.kind!=='pc').filter(rqMine).sort((a,b)=>a.at-b.at);RQS.cs=all.filter(x=>x.kind==='cs');RQS.cn=all.filter(x=>x.kind==='cn');RQS.cnx=all.filter(x=>x.kind==='cnx'||x.kind==='csx');RQS.ad=all.filter(x=>x.kind==='ad');RQS.tk=all.filter(x=>x.kind==='tk');RQS.lv=all.filter(x=>x.kind==='lv');RQS.list=all.filter(x=>(!x.kind||x.kind==='nd')&&!(RQS.going&&RQS.going.has(x.num)));csApply();await cnApply();cnxApply();adApply();if(typeof tkApply==='function')tkApply();if(typeof lvTick==='function')lvTick();RQS.n=RQS.list.filter(x=>!x.bad).length;rqBar();if($('rqT')&&!$('modal').hidden&&!RQS.busy)rqDlg();
@@ -5762,7 +5777,7 @@ async function rqSave(on){const tok=(($('rqTok')&&$('rqTok').value)||'').trim();
   if(on&&!tok&&!i.hasTok){toast('보강 등록 키를 넣어 주세요 · 아래 [보강 등록 키 만들기]를 보세요');return}
   toast(on?'보강 등록 키를 확인하는 중…':'끄는 중…');const r=await bridge.rqSet({on,...(tok?{token:tok}:{})});RQS.info=r;await rqRender();if(typeof accSums==='function')accSums();
   toast(r.err?'켜지 못했어요 · 아래 내용을 확인해 주세요':r.on?'선생님 보강 등록을 받아요 · 1~2분 뒤 선생님 화면에 반영돼요':'선생님 보강 등록 받기를 껐어요',4000);rqTick(true)}
-setTimeout(()=>rqTick(true),6000);setInterval(()=>rqTick(),45000); /* 창을 내려 둬도(최소화) 폰 요청·PC 확인을 받게 */window.addEventListener('focus',()=>rqTick());
+setTimeout(()=>rqTick(true),6000);setInterval(()=>{if(!document.hidden||Date.now()-RQS.last>=44000)rqTick()},15000); /* 3.87.1 창이 떠 있으면 15초, 내려 두면 45초마다 */ /* 창을 내려 둬도(최소화) 폰 요청·PC 확인을 받게 */window.addEventListener('focus',()=>rqTick());
 
 /* ---- 관리자 잠금 화면 ---- */
 function admRender(){const el=$('syncBadge');if(!el||el.hidden)return;if(ADM.open&&SYNC.info.pw&&el.textContent==='연동됨'){el.className='syncb adm';el.textContent='관리자 모드';el.title='설정 맨 위 [관리자 모드 잠그기]로 다시 '+syBName(myBr())+' 모드로'}}
@@ -8360,7 +8375,9 @@ const HELP=[
  {id:'sync',t:'지점 연동 (여러 PC)',b:`
   <ul><li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결해요. 자기 지점은 고치고, 다른 지점은 시간표만 봐요.</li>
   <li><b>먼저 수정 모드를 켠 PC만</b> 그 지점을 고쳐요(위쪽 "🔒 ○○ 수정 중"). [적용]하면 다른 PC로 올라가고 잠금이 풀려요.</li>
-  <li>다른 PC는 2분마다, 창으로 돌아올 때, 수정 모드를 켤 때 새로 받아요. 학생·성적·학교 정보·업무처럼 바로 저장되는 것은 1~2분 안에 다른 PC에 보여요.</li>
+  <li><b>나스 빠른 동기화</b>: 학원 나스(<code>서성완T › 1. 프로그램 › Y-MATH시간표</code>)에 암호화한 시간표를 두고 PC끼리 주고받아요. 저장은 바로, 다른 PC엔 <b>몇 초 안에</b> 보여요(4초마다 확인). GitHub에도 뒤에서 똑같이 올라가서 폰 보기·백업은 그대로예요.</li>
+  <li>나스가 안 열리는 곳(집 노트북 등)이나 나스가 꺼졌을 땐 저절로 GitHub로 주고받아요(2분마다). 나스가 다시 열리면 양쪽을 알아서 맞춰요 — 양쪽에서 동시에 고쳤으면 나스 것을 남기고 다른 쪽은 백업에 둬요.</li>
+  <li>나스 폴더는 관리자 PC [설정 → 지점 연동 → 나스 폴더]에서 바꾸거나 끌 수 있고, 지점 PC는 몇 분 안에 따라와요. 프로그램 업데이트도 나스에서 먼저 받아요(서명 확인은 똑같이).</li>
   <li>겹쳐서 고친 경우 [적용] 때 [상대 것 받기 / 내 수정으로 덮어쓰기]를 물어봐요. 버리는 쪽은 백업에 남아요.</li>
   <li>인터넷이 끊겨도 고치고 적용할 수 있어요. 연결되면 자동으로 올라가요("⏳ 올리기 대기").</li>
   <li><b>이 PC에서 로그아웃</b>: [설정 → 지점 연동]의 [이 PC에서 로그아웃](행정 PC는 위쪽 '행정 선생님 PC' 띠). 두 번 누르면 이 PC의 열쇠·에듀OK 계정을 지워요.</li></ul>`},
