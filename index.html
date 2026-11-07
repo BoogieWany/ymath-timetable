@@ -587,6 +587,16 @@ table.g td{position:relative}
 .tkban b{color:#1f2f5c}.tkl{display:flex;flex-direction:column;gap:8px}.tki{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}.tkh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.tkh b{font-size:calc(14px*var(--mz,1))}.tkk{font-size:11px;font-weight:700;color:#3d5a99;background:#eaf0fb;border-radius:999px;padding:1px 7px}.tkh em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:auto}.tkh em.soon{color:#a86a00}.tkh em.late{color:#c7372f;font-weight:700}.tks{font-size:12.5px;color:var(--muted)}.tkdone{align-self:flex-end;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 14px;font:inherit;font-size:13px;cursor:pointer;color:var(--fg)}
 .tkseg{display:flex;margin:2px 0 10px}.tkseg button{flex:1}
 .tkws{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px;padding-bottom:2px}.tkws::-webkit-scrollbar{display:none}.tkws button{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s}.tkws button small{color:var(--muted);margin-left:2px}.tkws button[aria-pressed="true"]{border-color:#1f2f5c;background:color-mix(in srgb,#1f2f5c 7%,var(--panel));font-weight:600}
+.tabs.many{overflow-x:auto;scrollbar-width:none;gap:0;scroll-behavior:smooth;}.tabs.many.ovf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}.tabs.many::-webkit-scrollbar{display:none}body .tabs.many button{flex:1 0 auto;padding-left:8px;padding-right:8px;white-space:nowrap}body.land .tabs.many button{padding-left:8px;padding-right:8px}
+.lvl{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}.lvi{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--panel);border-radius:12px;padding:10px 12px}.lvh{flex:1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.lvh b{font-size:calc(14px*var(--mz,1))}.lvh b small{font-weight:600;color:var(--muted);margin-left:2px}.lvw{font-size:11.5px;font-weight:700;color:#7a4a12;background:#fbefdc;border-radius:999px;padding:1px 8px}.lvp{font-size:11.5px;color:var(--muted)}
+.lvs{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px}.lvs.wait{color:#7d6a2a;background:#f7f0d6}.lvs.ok{color:#2e6a3a;background:#e2f1e4}.lvs.no{color:#9a3434;background:#f7e3e3}
+.lvbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1px solid var(--line);background:var(--panel);color:var(--acc);border-radius:14px;padding:14px;font:inherit;font-weight:700;font-size:calc(15px*var(--mz,1));min-height:52px;cursor:pointer;transition:background-color .2s,transform .1s}.lvbtn:active{transform:scale(.99);background:color-mix(in srgb,var(--acc) 6%,var(--panel))}.lvbtn[disabled]{opacity:.45}
+.lvbtn svg,.lvadd svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}.lvnote{margin:8px 4px 0;color:var(--muted);font-size:12.5px;text-align:center}
+.lvf{display:flex;flex-direction:column;gap:6px}.lvlab{font-weight:700;font-size:13.5px;margin-top:8px}.lvlab small{font-weight:500;color:var(--muted);margin-left:4px}.lvd{display:flex;align-items:center;gap:8px}.lvd input{flex:1;min-width:0}.lvd span{color:var(--muted)}
+.lvwhy{display:flex;width:100%}.lvwhy button{flex:1;min-height:40px}.lvph{display:flex;flex-wrap:wrap;gap:8px}.lvth{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}.lvth img{width:100%;height:100%;object-fit:cover;display:block}
+.lvth button{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(20,25,40,.62);color:#fff;font-size:15px;line-height:24px;padding:0}
+.lvadd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:76px;height:76px;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted);font-size:11px;text-align:center;cursor:pointer;line-height:1.25}
 .tki.dn{opacity:.6}.tki.dn .tkh b{text-decoration:line-through;text-decoration-color:var(--muted)}.tkw{color:var(--fg);font-weight:600}
 .ann.exa{padding-bottom:9px}.exrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.exrow::-webkit-scrollbar{display:none}
 .exi{flex:none;display:flex;flex-direction:column;gap:1px;border:1px solid var(--line2);border-radius:11px;padding:6px 10px;min-width:118px;position:relative;background:var(--bg,#f6f7fa)}
@@ -768,7 +778,7 @@ async function dec2(j,dk){const id=u8b64((await lgH(dk,'ymath-id')).slice(0,12))
   const com=await lgOpen(b64(P.kc),j.com);const branches=[];
   for(const id of Object.keys(j.br||{})){const k=(P.kb||{})[id];if(!k)continue;const b=await lgOpen(b64(k),j.br[id]);b.ctm=(P.ct||{})[id]||null;b.tsm=(P.ts||{})[id]||null;branches.push(b)}
   if(!branches.length)throw new Error('nobr');
-  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all,role:P.role||'',home:P.home||'',...(P.sb?{sb:P.sb}:{}),...(P.tka?{tka:P.tka}:{}),...(P.role==='owner'&&P.ak?{ak:P.ak,ox:P.ox||{}}:{}),...(P.mk?{mk:P.mk}:{}),...(P.mq?{mq:P.mq}:{})})}
+  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all,role:P.role||'',home:P.home||'',...(P.sb?{sb:P.sb}:{}),...(P.tka?{tka:P.tka}:{}),...(P.lv?{lv:P.lv}:{}),...(P.role==='owner'&&P.ak?{ak:P.ak,ox:P.ox||{}}:{}),...(P.mk?{mk:P.mk}:{}),...(P.mq?{mq:P.mq}:{})})}
 const isAdm=()=>!!(D&&D.v2&&D.role==='admin'); // 행정 선생님: 내 수업 없음 · 전 지점 · 학생 전체 연락처
 /* 예전 방식(공용 번호)으로 저장된 것은 처음 한 번 지움 */
 function legacyWipe(){if(!ls.get('m_pin','')&&!ls.get('m_key',''))return;['m_pin','m_key','m_me','m_noMe','m_cache'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
@@ -857,13 +867,13 @@ function meta(stale){const t=new Date(D.at),p=n=>String(n).padStart(2,'0');
 function sizeHd(){document.documentElement.style.setProperty('--hdh',$('hd').getBoundingClientRect().height+'px')}
 /* 다른 지점(지점장만 받음): 전체 시간표만 · 참고용 — 관리자·행정은 모두 */
 const viewOnlyB=b=>!!(D&&D.v2&&b&&!(typeof isOwn==='function'&&isOwn())&&(isAdm()?!!(D.sb||D.home)&&!(D.sb||[D.home]).includes(b.id):!(D.me||[]).some(m=>m.br===b.id))); /* 행정: 소속 지점(sb)만 전부 */
-const TABS=()=>viewOnlyB(B0())?[['grid',wide?'전체 시간표':'전체']]:(wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']]).concat(B0()&&(B0().schl||[]).length?[['sch','학교']]:[]).concat(D&&(isOwn()||isMgr(B0()))?[['adm','관리']]:[]);
+const TABS=()=>viewOnlyB(B0())?[['grid',wide?'전체 시간표':'전체']]:(wide?[['grid','전체 시간표'],['today','오늘'],['tch','강사별'],['stu','학생 찾기']]:[['today','오늘'],['grid','전체'],['day','요일별'],['tch','강사별'],['stu','학생']]).concat(tkTabOn(B0())?[['tk','업무']]:[]).concat(B0()&&(B0().schl||[]).length?[['sch','학교']]:[]).concat(D&&(isOwn()||isMgr(B0()))?[['adm','관리']]:[]);
 function render(){if(!D)return;document.body.classList.remove('nolog');pvApply();nextApply();const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');$('brn').textContent=b.name;$('brb').classList.toggle('one',D.branches.length<2);
-  $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';tabInd(true);
+  $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';$('tabs').classList.toggle('many',!wide&&TABS().length>6);tabInd(true);
   meta(false);sizeHd();
-  const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid,adm:vAdm,sch:vSch}[ST.tab]||vToday;if(ST.tab==='adm')adPoll();
+  const v={today:vToday,day:vDay,tch:vTch,stu:vStu,grid:vGrid,adm:vAdm,sch:vSch,tk:vTk}[ST.tab]||vToday;if(ST.tab==='adm')adPoll();
   $('main').classList.toggle('zm',ST.tab!=='grid');const mh=pvBar()+(ST.tab==='adm'?'':nxBar())+v(b);if(mh!==ST.mh||!$('main').firstChild){ST.mh=mh;$('main').innerHTML=mh}zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}ctFill()}liveTick();glowApply()}
 /* 1분마다: 오늘 화면은 교시가 바뀌었을 때만 다시 그리고(같으면 그대로), 분 단위 글자·남은 시간 선·지금 시각 선만 조용히 */
@@ -1261,7 +1271,7 @@ async function rqFetch(force){if(!rqOn()){if(RQ.list.length||RQ.ok.length){RQ.li
       if(r2.ok){const closed=await rqRead(await r2.json());ok=closed.filter(x=>x.reason==='completed');rqNotify(list,closed)}}else ok=[];
     RQ.list=list;RQ.ok=ok;RQ.seen=true;const sig=JSON.stringify([list.map(x=>x.num),ok.map(x=>x.num)]);if(sig!==RQ.sig){RQ.sig=sig;if((ST.tab==='grid'||ST.tab==='stu')&&!$('sh'))render()}}catch(e){}}
 /* 내가 보낸 요청이 목록에서 사라지면: 승인됐는지·거절됐는지 알려 줌 */
-function rqNotify(list,closed){const me=ME();if(!me||!RQ.seen)return;const gone=RQ.list.filter(x=>(!x.kind||x.kind==='nd')&&x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(!gone.length)return;
+function rqNotify(list,closed){const me=ME();if(!me||!RQ.seen)return;{const gl=RQ.list.filter(x=>x.kind==='lv'&&x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(gl.length){const c=closed.find(y=>y.num===gl[0].num);if(c)fzToast(`결근 신청(${mdd(gl[0].from)})이 ${c.reason==='completed'?'확인':'반려'}됐어요`,3600)}}const gone=RQ.list.filter(x=>(!x.kind||x.kind==='nd')&&x.t===me.t&&x.br===me.br&&!list.some(y=>y.num===x.num));if(!gone.length)return;
   const lab=gone[0].k||'보강';const w=x=>{const c=closed.find(y=>y.num===x.num);return c&&c.reason==='completed'?'승인':c&&c.reason==='not_planned'?'거절':'처리'};
   const g=gone[0];const more=gone.length>1?` 외 ${gone.length-1}건`:'';if(g.kind==='nd'){fzToast(`보강 삭제 요청이 ${w(g)}됐어요${more}`,3600);return}fzToast(`등록한 ${lab}이(가) ${w(g)}됐어요 · ${g.names||(g.cls&&(C(D.branches.find(b=>b.id===me.br)||{classes:[]},g.cls)||{}).name)||''}${more}`,3600)}
 const noteLive=n=>!n.until||n.until>=tdStr(); // 횟수가 끝난 메모는 안 보임
@@ -1363,15 +1373,17 @@ function brSheet(){const b=B();const bt=$('brb');bt.classList.add('open');
 function cnGoM(sid){const b=B(),st=S(b,sid);if(!st)return;shOpen(`<h3>상담 완료</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} 상담을 마쳤나요?<br>같이 가르치는 선생님 화면에서도 완료로 바뀌어요${holdSet(b).has(st.id)?'<br><b>보류 중인 학생이라 보류도 같이 풀려요</b>':''}</p><textarea id="cnMemo" rows="2" maxlength="200" placeholder="메모 (안 적어도 돼요) · 예: 학부모 통화, 진도 안내" class="cnmemo"></textarea><p class="snote" id="cnMsg">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="cnOk" data-act="cnSend" data-sid="${esc(st.id)}">상담 완료</button></div>`);}
 function rqClick(e){const sh=e.target.closest('#sh');
   if(sh){const t=e.target.closest('button');if(!t)return true;const ds=t.dataset;
-    if(ST.pv&&/^(rqNdSend|rqNdCancel|rqSend|rqCancel|csSend|cnSend|cnUndoGo|holdGo|tkDone)$/.test(ds.act||'')){fzToast('미리 보기 중에는 보낼 수 없어요');return true}
+    if(ST.pv&&/^(rqNdSend|rqNdCancel|rqSend|rqCancel|csSend|cnSend|cnUndoGo|holdGo|tkDone|lvSend|lvCancelGo)$/.test(ds.act||'')){fzToast('미리 보기 중에는 보낼 수 없어요');return true}
     if(ds.act==='cnGo'){cnGoM(ds.sid);return true}
-    if(ds.act==='shClose')shClose();else if(ds.act==='stuCopy'){stuCopyM(ds.sid);return}else if(ds.act==='tkOpen'){tkSheet();return}else if(ds.act==='dockToday'){shClose();goTab('today');setTimeout(()=>{const d=$('dock');if(d)d.scrollIntoView({behavior:'smooth',block:'start'})},350);return}else if(ds.act==='tkDone'){tkDone(ds.id,t);return}else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.act==='rqNdOpen')rqNdSheet(ds.nk);else if(ds.ndpk!=null)rqNdPick(t);else if(ds.act==='rqNdSend')rqNdSend(ds.nk);else if(ds.act==='rqNdCancel')rqCancel(ds.rn);else if(ds.rqn2){rqSetCnt(+ds.rqn2)}
+    if(ds.act==='shClose')shClose();else if(ds.act==='stuCopy'){stuCopyM(ds.sid);return}else if(ds.act==='tkOpen'){tkGo();return}else if(ds.act==='dockToday'){shClose();goTab('today');setTimeout(()=>{const d=$('dock');if(d)d.scrollIntoView({behavior:'smooth',block:'start'})},350);return}else if(ds.act==='tkDone'){tkDone(ds.id,t);return}else if(ds.act==='rqSend')rqSend(ds.rd,ds.rp);else if(ds.act==='rqCancel')rqCancel(ds.rn);else if(ds.act==='rqNdOpen')rqNdSheet(ds.nk);else if(ds.ndpk!=null)rqNdPick(t);else if(ds.act==='rqNdSend')rqNdSend(ds.nk);else if(ds.act==='rqNdCancel')rqCancel(ds.rn);else if(ds.rqn2){rqSetCnt(+ds.rqn2)}
     else if(ds.brpick){shClose();if(ds.brpick!==B().id)setTimeout(()=>{ST.gt='';ST.br=ds.brpick;ST.brPicked=true;ls.set('m_br',ds.brpick);ST.open.clear();if(!wide)ST.fit=true;render();window.scrollTo(0,0)},300)}
     else if(ds.act==='ctGo'){ctGo()}
     else if(ds.act==='csSend'){csSend(ds.sid)}
     else if(ds.act==='cnSend'){cnSend(ds.sid)}
     else if(ds.act==='cnUndoGo'){cnUndo(+ds.n)}
     else if(ds.act==='holdGo'){holdSend(ds.sid,ds.on==='1',t)}
+    else if(ds.act==='lvSend'){lvSend()}
+    else if(ds.act==='lvCancelGo'){lvCancel(ds.n)}
     else if(ds.act==='logoutGo'){shClose();setTimeout(()=>{['m_pin','m_cache','m_key','m_lk','m_me','m_br','m_t'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}KC.k=null;D=null;lastCt=null;showPin('')},340)}
     else if(ds.rqpick){const i=$('rqIn');i.value=i.value.replace(/([^,\s]*)$/,'')+ds.rqpick+', ';i.focus();rqSug()}return true}
   if(!rqOn())return false;
@@ -1413,7 +1425,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.85.8</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="logout">로그아웃</button><div class="vv">Y-MATH 시간표 · v3.86.1</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1451,7 +1463,10 @@ document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&
   if(ds.act==='ctCode'){ctSheet();return}
   if(ds.act==='cnGo'){cnGoM(ds.sid);return}
   if(ds.act==='goCn'){goTab('stu');return}
-  if(ds.act==='tkOpen'){tkSheet();return}
+  if(ds.act==='tkOpen'){tkGo();return}
+  if(ds.act==='lvNew'){lvNew();return}
+  if(ds.act==='lvCancel'){lvCancelAsk(ds.n);return}
+  if(ds.act==='tkDone'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}tkDone(ds.id,t);return}
   if(ds.act==='tkAll'){tkAllSheet();return}
   if(ds.act==='dockSheet'){dockSheet();return}
   if(ds.act==='holdAsk'){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return}const st=S(B0(),ds.sid);if(!st)return;shOpen(`<h3>정기 상담 보류</h3><p class="ssub"><b>${esc(st.name)}</b> ${esc(st.grade||'')} · 보류하면 이번 상담 목록에서 빠져요<br>아래 '보류 n명'에서 언제든 풀 수 있어요</p><input id="cnMemo" maxlength="40" placeholder="사유 (안 적어도 돼요) · 예: 장기 결석" autocomplete="off"><p class="snote">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="holdGo" data-sid="${esc(st.id)}" data-on="1">보류</button></div>`);return}
@@ -1562,6 +1577,8 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 /* ===== 탭: 노란 밑줄이 미끄러지듯 이동 + 내용은 방향에 맞춰 부드럽게 + 위쪽 바를 옆으로 밀어 탭 이동 ===== */
 let tindLast=null;
 function tabInd(instant){const n=$('tabs'),i=$('tind');if(!n||!i)return;const b=n.querySelector('[aria-selected="true"]');if(!b){i.style.opacity=0;return}
+  if(n.classList.contains('many'))n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+1);
+  if(n.classList.contains('ovf')){const L=b.offsetLeft,R=L+b.offsetWidth;if(L<n.scrollLeft+8)n.scrollLeft=Math.max(0,L-24);else if(R>n.scrollLeft+n.clientWidth-40)n.scrollLeft=R-n.clientWidth+48}
   const x=b.offsetLeft,w=b.offsetWidth;if(instant&&tindLast){i.style.transition='none';i.style.transform=`translateX(${tindLast.x}px)`;i.style.width=tindLast.w+'px';void i.offsetWidth;i.style.transition=''}
   else if(instant){i.style.transition='none'}
   requestAnimationFrame(()=>{i.style.transform=`translateX(${x}px)`;i.style.width=w+'px';i.style.opacity=1;if(instant&&!tindLast)requestAnimationFrame(()=>i.style.transition='');tindLast={x,w}})}
@@ -1802,10 +1819,63 @@ function tkAllHTML(){const td=tdStr();const G=ST.tka=ST.tka||{done:false,w:''};c
 /* 시트 안에서 거르기: 다시 열지 않고 내용만 바꿈(번쩍임 없게) */
 document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('#sh [data-tka],#sh [data-tkw]');if(!x)return;const G=ST.tka=ST.tka||{done:false,w:''};if(x.dataset.tka!=null){G.done=x.dataset.tka==='1';G.w=''}else G.w=x.dataset.tkw;
   const p=document.querySelector('#sh .shp');if(!p)return;const sc=p.scrollTop;p.innerHTML='<i class="grab" aria-hidden="true"></i>'+tkAllHTML();p.scrollTop=x.dataset.tka!=null?0:sc});
-function tkSheet(){const b=B();const L=tkMine(b);shOpen(`<h3>내 업무 <small>${L.length}개</small></h3><p class="ssub">PC 업무 탭에서 나한테 맡긴 일이에요 · 다 하면 [완료]를 눌러 주세요</p><div class="tkl">${L.map(t=>`<div class="tki"><div class="tkh"><span class="tkk">${esc(t.k)}</span><b>${esc(t.t)}</b>${t.d?`<em class="${t.d<=tdStr()?'late':t.d<=plusD(tdStr(),3)?'soon':''}">${esc(mdd(t.d))}까지</em>`:''}</div><div class="tks">${esc([t.g,t.s,t.j].filter(Boolean).join(' · '))}${t.n?` · ${t.n}문항`:''}${t.a?' · 답안 있음':''}${t.p?' · 발행 완료':''}${t.m?` · ${esc(t.m)}`:''}</div>${rqOn()?`<button class="tkdone" data-act="tkDone" data-id="${esc(t.id)}">완료</button>`:''}</div>`).join('')||'<div class="cth">남은 업무가 없어요</div>'}</div><div class="sbtn" style="margin-top:12px"><button class="pri" data-act="shClose" style="flex:1">닫기</button></div>`,{stay:true,cls:'stsh'})}
+function tkSheet(){const b=B();const L=tkMine(b);shOpen(`<h3>내 업무 <small>${L.length}개</small></h3><p class="ssub">PC 업무 탭에서 나한테 맡긴 일이에요 · 다 하면 [완료]를 눌러 주세요</p><div class="tkl">${L.map(tkRowM).join('')||'<div class="cth">남은 업무가 없어요</div>'}</div><div class="sbtn" style="margin-top:12px"><button class="pri" data-act="shClose" style="flex:1">닫기</button></div>`,{stay:true,cls:'stsh'})}
 async function tkDone(id,btn){const b=B(),me=ME();if(!me||!rqOn())return;const t=(b.tk||[]).find(x=>x.id===id);if(!t)return;btn.disabled=true;btn.textContent='보내는 중…';
   try{const x={v:1,kind:'tk',br:b.id,id,t:me.t,tn:T(b,me.t),at:Date.now()};const body=await rqEnc(x);const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 업무',body})});if(r.status!==201)throw new Error('보내지 못했어요 ('+r.status+')');
-    TKD.add(id);fzToast(`'${t.t}' 완료로 보냈어요 · PC에 1~2분 뒤 반영`,2600);tkSheet();render()}catch(err){btn.disabled=false;btn.textContent='다시 보내기';fzToast(err.message||'보내지 못했어요')}}
+    TKD.add(id);fzToast(`'${t.t}' 완료로 보냈어요 · PC에 1~2분 뒤 반영`,2600);if($('sh'))tkSheet();ST.mh='';render()}catch(err){btn.disabled=false;btn.textContent='다시 보내기';fzToast(err.message||'보내지 못했어요')}}
+/* ===== 3.86.0 업무 탭 · 결근 신청(서류 제출) =====
+   사유·메모·사진은 그 지점 공개키(b.lvk · ECDH P-256)로 암호화 → 지점 관리 PC(지점장·부원장)만 풀 수 있음 · 다른 폰은 못 봄
+   사진은 길어서 요청 댓글에 나눠 올림(GitHub 글 길이 한도) · 결과(확인/반려)는 PC 기록 → 내 폰 자료(D.lv)로 */
+const tkTabOn=b=>!!(D&&b&&!viewOnlyB(b)&&((ME()&&ME().br===b.id&&TT(b,ME().t))||tkAllOn()));
+function tkGo(){if(TABS().some(t=>t[0]==='tk')){shClose();goTab('tk')}else tkSheet()}
+const tkRowM=t=>`<div class="tki"><div class="tkh"><span class="tkk">${esc(t.k)}</span><b>${esc(t.t)}</b>${t.d?`<em class="${t.d<=tdStr()?'late':t.d<=plusD(tdStr(),3)?'soon':''}">${esc(mdd(t.d))}까지</em>`:''}</div><div class="tks">${esc([t.g,t.s,t.j].filter(Boolean).join(' · '))}${t.n?` · ${t.n}문항`:''}${t.a?' · 답안 있음':''}${t.p?' · 발행 완료':''}${t.m?` · ${esc(t.m)}`:''}</div>${rqOn()&&!ST.pv?`<button class="tkdone" data-act="tkDone" data-id="${esc(t.id)}">완료</button>`:''}</div>`;
+function vTk(b){const me=ME();const mine=!!(me&&me.br===b.id&&TT(b,me.t));let h='';
+  if(mine){const L=tkMine(b);h+=`<div class="sec">내 업무 <small>${L.length?L.length+'개 남음':''}</small></div><div class="tkl">${L.map(tkRowM).join('')||'<div class="cth">남은 업무가 없어요 · PC 업무 탭에서 나한테 맡기면 여기 떠요</div>'}</div>`}
+  if(tkAllOn()){const A=D.tka.filter(t=>!t.x);const late=A.filter(t=>t.d&&t.d<tdStr()).length;h+=`<button class="cnban tkban tka" data-act="tkAll" style="margin-top:14px"><span>전체 업무 · 진행 중 <b>${A.length}개</b>${late?` <i>기한 지남 ${late}</i>`:''}</span><em>›</em></button>`}
+  if(mine)h+=lvHTML(b);return h}
+/* 결근 신청 목록: 기다리는 것(열린 요청) + 최근 기록(PC가 확인·반려한 것 · 90일) */
+const LVW={get(){try{return JSON.parse(ls.get('m_lvw','{}'))||{}}catch(e){return {}}},set(n,v){const o=this.get();o[n]=v;const ks=Object.keys(o);ks.slice(0,Math.max(0,ks.length-30)).forEach(k=>delete o[k]);ls.set('m_lvw',JSON.stringify(o))}};
+const lvRange=(a,z)=>{const f=d=>`${+d.slice(5,7)}/${+d.slice(8,10)}(${DAYS[(new Date(d+'T00:00:00').getDay()+6)%7]||''})`;if(!z||z===a)return f(a);const n=Math.round((Date.parse(z)-Date.parse(a))/864e5)+1;return `${f(a)} ~ ${f(z)} <small>${n}일</small>`};
+function lvHTML(b){const me=ME();const W=LVW.get();const P=RQ.list.filter(x=>x.kind==='lv'&&x.br===b.id&&x.t===me.t).sort((a,z)=>z.at-a.at);
+  const H=((D.lv||{})[b.id]||[]).filter(r=>!P.some(x=>x.num===r.iss)).sort((a,z)=>(z.from||'').localeCompare(a.from||'')).slice(0,8);
+  const row=(x,st)=>`<div class="lvi"><div class="lvh"><b>${lvRange(x.from,x.until)}</b>${(x.why||(W[x.num]||{}).why)?`<span class="lvw">${esc(x.why||W[x.num].why)}</span>`:''}${x.np||(W[x.num]||{}).np?`<span class="lvp">서류 ${x.np||W[x.num].np}장</span>`:''}<em class="lvs ${st}">${st==='wait'?'확인 기다리는 중':st==='ok'?'확인됨':'반려'}</em></div>${st==='wait'&&!ST.pv?`<button class="lnk" data-act="lvCancel" data-n="${x.num}">취소</button>`:''}</div>`;
+  const list=P.map(x=>row(x,'wait')).join('')+H.map(r=>row(r,r.st==='no'?'no':'ok')).join('');
+  const ready=rqOn()&&b.lvk;
+  return `<div class="sec" style="margin-top:22px">결근 신청</div>${list?`<div class="lvl">${list}</div>`:''}
+    <button class="lvbtn" data-act="lvNew" ${ready&&!ST.pv?'':'disabled'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/></svg>결근 신청 · 서류 제출</button>
+    <p class="lvnote">${ST.pv?'미리 보기 중에는 보낼 수 없어요':!rqOn()?'요청 보내기가 꺼져 있어요 · 부원장님께 말씀해 주세요':!b.lvk?'지점 PC에서 준비 중이에요 · 지점 관리 PC가 한 번 켜지면 쓸 수 있어요':'사유·서류는 암호화돼서 지점 관리 PC(지점장·부원장)에서만 열려요'}</p>`}
+function lvNew(){const b=B();if(!b.lvk||!rqOn())return;ST.lvf={why:'병가',ph:[]};const td=tdStr();
+  shOpen(`<h3>결근 신청</h3><p class="ssub">사유·서류는 암호화돼서 지점 관리 PC에서만 열려요</p>
+    <div class="lvf"><div class="lvlab">날짜</div><div class="lvd"><input type="date" id="lvA" value="${td}"><span>~</span><input type="date" id="lvZ" value="${td}"></div>
+    <div class="lvlab">사유</div><div class="seg lvwhy">${['병가','경조사','개인 사정','기타'].map(w=>`<button data-lvw="${w}" aria-pressed="${w==='병가'}">${w}</button>`).join('')}</div>
+    <div class="lvlab">메모 <small>안 적어도 돼요</small></div><textarea id="lvM" rows="2" maxlength="200" placeholder="예: 독감으로 병원 진료"></textarea>
+    <div class="lvlab">서류 사진 <small>진단서·확인서 등 · 최대 4장</small></div><div class="lvph" id="lvPh"></div></div>
+    <p class="snote" id="lvMsg">&nbsp;</p><div class="sbtn"><button data-act="shClose">취소</button><button class="pri" id="lvGo" data-act="lvSend">보내기</button></div>`,{stay:true});lvPhDraw()}
+function lvPhDraw(){const el=$('lvPh');if(!el)return;const L=ST.lvf.ph;el.innerHTML=L.map((p,i)=>`<span class="lvth"><img src="${p}" alt="서류 ${i+1}"><button data-lvx="${i}" aria-label="빼기">×</button></span>`).join('')+(L.length<4?`<label class="lvadd"><input type="file" id="lvF" accept="image/*" multiple hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>사진 추가</span></label>`:'')}
+/* 사진 줄이기: 긴 쪽 1600px · JPEG 0.72 (글씨 읽힐 정도) */
+function lvShrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f);const im=new Image();im.onload=()=>{const s=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight));const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*s);c.height=Math.round(im.naturalHeight*s);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.72))};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('사진을 읽지 못했어요'))};im.src=u})}
+document.addEventListener('change',async e=>{const t=e.target;if(!t||t.id!=='lvF'||!ST.lvf)return;const fs=[...(t.files||[])].slice(0,4-ST.lvf.ph.length);const m=$('lvMsg');if(m)m.textContent='사진 줄이는 중…';
+  for(const f of fs){try{ST.lvf.ph.push(await lvShrink(f))}catch(err){fzToast(err.message)}}if(m)m.innerHTML='&nbsp;';lvPhDraw()});
+document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('#sh [data-lvw],#sh [data-lvx]');if(!x||!ST.lvf)return;
+  if(x.dataset.lvw){ST.lvf.why=x.dataset.lvw;document.querySelectorAll('#sh [data-lvw]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lvw===ST.lvf.why))}else{ST.lvf.ph.splice(+x.dataset.lvx,1);lvPhDraw()}});
+async function lvSeal(pubJwk,obj){const pub=await crypto.subtle.importKey('jwk',pubJwk,{name:'ECDH',namedCurve:'P-256'},false,[]);const eph=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'ECDH',public:pub},eph.privateKey,{name:'AES-GCM',length:256},false,['encrypt']);const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=u8b64(new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(obj)))));const e=await crypto.subtle.exportKey('jwk',eph.publicKey);return {epk:{kty:e.kty,crv:e.crv,x:e.x,y:e.y},iv:u8b64(iv),ct}}
+const LV_CH=60000,LV_IN=30000;
+async function lvSend(){const b=B(),me=ME();const g=$('lvGo'),m=$('lvMsg');if(!b.lvk||!me||!ST.lvf)return;const a=($('lvA')||{}).value||'',z=($('lvZ')||{}).value||a;
+  const bad=s=>{if(m){m.textContent=s;m.classList.add('err')}};if(!/^\d{4}-\d\d-\d\d$/.test(a))return bad('날짜를 골라 주세요');if(z<a)return bad('끝 날짜가 시작 날짜보다 앞이에요');if(Math.round((Date.parse(z)-Date.parse(a))/864e5)>30)return bad('한 번에 31일까지만 보낼 수 있어요');
+  const memo=(($('lvM')||{}).value||'').trim().slice(0,200);const np=ST.lvf.ph.length;g.disabled=true;g.textContent='보내는 중…';if(m){m.classList.remove('err');m.textContent=np?'서류를 암호화해서 올리는 중이에요 · 화면을 닫지 말아 주세요':' '}
+  let num=0;try{const s=await lvSeal(b.lvk,{why:ST.lvf.why,memo,ph:ST.lvf.ph});const inl=s.ct.length<=LV_IN;const parts=inl?[]:s.ct.match(new RegExp(`.{1,${LV_CH}}`,'g'));
+    const x={v:1,kind:'lv',br:b.id,t:me.t,tn:T(b,me.t),from:a,until:z,np,epk:s.epk,iv:s.iv,...(inl?{ct:s.ct}:{nc:parts.length}),at:Date.now()};
+    const base=`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`;const H=Object.assign(rqH(),{'Content-Type':'application/json'});
+    const r=await fetch(base,{method:'POST',headers:H,body:JSON.stringify({title:'[ymt] 결근',body:await rqEnc(x)})});if(r.status!==201)throw new Error('보내지 못했어요 ('+r.status+')');num=(await r.json()).number;
+    for(let i=0;i<parts.length;i++){if(m)m.textContent=`서류 올리는 중 · ${Math.round((i+1)/parts.length*100)}%`;const c=await fetch(`${base}/${num}/comments`,{method:'POST',headers:H,body:JSON.stringify({body:JSON.stringify({lv:1,i,c:parts[i]})})});if(c.status!==201)throw new Error('서류를 다 올리지 못했어요 ('+c.status+')')}
+    LVW.set(num,{why:ST.lvf.why,np});RQ.list.push(Object.assign({},x,{num,ct:undefined}));RQ.sig='';ST.lvf=null;shClose();ST.mh='';render();fzToast('결근 신청을 보냈어요 · 지점 PC에서 확인하면 여기 바뀌어요',2800)}
+  catch(err){if(num){try{await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues/${num}`,{method:'PATCH',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({state:'closed',state_reason:'not_planned'})})}catch(_){}}
+    g.disabled=false;g.textContent='다시 보내기';bad((err&&err.message)||'보내지 못했어요 · 인터넷 연결을 확인해 주세요')}}
+function lvCancelAsk(num){shOpen(`<h3>결근 신청 취소</h3><p class="ssub">보낸 결근 신청을 취소할까요? 올린 서류도 PC에 안 보여요</p><div class="sbtn"><button data-act="shClose">아니요</button><button class="pri" data-act="lvCancelGo" data-n="${+num}">취소하기</button></div>`)}
+async function lvCancel(num){try{const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues/${+num}`,{method:'PATCH',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({state:'closed',state_reason:'not_planned'})});if(!r.ok)throw 0;
+    RQ.list=RQ.list.filter(i=>i.num!==+num);RQ.sig='';shClose();ST.mh='';render();fzToast('결근 신청을 취소했어요',2000)}catch(e){fzToast('취소하지 못했어요 · 인터넷 연결을 확인해 주세요',2400)}}
 /* 문자용 글: 이름 없이 · 같은 반·같은 시간은 요일 묶어서 */
 function stuTextM(b,id){const G={};const DO=d=>DAYS.indexOf(d);b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(id)}).forEach(o=>{const c=C(b,o.cls);const [st,en]=pRange(b,o.d,o.p);if(st==null)return;const k=`${o.cls}|${o.t}|${st}|${en}`;(G[k]=G[k]||{days:[],st,en,nm:c.name,t:o.t}).days.push(o.d)});
   sps(b).filter(x=>(x.members||[]).includes(id)).forEach(x=>{const st=toMin(x.start);if(st==null)return;G['sp|'+x.id]={days:(x.days||[]).slice(),st,en:st+(+x.dur||120),nm:`${x.name} (특강)`,t:x.t}});
@@ -1825,7 +1895,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='3.85.8';const VC={last:0,nv:''};
+const MVER='3.86.1';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
