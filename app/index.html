@@ -3550,7 +3550,7 @@ var qrcode = function() {
 </script>
 <script>window.SEED_DATA={"app": "ymath-timetable", "format": 1, "currentBranch": "b1", "branches": [{"id": "b1", "name": "새 지점", "teachers": [], "days": {"월": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "화": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "수": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "목": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "금": [{"name": "초등부", "time": "15:30"}, {"name": "저녁 1교시", "time": "17:00"}, {"name": "저녁 2교시", "time": "18:30"}, {"name": "저녁 3교시", "time": "20:00"}, {"name": "저녁 4교시", "time": "21:30"}], "토": [{"name": "주말 1교시", "time": "12:30"}, {"name": "주말 2교시", "time": "14:00"}, {"name": "주말 3교시", "time": "15:30"}, {"name": "주말 4교시", "time": "17:00"}, {"name": "주말 5교시", "time": "18:30"}, {"name": "주말 6교시", "time": "20:00"}], "일": [{"name": "주말 1교시", "time": "13:30"}, {"name": "주말 2교시", "time": "15:00"}, {"name": "주말 3교시", "time": "16:00"}, {"name": "주말 4교시", "time": "17:30"}, {"name": "주말 5교시", "time": "19:30"}, {"name": "주말 6교시", "time": "21:00"}]}, "students": [], "versions": [{"id": "v1", "name": "새 시간표", "classes": [], "sessions": [], "trash": []}], "current": "v1"}], "pastel1": true};</script>
 <script>'use strict';
-const APPVER='3.87.1', APPDATE='2026-10-28';
+const APPVER='3.87.2', APPDATE='2026-10-28';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -5472,7 +5472,7 @@ function syMerge(target,r,known){const present=new Set(r.present.map(x=>x.id));c
 async function syncPull(opt={}){if(!syOn()||SYNC.busy||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev))return false;SYNC.busy=true;let r;
   try{r=await bridge.syncPull(opt.full?{}:(DB.syncKnown||{}))}catch(e){r={ok:false,err:e.message}}SYNC.busy=false;
   if(!r.ok){if(r.revoked){syRevokedNow();return false}SYNC.err=r.err||'';renderSyncState();return false}
-  SYNC.err='';try{if(bridge.syncBeat)bridge.syncBeat(APPVER)}catch(e){}SYNC.locks=r.locks||{};SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
+  SYNC.err='';if(r.restored&&r.restored.length)toast(`나스의 ${r.restored.map(syBName).join(', ')} 파일이 깨져 있어서 백업(GitHub)으로 되살렸어요`,6000);try{if(bridge.syncBeat)bridge.syncBeat(APPVER)}catch(e){}SYNC.locks=r.locks||{};SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
   const known=DB.syncKnown=DB.syncKnown||{};
   let o=null;if(UI.edit&&ORIG){try{o=JSON.parse(ORIG)}catch(e){}}
   const changed=syMerge(DB,r,known);if(o){syMerge(o,r,known);o.syncKnown=known}
@@ -5564,8 +5564,8 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
   <div class="row"><label for="syName">내 이름</label><input id="syName" value="${esc(i.name)}" style="width:120px"><button class="btn" data-act="syName">저장</button><span class="hint">잠금에 "○○ 수정 중"으로 보여요</span><span class="sp"></span>
     <span class="hint">${i.last?'마지막 동기화 '+fmtT(i.last):''}</span><button class="btn" data-act="syPull">지금 받기</button></div>
   ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}
-  ${(()=>{const n=i.nas;const can=i.role==='owner'&&!admLocked();if(!n&&!can)return '';return `<div class="row nsrow"><label>나스 폴더</label>${n&&!n.off?`<span class="nsp" title="${esc(n.unc||n.path)}">${esc(n.path)}</span>${n.ok?'<span class="nsok">빠른 동기화 중</span>':`<span class="hint">지금 안 열려요 · GitHub로 받고 있어요</span>`}`:'<span class="hint">안 씀 · GitHub로만 동기화</span>'}<span class="sp"></span>${can?`<button class="btn" data-act="nsPick">${n&&!n.off?'바꾸기':'폴더 고르기'}</button>${n&&!n.off?'<button class="btn" data-act="nsOff">끄기</button>':''}`:''}</div>
-  <div class="hint" style="margin:-4px 0 8px">학원 나스에 같은 암호 파일을 두고 PC끼리 몇 초 안에 주고받아요. GitHub엔 뒤에서 똑같이 올라가요(폰 보기·백업·나스가 안 될 때).</div>`})()}`;
+  ${(()=>{const n=i.nas;const can=i.role==='owner'&&!admLocked();if(!n&&!can)return '';return `<div class="row nsrow"><label>나스 폴더</label>${n&&!n.off?`<span class="nsp" title="${esc(n.unc||n.path)}">${esc(n.path)}</span>${n.ok?'<span class="nsok">빠른 동기화 중</span>':`<span class="hint">지금 안 열려요 · 고친 건 이 PC에 두었다가 연결되면 올려요</span>`}`:'<span class="hint">안 씀 · GitHub로만 동기화</span>'}<span class="sp"></span>${can?`<button class="btn" data-act="nsPick">${n&&!n.off?'바꾸기':'폴더 고르기'}</button>${n&&!n.off?'<button class="btn" data-act="nsOff">끄기</button>':''}`:''}</div>
+  <div class="hint" style="margin:-4px 0 8px">PC끼리는 학원 나스 하나로만 주고받아요(몇 초). GitHub에는 뒤에서 백업 사본이 올라가고, 폰 시간표·폰 요청은 지금처럼 GitHub로 가요.</div>`})()}`;
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
     <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
@@ -8375,8 +8375,9 @@ const HELP=[
  {id:'sync',t:'지점 연동 (여러 PC)',b:`
   <ul><li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결해요. 자기 지점은 고치고, 다른 지점은 시간표만 봐요.</li>
   <li><b>먼저 수정 모드를 켠 PC만</b> 그 지점을 고쳐요(위쪽 "🔒 ○○ 수정 중"). [적용]하면 다른 PC로 올라가고 잠금이 풀려요.</li>
-  <li><b>나스 빠른 동기화</b>: 학원 나스(<code>서성완T › 1. 프로그램 › Y-MATH시간표</code>)에 암호화한 시간표를 두고 PC끼리 주고받아요. 저장은 바로, 다른 PC엔 <b>몇 초 안에</b> 보여요(4초마다 확인). GitHub에도 뒤에서 똑같이 올라가서 폰 보기·백업은 그대로예요.</li>
-  <li>나스가 안 열리는 곳(집 노트북 등)이나 나스가 꺼졌을 땐 저절로 GitHub로 주고받아요(2분마다). 나스가 다시 열리면 양쪽을 알아서 맞춰요 — 양쪽에서 동시에 고쳤으면 나스 것을 남기고 다른 쪽은 백업에 둬요.</li>
+  <li><b>나스 빠른 동기화</b>: PC끼리는 학원 나스(<code>서성완T › 1. 프로그램 › Y-MATH시간표</code>) <b>하나로만</b> 주고받아요. 저장은 바로, 다른 PC엔 <b>몇 초 안에</b> 보여요(4초마다 확인). 원본이 하나라 어느 쪽이 최신인지 헷갈릴 일이 없어요.</li>
+  <li>GitHub에는 뒤에서 <b>백업 사본</b>만 올라가요(동기화 때 읽지 않음). 폰 시간표·폰 요청(보강·결근·완료)은 지금처럼 GitHub로 가요.</li>
+  <li>나스 파일이 깨져 있으면 그 지점만 GitHub 백업 사본으로 되살리고 알려 줘요. 나스가 잠깐 안 열리면 고친 건 그 PC에 두었다가("⏳ 올리기 대기") 다시 열리면 올라가요.</li>
   <li>나스 폴더는 관리자 PC [설정 → 지점 연동 → 나스 폴더]에서 바꾸거나 끌 수 있고, 지점 PC는 몇 분 안에 따라와요. 프로그램 업데이트도 나스에서 먼저 받아요(서명 확인은 똑같이).</li>
   <li>겹쳐서 고친 경우 [적용] 때 [상대 것 받기 / 내 수정으로 덮어쓰기]를 물어봐요. 버리는 쪽은 백업에 남아요.</li>
   <li>인터넷이 끊겨도 고치고 적용할 수 있어요. 연결되면 자동으로 올라가요("⏳ 올리기 대기").</li>
