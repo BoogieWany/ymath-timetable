@@ -255,7 +255,7 @@ function exPeriods(db,b){EXDB=db;const td=exTd();const out={};if(b.examAuto===fa
 function schPack(db,b){EXDB=db;const L=((db.schools||{}).list)||{};const td=exTd();const y=+td.slice(0,4);const yrs=new Set([String(y),String(y+1)].concat(+td.slice(5,7)<=2?[String(y-1)]:[]));
   const rt=r=>{if(!r||r.del||(!r.a&&!r.z&&!r.free))return '';const un=p=>(p||[]).filter(Boolean).pop()||'';let t=r.free&&!(r.a&&r.a.length)?r.free:(un(r.a)&&un(r.z)?(un(r.a)===un(r.z)?un(r.a):`${un(r.a)} ~ ${un(r.z)}`):(un(r.a)||un(r.z)||''));if(r.memo)t+=` · ${r.memo}`;if(r.free&&(r.a&&r.a.length))t+=` (${r.free})`;return t};
   const ks=[...new Set((b.students||[]).filter(s=>s.status!=='퇴원').map(s=>exNorm(s.school)).filter(k=>k&&exKind(k)))];const out=[];
-  ks.forEach(k=>{const o=L[k]||{};if(o.hide&&o.hide.v)return;const base=o.base||{};const cal={};Object.entries(o.cal||{}).forEach(([yy,c])=>{if(!yrs.has(yy)||!c)return;const x={};['m1','f1','m2','f2','g3','camp','trip','sum','win'].forEach(mk=>{if(c[mk]&&c[mk][0])x[mk]=c[mk]});if(c.dm&&Object.keys(c.dm).length)x.dm=c.dm;cal[yy]=x});
+  ks.forEach(k=>{const o=L[k]||{};if(o.hide&&o.hide.v)return;const base=o.base||{};const cal={};Object.entries(o.cal||{}).forEach(([yy,c])=>{if(!yrs.has(yy)||!c)return;const x={};['m1','f1','m2','f2','g3','camp','trip','sum','win','spr'].forEach(mk=>{if(c[mk]&&c[mk][0])x[mk]=c[mk]});if(c.dm&&Object.keys(c.dm).length)x.dm=c.dm;cal[yy]=x});
     const rng={},rnn={};Object.entries(o.rng||{}).forEach(([rk,r])=>{if(!yrs.has(rk.split('|')[0]))return;const t=rt(r);if(t)rng[rk]=t;if(r&&!r.del&&r.note)rnn[rk]=String(r.note).slice(0,400)}); /* 3.78.9 출제 참고사항 */
     const books={};Object.entries(o.books||{}).forEach(([x,v])=>{if(v&&v.t)books[x]=v.t});
     const cuts={};Object.entries(o.cuts||{}).forEach(([ck,v])=>{if(!yrs.has(ck.split('|')[0])||!v||!v.c)return;const c={};Object.entries(v.c).forEach(([n,x])=>{if(x!=null&&x!=='')c[n]=x});if(Object.keys(c).length)cuts[ck]=c});
@@ -341,7 +341,12 @@ async function publishNas(){const d=nasDir();if(!d)return;NAS.err='';if(appStale
     for(const f of fs.readdirSync(path.join(__dirname,'fonts')).filter(x=>x.endsWith('.woff2'))){const to=path.join(d,'fonts',f);if(!fs.existsSync(to))fs.copyFileSync(path.join(__dirname,'fonts',f),to)}
     NAS.last=Date.now()}catch(e){NAS.err=e.message}
   try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{last:NAS.last,err:NAS.err})}catch(e){}}
-function nasLater(){if(nasDir()){clearTimeout(nasT);nasT=setTimeout(publishNas,2500)}if(mob.ghOn){clearTimeout(ghT);ghT=setTimeout(publishGh,3000)}}
+function nasLater(){if(nasDir()){clearTimeout(nasT);nasT=setTimeout(publishNas,2500)}if(mob.ghOn)ghSchedule(GH_IDLE)}
+/* 4.10.0 폰용 시간표 몰아 올리기 (GitHub Pages 빌드 줄이기): 마지막 수정 뒤 20초 기다렸다가, 직전에 실제로 올린 지 6분이 지나야 올림
+   (계속 고치는 중이어도 6분을 넘게 미루지는 않음) · 설정의 [지금 올리기]·켤 때는 바로 */
+const GH_GAP=+(process.env.YMT_GH_GAP||6*60e3),GH_IDLE=+(process.env.YMT_GH_IDLE||20e3);
+function ghSchedule(d){const now=Date.now();if(!GH.pend)GH.pend=now;const due=(GH.lastPut||0)+GH_GAP;const cap=GH.pend+Math.max(GH_GAP,GH_IDLE*3); /* 계속 고쳐도 이 이상은 안 미룸 */
+  let t=Math.max(now+d,due);if(t>cap)t=Math.max(cap,due);clearTimeout(ghT);GH.at=t;ghT=setTimeout(()=>{GH.at=0;GH.pend=0;publishGh()},Math.max(0,t-now))}
 /* ================= 인터넷(GitHub Pages)으로 올리기 =================
    저장소(예: ymath-timetable)에 index.html·view.json(암호화)·글꼴을 GitHub API로 올림 → https://아이디.github.io/저장소/
    연결 키는 윈도우 보안 저장(safeStorage)으로 암호화해서 data/mobile.json에 둠. 같은 내용이면 다시 안 올림(git blob sha 비교). */
@@ -368,6 +373,15 @@ async function ghPut(file,buf,msg,pre){const u=`/repos/${mob.ghOwner}/${mob.ghRe
     if(p.status===200||p.status===201)return true;
     if((p.status===409||p.status===422)&&k<2){await new Promise(r=>setTimeout(r,1200+k*1500));continue}
     throw new Error(ghErr(p,file))}}
+/* 4.10.0 여러 파일을 커밋 하나로 (git data API) · 그사이 다른 PC가 올렸으면(422) 최신 위에 다시 · 세 번까지 */
+async function ghCommit(files,msg){const R=`/repos/${mob.ghOwner}/${mob.ghRepo}`,br=GH.branch||'main';const tree=[];
+  for(const f of files){const b=await gh('POST',`${R}/git/blobs`,{content:f.buf.toString('base64'),encoding:'base64'});if(b.status!==201||!b.j)throw new Error(ghErr(b,f.path));tree.push({path:f.path,mode:'100644',type:'blob',sha:b.j.sha})}
+  for(let k=0;;k++){const ref=await gh('GET',`${R}/git/ref/heads/${encodeURIComponent(br)}?t=${Date.now()}`);if(ref.status!==200||!ref.j||!ref.j.object)throw new Error(ghErr(ref,'가지'));const head=ref.j.object.sha;
+    const cm=await gh('GET',`${R}/git/commits/${head}`);if(cm.status!==200||!cm.j)throw new Error(ghErr(cm,'커밋'));
+    const t=await gh('POST',`${R}/git/trees`,{base_tree:cm.j.tree.sha,tree});if(t.status!==201||!t.j)throw new Error(ghErr(t,'tree'));
+    const c=await gh('POST',`${R}/git/commits`,{message:msg,tree:t.j.sha,parents:[head]});if(c.status!==201||!c.j)throw new Error(ghErr(c,'commit'));
+    const u=await gh('PATCH',`${R}/git/refs/heads/${encodeURIComponent(br)}`,{sha:c.j.sha,force:false});if(u.status===200)return true;
+    if((u.status===422||u.status===409)&&k<2){await new Promise(r=>setTimeout(r,1200+k*1500));continue}throw new Error(ghErr(u,'가지 바꾸기'))}}
 function ghErr(r,what){if(r.status===401)return '연결 키가 맞지 않거나 기한이 지났어요';if(r.status===403)return '연결 키에 쓰기 권한이 없어요 (Contents: Read and write)';if(r.status===404)return `저장소 ${mob.ghOwner}/${mob.ghRepo}을(를) 찾지 못했어요 · 이름과 키의 저장소 선택을 확인해 주세요`;return `GitHub 오류 ${r.status}${what?' ('+what+')':''}: ${(r.j&&r.j.message)||''}`}
 async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)throw new Error(ghErr(me));mob.ghOwner=me.j.login;
   const rp=await gh('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}`);if(rp.status!==200)throw new Error(ghErr(rp));
@@ -380,22 +394,26 @@ async function publishGh(){if(!mob.ghOn)return;if(appStale()){GH.err=STALE_MSG;t
   try{if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
     await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');const rqv=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
-    // 화면·글꼴 같은 고정 파일: 한 번 확인한 뒤엔 내용(sha)이 바뀔 때만 다시 확인 (매번 9번 묻던 걸 0번으로)
-    const stat=async(file,buf,msg)=>{const s=blobSha(buf);if(GH.sha[file]===s)return;await ghPut(file,buf,msg);GH.sha[file]=s};
-    await stat('index.html',fs.readFileSync(path.join(__dirname,'mobile.html')),'화면 '+st);
-    await stat('.nojekyll',Buffer.from(''),'설정');
-    await stat('manifest.webmanifest',Buffer.from(MANIFEST),'앱 아이콘 정보');
-    await stat('icon.png',fs.readFileSync(path.join(__dirname,'icon.png')),'아이콘');
-    for(const f of ['IBMPlexSansKR-Regular.woff2','IBMPlexSansKR-SemiBold.woff2','IBMPlexSansKR-Bold.woff2','IBMPlexMono-Medium.woff2'])await stat('fonts/'+f,fs.readFileSync(path.join(__dirname,'fonts',f)),'글꼴');
+    /* 4.10.0 올릴 파일을 모아 커밋 하나로(Pages 빌드 1번): 고정 파일(화면·글꼴·아이콘)은 올라가 있는 것과 다를 때만, 시간표는 내용 해시가 다를 때만 */
+    const R=`/repos/${mob.ghOwner}/${mob.ghRepo}`,br=GH.branch||'main';const files=[];
+    const ref=await gh('GET',`${R}/git/ref/heads/${encodeURIComponent(br)}?t=${Date.now()}`);let remote={};
+    if(ref.status===200&&ref.j&&ref.j.object){const cm=await gh('GET',`${R}/git/commits/${ref.j.object.sha}`);if(cm.status===200&&cm.j&&cm.j.tree){const tr=await gh('GET',`${R}/git/trees/${cm.j.tree.sha}?recursive=1`);if(tr.status===200&&tr.j&&tr.j.tree)tr.j.tree.forEach(x=>{if(x.type==='blob')remote[x.path]=x.sha})}}
+    /* 4.10.1 폰 화면·글꼴·아이콘은 관리자 PC(연동 안 쓰는 단독 PC 포함)만 올림 → 업데이트 직후 아직 껐다 켜지 않은 옛 판 PC가 옛 화면으로 덮지 않음 · 다른 PC는 시간표(view.json)만 */
+    const ownPC=(()=>{const c=syCfg();return !c.on||c.role==='owner'})();
+    const stat=(file,buf)=>{if(!ownPC)return;if(remote[file]!==blobSha(buf))files.push({path:file,buf});GH.sha[file]=blobSha(buf)};
+    stat('index.html',fs.readFileSync(path.join(__dirname,'mobile.html')));stat('.nojekyll',Buffer.from(''));stat('manifest.webmanifest',Buffer.from(MANIFEST));stat('icon.png',fs.readFileSync(path.join(__dirname,'icon.png')));
+    for(const f of ['IBMPlexSansKR-Regular.woff2','IBMPlexSansKR-SemiBold.woff2','IBMPlexSansKR-Bold.woff2','IBMPlexMono-Medium.woff2'])stat('fonts/'+f,fs.readFileSync(path.join(__dirname,'fonts',f)));
     // 시간표: 올라가 있는 파일의 내용 해시가 같으면(다른 PC가 올렸어도) 건너뜀 → 커밋·Pages 빌드 없음
-    const vj=await encV2(v,rqv?{rq:rqv}:{});const vu=`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/view.json`;const cur=await gh('GET',vu+`?t=${Date.now()}`);
+    const vj=await encV2(v,rqv?{rq:rqv}:{});const vu=`${R}/contents/view.json`;const cur=await gh('GET',vu+`?t=${Date.now()}`);
     let same=false;if(cur.status===200&&cur.j&&cur.j.content){try{const j=JSON.parse(Buffer.from(String(cur.j.content).replace(/\n/g,''),'base64').toString('utf8'));same=j.enc===2&&!!j.h&&j.h===vj.h&&j.salt===vj.salt}catch(e){}}
-    GH.skipped=same;if(!same)await ghPut('view.json',Buffer.from(JSON.stringify(vj)),'시간표 '+st,cur.status===200?cur:null);
+    GH.skipped=same&&!files.length;if(!same)files.push({path:'view.json',buf:Buffer.from(JSON.stringify(vj))});
+    /* 가지를 못 읽으면(새 빈 저장소 등) 예전처럼 파일마다 올림 */
+    if(files.length){const msg=(same?'화면 ':'시간표 ')+st;if(ref.status===200)await ghCommit(files,msg);else for(const f of files)await ghPut(f.path,f.buf,msg,f.path==='view.json'&&cur.status===200?cur:null);GH.lastPut=Date.now()}
     await ghPages();if(!GH.url)GH.url=`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`;GH.last=Date.now();
     try{await ghClean()}catch(e){try{logErr('ghClean',e)}catch(_){}}}
   catch(e){GH.err=e.message||String(e)}
   GH.busy=false;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}
-  if(GH.again){GH.again=false;clearTimeout(ghT);ghT=setTimeout(publishGh,1500)}}
+  if(GH.again){GH.again=false;ghSchedule(1500)}}
 /* 4.09.0 GitHub 저장소 예전 기록 정리 (한 달에 한 번 · 관리자 PC만 · 올리기 끝난 뒤 조용히)
    지금 파일 그대로(같은 tree)로 부모 없는 새 커밋을 만들어 기본 가지를 그걸로 바꿈 → 예전 판 view.json들이 기록에서 빠짐(GitHub가 며칠 안에 치움)
    그사이 다른 PC가 올렸으면(가지가 움직였으면) 이번엔 안 하고 다음에 · 실패해도 조용히(오류 기록에만) */
@@ -409,11 +427,11 @@ async function ghClean(force){const c=syCfg();if(c.on&&c.role!=='owner')return {
   const up=await gh('PATCH',`${R}/git/refs/heads/${encodeURIComponent(br)}`,{sha:nc.j.sha,force:true});if(up.status!==200)throw new Error('가지 바꾸기 실패 '+up.status);
   mob.ghCleanAt=Date.now();fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');return {ok:true}}
 ipcMain.handle('ghClean',async()=>{try{if(!mob.ghOwner)await ghConnect();return await ghClean(true)}catch(e){return {ok:false,err:String(e.message||e)}}});
-function ghInfo(){return {cleanAt:mob.ghCleanAt||0,exp:mob.ghExp||0,on:!!mob.ghOn,repo:mob.ghRepo||'',owner:mob.ghOwner||'',hasTok:!!ghToken(),last:GH.last,err:GH.err,url:GH.url||(mob.ghOwner&&mob.ghRepo?`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`:''),pagesOff:!!GH.pagesOff,busy:GH.busy}}
+function ghInfo(){return {nextAt:GH.at||0,lastPut:GH.lastPut||0,cleanAt:mob.ghCleanAt||0,exp:mob.ghExp||0,on:!!mob.ghOn,repo:mob.ghRepo||'',owner:mob.ghOwner||'',hasTok:!!ghToken(),last:GH.last,err:GH.err,url:GH.url||(mob.ghOwner&&mob.ghRepo?`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`:''),pagesOff:!!GH.pagesOff,busy:GH.busy}}
 ipcMain.handle('ghSet',async(e,o)=>{mob.ghOn=!!o.on;if(o.repo!==undefined)mob.ghRepo=String(o.repo||'').trim().replace(/^.*\//,'');if(o.token)ghSetToken(String(o.token).trim());
   let pinCh=false;if(o.pin!==undefined){const np=String(o.pin||'').trim().slice(0,32);if(np!==mob.pin){mob.pin=np;mob.pinAt=Date.now();pinCh=true}}fs.writeFileSync(MOB,JSON.stringify(mob),'utf8');if(pinCh)await rqPublish();if(mob.ghOn)await publishGh();if(o.token)await tokenPublish();return mobInfo()});
 ipcMain.handle('ghNow',async()=>{await publishGh();return mobInfo()});
-ipcMain.handle('ghLater',()=>{if(mob.ghOn){clearTimeout(ghT);ghT=setTimeout(publishGh,1500)}return true});
+ipcMain.handle('ghLater',()=>{if(mob.ghOn)ghSchedule(1500);return true});
 ipcMain.handle('nasSet',(e,o)=>{if(o.pickBase!==undefined){}
   mob.nasOn=!!o.on;if(o.base!==undefined)mob.nasBase=o.base;if(o.host!==undefined)mob.nasHost=String(o.host||'').trim().replace(/^https?:\/\//,'').replace(/\/+$/,'');
   if(o.pin!==undefined)mob.pin=String(o.pin||'').trim().slice(0,32);
@@ -466,22 +484,25 @@ async function nsList(sub){const d=nsDir(sub);const names=(await nsT(fs.promises
     out.push({id:n.slice(0,-5),sha:c.sha,fp})}
   Object.keys(NS.st).forEach(k=>{if(k.startsWith(sub+'/')&&!names.includes(k.slice(sub.length+1)))delete NS.st[k]});return out}
 async function nsRead(fp){try{return await nsT(fs.promises.readFile(fp))}catch(e){if(e.code==='ENOENT')return null;throw e}}
-async function nsWrite(fp,buf){const t=fp+'.'+(syCfg().dev||'x').slice(0,8)+'.tmp';await nsT(fs.promises.writeFile(t,buf));try{await nsT(fs.promises.rename(t,fp))}catch(e){try{await fs.promises.unlink(t)}catch(_){}throw e}
+/* 4.11.0: 나스가 잠깐 파일을 잡고 있어서(EPERM·EBUSY) 이름 바꾸기가 튕기면 조금 쉬었다 다시 · 끝까지 안 되면 덮어쓰기 복사로 */
+async function nsRen(t,fp){const W=[150,400,900];for(let i=0;;i++){try{await nsT(fs.promises.rename(t,fp));return}catch(e){if(!/EPERM|EBUSY|EACCES/.test(e&&e.code||'')||i>=W.length){if(/EPERM|EBUSY|EACCES/.test(e&&e.code||'')){try{await nsT(fs.promises.copyFile(t,fp));try{await fs.promises.unlink(t)}catch(_){}return}catch(_){}}try{await fs.promises.unlink(t)}catch(_){}throw e}await new Promise(r=>setTimeout(r,W[i]))}}}
+async function nsWrite(fp,buf){const t=fp+'.'+(syCfg().dev||'x').slice(0,8)+'.tmp';await nsT(fs.promises.writeFile(t,buf));await nsRen(t,fp)
   try{const st=await fs.promises.stat(fp);NS.st[path.basename(path.dirname(fp))+'/'+path.basename(fp)]={m:st.mtimeMs,s:st.size,sha:blobSha(buf)}}catch(e){}}
 /* GitHub로 뒤에서 똑같이 올리기 (같은 파일은 마지막 것만) */
-function nsMirror(sub,id,buf){NS.mq.set(sub+'/'+id,{sub,id,buf});nsMirrorRun()}
+/* 4.10.0 GitHub 백업 사본은 끔(나스 중심 · PC마다 전체 사본과 30분 자동 백업이 있음) — Pages 빌드 줄이기 · 다시 켜려면 syCfg().ghMirror=true */
+function nsMirror(sub,id,buf){if(!syCfg().ghMirror)return;NS.mq.set(sub+'/'+id,{sub,id,buf});nsMirrorRun()}
 async function nsMirrorRun(){if(NS.mBusy)return;NS.mBusy=true;try{while(NS.mq.size){const [k,it]=NS.mq.entries().next().value;NS.mq.delete(k);
       try{if(!mob.ghOwner)await ghConnect();if(it.buf)await ghPut(`sync/${it.sub}/${it.id}.json`,it.buf,`${syCfg().name||'관리자'} · ${it.id} (나스)`);else{const u=`${syBase()}/${it.sub}/${it.id}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'지우기 (나스)',sha:g.j.sha})}}catch(e){}}}finally{NS.mBusy=false}}
 async function nsMetaGet(){try{const b=await nsRead(path.join(nsRoot(),'동기화','meta.json'));return b?JSON.parse(b.toString('utf8')):{}}catch(e){return {}}}
 /* 처음 한 번(또는 나스를 다시 켤 때): GitHub 원본을 나스로 '전부' 옮김 → 그 뒤로 나스가 원본, GitHub는 뒤에서 받는 백업 사본(동기화 때 읽지 않음) */
-async function nsSeed(){if(!(await nsUpRaw()))return false;try{if(!mob.ghOwner)await ghConnect();
-    for(const sub of ['branches','shared']){const G=await syDir(sub);for(const g of G){const fp=path.join(nsDir(sub),g.id+'.json');const cur=await nsRead(fp);if(cur&&blobSha(cur)===g.sha)continue;const b=await syRaw(`${syBase()}/${sub}/${g.id}.json`);syDec(b);await nsWrite(fp,b)}}
-    return true}catch(e){return false}}
+/* 4.10.0 GitHub 사본은 더 이상 최신이 아니라서 거기서 옮겨 오지 않음(옛 GitHub → 나스 첫 옮기기는 이미 끝남) · 나스에 있는 파일은 절대 덮지 않음
+   빈 나스면 각 PC가 평소처럼 [적용]·저장할 때 채워짐 → 여기선 '옮기기 끝' 표시만 */
+async function nsSeed(){return !!(await nsUpRaw())}
 function nsRevokedSoon(){if(Date.now()-NS.revAt<180000)return NS.rev;NS.revAt=Date.now();syRevoked().then(v=>{NS.rev=v}).catch(()=>{});return NS.rev}
 async function nsPull(known,opt){const list=await nsList('branches');const out=[],restored=[]; /* 텅 빈 나스(옮길 것도 없던 새 저장소)는 빈 목록 — 화면은 '전부 사라짐'을 지우기로 받지 않음(3.87.1) */
   for(const f of list){if(known&&known[f.id]===f.sha)continue;const b=await nsRead(f.fp);if(!b)continue;let data=null,sha=blobSha(b);try{data=syDec(b)}catch(err){
-      /* 깨진 나스 파일: GitHub 백업 사본이 멀쩡하면 그걸로 되살림(백업 → 원본 방향은 이때뿐) */
-      try{const g=await syRaw(`${syBase()}/branches/${f.id}.json`);data=syDec(g);try{fs.writeFileSync(path.join(BAK,`timetable_깨진나스파일_${f.id}_${stamp()}.bin`),b)}catch(_){}await nsWrite(f.fp,g);sha=blobSha(g);restored.push(f.id)}catch(e2){data=null}}
+      /* 깨진 나스 파일: 4.10.0 이 PC가 가진 그 지점 사본으로 되살림(GitHub 사본은 꺼서 최신이 아님) · 깨진 파일은 이 PC 백업 폴더에 */
+      try{let db={branches:[]};try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(_){}const lb=(db.branches||[]).find(x=>x&&x.id===f.id);if(!lb)throw new Error('이 PC에 사본 없음');const g=syEnc(lb);data=syDec(g);try{fs.writeFileSync(path.join(BAK,`timetable_깨진나스파일_${f.id}_${stamp()}.bin`),b)}catch(_){}await nsWrite(f.fp,g);sha=blobSha(g);restored.push(f.id)}catch(e2){data=null}}
     out.push(data?{id:f.id,sha,data}:{id:f.id,sha,err:'풀지 못했어요(관리자 키가 다르거나 파일이 깨짐)'})}
   let locks=opt&&opt.noLocks?null:{};if(locks)for(const l of await nsList('locks')){try{const b=await nsRead(l.fp);if(b)locks[l.id]=Object.assign(JSON.parse(b.toString('utf8')),{sha:l.sha})}catch(e){}}
   return {ok:true,nas:true,present:list.map(f=>({id:f.id,sha:f.sha})),changed:out,locks,restored}}
@@ -593,15 +614,25 @@ ipcMain.handle('syncOff',()=>{const c=syCfg();c.on=false;sySave();return syInfo(
 ipcMain.handle('syncName',(e,n)=>{syCfg().name=String(n||'').slice(0,20);sySave();return syInfo()});
 /* 연결된 PC 목록·원격 끊기: 각 PC가 sync/devices/<dev>.json(관리자 키 암호화)에 이름·역할·지점·버전·날짜를 남김 (바뀔 때·하루 한 번만 씀)
    관리자가 [연결 끊기] → sync/revoke.json에 그 PC 표시 → 그 PC는 다음 동기화 때 연동을 끄고 키를 지움 (시간표 파일은 그 PC에 남음) */
-async function syRevoked(){try{const r=await fetch(API()+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/revoke.json?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'}});
+async function syRevoked(){try{const c0=syCfg();if(await nsUpRaw()){const b=await nsRead(path.join(nsRoot(),'동기화','revoke.json')).catch(()=>null);if(b){try{const o=syDec(b);if(o&&o[c0.dev])return true}catch(e){}}}}catch(e){}try{const r=await fetch(API()+`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/sync/revoke.json?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+ghToken(),'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable'}});
   if(!r.ok)return false;const o=syDec(Buffer.from(await r.arrayBuffer()));const c=syCfg();return !!(o&&o[c.dev])}catch(e){return false}}
 function syWipe(){const c=syCfg();c.on=false;['keyEnc','keyPlain','signEnc','signPlain','admPw','beat','home'].forEach(k=>delete c[k]);c.revoked=Date.now();delete mob.ghTok;delete mob.ghTokPlain;mob.ghOn=false;mob.rq={};sySave()}
 ipcMain.handle('syncBeat',async(e,ver)=>{const c=syCfg();if(!syReady())return false;const d={name:c.name||'',role:c.role||'owner',branch:c.branch||'',ver:String(ver||''),day:new Date().toISOString().slice(0,10),...(appStale()?{stale:1}:{})};const sig=JSON.stringify(d);
-  if(c.beat===sig)return false;try{if(!mob.ghOwner)await ghConnect();await ghPut(`sync/devices/${c.dev}.json`,syEnc(d),'PC 확인 · '+(c.name||''));c.beat=sig;sySave();return true}catch(err){return false}});
+  if(c.beat===sig)return false;
+  /* 4.10.0 PC 확인 쪽지: 기본은 나스(동기화\devices · GitHub 빌드 없음) · 설정에서 GitHub로 고를 수 있음(c.beatGh) */
+  if(!c.beatGh&&nsMode()){try{if(!(await nsUpRaw()))return false; /* 나스를 안 쓰는 PC(나스 설정 없음)는 예전처럼 GitHub */const d0=nsDir('devices');await nsT(fs.promises.mkdir(d0,{recursive:true}));await nsWrite(path.join(d0,c.dev+'.json'),syEnc(d));c.beat=sig;sySave();return true}catch(err){return false}}
+  try{if(!mob.ghOwner)await ghConnect();await ghPut(`sync/devices/${c.dev}.json`,syEnc(d),'PC 확인 · '+(c.name||''));c.beat=sig;sySave();return true}catch(err){return false}});
+ipcMain.handle('syncBeatWhere',(e,gh)=>{const c=syCfg();if(gh!==undefined){c.beatGh=!!gh;delete c.beat;sySave()}return {gh:!!c.beatGh}});
 ipcMain.handle('syncDevices',async()=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false,list:[]};
-  try{if(!mob.ghOwner)await ghConnect();const out=[];for(const f of await syDir('devices')){try{out.push(Object.assign(syDec(await syRaw(`${syBase()}/devices/${f.id}.json`)),{dev:f.id,me:f.id===c.dev}))}catch(err){}}return {ok:true,list:out}}catch(err){return {ok:false,err:err.message,list:[]}}});
+  /* 4.10.0 나스(기본)와 GitHub(예전·GitHub로 고른 PC) 둘 다 읽어서 PC마다 날짜가 더 늦은 쪽 */
+  const M={};const put=(dev,o,src)=>{if(!o)return;const cur=M[dev];if(!cur||String(o.day||'')>String(cur.day||''))M[dev]=Object.assign(o,{dev,me:dev===c.dev,src})};
+  try{if(await nsUpRaw()){let L=[];try{L=await nsList('devices')}catch(e){}for(const f of L){try{put(f.id,syDec(await nsRead(f.fp)),'nas')}catch(e){}}}}catch(e){}
+  try{if(!mob.ghOwner)await ghConnect();for(const f of await syDir('devices')){try{put(f.id,syDec(await syRaw(`${syBase()}/devices/${f.id}.json`)),'gh')}catch(err){}}}catch(err){if(!Object.keys(M).length)return {ok:false,err:err.message,list:[]}}
+  return {ok:true,list:Object.values(M)}});
 ipcMain.handle('syncRevoke',async(e,dev)=>{const c=syCfg();if(!syReady()||c.role!=='owner'||!dev||dev===c.dev)return {ok:false,err:'끊을 수 없어요'};
   try{if(!mob.ghOwner)await ghConnect();let o={};try{o=syDec(await syRaw(`${syBase()}/revoke.json`))||{}}catch(err){}o[dev]=Date.now();
+    /* 4.10.0 나스에도 적고 그 PC 쪽지도 지움(나스 중심) · GitHub에도 남겨 둠(드묾 · 예전 판 PC도 알아듣게) */
+    try{if(await nsUpRaw()){let n={};try{n=syDec(await nsRead(path.join(nsRoot(),'동기화','revoke.json')))||{}}catch(e){}n[dev]=Date.now();await nsWrite(path.join(nsRoot(),'동기화','revoke.json'),syEnc(n));try{await fs.promises.unlink(path.join(nsDir('devices'),dev+'.json'))}catch(e){}}}catch(e){}
     await ghPut('sync/revoke.json',syEnc(o),'PC 연결 끊기');const u=`${syBase()}/devices/${dev}.json`;const g=await gh('GET',u);if(g.status===200)await gh('DELETE',u,{message:'PC 연결 끊기',sha:g.j.sha});return {ok:true}}catch(err){return {ok:false,err:err.message}}});
 /* 관리자 잠금: 프로그램 관리자 PC를 평소엔 '내 지점 모드'로 — 비밀번호를 넣어야 관리자 기능이 열림 (화면 잠금 · 업데이트 보내기는 계속) */
 const ADMF={n:0,until:0};
@@ -675,7 +706,7 @@ ipcMain.handle('rqCm',async(e,num)=>{if(!rqOn())return {ok:false,err:'꺼져 있
 ipcMain.handle('rqComment',async(e,num,obj)=>{if(!rqOn())return {ok:false};try{const key=Buffer.from(rqCfg().k,'base64'),iv=crypto.randomBytes(12),c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);
   const r=await rqApi('POST',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}/comments`,{body:JSON.stringify({v:1,iv:iv.toString('base64'),ct:ct.toString('base64')})});return {ok:r.status===201}}catch(err){return {ok:false,err:err.message}}});
 ipcMain.handle('autoStart',(e,on)=>{try{if(on!==undefined)app.setLoginItemSettings({openAtLogin:!!on});return !!app.getLoginItemSettings().openAtLogin}catch(err){return null}});
-ipcMain.handle('updRemoteVer',async()=>{try{if(!syReady())return null;if(!mob.ghOwner)await ghConnect();const rv=await updRemote();const m=rv&&JSON.parse(rv.m);return m?{ver:m.ver,at:m.at}:null}catch(err){return null}});
+ipcMain.handle('updRemoteVer',async()=>{try{if(!syReady())return null;{const nv=await nsUpdGet();let nm=null;try{nm=nv&&JSON.parse(nv.m)}catch(e){}if(nm)return {ver:nm.ver,at:nm.at,nas:true}}if(!mob.ghOwner)await ghConnect();const rv=await updRemote();const m=rv&&JSON.parse(rv.m);return m?{ver:m.ver,at:m.at}:null}catch(err){return null}});
 ipcMain.handle('rqClose',async(e,num,ok)=>{if(!rqOn())return {ok:false,err:'꺼져 있어요'};try{const r=await rqApi('PATCH',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}`,{state:'closed',state_reason:ok?'completed':'not_planned'});return r.status===200?{ok:true}:{ok:false,err:rqErr(r)}}catch(err){return {ok:false,err:err.message}}});
 
 /* ================= 자동 업데이트 (원장님 PC → 지점 PC) =================
@@ -693,6 +724,11 @@ const {publicKey,privateKey}=crypto.generateKeyPairSync('ed25519');const pem=pri
 const sha256=b=>crypto.createHash('sha256').update(b).digest('hex');
 async function updRemote(){try{return JSON.parse((await syRaw(`/repos/${mob.ghOwner}/${mob.ghRepo}/contents/app/version.json`)).toString('utf8'))}catch(e){return null}}
 ipcMain.handle('updPublish',async(e,ver)=>{const c=syCfg();if(!syReady()||c.role!=='owner')return {ok:false};if(!c.pub)try{updEnsureKeys()}catch(err){}const priv=updPriv();if(!priv)return {ok:false,nokey:true};
+  /* 4.10.0 나스가 보이면 업데이트는 나스에만(GitHub에 안 올림 → Pages 빌드 0) · PC들은 원래 나스를 먼저 봄 · 나스가 안 보일 때만 예전처럼 GitHub */
+  try{if(await nsUp()){const nv=await nsUpdGet();let nc=null;try{nc=nv&&JSON.parse(nv.m)}catch(err){}if(nc&&vcmp(nc.ver,ver)>=0)return {ok:true,skipped:true,remote:nc.ver};
+      const files={};for(const f of UPD_FILES){if(!fs.existsSync(path.join(__dirname,f)))continue;files[f]=sha256(fs.readFileSync(path.join(__dirname,f)))}
+      const m=JSON.stringify({ver,at:Date.now(),files});const sig=crypto.sign(null,Buffer.from(m),priv).toString('base64');await nsUpdPut(m,sig);const chk=await nsUpdGet();
+      let ok2=false;try{ok2=JSON.parse(chk.m).ver===ver}catch(err){}if(ok2)return {ok:true,published:ver,nas:true}}}catch(err){}
   try{if(!mob.ghOwner)await ghConnect();const rv=await updRemote();let cur=null;try{cur=rv&&JSON.parse(rv.m)}catch(err){}
     if(cur&&vcmp(cur.ver,ver)>=0){if(cur.ver===ver)await nsUpdPut(rv.m,rv.sig,true);return {ok:true,skipped:true,remote:cur.ver}}
     const files={};for(const f of UPD_FILES){if(!fs.existsSync(path.join(__dirname,f)))continue;const b=fs.readFileSync(path.join(__dirname,f));files[f]=sha256(b);await ghPut('app/'+f,b,`프로그램 ${ver} · ${f}`)}
@@ -793,7 +829,7 @@ ipcMain.handle('reloadNow',()=>{if(win&&!win.isDestroyed())win.webContents.reloa
   // 폰 화면(mobile.html)이 바뀌면 GitHub·NAS에도 바로 다시 올림
   let mt=null,mlast=0;try{mlast=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs}catch(e){}
   fs.watch(__dirname,(ev,f)=>{if(!f||!/^mobile\.html$/i.test(f))return;clearTimeout(mt);mt=setTimeout(()=>{try{const m=fs.statSync(path.join(__dirname,'mobile.html')).mtimeMs;if(m===mlast)return;mlast=m}catch(e){return}
-    try{publishNas()}catch(e){}try{publishGh()}catch(e){}},1500)});
+    try{publishNas()}catch(e){}try{if(mob.ghOn)ghSchedule(1500)}catch(e){}},1500)});
 });
 app.on('window-all-closed',()=>app.quit());
 /* ===== 에듀OK에서 명단 자동으로 받기 (재학생명부·입학희망생명부)
@@ -879,7 +915,7 @@ ipcMain.handle('ynSetup',async(e,o)=>{const d=ynDir();if(!d)return {ok:false,err
   /* 시간표.json : Y-Note 추천 교재용 (반 이름·시간만 · 바뀐 때만 · 임시로 쓰고 이름 바꿈 · 실패는 조용히) */
   if(o&&o.tt&&typeof o.tt==='object'){try{const T={};const hm=x=>/^\d\d:\d\d$/.test(String(x||''));names.forEach(n=>{T[n]=(Array.isArray(o.tt[n])?o.tt[n]:[]).filter(x=>x&&x.d>=1&&x.d<=7&&hm(x.s)&&x.c).map(x=>{const r={d:x.d|0,s:String(x.s)};if(hm(x.e))r.e=String(x.e);r.c=String(x.c).slice(0,60);return r})});
     const sp=path.join(d,'시간표.json');let so=null;try{so=JSON.parse(await nsT(fs.promises.readFile(sp,'utf8'),5000))}catch(err){}
-    if(!so||so.v!==1||JSON.stringify(so.teachers)!==JSON.stringify(T)){const tmp=sp+'.tmp';await nsT(fs.promises.writeFile(tmp,JSON.stringify({v:1,at:Date.now(),teachers:T}),'utf8'),5000);await nsT(fs.promises.rename(tmp,sp),5000)}}catch(err){try{logErr('ynTT',err)}catch(e2){}}}
+    if(!so||so.v!==1||JSON.stringify(so.teachers)!==JSON.stringify(T)){const tmp=sp+'.tmp';await nsT(fs.promises.writeFile(tmp,JSON.stringify({v:1,at:Date.now(),teachers:T}),'utf8'),5000);await nsRen(tmp,sp)}}catch(err){try{logErr('ynTT',err)}catch(e2){}}}
   return {ok:true}}catch(err){return {ok:false,err:String(err.message||err)}}});
 const YNC={};/* 파일별 풀어 둔 것 (크기·시각 같으면 다시 안 풂) */
 function ynDec(priv,line){try{const o=JSON.parse(line);if(o.e!==1)return null;const key=crypto.privateDecrypt({key:priv,padding:crypto.constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},Buffer.from(o.k,'base64'));const dc=crypto.createDecipheriv('aes-256-gcm',key,Buffer.from(o.iv,'base64'));dc.setAuthTag(Buffer.from(o.tag,'base64'));const r=JSON.parse(Buffer.concat([dc.update(Buffer.from(o.ct,'base64')),dc.final()]).toString('utf8'));return r&&typeof r==='object'?r:null}catch(e){return null}}
