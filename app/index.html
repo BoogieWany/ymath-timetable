@@ -280,7 +280,7 @@ td.slot.stacked{background:repeating-linear-gradient(135deg,color-mix(in srgb,va
 .trash-h{display:flex;align-items:center;gap:6px;border:1.5px dashed var(--line);background:var(--bg);border-radius:8px;padding:8px;cursor:pointer;color:var(--muted);width:100%}
 .trash-h b{color:var(--fg);font-size:12.5px;flex:1;text-align:left}
 .trash.drop .trash-h{border-color:var(--err);background:var(--err-bg);color:var(--err)}
-.titem{display:flex;align-items:center;gap:6px;font-size:12px}
+.titem{display:flex;align-items:center;gap:6px;font-size:12px}.titem[draggable]{cursor:grab;border-radius:6px;transition:background-color .15s}.titem[draggable]:hover{background:color-mix(in srgb,var(--fg) 5%,transparent)}.titem[draggable]:active{cursor:grabbing}
 .titem .tn{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
 .titem .tn small{color:var(--muted);font-size:11px}
 .titem .btn{padding:2px 7px;font-size:11.5px}
@@ -1290,6 +1290,7 @@ tr:hover .tgq,.tgq:focus-visible{opacity:.8}.tgq:hover{background:var(--line2);o
 
 .tgbl{display:flex;align-items:flex-start;gap:8px;margin:10px 0 0 78px;cursor:pointer;line-height:1.45;font-size:13.5px}.tgbl input{margin-top:3px;flex:none}.tgbl span{display:block}.tgbl small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
 /* 3.96.0 면제 */
+.sybw{gap:8px;align-items:center;margin:6px 0 4px}
 .ynv{margin:10px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px}.ynv .row{gap:10px;align-items:baseline}.ynvt{margin-top:6px}.ynvt tr.old td{color:var(--muted)}.ynok{color:var(--ok);font-weight:600}.ynold{color:var(--warn);font-weight:600}.ynvn{margin-top:6px;font-size:11.5px;line-height:1.55}
 .grwas{display:inline-block;margin-left:4px;padding:0 5px;border-radius:5px;font-size:10.5px;line-height:16px;color:var(--muted);border:1px solid var(--line)}
 .gri.gbad,input.gbad{outline:1.5px solid var(--err);outline-offset:-1.5px;background:color-mix(in srgb,var(--err) 8%,var(--panel))}
@@ -3813,15 +3814,17 @@ var qrcode = function() {
 /* 4.01.0 펼침 메뉴(details.impm·.thm): 바깥을 누르거나 항목을 고르면 닫힘 */
 document.addEventListener('click',e=>{document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.impm-l button'))d.open=false})},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>d.open=false)});
-const APPVER='4.08.0', APPDATE='2026-11-12';
+const APPVER='4.11.0', APPDATE='2026-11-15';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
 const bridge=window.api||null;
 /* 4.03.3 화면 오류도 조용히 data\error.log에(한 번 켤 때 30건까지 · 화면엔 안 띄움) */
 (()=>{let n=0;const send=(t,m,st)=>{if(!bridge||!bridge.logErr||++n>30)return;try{bridge.logErr(t,String(m||'').slice(0,300),String(st||'').slice(0,600))}catch(e){}};
-  window.addEventListener('error',e=>send('error',e.message,(e.error&&e.error.stack)||`${String(e.filename||'').split('/').pop()}:${e.lineno}`));
-  window.addEventListener('unhandledrejection',e=>{const r=e.reason;send('promise',r&&r.message||r,r&&r.stack)})})();
+  /* 4.11.0 화면에도 알림: 눌렀는데 아무 반응 없이 멈추지 않게 (8초에 한 번까지 · 창 크기 관찰 같은 무해한 것은 빼고) */
+  let last=0;const tell=m=>{m=String(m||'');if(!m||/ResizeObserver|Script error/i.test(m))return;const now=Date.now();if(now-last<8000)return;last=now;try{if(typeof toast==='function')toast('문제가 생겨서 방금 동작이 끝까지 안 됐을 수 있어요 · '+m.slice(0,90),7000)}catch(e){}};
+  window.addEventListener('error',e=>{send('error',e.message,(e.error&&e.error.stack)||`${String(e.filename||'').split('/').pop()}:${e.lineno}`);tell(e.message)});
+  window.addEventListener('unhandledrejection',e=>{const r=e.reason;send('promise',r&&r.message||r,r&&r.stack);tell(r&&r.message||r)})})();
 if(bridge)document.body.classList.add('exe');
 // 창 버튼(최소화·최대화/원래 크기·닫기) — 출제기와 같은 방식(frame:false)
 (function(){if(!bridge||!bridge.winCtl)return;document.body.classList.add('ownctl');const set=s=>document.body.classList.toggle('wmax',!!(s&&(s.max||s.full)));
@@ -3918,7 +3921,7 @@ async function mobRender(info){const el=$('mobBox');if(!el)return;
       <button class="btn" data-act="ghSave">${g.on?'저장':'연결 확인'}</button>${g.exp?`<span class="hint">키 만료 ${new Date(g.exp).toLocaleDateString('ko-KR')}</span>`:''}${g.on?'<button class="btn" data-act="ghNow">지금 올리기</button>':''}</div>
     ${g.busy?'<div class="hint">올리는 중…</div>':''}
     ${g.err?`<div class="box warn">${esc(g.err)}</div>`:''}
-    ${g.on&&!g.err&&g.last?`<div class="hint" style="color:var(--ok)">● ${fmtT(g.last)}에 올렸어요 · 앞으로 [적용]할 때마다 자동으로 올라가요 (폰에 보이기까지 1~2분)</div>`:''}
+    ${g.on&&!g.err&&g.last?`<div class="hint" style="color:var(--ok)">● ${fmtT(g.last)}에 올렸어요 · 앞으로 [적용]할 때마다 자동으로 올라가요 (폰에 보이기까지 몇 분 · 빌드를 아끼려고 6분에 한 번까지 몰아서 올려요)</div>`:''}${g.on&&g.cleanAt&&isOwner()?`<div class="hint">예전 기록은 한 달에 한 번 저절로 정리해요 · 마지막 정리 ${fmtT(g.cleanAt)}</div>`:''}
     ${g.on&&g.pagesOff?`<div class="box warn"><span>웹 페이지 켜기만 남았어요: GitHub의 저장소 → <b>Settings → Pages</b> → Source <b>Deploy from a branch</b>, Branch <b>main</b> / <b>(root)</b> → [Save]</span></div>`:''}
     ${g.on&&g.url&&!g.err?`<div class="mobqr"><div class="qrc">${qrSvg(g.url)}<b>${esc(g.url)}</b></div><div class="hint" style="max-width:420px"><span class="row" style="margin:0 0 8px;gap:6px"><button class="btn pri" data-act="mobCopy" data-u="${esc(g.url)}">주소 복사</button><button class="btn" data-act="mobCopyMsg" data-u="${esc(g.url)}" title="주소·사용법을 한 번에 복사 · 코드는 들어 있지 않아요">안내문 복사</button></span>이 주소(QR)를 선생님들께 공유하세요.<br>시간표는 지점마다 따로 <b>암호화</b>돼서 올라가고, 선생님마다 <b>개인 로그인 코드</b>로 이름이 있는 지점만 열려요.<br>코드는 [강사 관리]에서 만들고 [복사]로 1:1로 보내 주세요 · 모든 지점을 볼 사람은 [강사 관리 → 모든 지점]을 켜요.</div></div>`:''}
     <details class="guide"${g.on?'':' open'}><summary>처음 한 번 준비 (GitHub 화면에서)</summary><ol>
@@ -3984,7 +3987,7 @@ async function applyEditGo(){if(UI.stale||await staleCheck()){staleDlg();return}
   delete DB._baseHash;
   try{const k=notesExpire();if(k)setTimeout(()=>toast(`횟수가 끝난 메모 ${k}개를 지웠어요`),1600)}catch(e){}
   try{exExpire()}catch(e){}
-  try{const o=JSON.parse(ORIG||'null');if(o){HIST.unshift({id:uid('h'),at:new Date().toISOString(),snap:JSON.stringify(o.branches)});if(HIST.length>200)HIST.length=200;histSave()}}catch(e){}
+  try{const o=JSON.parse(ORIG||'null');if(o){HIST.unshift({id:uid('h'),at:new Date().toISOString(),snap:JSON.stringify(o.branches)});histTrim();histSave()}}catch(e){}
   UI.edit=false;document.body.classList.remove('editing');await saveNow();try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}
   ORIG=null;hist.u=[];hist.r=[];UI.picked=null;render();toast('수정한 시간표를 적용했어요 · 적용 전 시간표는 [보관함 → 적용 기록]에 남아요');if(typeof syOn==='function'&&syOn())await syncAfterApply()}
 async function discardEdit(){if(ORIG)DB=JSON.parse(ORIG);UI.edit=false;document.body.classList.remove('editing');try{if(bridge)await bridge.clearDraft();else localStorage.removeItem('ymt_draft')}catch(e){}
@@ -4000,8 +4003,11 @@ function renderMode(){const m=$('modeBox');if(!m)return;
   $('undoRow').hidden=!UI.edit}
 /* 적용 기록(HIST)은 시간표(DB)와 따로 history.json에 — 되돌리기·저장·동기화가 기록 양에 영향받지 않음 */
 let HIST=[];
+/* 4.11.0 정리 규칙: 최근 30개는 모두 · 그 전은 하루에 마지막 1개만 · 90일 넘은 건 지움 (보고 있는 기록은 남김) */
+function histTrim(){const n0=HIST.length;if(n0<=30)return false;HIST.sort((a,b)=>String(b&&b.at||'').localeCompare(String(a&&a.at||'')));const lim=Date.now()-90*864e5,days=new Set();
+  HIST=HIST.filter((h,i)=>{if(i<30||(h&&h.id===UI.peek))return true;const t=Date.parse(h&&h.at);if(!(t>=lim))return false;const d=new Date(t),k=d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();if(days.has(k))return false;days.add(k);return true});return HIST.length!==n0}
 function histSave(){try{if(bridge&&bridge.histSave)bridge.histSave(JSON.stringify(HIST));else localStorage.setItem('ymt_hist',JSON.stringify(HIST))}catch(e){}}
-function histAdopt(o){if(!o||!('history' in o))return;if(Array.isArray(o.history)&&o.history.length){const ids=new Set(HIST.map(h=>h&&h.id));let add=false;o.history.forEach(h=>{if(h&&h.id&&!ids.has(h.id)){HIST.push(h);add=true}});if(add){HIST.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));if(HIST.length>200)HIST.length=200;histSave()}}delete o.history}
+function histAdopt(o){if(!o||!('history' in o))return;if(Array.isArray(o.history)&&o.history.length){const ids=new Set(HIST.map(h=>h&&h.id));let add=false;o.history.forEach(h=>{if(h&&h.id&&!ids.has(h.id)){HIST.push(h);add=true}});if(add){HIST.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));histTrim();histSave()}}delete o.history}
 function dbSnap(){return JSON.stringify(DB)}
 function dbRestore(s){DB=JSON.parse(s)}
 function undo(){if(!hist.u.length)return;hist.r.push(dbSnap());dbRestore(hist.u.pop());UI.picked=null;markDirty();render();toast('되돌렸어요')}
@@ -4605,7 +4611,7 @@ function unplace(sid){const o=V().sessions.find(x=>x.id===sid);if(!o)return;comm
 function TR(){const v=V();if(!v.trash)v.trash=[];return v.trash}
 function trashBox(){const t=(V().trash||[]);
   let h=`<div class="trash${UI.trashOpen?' open':''}" id="trash" title="카드를 놓으면 그 반 전체 삭제 · Shift 누른 채 놓으면 그 수업 1개만 (되살리기 가능)"><button class="trash-h" data-act="trashToggle"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm4 2v8h2v-8h-2zm4 0v8h2v-8h-2z"/></svg><b>휴지통</b><span class="hint">${t.length?t.length+'개':'비어 있음'}</span></button>`;
-  if(UI.trashOpen){h+=t.length?t.slice().reverse().map(x=>`<div class="titem"><span class="sw" style="background:${esc(x.color||'#999')}"></span><span class="tn">${esc(x.name)}<small>${x.kind==='cls'?'반 전체':esc(tn(x.t)+'T'+(x.d?` · ${x.d} ${pname(x.d,x.p).replace('저녁 ','').replace('주말 ','')}`:' · 대기'))}</small></span>${UI.edit?`<button class="btn" data-restore="${x.id}">되살리기</button>`:''}</div>`).join('')+(UI.edit?'<button class="btn danger" data-act="trashEmpty">휴지통 비우기</button>':''):'<span class="hint">카드를 놓으면 반 전체, Shift+놓기는 수업 1개만 지워져요</span>'}
+  if(UI.trashOpen){h+=t.length?t.slice().reverse().map(x=>`<div class="titem"${UI.edit?` draggable="true" data-trid="${x.id}" title="끌어서 시간표 칸이나 보관함에 놓아도 돼요"`:''}><span class="sw" style="background:${esc(x.color||'#999')}"></span><span class="tn">${esc(x.name)}<small>${x.kind==='cls'?'반 전체':esc(tn(x.t)+'T'+(x.d?` · ${x.d} ${pname(x.d,x.p).replace('저녁 ','').replace('주말 ','')}`:' · 대기'))}</small></span>${UI.edit?`<button class="btn" data-restore="${x.id}">되살리기</button>`:''}</div>`).join('')+(UI.edit?'<button class="btn danger" data-act="trashEmpty">휴지통 비우기</button>':''):'<span class="hint">카드를 놓으면 반 전체, Shift+놓기는 수업 1개만 지워져요</span>'}
   return h+'</div>'}
 function trashCard(pk){const c=C(pk.cls);if(!c)return;
   commit(()=>{const v=V();const cc=C(pk.cls);let d=null,p=null;
@@ -4618,12 +4624,28 @@ function trashCard(pk){const c=C(pk.cls);if(!c)return;
 function trashClass(id){const c=C(id);if(!c)return;
   commit(()=>{const v=V();TR().push({id:uid('r'),kind:'cls',cls:id,name:c.name,color:c.color,clsSnap:JSON.parse(JSON.stringify(c)),sessions:v.sessions.filter(o=>o.cls===id)});
     v.classes=v.classes.filter(x=>x.id!==id);v.sessions=v.sessions.filter(o=>o.cls!==id)},`${c.name} 반을 휴지통에 넣었어요 (되살리기 가능)`)}
-function restoreTrash(rid){const it=TR().find(x=>x.id===rid);if(!it)return;let msg='';
-  commit(()=>{const v=V();if(!C(it.cls)&&it.clsSnap){const k=JSON.parse(JSON.stringify(it.clsSnap));if(it.kind==='ses')k.rule={...k.rule,[it.t]:Math.max(0,(k.rule[it.t]||0)-1)};v.classes.push(k)}
-    if(it.kind==='cls'){(it.sessions||[]).forEach(o=>v.sessions.push(o));msg=`${it.name} 반을 되살렸어요`}
+/* 되살리기 · opt.wait: 원래 자리 말고 보관함(대기)으로 · 돌려주는 값: 되살렸으면 true
+   4.10.3 같은 반 수업을 하나씩 버리면 반 정보(clsSnap)는 마지막 조각에만 있음 → 같은 반의 다른 조각에서 빌려 씀
+   4.11.0 원래 자리에 그 선생님 다른 수업이 이미 있으면 겹쳐 넣지 않고 보관함으로 · 지워진 선생님 수업은 되살리지 않음(반 전체면 그 선생님 몫만 빼고) */
+function restoreTrash(rid,opt){opt=opt||{};const it=TR().find(x=>x.id===rid);if(!it)return false;let msg='';const hasT=t=>B().teachers.some(x=>x.id===t);
+  const snap=it.clsSnap||((TR().find(x=>x.cls===it.cls&&x.clsSnap&&x.id!==rid)||{}).clsSnap);
+  if(!C(it.cls)&&!snap){toast('이 반 정보가 남아 있지 않아 되살릴 수 없어요');return false}
+  if(it.kind==='ses'&&!hasT(it.t)){toast(`${it.name} 수업은 담당 선생님이 지워져서 되살릴 수 없어요`,4500);return false}
+  commit(()=>{const v=V();if(!C(it.cls)&&snap){const k=JSON.parse(JSON.stringify(snap));if(it.kind==='ses')k.rule={...k.rule,[it.t]:Math.max(0,(k.rule[it.t]||0)-1)};
+      Object.keys(k.rule||{}).forEach(t=>{if(!hasT(t)){delete k.rule[t];if(k.members)delete k.members[t]}});v.classes.push(k)}
+    const free=o=>per(o.d)[o.p]&&!v.sessions.some(x=>x.t===o.t&&x.d===o.d&&x.p===o.p);
+    if(it.kind==='cls'){let w=0,g=0;(it.sessions||[]).forEach(o=>{if(!hasT(o.t)){g++;return}if(!opt.wait&&free(o))v.sessions.push(o);else w++});
+      msg=`${it.name} 반을 되살렸어요`+(w?` · 수업 ${w}개는 ${opt.wait?'':'자리에 다른 수업이 있어 '}보관함으로`:'')+(g?` · 지워진 선생님 수업 ${g}개는 뺐어요`:'')}
     else{const c=C(it.cls);c.rule[it.t]=(c.rule[it.t]||0)+1;if(c.members[it.t]===undefined)c.members[it.t]=[];
-      if(it.d&&it.p!=null&&per(it.d)[it.p]){v.sessions.push({id:uid('x'),cls:it.cls,t:it.t,d:it.d,p:it.p});msg=`${it.name} 수업을 원래 자리(${it.d} ${pname(it.d,it.p)})로 되살렸어요`}else msg=`${it.name} 수업을 보관함으로 되살렸어요`}
-    v.trash=v.trash.filter(x=>x.id!==rid)});toast(msg)}
+      const o={cls:it.cls,t:it.t,d:it.d,p:it.p};
+      if(!opt.wait&&it.d&&it.p!=null&&free(o)){v.sessions.push({id:uid('x'),...o});msg=`${it.name} 수업을 원래 자리(${it.d} ${pname(it.d,it.p)})로 되살렸어요`}
+      else msg=`${it.name} 수업을 보관함으로 되살렸어요`+(!opt.wait&&it.d&&it.p!=null&&per(it.d)[it.p]?` · 원래 자리(${it.d} ${pname(it.d,it.p)})에 다른 수업이 있어요`:'')}
+    v.trash=v.trash.filter(x=>x.id!==rid)});if(!opt.quiet)toast(msg,4000);return true}
+/* 4.11.0 휴지통 줄을 끌어서: 시간표 칸에 놓으면 그 칸으로(다른 선생님 칸이면 담당도 바뀜) · 보관함에 놓으면 대기로 · 반 전체는 어디 놓든 [되살리기]와 같음 */
+function restoreTrashTo(rid,d,p,t){const it=TR().find(x=>x.id===rid);if(!it)return;
+  if(it.kind==='cls'){restoreTrash(rid);return}
+  if(!restoreTrash(rid,{wait:true,quiet:true}))return;if(d==null){toast(`${it.name} 수업을 보관함으로 되살렸어요`);return}
+  placeAt({cls:it.cls,t:it.t,i:0},d,p,t)}
 
 /* ================= 학생 시간 조건 (불가·선호) ================= */
 function availCell(s){const a=s.avail||{};const no=Object.values(a).filter(v=>v==='no').length,pr=Object.values(a).filter(v=>v==='pref').length;
@@ -4886,7 +4908,7 @@ document.addEventListener('click',async e=>{
   if(ds.auscope){UI.auto.scope=ds.auscope;UI.auto.res=null;renderAuto();return}
   if(ds.aupv){autoPreview(+ds.aupv);return}
   if(ds.auap){autoApply(+ds.auap);return}
-  if(ds.restore){restoreTrash(ds.restore);return}
+  if(ds.restore){try{restoreTrash(ds.restore)}catch(err){toast('되살리지 못했어요 · '+(err&&err.message||err),6000);try{bridge&&bridge.logErr&&bridge.logErr('restoreTrash',String(err&&err.message||err),String(err&&err.stack||''))}catch(_){}}render();return}
   if(ds.nccolor){UI.nc.color=ds.nccolor;renderNewClass();return}
   if(ds.ncrm){UI.nc.students=UI.nc.students.filter(x=>x!==ds.ncrm);renderNewClass();return}
   if(ds.color){const id=UI.cls;commit(()=>{C(id).color=ds.color});return}
@@ -5357,6 +5379,8 @@ document.addEventListener('dragstart',e=>{const sn=e.target.closest&&e.target.cl
     document.querySelectorAll('#gridScroll .chip[data-sid]').forEach(ch=>{if(ch.dataset.sid===sdrag.from)return;const o=V().sessions.find(x=>x.id===ch.dataset.sid);if(!o)return;
       const clash=busy.has(o.d+'|'+o.p)&&!(fo&&fo.d===o.d&&fo.p===o.p);ch.classList.add(clash?'sdrop-bad':'sdrop-ok')});
     document.querySelectorAll('#gridScroll .chip[data-spid]').forEach(ch=>{if('sp:'+ch.dataset.spid===sdrag.from)return;const sp=SPC(ch.dataset.spid);if(!sp)return;ch.classList.add((sp.members||[]).includes(sdrag.id)?'sdrop-bad':'sdrop-ok')});return}
+  const ti=e.target.closest&&e.target.closest('.titem[data-trid]');
+  if(ti&&UI.edit&&UI.view==='grid'){drag={trid:ti.dataset.trid};e.dataTransfer.setData('text/plain','r');e.dataTransfer.effectAllowed='move';if(UI.pop)closePop();return}
   const c=e.target.closest&&e.target.closest('.chip');if(!c||UI.view!=='grid'||!UI.edit){if(c)e.preventDefault();return}
   if(c.dataset.spid){const sp=SPC(c.dataset.spid);if(!sp)return;drag={spid:sp.id};e.dataTransfer.setData('text/plain','p');e.dataTransfer.effectAllowed='move';if(UI.pop)closePop();document.querySelectorAll('#gridScroll td.spcell').forEach(td=>{if(td.dataset.t!==sp.t)td.classList.add('fit-ok')});return}
   if(c.dataset.sid){const o=V().sessions.find(x=>x.id===c.dataset.sid);drag={sid:o.id,cls:o.cls,t:o.t}}else if(c.dataset.wait){const [cls,t,i]=c.dataset.wait.split('|');drag={cls,t,i:+i}}else return;
@@ -5367,6 +5391,7 @@ document.addEventListener('dragend',()=>{drag=null;sdrag=null;document.body.clas
 document.addEventListener('dragover',e=>{if(sdrag){const ch=underChip(e);document.querySelectorAll('.sdrop-hover').forEach(x=>x.classList.remove('sdrop-hover'));if(ch&&chipKey(ch)!==sdrag.from){e.preventDefault();e.dataTransfer.dropEffect=e.ctrlKey?'copy':'move';ch.classList.add('sdrop-hover')}else{const tz=e.target.closest&&e.target.closest('#trash');if(tz)e.preventDefault()}return}
   if(!drag)return;const td=e.target.closest&&e.target.closest('td.slot[data-t]');const tr=e.target.closest&&e.target.closest('#tray');
   document.querySelectorAll('.drophover').forEach(x=>x.classList.remove('drophover','dropcopy'));
+  if(drag.trid){if(tr){e.preventDefault();tr.classList.add('drop')}else{if($('tray'))$('tray').classList.remove('drop');if(td&&!td.classList.contains('none')&&!td.classList.contains('spcell')){e.preventDefault();e.dataTransfer.dropEffect='move';td.classList.add('drophover')}}return}
   const tz=e.target.closest&&e.target.closest('#trash');if($('trash'))$('trash').classList.toggle('drop',!!tz);
   if(tz){e.preventDefault();if(tr)tr.classList.remove('drop');return}
   if(drag.spid){if(td&&td.classList.contains('spcell')){e.preventDefault();td.classList.add('drophover')}return}
@@ -5394,6 +5419,7 @@ document.addEventListener('drop',async e=>{const X=e.clientX,Y=e.clientY;const s
     else if(e.target.closest&&e.target.closest('#trash')){let one=shift?true:null;if(one===null){const v=await dropMenu(X,Y,`${nm} 빼기`,[{v:'all',t:'반 전체에서 빼기'},{v:'one',t:'이 수업에서만 빼기'}]);if(!v)return;one=v==='one'}removeStudent(sd.id,sd.from,one)}
     return}
   if(!drag)return;const td=e.target.closest&&e.target.closest('td.slot[data-t]');const tr=e.target.closest&&e.target.closest('#tray');e.preventDefault();const d=drag;drag=null;
+  if(d.trid){if(tr)restoreTrashTo(d.trid,null);else if(td&&!td.classList.contains('none')&&!td.classList.contains('spcell'))restoreTrashTo(d.trid,td.dataset.d,+td.dataset.p,td.dataset.t);if($('tray'))$('tray').classList.remove('drop');render();return}
   if(d.spid){const sp=SPC(d.spid);if(!sp)return;if(e.target.closest&&e.target.closest('#trash')){const v=await dropMenu(X,Y,`${sp.name} 특강`,[{v:'del',t:'특강 지우기',s:'명단·시간 포함 전부 (되돌리기 가능)'}]);if(v==='del')spDelete(d.spid);return}
     if(td&&td.classList.contains('spcell')){spSetTeacher(d.spid,td.dataset.t);return}if(td||tr)toast('특강 카드는 특강 줄 안에서 강사 칸으로만 옮길 수 있어요 · 요일·시간은 [수정]에서');return}
   if(e.target.closest&&e.target.closest('#trash')){let one=shift?true:null;if(one===null){const v=await dropMenu(X,Y,`${C(d.cls).name} 지우기`,[{v:'all',t:'반 전체 지우기',s:'이 반의 수업 전부'},{v:'one',t:'이 수업 1개만',s:d.sid?'이 칸의 수업만':'대기 카드 1개만'}]);if(!v)return;one=v==='one'}
@@ -5455,7 +5481,7 @@ function loadBadAsk(pre){return new Promise(async ok=>{let inf=pre||{ok:false};i
   try{DB=txt?JSON.parse(txt):null}catch(e){DB=null;toast('저장 파일을 읽지 못해 처음 데이터로 시작해요 (백업 폴더 확인)')}
   if(!DB||!Array.isArray(DB.branches)){DB=JSON.parse(JSON.stringify(SEED));UI.firstRun=!txt;markDirty()}
   DB.branches.forEach(migB);
-  try{HIST=bridge&&bridge.histLoad?(await bridge.histLoad())||[]:JSON.parse(localStorage.getItem('ymt_hist')||'[]')}catch(e){HIST=[]}histAdopt(DB);
+  try{HIST=bridge&&bridge.histLoad?(await bridge.histLoad())||[]:JSON.parse(localStorage.getItem('ymt_hist')||'[]')}catch(e){HIST=[]}histAdopt(DB);try{if(histTrim())histSave()}catch(e){}
   let st=null;try{st=JSON.parse(sessionStorage.getItem('ymt_state')||'null');sessionStorage.removeItem('ymt_state')}catch(e){}
   if(st){['view','mode','cls','teacher','student','trashOpen'].forEach(k=>{if(st[k]!==undefined&&st[k]!==null)UI[k]=st[k]})}
   try{const dr=bridge?await bridge.loadDraft():localStorage.getItem('ymt_draft');
@@ -5479,7 +5505,7 @@ function histOpen(){let w=$('histFloat');if(!w){w=document.createElement('div');
   UI.histOn=true;histRender();requestAnimationFrame(()=>w.classList.add('on'))}
 function histClose(){const w=$('histFloat');UI.histOn=false;if(!w)return;w.classList.remove('on');setTimeout(()=>{if(!UI.histOn)w.remove()},220)}
 function histRender(){const w=$('histFloat');if(!w||!UI.histOn)return;const sc=w.querySelector('.hfl');const top=sc?sc.scrollTop:0;
-  w.innerHTML=`<div class="hfh"><b>적용 기록</b><span class="hint">${HIST.length}개 · 적용하기 전 시간표</span><button class="cp-x" data-act="histClose" aria-label="닫기">×</button></div>
+  w.innerHTML=`<div class="hfh"><b>적용 기록</b><span class="hint" title="최근 30개는 모두 남기고, 그 전 것은 하루에 마지막 1개만 90일 동안 남겨요">${HIST.length}개 · 적용하기 전 시간표 · 오래된 건 하루 1개씩 90일</span><button class="cp-x" data-act="histClose" aria-label="닫기">×</button></div>
   <div class="hfl">${HIST.length?HIST.slice(0,60).map(h=>`<div class="hfi${UI.peek===h.id?' on':''}"><div><b class="mono">${fmtAt(h.at)}</b><small>${esc(histSummary(h))}</small></div><div class="hfb">${UI.peek===h.id?'<span class="hint">보는 중</span>':`<button class="btn sm" data-hpeek="${h.id}">보기</button>`}<button class="btn sm" data-hrestore="${h.id}" title="두 번 누르면 이 시간표를 초안으로 불러와요">되돌리기</button><button class="hdel" data-hdel="${h.id}" title="이 기록 지우기 (두 번 누르기)" aria-label="이 기록 지우기">×</button></div></div>`).join(''):'<div class="hint" style="padding:12px">아직 적용 기록이 없어요</div>'}</div>
   ${HIST.length||UI.peek?`<div class="hff">${HIST.length?'<button class="btn danger sm" data-act="histClear" style="margin-right:auto" title="두 번 누르면 이 PC의 적용 기록을 모두 지워요">모두 지우기</button>':''}${UI.peek?'<button class="btn pri" data-act="endPeek">지금 시간표로 돌아가기</button>':''}</div>`:''}`;
   const n=w.querySelector('.hfl');if(n)n.scrollTop=top;histClamp()}
@@ -5793,7 +5819,7 @@ function syMerge(target,r,known){const present=new Set(r.present.map(x=>x.id));c
 async function syncPull(opt={}){if(!syOn()||SYNC.busy||UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev))return false;SYNC.busy=true;let r;
   try{r=await bridge.syncPull(opt.full?{}:(DB.syncKnown||{}))}catch(e){r={ok:false,err:e.message}}SYNC.busy=false;
   if(!r.ok){if(r.revoked){syRevokedNow();return false}SYNC.err=r.err||'';renderSyncState();return false}
-  SYNC.err='';if(r.restored&&r.restored.length)toast(`나스의 ${r.restored.map(syBName).join(', ')} 파일이 깨져 있어서 백업(GitHub)으로 되살렸어요`,6000);try{if(bridge.syncBeat)bridge.syncBeat(APPVER)}catch(e){}SYNC.locks=r.locks||{};if(UI.edit){SYNC.mine.forEach(id=>SYNC.held.add(id));SYNC.offline.forEach(id=>SYNC.held.add(id))}else SYNC.held.clear();SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
+  SYNC.err='';if(r.restored&&r.restored.length)toast(`나스의 ${r.restored.map(syBName).join(', ')} 파일이 깨져 있어서 이 PC 사본으로 되살렸어요`,6000);try{if(bridge.syncBeat)bridge.syncBeat(APPVER)}catch(e){}SYNC.locks=r.locks||{};if(UI.edit){SYNC.mine.forEach(id=>SYNC.held.add(id));SYNC.offline.forEach(id=>SYNC.held.add(id))}else SYNC.held.clear();SYNC.mine=new Set(Object.entries(SYNC.locks).filter(([id,l])=>l.dev===SYNC.info.dev).map(([id])=>id));
   const known=DB.syncKnown=DB.syncKnown||{};
   let o=null;if(UI.edit&&ORIG){try{o=JSON.parse(ORIG)}catch(e){}}
   const changed=syMerge(DB,r,known);if(o){syMerge(o,r,known);o.syncKnown=known}
@@ -5904,7 +5930,7 @@ async function syncRender(){const el=$('syncBox');if(!el)return;if(!bridge||!bri
     <span class="hint">${i.last?'마지막 동기화 '+fmtT(i.last):''}</span><button class="btn" data-act="syPull">지금 받기</button></div>
   ${SYNC.err||i.err?`<div class="box warn"><span>${esc(SYNC.err||i.err)}</span></div>`:''}
   ${(()=>{const n=i.nas;const can=i.role==='owner'&&!admLocked();if(!n&&!can)return '';return `<div class="row nsrow"><label>나스 폴더</label>${n&&!n.off?`<span class="nsp" title="${esc(n.unc||n.path)}">${esc(n.path)}</span>${n.ok?'<span class="nsok">빠른 동기화 중</span>':`<span class="hint">지금 안 열려요 · 고친 건 이 PC에 두었다가 연결되면 올려요</span>`}`:'<span class="hint">안 씀 · GitHub로만 동기화</span>'}<span class="sp"></span>${can?`<button class="btn" data-act="nsPick">${n&&!n.off?'바꾸기':'폴더 고르기'}</button>${n&&!n.off?'<button class="btn" data-act="nsOff">끄기</button>':''}`:''}</div>
-  <div class="hint" style="margin:-4px 0 8px">PC끼리는 학원 나스 하나로만 주고받아요(몇 초). GitHub에는 뒤에서 백업 사본이 올라가고, 폰 시간표·폰 요청은 지금처럼 GitHub로 가요.</div>`})()}`;
+  <div class="hint" style="margin:-4px 0 8px">PC끼리는 학원 나스 하나로만 주고받아요(몇 초). GitHub에는 폰 시간표·폰 요청만 가요(백업은 PC마다 · 4.10.0). 폰 시간표·폰 요청은 지금처럼 GitHub로 가요.</div>`})()}`;
   if(owner){h+=`<table class="tbl" style="max-width:820px"><thead><tr><th>지점</th><th>수정 잠금</th><th>지점 코드</th></tr></thead><tbody>${DB.branches.map(b=>{const l=SYNC.locks[b.id];return `<tr><td><b>${esc(b.name)}</b></td><td>${l?`${esc(l.by)} · ${fmtT(l.at)}${l.dev!==i.dev?` <button class="btn danger" data-syunlock="${b.id}" title="그 PC의 수정 중 초안은 올라가지 못해요">잠금 풀기</button>`:' (이 PC)'}`:'<span class="hint">없음</span>'}</td><td><button class="btn" data-sycode="${b.id}">코드 만들기</button></td></tr>`}).join('')}</tbody></table>
     <div class="sydevs" id="syDevs"><b>연결된 PC</b><span class="hint">불러오는 중…</span></div>
     <div class="row"><button class="btn" data-sycode="*">프로그램 관리자 다른 PC용 코드</button><span class="sp"></span><button class="btn danger" data-act="lgoDlg">이 PC에서 로그아웃</button><button class="btn danger" data-act="syOff">이 PC 연동 끄기</button></div>
@@ -6093,7 +6119,7 @@ async function rqWork(){if(RQS.busy)return;RQS.busy=true;renderSyncState();
       batch.forEach(j=>RQS.going.delete(j.x.num));RQS.n=RQS.list.filter(i=>!i.bad).length;
       if(applied.length)render();rqBar();if($('rqT')&&!$('modal').hidden)rqDlg();
       if(back.length)toast(back[0][1]+(back.length>1?` (${back.length}건 · 다시 목록에 넣었어요)`:' · 다시 목록에 넣었어요'),5000);
-      else if(msg)toast(msg,5000);else if(applied.length)toast(applied.length>1?`보강 ${applied.length}건 반영했어요 · 선생님 화면에 1~2분 뒤 보여요`:'반영했어요 · 선생님 화면에 1~2분 뒤 보여요',2600)}}
+      else if(msg)toast(msg,5000);else if(applied.length)toast(applied.length>1?`보강 ${applied.length}건 반영했어요 · 선생님 화면에 몇 분 안에 보여요`:'반영했어요 · 선생님 화면에 몇 분 안에 보여요',2600)}}
   finally{RQS.busy=false;renderSyncState()}}
 const tnB=x=>{const b=DB.branches.find(i=>i.id===x.br);const t=b&&b.teachers.find(i=>i.id===x.t);return t?t.name:(x.tn||'')};
 async function rqRender(){const el=$('rqBox');if(!el)return;if(!bridge||!bridge.rqInfo){el.innerHTML='<h3>선생님 보강 등록</h3><div class="hint">프로그램을 한 번 다시 시작하면 쓸 수 있어요.</div>';return}
@@ -6178,9 +6204,12 @@ async function syDevsLoad(){const el=$('syDevs');if(!el||!bridge.syncDevices){if
   const box=$('syDevs');if(!box)return;
   const L=(r.list||[]).sort((a,b)=>(b.me?1:0)-(a.me?1:0)||(a.role==='owner'?0:1)-(b.role==='owner'?0:1)||String(a.name).localeCompare(String(b.name),'ko'));
   const md=d=>{if(!d.day)return '';const [y,m,dd]=d.day.split('-');const age=Math.floor((Date.now()-new Date(+y,+m-1,+dd).getTime())/86400000);return `${+m}/${+dd}${age>=30?` <span class="rqw">· ${age}일째 안 켜짐</span>`:''}`};
+  let bw={gh:false};try{if(bridge.syncBeatWhere)bw=await bridge.syncBeatWhere()}catch(e){}
   box.innerHTML=`<b>연결된 PC</b><span class="hint">각 PC가 켜질 때 여기에 나와요 · [연결 끊기]하면 그 PC는 다음 동기화(2분 안) 때 연동이 꺼지고 키가 지워져요. 시간표 파일은 그 PC에 남아요</span>
+    <div class="row sybw"><span class="hint">이 PC의 확인 기록 남기는 곳</span><div class="seg"><button aria-pressed="${!bw.gh}" data-sybw="0">나스</button><button aria-pressed="${!!bw.gh}" data-sybw="1">GitHub</button></div><span class="hint">나스가 기본(GitHub 빌드 안 생김)</span></div>
     ${updStHTML()}
     ${L.length?`<table class="tbl"><thead><tr><th>이름</th><th>역할</th><th>버전</th><th>마지막 확인</th><th></th></tr></thead><tbody>${L.map(d=>`<tr><td><b>${esc(d.name||'(이름 없음)')}</b>${d.me?' <span class="hint">이 PC</span>':''}</td><td>${d.role==='owner'?'프로그램 관리자':esc(syBName(d.branch))+(d.role==='staff'?' 행정 선생님':' 관리자')}</td><td class="mono">${esc(d.ver||'')}${d.stale?' <span class="rqw" title="새 버전을 받았지만 다시 시작하지 않았어요 · 그 PC에서 프로그램을 껐다 켜 주세요">· 다시 켜야 함</span>':''}</td><td>${md(d)}</td><td>${d.me?'':`<button class="btn danger" data-syrevoke="${esc(d.dev)}" data-n="${esc(d.name||'')}">연결 끊기</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="hint">아직 목록에 나온 PC가 없어요 · 이번 업데이트를 받은 PC부터 보여요</div>'}`}
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-sybw]');if(!b||!bridge.syncBeatWhere)return;await bridge.syncBeatWhere(b.dataset.sybw==='1');try{bridge.syncBeat&&bridge.syncBeat(APPVER)}catch(_){}toast(b.dataset.sybw==='1'?'이 PC 확인 기록은 GitHub에 남겨요':'이 PC 확인 기록은 나스에 남겨요');syDevsLoad()});
 async function syRevokeGo(btn){if(!armed(btn,'rv'+btn.dataset.syrevoke,'한 번 더 누르면 끊어요'))return;btn.disabled=true;const r=await bridge.syncRevoke(btn.dataset.syrevoke);
   if(!r.ok){btn.disabled=false;toast('끊지 못했어요 · '+(r.err||''),4000);return}toast(`${btn.dataset.n||'그 PC'}의 연결을 끊었어요 · 그 PC가 켜져 있으면 2분 안에 연동이 꺼져요`,5000);syDevsLoad()}
 function syRevokedNow(){clearInterval(SYNC.timer);SYNC.info=Object.assign({},SYNC.info,{on:false});SYNC.mine.clear();SYNC.offline.clear();ADM.open=false;
@@ -6458,7 +6487,7 @@ async function quickChange(fn,msg,bid){if(typeof staleCheck==='function'&&(UI.st
   if(UI.peek||(typeof AUTO!=='undefined'&&AUTO.prev)){toast('지금 보고 있는 미리보기를 먼저 닫아 주세요');return false}
   if(typeof syOn==='function'&&syOn()){for(const id of bids)if(!canEditB(id)){toast('다른 지점은 보기만 할 수 있어요');return false}
     await syncPull({silent:true});for(const id of bids){const l=await bridge.syncLock(id);if(!l.ok){const nb=DB.branches.find(x=>x.id===id)||BB();if(!l.offline&&typeof canForceUnlock==='function'&&canForceUnlock(id)){lockForceDlg(id,l);return false}toast(l.offline?'인터넷에 연결되지 않아 저장하지 못했어요':`${l.by||'다른 관리자'} 님이 ${nb.name}을(를) 고치고 있어요 · 끝나면 다시 해 주세요`,5000);return false}SYNC.mine.add(id)}}
-  fn();DB.updated=new Date().toISOString();await saveNow();if(typeof syOn==='function'&&syOn())await syncAfterApply();render();toast(msg+' · 선생님 화면에 1~2분 뒤 보여요',4000);return true}
+  fn();DB.updated=new Date().toISOString();await saveNow();if(typeof syOn==='function'&&syOn())await syncAfterApply();render();toast(msg+' · 선생님 화면에 몇 분 안에(최대 7분) 보여요',4000);return true}
 async function exSave(){const sid=$('modal').dataset.ex;const o=V().sessions.find(x=>x.id===sid);if(!o)return;const k=(document.querySelector('[data-exk][aria-pressed="true"]')||{}).dataset.exk||'cancel';
   const x={id:uid('e'),date:$('exDate').value,sid,kind:k,memo:($('exMemo').value||'').trim()};
   if(k==='sub')x.t=$('exSubT').value;if(k==='move'){x.p=+$('exP').value;x.t=$('exMT').value;if(isNaN(x.p)){toast('옮길 교시를 골라 주세요');return}}
@@ -6633,7 +6662,7 @@ const stfCk=(a,ed)=>a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button cla
 const stfSelfName=()=>tnm((typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'');
 const stfIsSelf=a=>{if(!(typeof isStaff==='function'&&isStaff()))return false;const me=stfSelfName(),an=tnm(a.name);return !!me&&!!an&&(an===me||an===me.replace(/행정$/,'')||an+'행정'===me)};
 function staffSelfHTML(b){const L=(b.staff||[]).filter(stfIsSelf);if(!L.length)return '';
-  return `<div class="sec stfbox"><h3>내 로그인 코드 <span class="hint">폰·강사용 PC에서 쓰는 내 코드 · 바꾸면 예전 코드로 로그인한 기기는 1~2분 뒤 끊겨요${stfSame(L[0].name).length>1?' · 다른 지점은 부원장님 PC가 같은 코드로 맞춰요':''}</span></h3><table class="tbl stftbl"><tbody>${L.map(a=>`<tr><td><b>${esc(a.name)}</b> <span class="hint">행정</span></td><td>${a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button> <button class="btn sm" data-stfck="${a.id}" data-label="코드 바꾸기">코드 바꾸기</button>`:'<span class="hint">코드 없음 · 부원장님께 받아 주세요</span>'}</td></tr>`).join('')}</tbody></table></div>`}
+  return `<div class="sec stfbox"><h3>내 로그인 코드 <span class="hint">폰·강사용 PC에서 쓰는 내 코드 · 바꾸면 예전 코드로 로그인한 기기는 몇 분 안에 끊겨요${stfSame(L[0].name).length>1?' · 다른 지점은 부원장님 PC가 같은 코드로 맞춰요':''}</span></h3><table class="tbl stftbl"><tbody>${L.map(a=>`<tr><td><b>${esc(a.name)}</b> <span class="hint">행정</span></td><td>${a.ck?`<span class="ckc mono">${esc(a.ck)}</span> <button class="btn sm" data-stfcopy="${a.id}">복사</button> <button class="btn sm" data-stfck="${a.id}" data-label="코드 바꾸기">코드 바꾸기</button>`:'<span class="hint">코드 없음 · 부원장님께 받아 주세요</span>'}</td></tr>`).join('')}</tbody></table></div>`}
 const stfSame=name=>DB.branches.flatMap(b=>(b.staff||[]).filter(a=>tnm(a.name)===tnm(name)).map(a=>({b,a})));
 const stfSameEd=name=>stfSame(name).filter(x=>!(typeof syOn==='function'&&syOn())||canEditB(x.b.id));
 const stfById=id=>{for(const b of DB.branches){const a=(b.staff||[]).find(x=>x.id===id);if(a)return {b,a}}return null};
@@ -6646,10 +6675,10 @@ async function stfAdd(){const i=$('newStf');const n=(i&&i.value||'').trim().repl
 async function stfCkNew(id){const r=stfById(id);if(!r)return;if(typeof isStaff==='function'&&isStaff()&&!stfIsSelf(r.a)){toast('행정 PC에서는 내 코드만 바꿀 수 있어요');return}const L=stfSameEd(r.a.name);const bids=[...new Set(L.map(x=>x.b.id))];const had=!!r.a.ck;const c=newCode();
   const at=Date.now(),by=(typeof SYNC!=='undefined'&&SYNC.info&&SYNC.info.name)||'';const others=[...new Set(stfSame(r.a.name).filter(x=>!bids.includes(x.b.id)).map(x=>x.b.name))];
   if(had&&others.length){await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c;x.a.ckAt=at;if(by)x.a.ckBy=by})},`${stfIsSelf(r.a)?'내':r.a.name+' 행정 선생님'} 새 코드 ${c} · 이 지점은 바로 바뀌었고, ${others.join('·')}은(는) 부원장님 PC가 켜져 있으면 2분 안에 같은 코드로 맞춰져요`,bids);return}
-  await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c;x.a.ckAt=at;if(by)x.a.ckBy=by})},had?`${r.a.name} 행정 선생님: 예전 코드로 로그인한 기기는 1~2분 뒤 모두 끊겨요 · 새 코드 ${c} · [복사]로 1:1로 보내 주세요`:`${r.a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`,bids)}
+  await quickChange(()=>{stfSameEd(r.a.name).forEach(x=>{x.a.ck=c;x.a.ckAt=at;if(by)x.a.ckBy=by})},had?`${r.a.name} 행정 선생님: 예전 코드로 로그인한 기기는 몇 분 안에 모두 끊겨요 · 새 코드 ${c} · [복사]로 1:1로 보내 주세요`:`${r.a.name} 행정 선생님 로그인 코드: ${c} · [복사]로 1:1로 보내 주세요`,bids)}
 async function stfDel(id){const r=stfById(id);if(!r)return;await quickChange(()=>{const b=DB.branches.find(x=>x.id===r.b.id);b.staff=(b.staff||[]).filter(x=>x.id!==id)},`${r.a.name} 행정 선생님을 ${r.b.name}에서 뺐어요${stfSame(r.a.name).length>1?' · 다른 지점에는 남아 있어요':' · 그 코드로는 더 못 들어와요'}`,r.b.id)}
 function stfNmDlg(id){const r=stfById(id);if(!r)return;$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="sfT" style="width:min(400px,100%)" data-stfnmd="${id}"><h2 id="sfT">이름 고치기 · 행정 선생님</h2>
-  <div class="hint">로그인 코드는 그대로예요. 다시 로그인하지 않아도 1~2분 뒤 새 이름으로 보여요.${stfSame(r.a.name).length>1?' 다른 지점에 같은 이름도 같이 바뀌어요.':''}</div>
+  <div class="hint">로그인 코드는 그대로예요. 다시 로그인하지 않아도 몇 분 안에 새 이름으로 보여요.${stfSame(r.a.name).length>1?' 다른 지점에 같은 이름도 같이 바뀌어요.':''}</div>
   <div class="row"><label for="sfIn">이름</label><input id="sfIn" value="${esc(r.a.name)}" style="flex:1" autocomplete="off"></div>
   <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">취소</button><button class="btn pri" data-act="stfNmSave">저장</button></div></div>`;setTimeout(()=>{const i=$('sfIn');if(i){i.focus();i.select()}},50)}
 async function stfNmSave(){const d=document.querySelector('[data-stfnmd]');if(!d)return;const r=stfById(d.dataset.stfnmd);if(!r)return;const n=String($('sfIn').value||'').trim().replace(/\s+/g,' ');
@@ -7381,7 +7410,7 @@ const schNorm=n=>shortSchool(String(n||'')).replace(/\s+/g,'');
 const SUBJ_ALIAS={'공수1':'공통수학1','공통수학1':'공통수학1','공수2':'공통수학2','공통수학2':'공통수학2','대수':'대수','미적1':'미적분Ⅰ','미적분1':'미적분Ⅰ','미적분I':'미적분Ⅰ','미적분Ⅰ':'미적분Ⅰ','확통':'확률과 통계','확률과통계':'확률과 통계','확률과 통계':'확률과 통계','기하':'기하','미적2':'미적분Ⅱ','미적분2':'미적분Ⅱ','미적분II':'미적분Ⅱ','미적분Ⅱ':'미적분Ⅱ','미적':'미적분Ⅰ'};
 const subjNorm=s=>{const k=String(s||'').trim().replace(/\s+/g,'');return SUBJ_ALIAS[k]||SUBJ_ALIAS[String(s||'').trim()]||String(s||'').trim()};
 const subjShort=s=>({'공통수학1':'공수1','공통수학2':'공수2','미적분Ⅰ':'미적1','확률과 통계':'확통','미적분Ⅱ':'미적2'}[s]||s);
-const EK_LAB={m1:'1학기 중간',f1:'1학기 기말',m2:'2학기 중간',f2:'2학기 기말'};const CAL_LAB=Object.assign({camp:'수련회·현장체험',trip:'수학여행',sum:'여름방학',win:'겨울방학',g3:'2학기 시험(중3)'},EK_LAB);
+const EK_LAB={m1:'1학기 중간',f1:'1학기 기말',m2:'2학기 중간',f2:'2학기 기말'};const CAL_LAB=Object.assign({camp:'수련회·현장체험',trip:'수학여행',sum:'여름방학',win:'겨울방학',spr:'봄방학',g3:'2학기 시험(중3)'},EK_LAB);
 const ekOf=(y,mk)=>`${y}|${mk[1]}|${mk[0]==='m'?'중간':'기말'}`;const ekLab=ek=>{const [y,s,m]=ek.split('|');return `${String(y).slice(2)}년 ${s}학기 ${m}`};const ekMk=ek=>{const [,s,m]=ek.split('|');return (m==='중간'?'m':'f')+s};
 /* 3.78.3: 학년별로 없는 시험 — 중3은 2학기 기말, 고3은 2학기 중간·기말(2학기 시험 자체가 없음). 그 학년 학생은 달력·D-day·띠 인원·상담 시험 기간·시험 범위 줄·성적 명단에서 빠짐 (학교 정보의 시험 날짜는 1·2학년 것이라 그대로) */
 const exSkip=(g,mk)=>{g=String(g||'');mk=String(mk||'');if(mk.length<2)return false;return (g==='중3'&&mk==='f2')||(g==='고3'&&mk[1]==='2')};
@@ -7486,7 +7515,7 @@ function schCardHTML(k,b,ed){const o=schGet(k);const kd=schKindOf(k);const y=UI.
   let h=`<div class="schhead"><h2>${ed?`<button class="schnm" data-act="schBase" data-k="${esc(k)}" title="눌러서 보이는 이름 바꾸기 · 목록에서 숨기기"><span>${esc(schName(k))}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>`:esc(schName(k))} <small>${kd==='고'?'고등학교':kd==='중'?'중학교':'초등학교'} · ${esc(b.name)} ${stu.length}명${schPubTxt(o.base,grades)?` · 교과서 ${esc(schPubTxt(o.base,grades))}`:''}</small></h2><span class="sp"></span>${ed?`<button class="btn sm" data-act="schMerge" data-k="${esc(k)}" title="같은 학교가 두 이름으로 잡혔을 때 한쪽으로">합치기</button>`:''}</div>${(o.base||{}).alias&&o.base.alias.length?`<div class="hint" style="padding:0 18px 8px">다른 이름: ${esc(o.base.alias.join(', '))} → 모두 이 학교로 들어와요</div>`:''}`;
   if(kd==='초'){return h+'<div class="hint" style="padding:12px 18px">초등학교는 시험 정보를 따로 두지 않아요.</div>'}
   /* 학사일정 */
-  h+=`<div class="sec"><h3>학사일정 <span class="hint">${y}년 · 시험은 시작~끝, 수학 시험일은 아래에 따로</span></h3><div class="calt">${['m1','f1','m2','f2'].concat(kd==='중'?['g3']:[],['camp','trip','sum','win']).map(mk=>`<div class="calr${/^[mfg]/.test(mk)?' ex':''}${mk==='g3'?' g3':''}"${mk==='g3'?' title="중3은 2학기 시험이 하나뿐이고 1·2학년과 기간이 다를 때만 · 넣으면 중3은 이 기간만, 1·2학년은 2학기 중간·기말"':''}><label>${CAL_LAB[mk]}</label>${inp(mk,0)}<span>~</span>${inp(mk,1)}</div>`).join('')}</div>
+  h+=`<div class="sec"><h3>학사일정 <span class="hint">${y}년 · 시험은 시작~끝, 수학 시험일은 아래에 따로</span></h3><div class="calt">${['m1','f1','m2','f2'].concat(kd==='중'?['g3']:[],['camp','trip','sum','win','spr']).map(mk=>`<div class="calr${/^[mfg]/.test(mk)?' ex':''}${mk==='g3'?' g3':''}"${mk==='g3'?' title="중3은 2학기 시험이 하나뿐이고 1·2학년과 기간이 다를 때만 · 넣으면 중3은 이 기간만, 1·2학년은 2학기 중간·기말"':''}><label>${CAL_LAB[mk]}</label>${inp(mk,0)}<span>~</span>${inp(mk,1)}</div>`).join('')}</div>
     <div class="dml"><b>수학 시험일</b>${Object.entries(cal.dm||{}).sort().map(([d,t])=>`<span class="dmi">${esc(annMD(d))}(${esc(ntDow(d))}) ${esc(t)}${ed?`<button data-act="schDmX" data-d="${esc(d)}" aria-label="지우기">×</button>`:''}</span>`).join('')||'<span class="hint">없음</span>'}${ed?`<span class="dmadd"><input type="date" id="dmD"><input id="dmT" placeholder="${kd==='고'?'예: 공수2, 미적1':'수학'}" value="${kd==='고'?'':'수학'}" maxlength="40"><button class="btn sm" data-act="schDmAdd">넣기</button></span>`:''}</div></div>`;
   /* 시험 범위 */
   const exs=schExams(k).filter(x=>x.y==String(y));const curEk=UI.schEk&&UI.schEk.startsWith(y+'|')?UI.schEk:(schNextExam(k,td)||{}).ek||(exs[0]||{}).ek||`${y}|1|중간`;UI.schEk=curEk;const eks=['m1','f1','m2','f2'].map(mk=>ekOf(y,mk));
@@ -7608,7 +7637,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 const xlDate=v=>{if(typeof v==='number'&&v>30000&&v<80000){const d=new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5);return d.toISOString().slice(0,10)}const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(v||''));return m?m[0]:''};
 const mdDate=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 function parseRangeText(v,y,mk){if(v==null||v==='')return null;const dd=xlDate(v);if(dd)return [dd,dd];const t=String(v).split('\n')[0];const m=/(\d{1,2})(?:\/|\.|-(?=\d))(\d{1,2})\s*(?:[-~]\s*(\d{1,2})(?:\/|\.|-(?=\d))(\d{1,2}))?/.exec(t);if(!m)return null;
-  const yy=mo=>mk==='win'&&mo<=2?y+1:y;const a=mdDate(yy(+m[1]),+m[1],+m[2]);const z=m[3]?mdDate(yy(+m[3]),+m[3],+m[4]):a;return [a,z<a?a:z]}
+  const yy=mo=>(mk==='win'||mk==='spr')&&mo<=2?y+1:y; /* 4.10.2 봄방학도 이듬해 2월 */const a=mdDate(yy(+m[1]),+m[1],+m[2]);const z=m[3]?mdDate(yy(+m[3]),+m[3],+m[4]):a;return [a,z<a?a:z]}
 function schImportOpen(){if(!schCanEdit())return;const inp=document.createElement('input');inp.type='file';inp.accept='.xlsx';inp.multiple=true;inp.addEventListener('change',async()=>{const fs=[...inp.files];if(!fs.length)return;toast('시트를 읽는 중…');
   try{const R=schImpEmpty();for(const f of fs){await schImpParse(await f.arrayBuffer(),R,f.name)}UI.schImp=R;schImpDlg(R)}catch(e){console.error(e);toast('읽지 못했어요: '+e.message)}});inp.click()}
 const schImpEmpty=()=>({y:UI.schY||+todayStr().slice(0,4),cal:{},dm:{},per:{},rng:{},pub:{},books:{},cuts:{},got:{},subj:[],sheets:[],skip:[]});
@@ -7617,7 +7646,7 @@ async function schImpParse(buf,R,fname){const {z,sheets}=await readWorkbook(buf)
     const rows=Object.keys(G).map(Number).sort((a,b)=>a-b);const find=re=>{for(const r of rows)for(const c of Object.keys(G[r]))if(re.test(String(G[r][c])))return {r,c:+c,v:String(G[r][c])};return null};const n=sh.name;const did=[];const top3=rows.slice(0,3).flatMap(r=>Object.values(G[r]).map(String)).join(' ');
     const title=(()=>{for(const r of rows.slice(0,6))for(const c of Object.keys(G[r])){const v=String(G[r][c]);if(/\d{4}/.test(v)&&/학기/.test(v))return v}return ''})();const ty=+(/(\d{4})/.exec(title)||[])[1]||y;const tsem=(/([12])학기/.exec(title+' '+n)||[])[1]||'';const tmf=(/(중간|기말)/.exec(title+' '+n)||[])[1]||'';
     /* 학사일정 */
-    const hc=find(/^1학기\s*중간$/);if(hc){const HM={'1학기 중간':'m1','1학기 기말':'f1','2학기 중간':'m2','2학기 기말':'f2','수련회':'camp','수학여행':'trip','여름방학':'sum','겨울방학':'win'};const cm={};Object.keys(G[hc.r]).forEach(c=>{const v=String(G[hc.r][c]).replace(/\s+/g,' ').trim();const k=Object.keys(HM).find(h=>v.startsWith(h));if(k)cm[c]=HM[k]});
+    const hc=find(/^1학기\s*중간$/);if(hc){const HM={'1학기 중간':'m1','1학기 기말':'f1','2학기 중간':'m2','2학기 기말':'f2','수련회':'camp','수학여행':'trip','여름방학':'sum','겨울방학':'win','봄방학':'spr'};const cm={};Object.keys(G[hc.r]).forEach(c=>{const v=String(G[hc.r][c]).replace(/\s+/g,' ').trim();const k=Object.keys(HM).find(h=>v.startsWith(h));if(k)cm[c]=HM[k]});
       let cnt=0;rows.filter(r=>r>hc.r).forEach(r=>{const sc=schNorm(str(r,1));if(!sc||!schKind(sc))return;Object.entries(cm).forEach(([c,mk])=>{const p=parseRangeText(get(r,+c),ty,mk);if(!p)return;(R.cal[sc]=R.cal[sc]||{})[mk]=p;cnt++})});if(cnt)did.push(`학사일정 ${cnt}칸`)}
     /* 시험 일정(날짜 칸): 한 시트에 블록이 여럿(중간·기말, 옆으로 나란히)일 수 있어 날짜 줄마다 따로 · 제목(학기·중간/기말)은 칸 위쪽에서 가까운 것 */
     {const drs=rows.filter(r=>Object.values(G[r]).filter(v=>/^\d{1,2}일\s*\(/.test(String(v))).length>=3);let cnt=0;
@@ -8757,7 +8786,7 @@ async function lvDecide(num,ok){const x=LVS.list.find(i=>i.num===+num);if(!x)ret
   const rec={id:uid('lv'),t:x.t,tn:x.tn||'',from:x.from,until:x.until||x.from,why:d.why||'',memo:d.memo||'',np:x.np|0,iss:x.num,epk:x.epk,iv:x.iv,...(x.ct?((x.np|0)?{ct:x.ct}:{}):{nc:x.nc|0}),at:x.at,st:ok?'ok':'no',by:(SYNC.info&&SYNC.info.name)||'',dAt:todayStr()};
   try{const done=await quickChange(()=>{const bb=DB.branches.find(i=>i.id===b.id);bb.lv=(bb.lv||[]).filter(r=>r.iss!==x.num).concat([rec])},`${lvTn(b,x)}T 결근 신청(${mdS(x.from)}) ${ok?'확인':'반려'}`,b.id);
     if(!done)throw new Error('기록하지 못했어요');const c=await bridge.rqClose(x.num,ok);if(!c||!c.ok)toast('기록은 했는데 요청 정리를 못 했어요 · '+((c&&c.err)||''),4000);
-    LVS.dec['r'+rec.id]=LVS.dec['n'+x.num];toast(`${lvTn(b,x)}T 결근 ${ok?'확인':'반려'} · 선생님 폰에 1~2분 뒤 보여요`,2400)}
+    LVS.dec['r'+rec.id]=LVS.dec['n'+x.num];toast(`${lvTn(b,x)}T 결근 ${ok?'확인':'반려'} · 선생님 폰에 몇 분 안에 보여요`,2400)}
   catch(e){if(!LVS.list.some(i=>i.num===x.num))LVS.list.push(x);LVS.list.sort((a,z)=>a.at-z.at);toast((e.message||'처리하지 못했어요')+' · 다시 목록에 넣었어요',4000)}
   finally{LVS.going.delete(x.num);lvBar();if(document.querySelector('.lvdlg'))lvDraw()}}
 async function lvDel(br,id){const b=DB.branches.find(i=>i.id===br);const r=b&&(b.lv||[]).find(i=>i.id===id);if(!r)return;
@@ -9291,7 +9320,7 @@ const HELP=[
   <li>수업이 있는 칸에 놓으면 <b>[겹쳐 넣기 / 자리 바꾸기]</b>를 골라요. 다른 강사 칸에 놓으면 담당 강사가 바뀌어요.</li>
   <li><b>Ctrl을 누른 채 끌어 놓으면 새 반으로 복사</b>돼요(칸에 "+ 새 반"이 떠요). 같은 색으로 "○○ 보충" 반이 생기고 놓은 칸에 수업이 하나 들어가요. 창에서 <b>빼고 싶은 학생만 체크를 끄면</b> 그 학생은 원래 반에만 남아요 — 예: 중1 A2 목요일 뒷타임을 따로 만들고 중2 수업 듣는 친구는 빼기. 원래 반은 그대로, 나중에 원래 반에 새 학생이 오면 보충 반에도 넣어 주세요.</li>
   <li>오른쪽 <b>보관함</b>: 아직 안 놓은 수업(주당 횟수보다 적을 때)이 대기해요. 카드를 여기로 끌면 시간표에서 빠져요. <b>[+ 새 반]</b>으로 반을 만들어요.</li>
-  <li><b>휴지통</b>에 놓으면 [반 전체 / 이 수업만]을 골라 지워요. 휴지통에서 되살릴 수 있어요.</li>
+  <li><b>휴지통</b>에 놓으면 [반 전체 / 이 수업만]을 골라 지워요. 휴지통을 펼쳐 <b>[되살리기]</b>를 누르거나, 휴지통 줄을 <b>끌어서 원하는 칸·보관함에 놓아도</b> 되살아나요(4.11.0). 원래 자리에 그 선생님의 다른 수업이 있으면 보관함으로 들어가고, 담당 선생님이 지워진 수업은 되살릴 수 없다고 알려 줘요.</li>
   <li><b>[자동 배치]</b>: 고른 반을 학생 겹침·선호 시간·연강을 따져 여러 안으로 배치해 보여 줘요(AI 없이 계산). 미리 보고 마음에 드는 안만 적용해요. 미리보기 중엔 지점·시간표를 바꿀 수 없어요 — 위쪽 [적용]이나 [취소]를 먼저 눌러요.</li>
   <li><b>반 색 다시 섞기</b>: <b>[반 관리] → [색 랜덤 재배치]</b>. 붙어 있는 반끼리는 구분되는 색으로.</li></ul>`},
  {id:'stu',t:'반에 학생 넣기 · 옮기기',b:`
@@ -9388,6 +9417,7 @@ const HELP=[
   <ul><li><b>학교·학년별 학생 수</b>: 위쪽 접힌 칸을 펼치면 이 지점 <b>재원생</b>(휴원·입학 예정 빼고)을 학교 줄 × 학년 칸으로 세어 보여 줘요 · 맨 아래 합계 · 학교를 누르면 그 학교 카드로. 펼친 채인지는 이 PC에 기억. 폰 [학교] 탭 맨 위에도 같은 표가 있어요(모든 선생님 · 숫자만).</li>
   <li>학생들이 다니는 학교가 저절로 목록에 떠요(없으면 [학교 추가]). 목록 위 <b>[우리 지점 | 전체 학교]</b>로 이 지점 학생이 있는 학교만 보거나 모든 지점 학교를 다 봐요(이 PC에 기억). 학교 목록은 카드를 아래로 내려도 왼쪽에 붙어 있어요(학교가 많으면 목록 위에서 휠). 학교를 고르면 <b>학사일정</b>(시험·방학·수련회, 수학 시험일), <b>시험 범위</b>, <b>부교재</b>, <b>등급컷</b>, <b>기출 수거</b>, 고등학교는 <b>선택과목</b>, <b>메모</b>.</li>
   <li><b>교과서</b>: 학교 카드의 '교과서' 칸에 출판사를 메모해요 — 중학교는 <b>학년마다</b>, 고등학교는 부교재처럼 <b>과목마다</b>(예: 비상(김원경)). 적은 건 학교 이름 옆 한 줄, 학생 정보 창 시험 칸(그 학생 학년·과목), 선생님 폰 학교 탭에 보여요. 학교 이름(보이는 이름)은 카드 맨 위 <b>학교 이름을 누르면</b> 바꾸거나 학생 없는 학교를 목록에서 숨겨요.</li>
+  <li><b>학사일정</b>: 시험(1·2학기 중간·기말)과 수련회·수학여행·여름방학·겨울방학·<b>봄방학</b>을 시작~끝 날짜로 적어요. 봄방학은 보통 다음 해 2월이에요(시트로 불러올 때 1·2월이면 다음 해로 읽어요 · 4.10.2). 선생님 폰 학교 정보에도 같이 보여요.</li>
   <li><b>등급컷</b>은 고등 과목마다 <b>1등급 최저 점수</b>만 적어요(선생님 폰에도 1등급만).</li>
   <li><b>선택과목</b>: 고2는 2학년 1·2학기(+2학기엔 3학년 1학기 조사), 고3은 3학년 1학기만 — 3학년 2학기는 시험이 없어 받지 않아요. 고1은 2학기에 <b>2학년 1·2학기 + 3학년 1학기</b>를 미리 조사해 두면 학년이 올라가도 그대로 이어져요.</li>
   <li><b>선택과목 미정 표시</b>: 학년 제목 옆에 지금 학기 과목을 아직 안 정한 학생 수가 <b>[3명 미정]</b>으로 떠요(다 정했으면 '모두 정함'). 누르면 그 학생 줄로 차례로 찾아가고, 미정인 학생 줄은 이름 왼쪽에 노란 선. 칸 제목과 <b>기출 수거</b> 제목에도 '고2 3명 미정'처럼 같이 보여요(고1 2·3학년 과목 미리 조사는 꼭 채울 필요가 없어 고1 학년 제목 옆에만) — 과목 줄이 학생 선택과목으로 정해져서 빈 곳을 먼저 채우면 돼요.</li>
@@ -9497,14 +9527,14 @@ const HELP=[
   ${HF('m-nd','폰 — 보강 삭제 요청 (학생 골라 빼기)')}</ul>`},
  {id:'ex',t:'당일 변경 (휴강 · 대강 · 시간 이동)',b:`
   ${HF('ex','당일 변경 — 날짜를 고르고 휴강·대강·시간 이동')}
-  <ul><li>수업 카드를 누르면 명단 창 아래 <b>[당일 변경]</b>. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 1~2분 뒤 보여요.</li>
+  <ul><li>수업 카드를 누르면 명단 창 아래 <b>[당일 변경]</b>. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 몇 분 안에(최대 7분) 보여요.</li>
   <li>날짜(그 요일 다음 5번 중)를 고르고 <b>휴강</b> / <b>대강</b>(대신 들어갈 선생님) / <b>시간 이동</b> + 메모(선택). 원래 시간표는 그대로고 그날이 지나면 저절로 원래대로.</li>
   <li>잘못 넣었으면 같은 창 위쪽 목록에서 <b>[취소]</b>.</li></ul>`},
  {id:'ver',t:'보관함 · 예정 시간표 · 적용 기록',b:`
   ${HF('ver','보관함 — 시간표안 여러 개, 예정으로 정하기, 적용 기록')}
   <ul><li><b>[보관함]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 두고 바꿔 봐요.</li>
   <li><b>예정 시간표</b>: [복사해서 새 시간표] → 고친 뒤 <b>[예정으로 정하기]</b>로 시작 날짜를 고르면 그날부터 지금 시간표로 바뀌어요(PC가 꺼져 있어도). <b>미리 보여 주기(공개)</b>를 켜면 선생님 폰에 "○/○부터 시간표가 바뀌어요 [미리 보기]". <b>[바뀌는 점]</b>으로 달라지는 반·학생을 비교해요.</li>
-  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [보기]로 지난 시간표를 보고, [되돌리기](두 번)로 초안으로 불러와요.</li>
+  <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [보기]로 지난 시간표를 보고, [되돌리기](두 번)로 초안으로 불러와요. 기록은 <b>최근 30개는 모두</b>, 그 전 것은 <b>하루에 마지막 1개씩 90일</b> 동안 남고 더 오래된 건 저절로 정리돼요(4.11.0).</li>
   <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요.</li></ul>`},
  {id:'pdf',t:'PDF 인쇄',b:`<ul><li>지점 시간표 위 <b>[⤓ PDF]</b>(지점 시간표 A3), 강사 버튼·학생 주간 시간표의 <b>[이 강사/학생 PDF]</b>, <b>[전체 강사 PDF]</b>·학생 관리 위 <b>[재원생 전체 PDF]</b>. PDF 폴더에 저장돼요. 특강 기간이면 특강도 같이 나와요.</li></ul>`},
  {id:'blog',t:'블로그용 시간표 이미지',b:`
@@ -9554,7 +9584,7 @@ const HELP=[
   <li><b>지점장 폰 [관리] 탭</b>(자기 지점만): 학생(추가·상태·연락처·반 넣기/빼기), 입학 문의(카드를 누르면 전화·정보·메모), 정기 상담(주기·지정·보류), 공지. 보낸 건 켜져 있는 PC가 받아 1~2분 안에 반영해요.</li>
   ${HF('m-iq','관리 → 입학 문의 카드 — 전화 버튼과 메모')}
   <li><b>PC 브라우저</b>로 같은 주소를 열면 설치 없이 지점 시간표 전체 격자로 보여요.</li>
-  <li><b>강사용 PC 프로그램</b>(설치파일 폴더의 강사용 설치 exe): 같은 화면을 전용 창으로 열어요 — 화면·자료는 늘 최신이라 따로 업데이트할 게 없어요. PC에선 <b>오늘</b>이 두 단(왼쪽 내 수업·업무·시험·새 학생·공지·메모, 오른쪽 오늘 전체 수업), <b>표 크기</b>는 위쪽 바의 [작게 · % · 크게 · 화면에 맞춤](Ctrl+휠 · Ctrl+0), <b>[인쇄]</b>(Ctrl+P), 시험 달력은 칸 안에 바로 학생 이름, 관리 탭의 학생·문의는 여러 칸, 창은 오른쪽 위 × 나 Esc로 닫아요. 창을 반쪽(960px 이상)으로 붙여도 PC 화면이 유지되고 보던 탭이 남아요. 전화번호를 누르면 복사돼요.</li>
+  <li><b>강사용 PC 프로그램</b>(설치파일 폴더의 강사용 설치 exe): 같은 화면을 전용 창으로 열어요 — 화면·자료는 늘 최신이라 따로 업데이트할 게 없어요. PC에선 <b>오늘</b>이 두 단(왼쪽 내 수업·업무·시험·새 학생·공지·메모, 오른쪽 <b>이번 주 내 시간표</b>와 오늘 전체 수업), <b>Ctrl+F</b>(또는 Ctrl+K)로 찾기 · <b>Ctrl+1~9</b>로 탭 이동(4.11.0), <b>표 크기</b>는 위쪽 바의 [작게 · % · 크게 · 화면에 맞춤](Ctrl+휠 · Ctrl+0), <b>[인쇄]</b>(Ctrl+P), 시험 달력은 칸 안에 바로 학생 이름, 관리 탭의 학생·문의는 여러 칸, 창은 오른쪽 위 × 나 Esc로 닫아요. 창을 반쪽(960px 이상)으로 붙여도 PC 화면이 유지되고 보던 탭이 남아요. 전화번호를 누르면 복사돼요.</li>
   ${HF('d-grid','강사용 PC 창 — 전체 시간표 · 위쪽 바 표 크기 · [인쇄]')}
   ${HF('d-today','강사용 PC 창 — 오늘 두 단')}
   ${HF('d-xcal','강사용 PC 창 — 시험 달력(칸 안에 이름)')}
@@ -9563,8 +9593,8 @@ const HELP=[
   <ul><li>지점장 PC·행정 PC는 부원장님께 받은 <b>연결 코드</b>로 연결해요. 자기 지점은 고치고, 다른 지점은 시간표만 봐요.</li>
   <li><b>먼저 수정 모드를 켠 PC만</b> 그 지점을 고쳐요(위쪽 "🔒 ○○ 수정 중"). [적용]하면 다른 PC로 올라가고 잠금이 풀려요.</li>
   <li><b>나스 빠른 동기화</b>: PC끼리는 학원 나스(<code>서성완T › 1. 프로그램 › Y-MATH시간표</code>) <b>하나로만</b> 주고받아요. 저장은 바로, 다른 PC엔 <b>몇 초 안에</b> 보여요(4초마다 확인). 원본이 하나라 어느 쪽이 최신인지 헷갈릴 일이 없어요.</li>
-  <li>GitHub에는 뒤에서 <b>백업 사본</b>만 올라가요(동기화 때 읽지 않음). 폰 시간표·폰 요청(보강·결근·완료)은 지금처럼 GitHub로 가요.</li>
-  <li>나스 파일이 깨져 있으면 그 지점만 GitHub 백업 사본으로 되살리고 알려 줘요. 나스가 잠깐 안 열리면 고친 건 그 PC에 두었다가("⏳ 올리기 대기") 다시 열리면 올라가요.</li>
+  <li>GitHub에는 <b>폰 시간표·폰 요청</b>(보강·결근·완료)만 가요. 예전엔 백업 사본도 올렸는데 GitHub Pages 빌드를 아끼려고 껐어요 — <b>PC마다 세 지점 전체 사본과 30분마다 자동 백업</b>이 있어서 나스가 망가져도 아무 PC에서나 되살릴 수 있어요(4.10.0). PC 확인 기록·업데이트 파일도 나스로만 주고받아요([연결된 PC]에서 PC마다 GitHub로 바꿀 수 있어요).</li>
+  <li>나스 파일이 깨져 있으면 그 지점만 <b>그 PC가 가진 사본</b>으로 되살리고 알려 줘요(깨진 파일은 그 PC 백업 폴더에). 나스가 잠깐 안 열리면 고친 건 그 PC에 두었다가("⏳ 올리기 대기") 다시 열리면 올라가요.</li>
   <li>나스 폴더는 관리자 PC [설정 → 지점 연동 → 나스 폴더]에서 바꾸거나 끌 수 있고, 지점 PC는 몇 분 안에 따라와요. 프로그램 업데이트도 나스에서 먼저 받아요(서명 확인은 똑같이).</li>
   <li>겹쳐서 고친 경우 [적용] 때 [상대 것 받기 / 내 수정으로 덮어쓰기]를 물어봐요. 버리는 쪽은 백업에 남아요.</li>
   <li>인터넷이 끊겨도 고치고 적용할 수 있어요. 연결되면 자동으로 올라가요("⏳ 올리기 대기").</li>
@@ -9587,6 +9617,7 @@ const HELP=[
   <li><b>선생님 보강 등록이 안 와요</b> → 선생님이 로그인해서 '내 시간표'에서 빈 칸을 눌렀는지 확인.</li>
   <li><b>'이 PC의 연결이 끊겼어요'가 떠요</b> → 부원장님이 끊은 거예요. 새 연결 코드를 받아 다시 연결하세요.</li>
   <li><b>연동 오류</b>가 떠요 → 인터넷 연결 확인. 계속되면 [설정 → 지점 연동 → 지금 받기]를 눌러 오류 문구를 부원장님께 보내 주세요.</li>
+  <li><b>"문제가 생겨서 방금 동작이 끝까지 안 됐을 수 있어요"</b>가 떴어요 → 프로그램 안에서 오류가 난 거예요(4.11.0부터 화면에 알려 줘요). 방금 한 일을 한 번 더 해 보고, 계속 뜨면 어떤 때 뜨는지 관리자에게 알려 주세요.</li>
   <li><b>잘못 적용했어요</b> → [보관함 → 적용 기록]에서 그 전 시간표로 되돌리기.</li></ul>`},
 
  /* ---------- 관리자 도움말 (부원장님 PC에서만) ---------- */
@@ -9624,7 +9655,7 @@ const HELP=[
   <li><b>다른 사람으로 보기</b>: 아무 선생님·행정 선생님 폰 화면을 그대로 미리 봐요(그 사람이 받는 지점만 · 보내기는 막힘). 권한을 바꾼 뒤 확인할 때 써요.</li>
   <li><b>[PC·업데이트]</b>: 켜져 있는 PC와 버전·'다시 시작 필요'를 보고 원격으로 [다시 시작].</li>
   <li>코드가 새면 [새 코드로 바꾸기], 안 쓰면 [끄기].</li></ul>`},
- {id:'a-pub',owner:1,t:'폰으로 보기 설정 · 키',b:`<ul><li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]·바로 저장할 때마다 올라가서 어디서나 폰으로 봐요. 시간표는 지점마다 따로 암호화되고, 사람마다 받는 묶음(지점·연락처·전체 업무)이 달라요.</li><li><b>보강 등록 키</b>(Issues 권한만 있는 GitHub 키)를 [설정 → 선생님 보강 등록]에 넣어 켜면 폰 요청(보강·상담 완료·업무 완료·관리 탭)이 PC로 와요.</li><li>GitHub 키는 만료 14일 전부터 위쪽 노란 띠로 알려 줘요. 새 키를 넣으면 지점 PC들은 자동으로 따라와요.</li></ul>`},
+ {id:'a-pub',owner:1,t:'폰으로 보기 설정 · 키',b:`<ul><li><b>인터넷(GitHub)으로 올리기</b>를 켜면 [적용]·바로 저장할 때마다 올라가서 어디서나 폰으로 봐요. GitHub는 예전 판을 기록으로 쌓아 두는데, 쓸 데가 없어서 <b>관리자 PC가 한 달에 한 번 저절로 정리</b>해요(지금 파일만 남김 · 폰·다른 PC는 할 일 없음 · 4.09.0). 폰 시간표는 GitHub Pages 빌드 한도(시간당 약 10번)에 걸리지 않게 <b>마지막 수정 뒤 잠깐 기다렸다가, 6분에 한 번까지</b> 몰아서 올려요 — 그래서 고친 게 폰에 보이기까지 몇 분(최대 7분쯤) 걸릴 수 있어요. 급하면 [지금 올리기]를 눌러요(4.10.0). 폰 <b>화면 파일</b>(새 기능이 들어간 폰 화면)은 <b>관리자 PC만</b> 올려요 — 업데이트 뒤 아직 껐다 켜지 않은 PC가 옛 화면으로 덮지 않게(4.10.1). 그래서 업데이트가 폰에 들어가려면 관리자 PC가 새 판으로 켜져 있어야 해요. 시간표는 지점마다 따로 암호화되고, 사람마다 받는 묶음(지점·연락처·전체 업무)이 달라요.</li><li><b>보강 등록 키</b>(Issues 권한만 있는 GitHub 키)를 [설정 → 선생님 보강 등록]에 넣어 켜면 폰 요청(보강·상담 완료·업무 완료·관리 탭)이 PC로 와요.</li><li>GitHub 키는 만료 14일 전부터 위쪽 노란 띠로 알려 줘요. 새 키를 넣으면 지점 PC들은 자동으로 따라와요.</li></ul>`},
  {id:'a-deploy',owner:1,t:'업데이트 배포 · 업데이트 무게',b:`
   <ul><li>누르는 단추는 없어요. 새 버전 파일을 관리자 PC 프로그램 폴더(resources\\app)에 넣고 켜 두면, 켜진 뒤 3초·그다음 <b>2분마다</b> 이 PC 버전이 올려 둔 버전보다 새로울 때 <b>저절로</b> 저장소에 올리고("다른 PC들에 새 버전을 보냈어요" 알림), 다른 PC들은 2분마다 받아요. 본체(main.js)가 바뀐 버전은 받는 PC도 <b>다시 시작</b>이 필요해요(관리자 PC도 한 번 껐다 켜기).</li>
   <li>[프로그램 관리 → 연결된 PC] 위 <b>올려 둔 버전</b> 줄에서 저장소에 올라간 버전·올린 시각·마지막 확인 시각을 보고, 기다리기 싫으면 <b>[지금 확인]</b>으로 바로 올리거나 받아요. 폰 [관리 → PC·업데이트]의 [시간표 지금 올리기]는 프로그램이 아니라 폰용 시간표 자료를 올리는 거예요.</li>
