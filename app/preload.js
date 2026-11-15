@@ -44,6 +44,7 @@ contextBridge.exposeInMainWorld('api',{
   admSet:o=>ipcRenderer.invoke('admSet',o),
   syncBeat:v=>ipcRenderer.invoke('syncBeat',v),
   syncDevices:()=>ipcRenderer.invoke('syncDevices'),
+  syncBeatWhere:g=>ipcRenderer.invoke('syncBeatWhere',g),
   syncRevoke:d=>ipcRenderer.invoke('syncRevoke',d),
   ghSet:o=>ipcRenderer.invoke('ghSet',o),
   ghNow:()=>ipcRenderer.invoke('ghNow'),
