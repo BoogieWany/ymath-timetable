@@ -988,7 +988,7 @@ async function dec2(j,dk){const id=u8b64((await lgH(dk,'ymath-id')).slice(0,12))
   const com=await lgOpen(b64(P.kc),j.com);const branches=[];
   for(const id of Object.keys(j.br||{})){const k=(P.kb||{})[id];if(!k)continue;const b=await lgOpen(b64(k),j.br[id]);b.ctm=(P.ct||{})[id]||null;b.tsm=(P.ts||{})[id]||null;branches.push(b)}
   if(!branches.length)throw new Error('nobr');
-  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all,role:P.role||'',home:P.home||'',...(P.sb?{sb:P.sb}:{}),...(P.tka?{tka:P.tka}:{}),...(P.lv?{lv:P.lv}:{}),...(P.tb?{tb:P.tb}:{}),...(P.role==='owner'&&P.ak?{ak:P.ak,ox:P.ox||{}}:{}),...(P.mk?{mk:P.mk}:{}),...(P.mq?{mq:P.mq}:{})})}
+  return Object.assign({app:'ymath-view'},com,{v2:1,branches,me:P.me||[],myName:P.nm||'',all:!!P.all,role:P.role||'',...(P.ro?{ro:1}:{}),home:P.home||'',...(P.sb?{sb:P.sb}:{}),...(P.tka?{tka:P.tka}:{}),...(P.lv?{lv:P.lv}:{}),...(P.tb?{tb:P.tb}:{}),...(P.role==='owner'&&(P.ak||P.ro)?{...(P.ak?{ak:P.ak}:{}),ox:P.ox||{}}:{}),...(P.mk?{mk:P.mk}:{}),...(P.mq?{mq:P.mq}:{})})}
 const isAdm=()=>!!(D&&D.v2&&D.role==='admin'); // 행정 선생님: 내 수업 없음 · 전 지점 · 학생 전체 연락처
 /* 예전 방식(공용 번호)으로 저장된 것은 처음 한 번 지움 */
 function legacyWipe(){if(!ls.get('m_pin','')&&!ls.get('m_key',''))return;['m_pin','m_key','m_me','m_noMe','m_cache'].forEach(k=>ls.set(k,''));try{Object.keys(localStorage).filter(k=>k.startsWith('m_ck_')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
@@ -1636,7 +1636,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.15.0</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.16.0</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1711,7 +1711,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.15.0</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.16.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -2397,7 +2397,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.15.0';const VC={last:0,nv:''};
+const MVER='4.16.0';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
@@ -2414,7 +2414,10 @@ setInterval(()=>{if(!document.hidden&&D)load()},60000);
 /* ===== 내 폰 관리 모드 (프로그램 관리자 10자리 코드로 로그인) =====
    관리 탭: 학생 · 입학 문의 · 정기 상담 · 공지 · 통계 · 다른 사람으로 보기
    바꾸는 것은 서명(HMAC)한 요청으로 보내고, 그 지점 PC나 관리자 PC가 받아서 반영 → 시간표가 다시 올라오면 화면에 보임 */
-const isOwnR=()=>!!(D&&D.v2&&((D._o&&D._o.role)||D.role)==='owner'&&D.ak);
+const isOwnR=()=>!!(D&&D.v2&&((D._o&&D._o.role)||D.role)==='owner'&&(D.ak||D.ro));
+/* 4.16.0 원장님 열람 폰(D.ro): 관리자 폰처럼 전부 보이지만 보내는 것(요청·관리·상담·결근·업무)은 전부 막음 */
+const isRO=()=>!!(D&&D.ro);
+{const f0=window.fetch.bind(window);window.fetch=(u,o)=>{try{if(isRO()&&o&&o.method&&String(o.method).toUpperCase()!=='GET'&&/\/issues/.test(String(u))){try{fzToast('열람 전용이라 보낼 수 없어요')}catch(e){}return Promise.resolve(new Response('{}',{status:403,headers:{'Content-Type':'application/json'}}))}}catch(e){}return f0(u,o)}}
 const isOwn=()=>isOwnR()&&!ST.pv;
 const admLike=()=>isAdm()||(isOwn()&&!(D.me||[]).length);
 const OX=b=>((D&&D.ox)||{})[b.id]||((D&&D.mq)||{})[b.id]||{};
@@ -2449,7 +2452,7 @@ function nxSheet(b,need,P){ST.nxP=P;const nx=b.next;const opts=nx.classes.slice(
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-act="nxSend"]');if(!t||!ST.nxP)return;e.preventDefault();e.stopPropagation();const P=ST.nxP,N=ST.nxN||[];ST.nxP=null;const b=(P.brId&&D.branches.find(x=>x.id===P.brId))||B0();
   N.forEach(o=>{if(o.op==='mDel')o.a.nxd=[]});document.querySelectorAll('#sh [data-nxdc]:checked').forEach(el=>{const [i,cid,tt]=el.dataset.nxdc.split('|');const o=N[+i];if(o&&o.op==='mDel')o.a.nxd.push(cid+'|'+tt)});
   const pick={};document.querySelectorAll('#sh [data-nxs]').forEach(el=>{const o=N[+el.dataset.nxs];if(o)pick[o.a.cls]=el.value||''});P.ops.forEach(o=>{if(o.op==='mAdd'&&o.a&&pick[o.a.cls]!==undefined)o.a.nx=pick[o.a.cls]});P.ops._nx=1;adSend(P.ops,P.lb,t,P.ext,P.brId)},true);
-async function adSend(ops,lb,btn,ext,brId){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return false}const bS=(brId&&D.branches.find(x=>x.id===brId))||B0();
+async function adSend(ops,lb,btn,ext,brId){if(isRO()){fzToast('열람 전용이라 바꿀 수 없어요');return false}if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return false}const bS=(brId&&D.branches.find(x=>x.id===brId))||B0();
   if(!ops._nx){const need=nxNeed(bS,ops);if(need.length){nxSheet(bS,need,{ops,lb,ext,brId});return false}const nd=nxNeedD(bS,ops);if(nd.length){nxSheetD(bS,nd,{ops,lb,ext,brId});return false}}const mkey=!isOwn()&&D.mk&&D.mk[bS.id];if((!isOwn()&&!mkey)||!rqOn()){fzToast('보낼 수 없어요 · PC에서 [폰으로 보기 → 보강 등록]이 켜져 있어야 해요',2600);return false}
   const b=bS;const g=btn||null;if(g){g.disabled=true;g.dataset.l0=g.textContent;g.textContent='보내는 중…'}
   try{const n=u8b64(crypto.getRandomValues(new Uint8Array(9)));const p=JSON.stringify({br:b.id,ops,n,at:Date.now(),lb,...(mkey?{by:D.myName||''}:{})});const x=await rqSeal(b,{v:1,kind:'ad',br:b.id,p,sg:await adSign(p,mkey||D.ak)},['p']);
@@ -2486,7 +2489,7 @@ const pairOpts=b=>clsPairs(b).map(p=>`<option value="${esc(p.c.id+'|'+p.t)}">${e
 const mdA=d=>d?`${+d.slice(5,7)}/${+d.slice(8,10)}`:'';
 const AMG=['stu','iq','cn','an'];
 function vAdm(b){const mg=amMgr();const am=mg&&!AMG.includes(ST.am)?'iq':(ST.am||'iq'); /* 4.14.3 관리 탭은 입학 문의부터 */
-  let h=(`<div class="chips amc">${(mg?AM.filter(x=>AMG.includes(x[0])):AM).map(([k,l])=>`<button data-am="${k}" aria-pressed="${k===am}">${l}</button>`).join('')}</div>`)+adPendHTML();
+  let h=(`<div class="chips amc">${(mg?AM.filter(x=>AMG.includes(x[0])):isRO()?AM.filter(x=>x[0]!=='pc'):AM).map(([k,l])=>`<button data-am="${k}" aria-pressed="${k===am}">${l}</button>`).join('')}</div>`)+adPendHTML();
   h+=({stu:amStu,iq:amIq,cn:amCn,an:amAn,st:amSt,pc:amPc,pv:amPv}[am]||amStu)(b);return h+foot()}
 function amStu(b){const q=(ST.aq||'').trim();const L=b.students.filter(s=>!q||s.name.includes(q)).sort((a,z)=>a.name.localeCompare(z.name,'ko'));const out=OX(b).out||[];
   return `<div class="amh"><div class="search"><input id="aq" type="search" placeholder="학생 이름" autocomplete="off" value="${esc(q)}"></div><button class="ambtn pri" data-act="amStAdd">＋ 학생</button></div>
