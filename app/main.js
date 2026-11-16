@@ -52,6 +52,11 @@ process.on('uncaughtException',e=>logErr('main',e));process.on('unhandledRejecti
 ipcMain.on('logErr',(e,tag,msg,stack)=>logErr('화면:'+String(tag||''),{message:msg,stack:'\n'+String(stack||'')}));
 /* 4.04.0 결근 서류 PDF: [열기] = 임시 폴더에 풀어 기본 PDF 프로그램으로(끌 때·켤 때 지움) · [저장] = 자리 고르기 */
 const LVTMP=path.join(require('os').tmpdir(),'ymt-lv');const lvTmpClean=()=>{try{fs.rmSync(LVTMP,{recursive:true,force:true})}catch(e){}};lvTmpClean();app.on('will-quit',lvTmpClean);
+/* 4.16.0 열람 전용 PC(원장님용 · role 'viewer'): 전 지점 자료를 받아 보기만 — 올리기·잠금·요청 처리·Y-Note 내보내기·폰 화면 올리기를 여기서 통째로 막음 */
+const RO_MSG='열람 전용 PC라 저장할 수 없어요';
+function isRO(){try{const c=mob&&mob.sync;return !!(c&&c.on&&c.role==='viewer')}catch(e){return false}}
+const RO_BLOCK={syncPush:()=>({ok:false,ro:1,err:RO_MSG,shas:{},conflicts:[]}),sharedPush:()=>({ok:false,ro:1,err:RO_MSG}),syncLock:()=>({ok:false,ro:1,err:RO_MSG}),syncDelete:()=>({ok:false,ro:1,err:RO_MSG}),saveDraft:()=>false,rqComment:()=>({ok:false,err:RO_MSG}),rqClose:()=>({ok:false,err:RO_MSG}),ynSetup:()=>({ok:false,ro:1,err:RO_MSG})};
+{const h0=ipcMain.handle.bind(ipcMain);ipcMain.handle=(ch,fn)=>h0(ch,(e,...a)=>(RO_BLOCK[ch]&&isRO())?RO_BLOCK[ch]():fn(e,...a))}
 ipcMain.handle('lvPdf',async(e,o)=>{try{const buf=Buffer.from(String((o&&o.b64)||''),'base64');if(buf.length<5||buf.slice(0,4).toString('latin1')!=='%PDF')return {ok:false,err:'PDF 파일이 아니에요'};if(buf.length>8*1024*1024)return {ok:false,err:'파일이 너무 커요'};
   const nm=(String((o&&o.name)||'결근서류.pdf').replace(/[\\/:*?"<>|]+/g,'_').slice(0,80).replace(/\.pdf$/i,'')||'결근서류')+'.pdf';
   if(o&&o.save){const r=await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender),{defaultPath:nm,filters:[{name:'PDF',extensions:['pdf']}]});if(r.canceled||!r.filePath)return {ok:false,cancel:true};fs.writeFileSync(r.filePath,buf);return {ok:true,path:r.filePath}}
@@ -233,6 +238,13 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
       const mine=ppl[nm(own.nm)]||[];const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:mine.map(r=>({br:r.b.id,t:r.t.id})),nm:own.nm||'',role:'owner',home:(mine[0]&&mine[0].b.id)||ob.id,all:1,ct:ctA,ts:Object.fromEntries((db.branches||[]).filter(b=>kb[b.id]).map(b=>[b.id,tsAll(b)])),ak:own.ak,ox,tka:tkA};{const tb={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{const my=mine.filter(q=>q.b.id===b.id).flatMap(q=>Object.keys(ctPlain(q.b,q.ver,q.t,true)));const x=tbPack(b,my);if(x)tb[b.id]=x});if(Object.keys(tb).length)P.tb=tb}
       const dk=await lgKey(String(own.ck),salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});
       sig.push('O'+own.ck+':'+crypto.createHash('sha256').update(JSON.stringify([P.me,P.nm,P.home,own.ak,ctA,ox,tkA,P.ts,P.tb||null])).digest('hex'))}}
+  /* 4.16.0 원장님 열람 폰(b.vw · 10자리 코드): 프로그램 관리자 폰과 같은 자료를 보되 서명 키(ak)가 없어 아무것도 못 바꿈(ro) */
+  {const vb=(db.branches||[]).find(b=>kb[b.id]&&b.vw&&/^\d{10}$/.test(String(b.vw.ck||'')));
+    if(vb){const vw=vb.vw;const ctA={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ctA[b.id]=ctAll(b)});
+      const ox={};(db.branches||[]).filter(b=>kb[b.id]).forEach(b=>{ox[b.id]={...mgPack(b),mstat:Object.fromEntries(Object.keys(b.mstat||{}).sort().slice(-13).map(k=>[k,b.mstat[k]]))}});
+      const P={kc:kc.toString('base64'),kb:Object.fromEntries(v.branches.map(b=>[b.id,kb[b.id].toString('base64')])),me:[],nm:vw.nm||'원장님',role:'owner',ro:1,home:vb.id,all:1,ct:ctA,ts:Object.fromEntries((db.branches||[]).filter(b=>kb[b.id]).map(b=>[b.id,tsAll(b)])),ox,tka:tkA};
+      const dk=await lgKey(String(vw.ck),salt);u.push({id:lgH(dk,'ymath-id').subarray(0,12).toString('base64'),...lgSeal(lgH(dk,'ymath-wrap'),P)});
+      sig.push('V'+vw.ck+':'+crypto.createHash('sha256').update(JSON.stringify([P.nm,ctA,ox,tkA,P.ts])).digest('hex'))}}
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
@@ -277,7 +289,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
       classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
-      sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p})),
+      sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p,...(o.x&&o.x.length?{x:o.x}:{}),...(o.a&&o.a.length?{a:o.a}:{})})),
       ct:ctPack(b,v),
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
       ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
@@ -288,7 +300,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       ex:(b.ex||[]).filter(x=>x.date>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(x=>({date:x.date,sid:x.sid,kind:x.kind,t:x.t||'',p:x.p,memo:x.memo||''})),
       // 예정 시간표: 날짜가 되면 폰이 스스로 이걸로 바꿔 보여 줌 · pub이면 그 전에도 미리 보기
       ...(()=>{const sc=b.sched;const nv=sc&&(b.versions||[]).find(x=>x.id===sc.ver);if(!nv||nv.id===v.id)return {};
-        return {next:{from:sc.from,pub:!!sc.pub,version:nv.name||'',classes:(nv.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),sessions:(nv.sessions||[]).map(o=>({cls:o.cls,t:o.t,d:o.d,p:o.p}))}}})()}})}}
+        return {next:{from:sc.from,pub:!!sc.pub,version:nv.name||'',classes:(nv.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),sessions:(nv.sessions||[]).map(o=>({cls:o.cls,t:o.t,d:o.d,p:o.p,...(o.x&&o.x.length?{x:o.x}:{}),...(o.a&&o.a.length?{a:o.a}:{})}))}}})()}})}}
 const MANIFEST=JSON.stringify({name:'Y-MATH 시간표',short_name:'Y-MATH',start_url:'./',scope:'./',display:'standalone',background_color:'#F3F4F7',theme_color:'#17243F',icons:[{src:'icon.png?v=q7',sizes:'256x256',type:'image/png',purpose:'any'}]});
 const FAIL={};
 function handle(req,res){const u=new URL(req.url,'http://x');const ip=req.socket.remoteAddress||'';
@@ -331,7 +343,7 @@ async function encView(obj,pass){const {salt,key}=await viewKey(pass);const iv=c
   const c=crypto.createCipheriv('aes-256-gcm',key,iv);const ct=Buffer.concat([c.update(Buffer.from(JSON.stringify(obj),'utf8')),c.final(),c.getAuthTag()]);
   return {app:'ymath-view',enc:1,kdf:'pbkdf2-sha256',it:VIEW_IT,salt:salt.toString('base64'),iv:iv.toString('base64'),ct:ct.toString('base64'),h:viewHash(obj)}}
 function wr(f,data){const t=f+'.tmp';fs.writeFileSync(t,data);try{fs.renameSync(t,f)}catch(e){fs.copyFileSync(t,f);fs.unlinkSync(t)}}
-async function publishNas(){const d=nasDir();if(!d)return;NAS.err='';if(appStale()){NAS.err=STALE_MSG;return}
+async function publishNas(){if(isRO())return;const d=nasDir();if(!d)return;NAS.err='';if(appStale()){NAS.err=STALE_MSG;return}
   try{if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
     fs.mkdirSync(path.join(d,'fonts'),{recursive:true});const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
     wr(path.join(d,'view.json'),JSON.stringify(await encV2(v)));
@@ -390,7 +402,7 @@ async function ghConnect(){const me=await gh('GET','/user');if(me.status!==200)t
 async function ghPages(){const u=`/repos/${mob.ghOwner}/${mob.ghRepo}/pages`;const g=await gh('GET',u);if(g.status===200){GH.url=g.j.html_url||'';return true}
   const c=await gh('POST',u,{source:{branch:GH.branch||'main',path:'/'}});if(c.status===201||c.status===200){GH.url=(c.j&&c.j.html_url)||'';return true}
   GH.url='';GH.pagesOff=true;return false}
-async function publishGh(){if(!mob.ghOn)return;if(appStale()){GH.err=STALE_MSG;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}return}if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
+async function publishGh(){if(!mob.ghOn||isRO())return;if(appStale()){GH.err=STALE_MSG;try{if(win&&!win.isDestroyed())win.webContents.send('nasState',{gh:ghInfo()})}catch(e){}return}if(GH.busy){GH.again=true;return}GH.busy=true;GH.again=false;GH.err='';GH.pagesOff=false;
   try{if(!ghToken())throw new Error('연결 키를 넣어 주세요');if(!mob.ghRepo)throw new Error('저장소 이름을 넣어 주세요');
     await ghConnect();await rqRefresh(true);const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');const rqv=rqView();
     const st=new Date().toISOString().slice(0,16).replace('T',' ');
@@ -596,11 +608,11 @@ ipcMain.handle('syncEnable',async(e,o)=>{const c=syCfg();if(!ghToken()||!mob.ghR
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}
   if(!syKey())sySetKey(crypto.randomBytes(32).toString('base64'));c.on=true;c.role='owner';try{updEnsureKeys()}catch(err){}c.name=String(o&&o.name||c.name||'부원장').slice(0,20);c.dev=c.dev||crypto.randomBytes(6).toString('hex');sySave();await tokenPublish();return {ok:true,info:syInfo()}});
 ipcMain.handle('syncCode',(e,branchId,opt)=>{const c=syCfg();if(c.role!=='owner'||!syReady())return null;
-  try{updEnsureKeys()}catch(err){}const o={v:1,o:mob.ghOwner,r:mob.ghRepo,t:ghToken(),k:syKey().toString('base64'),p:mob.pin||'',b:branchId||'*',u:c.pub||''};
+  try{updEnsureKeys()}catch(err){}const o={v:1,o:mob.ghOwner,r:mob.ghRepo,t:ghToken(),k:syKey().toString('base64'),p:mob.pin||'',b:branchId||'*',u:c.pub||''};const vw=!!(opt&&opt.viewer);if(vw){o.b='*';o.vw=1} /* 열람 전용: 전 지점 열쇠는 주되 서명 키는 안 줌 */
   if(opt&&opt.staff){if(!branchId||branchId==='*')return null;o.st={n:String(opt.staff).slice(0,20)}} // 행정 선생님 PC: 소속 지점만 · 학생 관리 위주
-  if(!branchId||branchId==='*'){try{const pk=updPriv();if(pk)o.s=pk.export({type:'pkcs8',format:'pem'})}catch(err){}}return 'YMT1.'+Buffer.from(JSON.stringify(o)).toString('base64url')});
+  if(!vw&&(!branchId||branchId==='*')){try{const pk=updPriv();if(pk)o.s=pk.export({type:'pkcs8',format:'pem'})}catch(err){}}return 'YMT1.'+Buffer.from(JSON.stringify(o)).toString('base64url')});
 ipcMain.handle('syncJoin',async(e,code,name)=>{let o;try{o=JSON.parse(Buffer.from(String(code).trim().replace(/^YMT1\./,''),'base64url').toString('utf8'));if(!o.t||!o.k||!o.r)throw 0}catch(err){return {ok:false,err:'코드가 올바르지 않아요 · 프로그램 관리자에게 받은 코드를 통째로 붙여넣어 주세요'}}
-  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.b==='*'?'owner':o.st?'staff':'branch';c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(o.st&&o.st.n?o.st.n+' 행정':'')||(c.role==='owner'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
+  const c=syCfg();ghSetToken(o.t);mob.ghRepo=o.r;mob.ghOwner=o.o;if(o.p)mob.pin=o.p;mob.ghOn=true;sySetKey(o.k);c.on=true;if(o.u)c.pub=o.u;if(o.s&&o.b==='*'&&!o.vw){try{if(safeStorage.isEncryptionAvailable()){c.signEnc=safeStorage.encryptString(o.s).toString('base64');delete c.signPlain}else c.signPlain=o.s}catch(err){}}c.role=o.vw?'viewer':o.b==='*'?'owner':o.st?'staff':'branch';if(o.vw){delete c.signEnc;delete c.signPlain}c.branch=o.b==='*'?'':o.b;c.name=String(name||'').slice(0,20)||(o.st&&o.st.n?o.st.n+' 행정':'')||(c.role==='owner'||c.role==='viewer'?'원장님':'지점 관리자');c.dev=crypto.randomBytes(6).toString('hex');delete c.beat;sySave();
   try{await ghConnect()}catch(err){return {ok:false,err:err.message}}return {ok:true,info:syInfo()}});
 /* 이 PC에서 로그아웃(지점·행정 PC): 내 잠금 풀고 연결된 PC 목록에서 빠진 뒤 열쇠·키·에듀OK 계정을 지움 · data면 시간표·기록·백업까지 → 다시 시작하면 처음 화면 */
 ipcMain.handle('syncLogout',async(e,o)=>{const c=syCfg();if(c.on&&c.role==='owner')return {ok:false,err:'관리자 PC는 여기서 로그아웃할 수 없어요'};
