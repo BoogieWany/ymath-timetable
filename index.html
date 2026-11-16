@@ -157,6 +157,16 @@ body.wide .card .nm{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}
 body.wide .narrow{max-width:760px}
 /* 3.78.2: 넓은 화면 [오늘] 두 단 — 왼쪽 내 수업·업무·띠, 오른쪽 오늘 전체 수업 */
 body.wide .tdw{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:4px 28px;align-items:start;max-width:1480px}
+.wk{display:grid;grid-template-columns:repeat(var(--wn,7),minmax(0,1fr));background:var(--panel);border:1px solid var(--line2);border-radius:14px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;margin-bottom:6px}
+.wkc{padding:0 5px 8px;display:flex;flex-direction:column;gap:5px;min-width:0;border-left:1px solid var(--line2)}.wkc:first-child{border-left:0}
+.wkc.on{background:color-mix(in srgb,var(--acc) 5%,transparent)}
+.wkd{font-size:calc(12px*var(--mz,1));font-weight:700;color:var(--muted);text-align:center;padding:8px 0 5px;display:flex;justify-content:center;align-items:center;gap:4px}
+.wkc.on .wkd{color:var(--fg)}.wkd i{font-style:normal;font-size:calc(9.5px*var(--mz,1));font-weight:600;padding:1px 5px;border-radius:999px;background:var(--acc);color:var(--panel)}
+.wki{border-radius:8px;padding:4px 6px 5px 8px;background:color-mix(in srgb,var(--c) 14%,var(--panel));box-shadow:inset 3px 0 0 var(--c);display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.wki small{font:500 calc(10.5px*var(--mz,1)) var(--mono,ui-monospace,monospace);color:var(--muted)}.wki b{font-size:calc(12px*var(--mz,1));font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wki.sp{background:transparent;border:1px dashed color-mix(in srgb,var(--c) 60%,var(--line2))}.wki.done{opacity:.45}.wki.now{box-shadow:inset 3px 0 0 var(--c),0 0 0 1.5px var(--c)}
+.wke{text-align:center;color:var(--muted);font-size:calc(11.5px*var(--mz,1));padding:6px 0;opacity:.7}
+body.wide .tdw .tdr>.wk+.sec{margin-top:20px}
 body.wide .tdw .dock{margin-top:22px}body.wide .tdw .tdr>.sec:first-child{margin-top:8px}
 @media (max-width:1400px){body.wide .gt .tgh{display:none}} /* 3.78.2: 도구줄이 넘쳐 [인쇄]가 혼자 줄바꿈되지 않게 — 안내 글은 좁으면 숨김(스위치 title로) */
 /* 3.78.2: 관리 탭 넓은 화면 — 학생·문의 카드를 여러 칸으로 */
@@ -908,6 +918,17 @@ body.wide .mysw{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px
 .search input{transition:border-color .2s ease,box-shadow .2s ease}
 .search input:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 14%,transparent)}
 @media (prefers-reduced-motion:reduce){.card>button,.chips button,.search input{transition:none}}
+/* 4.15.0 시작 화면: 홈 화면 앱으로 켤 때 1.5초 — 밝은 테마는 밝은 바탕, 어두운 테마는 남색 바탕 */
+#spl{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--navy);transition:opacity .32s ease;-webkit-user-select:none;user-select:none}
+#spl.out{opacity:0;pointer-events:none}
+#spl .spm{display:flex;flex-direction:column;align-items:center;font-size:21px;font-weight:700;line-height:1.55;letter-spacing:-.2px}
+#spl .spm span{opacity:0;transform:translateY(10px);animation:splUp .5s cubic-bezier(.2,.7,.2,1) forwards}#spl .spm span+span{animation-delay:.14s}
+#spl .spln{width:34px;height:3px;border-radius:2px;background:#E8B04A;margin-top:18px;transform:scaleX(0);animation:splLn .45s cubic-bezier(.2,.7,.2,1) .38s forwards}
+#spl small{position:absolute;bottom:calc(44px + env(safe-area-inset-bottom,0px));font-size:11.5px;letter-spacing:3px;font-weight:600;color:var(--muted);opacity:0;animation:splIn .5s ease .3s forwards}
+#spl em{font-style:normal}
+@keyframes splUp{to{opacity:1;transform:none}}@keyframes splLn{to{transform:scaleX(1)}}@keyframes splIn{to{opacity:.7}}
+@media (prefers-color-scheme:dark){#spl{background:var(--navy);color:#fff}#spl .spm{font-weight:600}#spl em{color:#F2C46B}#spl .spln{display:none}#spl small{color:rgba(255,255,255,.6)}}
+@media (prefers-reduced-motion:reduce){#spl .spm span,#spl .spln,#spl small{animation:none;opacity:1;transform:none}}
 </style>
 <script>/* 3.90.0 화면 색·밝기 — 그리기 전에 바로(번쩍임 없게) */
 function thApply(){let a='';try{a=localStorage.getItem('m_acc')||''}catch(e){}const m=a==='rose'?'light':'auto'; /* 연분홍은 늘 밝게 · 기본은 휴대폰 설정 따라감(어둡게 고르기 없음) */
@@ -918,6 +939,11 @@ function thApply(){let a='';try{a=localStorage.getItem('m_acc')||''}catch(e){}co
 thApply();try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',thApply)}catch(e){}</script>
 </head>
 <body>
+<div id="spl" aria-hidden="true"><div class="spm"><span>와이매쓰는</span><span><em>선생님</em>을 응원합니다</span></div><i class="spln"></i><small>Y-MATH</small></div>
+<script>/* 4.15.0 시작 화면 — 홈 화면 앱으로 처음 켤 때만(같은 실행 중 새로고침·강사용 PC·브라우저 탭에선 안 뜸 · ?spl=1 로 미리 보기) */
+(function(){var s=document.getElementById('spl'),force=/[?&]spl=1/.test(location.search),ok=false;try{ok=(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true)&&!/YMT-Desk/.test(navigator.userAgent)&&!sessionStorage.getItem('m_spl')}catch(e){}
+  if(!ok&&!force){s.remove();return}try{sessionStorage.setItem('m_spl','1')}catch(e){}
+  setTimeout(function(){s.classList.add('out');setTimeout(function(){s.remove()},340)},1500)})();</script>
 <header class="hd" id="hd">
   <div class="hd-r"><img src="icon.png?v=q7" alt=""><b>Y-MATH 시간표</b><button class="srb" data-act="psOpen" aria-label="찾기 (기능·학생·반·선생님)" title="찾기"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></button><span class="fz" role="group" aria-label="화면"><button data-fz="-1" class="pm" aria-label="화면 작게" title="화면 작게 (전체 표에선 표 축소)">−</button><button data-fz="1" class="pm" aria-label="화면 크게" title="화면 크게 (전체 표에선 표 확대)">+</button><button data-fz="0" class="rs" aria-label="처음 화면으로" title="폭에 맞춰 처음 크기로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></button><button data-act="rot" class="rot" id="rotB" aria-label="가로로 보기" title="가로로 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg></button></span><select id="br" aria-label="지점"></select><button id="brb" class="brb" data-act="brSheet" aria-label="지점 고르기"><span id="brn"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6"/></svg></button><button class="hdx" data-act="hdHide" aria-label="위쪽 바 숨기기" title="위쪽 바 숨기기">▲</button></div>
   <div class="meta" id="meta"></div>
@@ -1055,8 +1081,8 @@ const TABS=()=>viewOnlyB(B0())?[['grid',wide?'전체 시간표':'전체']]:(wide
 function render(){if(!D)return;document.body.classList.remove('nolog');document.body.dataset.vt=ST.tab;pvApply();nextApply();const b=B();ST.br=b.id;
   if(!TABS().some(x=>x[0]===ST.tab))ST.tab=TABS()[0][0];
   $('br').innerHTML=D.branches.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('');$('brn').textContent=b.name;$('brb').classList.toggle('one',D.branches.length<2);
-  $('tabs').innerHTML=TABS().map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}">${l}</button>`).join('')+'<i class="tind" id="tind"></i>';$('tabs').classList.toggle('many',!wide&&TABS().length>6);tabInd(true);
-  meta(false);sizeHd();
+  $('tabs').innerHTML=TABS().map(([k,l],i)=>`<button role="tab" data-tab="${k}" aria-selected="${k===ST.tab}"${wide&&i<9?` title="Ctrl + ${i+1}"`:''}>${l}</button>`).join('')+'<i class="tind" id="tind"></i>';$('tabs').classList.toggle('many',!wide&&TABS().length>6);tabInd(true);
+  meta(false);sizeHd();{const sb=document.querySelector('.srb');if(sb)sb.title=wide?'찾기 (Ctrl + F · Ctrl + K)':'찾기'}
   const v={today:vToday,stu:vStu,grid:vGrid,adm:vAdm,sch:vSch,tk:vTk,ex:vEx}[ST.tab]||vToday;if(ST.tab==='adm')adPoll();
   $('main').classList.toggle('zm',ST.tab!=='grid'||ST.gl==='l');const mh=pvBar()+(ST.tab==='adm'?'':nxBar())+v(b);if(mh!==ST.mh||!$('main').firstChild){ST.mh=mh;$('main').innerHTML=mh}zmBar();
   if(ST.tab==='stu'){const i=$('q');if(i){i.value=ST.q;}ctFill()}liveTick();glowApply()}
@@ -1196,7 +1222,9 @@ const exCancel=(b,o)=>{const x=o._ex||exNearV(b,o.id);return !!(x&&x.kind==='can
 /* 주간 표: 대강·이동으로 이 칸에 오는 수업 (7일 안) */
 function exGhostV(b,d,p,t){if(b._nx)return '';return exL(b).filter(x=>x.date<plusD(tdStr(),7)&&x.kind!=='cancel').map(x=>{const o=b.sessions.find(s=>s.id===x.sid);if(!o||o.d!==d)return '';const tp=x.kind==='move'?x.p:o.p,tt=x.t||o.t;if(tp!==p||(t&&tt!==t))return '';const c=C(b,o.cls);if(!c)return '';
   return `<div class="gnote exg" style="--nc:${esc(c.color||'#9aa3b5')}"><i>${+x.date.slice(5,7)}/${+x.date.slice(8,10)}만 · ${x.kind==='sub'?'대강':'옮겨 옴'}</i><span><b>${esc(c.name)}</b> ${x.kind==='sub'?esc(T(b,o.t))+'T 대신':esc(pshort(per(b,o.d,o.p).name))+'에서'}</span></div>`}).join('')}
-function card(b,o,sub,hit,st,tm){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o._t0||o.t]||[];const xt=exTag(b,o);const xc=xt&&(o._ex||exNearV(b,o.id)).kind==='cancel';const act=mem.filter(id=>actS(S(b,id)));
+/* 4.13.0 수업 하나만 빠지기(o.x)·듣기(o.a) */
+function sMem(b,o,c){c=c||C(b,o.cls);if(!c)return [];let m=(c.members||{})[o._t0||o.t]||[];if(o.x&&o.x.length)m=m.filter(id=>!o.x.includes(id));if(o.a&&o.a.length)m=m.concat(o.a.filter(id=>!m.includes(id)));return m}
+function card(b,o,sub,hit,st,tm){const c=C(b,o.cls);if(!c)return'';const mem=sMem(b,o,c);const xt=exTag(b,o);const xc=xt&&(o._ex||exNearV(b,o.id)).kind==='cancel';const act=mem.filter(id=>actS(S(b,id)));
   const k=o.d+o.p+o.t+o.cls;const open=ST.open.has(k)||hit;
   return `<div class="card${open?' open':''}${hit?' hit':''}${st==='done'?' done':''}${xc?' exc':''}" style="--c:${esc(c.color||'#9aa3b5')}" data-pk="${esc([o.d,o.p,o.t,o.cls,o.id||'',o._t0||''].join('|'))}"${tm?` data-tm="${tm.s}|${tm.e}"`:''}><button data-k="${esc(k)}" aria-expanded="${open}">${tm&&tm.mine?`<span class="tc"><b>${fromMin(tm.s)}</b><small>${fromMin(tm.e)}</small></span>`:''}<span class="bar" style="background:${esc(c.color||'#9aa3b5')}"></span><span class="in"><span class="t1"><b>${esc(c.name)}</b>${stTag(st)}<span class="n">${nCnt(b,mem)}</span></span><span class="t2">${sub}${xt?' '+xt:''}</span></span></button>${tm&&(st==='now'||tm.live)&&!xc?'<i class="pg"></i>':''}
     <div class="nmw"><div><div class="nm">${mem.map(id=>{const s=S(b,id);if(!s)return'';return `<span>${s.away?`<s>${esc(s.name)}</s>`:esc(s.name)+nMark(s)}</span>`}).join('')||'<span>명단 없음</span>'}</div></div></div></div>`}
@@ -1236,8 +1264,14 @@ function vToday(b){const d=todayD();const dt=new Date();const me=ME();const myT=
         if(its.length){const x=its[0];nx=`다음 수업: <b>${i===1?'내일':d2+'요일'}</b> ${x.sp?esc(x.sp.name)+' '+fromMin(x.s):esc(pshort(per(b,d2,x.o.p).name))+' '+fromMin(x.s)+' '+esc((C(b,x.o.cls)||{}).name)}`}}
       const hol=((TT(b,myT)||{}).off||[]).includes(d);h+=`<div class="empty">${hol?'오늘은 휴일이에요 · 푹 쉬세요':'오늘은 수업이 없어요'}${nx?'<br>'+nx:''}</div>`}} /* 3.78.6: 강사 관리 휴무 요일이면 '휴일' */
   const all=`<div class="sec">오늘 전체 수업</div>`+dayBody(b,d,true);
-  if(wide)return `<div class="tdw"><div class="tdl">${h}${dockHTML(b,false)}</div><div class="tdr">${all}</div></div>${footBody(b)}`; /* 3.78.2: 넓은 화면 두 단 — 왼쪽 내 것(업무·내 수업·시험·새 학생·공지·메모), 오른쪽 오늘 전체 수업 */
+  if(wide)return `<div class="tdw"><div class="tdl">${h}${dockHTML(b,false)}</div><div class="tdr">${myT?wkHTML(b,myT,d):''}${all}</div></div>${footBody(b)}`; /* 3.78.2: 넓은 화면 두 단 — 왼쪽 내 것(업무·내 수업·시험·새 학생·공지·메모), 오른쪽 오늘 전체 수업 */
   return `<div>${h}${all}${foot()}</div>`}
+/* 4.11.0 넓은 화면 [오늘]: 이번 주 내 시간표 — 요일마다 내 수업을 시간 순으로 (오늘 칸만 보강·휴강 반영) */
+function wkHTML(b,myT,td){const ds=DAYS.filter(d=>((b.days||{})[d]||[]).length||sps(b).some(s=>s.t===myT&&(s.days||[]).includes(d)));if(!ds.length)return'';const nm=nowMin();let n=0;
+  const cols=ds.map(d=>{const its=todayItems(b,d).filter(x=>x.t===myT&&!(x.o&&x.o._ex&&x.o._ex.kind==='cancel'));n+=its.length;const off=((TT(b,myT)||{}).off||[]).includes(d);
+    return `<div class="wkc${d===td?' on':''}"><div class="wkd">${d}${d===td?'<i>오늘</i>':''}</div>${its.map(x=>{const c=x.sp?null:C(b,x.o.cls);const nmx=x.sp?x.sp.name:(c||{}).name||'';const col=x.sp?(x.sp.color||'#9aa3b5'):((c||{}).color||'#9aa3b5');
+      return `<div class="wki${d===td&&x.e<=nm?' done':''}${d===td&&x.s<=nm&&nm<x.e?' now':''}${x.sp?' sp':''}" style="--c:${esc(col)}" title="${esc(d+'요일 '+fromMin(x.s)+'~'+fromMin(x.e)+' '+nmx)}"><small>${fromMin(x.s)}</small><b>${esc(nmx)}</b></div>`}).join('')||`<div class="wke">${off?'휴일':'–'}</div>`}</div>`}).join('');
+  return `<div class="sec">이번 주 내 시간표 <small>${n}타임</small></div><div class="wk" style="--wn:${ds.length}">${cols}</div>`}
 function dayBody(b,d,mark){const ps=(b.days||{})[d]||[];const tord={};b.teachers.forEach((t,i)=>tord[t.id]=i);let any=false,h='';const nm=nowMin();
   const sd=sps(b).filter(s=>(s.days||[]).includes(d)).sort((x,y)=>toMin(x.start)-toMin(y.start)||tord[x.t]-tord[y.t]);
   if(sd.length){any=true;h+=`<div class="per"><b>특강</b><span>방학</span></div><div class="list">${sd.map(s=>{const a=toMin(s.start),e=a+(+s.dur||120);return spCard(b,s,`${spTime(s)} · ${esc(T(b,s.t))}T${spD(s)}`,mark?(e<=nm?'done':a<=nm?'now':''):'')}).join('')}</div>`}
@@ -1258,7 +1292,7 @@ function glTch(b,tid){const os=b.sessions.filter(o=>o.t===tid);let n=0,h='';
 /* ===== 3.76.0 학교 탭: 이 지점 학생들이 다니는 학교 — 시험 일정·과목별 시험일·범위·부교재·등급컷·기출 수거·선택과목(선생님은 자기 학생만) ===== */
 const SJ_SHORT={'공통수학1':'공수1','공통수학2':'공수2','미적분Ⅰ':'미적1','확률과 통계':'확통','미적분Ⅱ':'미적2'};const sjS=s=>SJ_SHORT[s]||s;
 const SJ_ORD=['공통수학1','공통수학2','대수','미적분Ⅰ','확률과 통계','기하','미적분Ⅱ'];
-const EKL={m1:'1학기 중간',f1:'1학기 기말',m2:'2학기 중간',f2:'2학기 기말'};const CALL={camp:'수련회·현장체험',trip:'수학여행',sum:'여름방학',win:'겨울방학'};
+const EKL={m1:'1학기 중간',f1:'1학기 기말',m2:'2학기 중간',f2:'2학기 기말'};const CALL={camp:'수련회·현장체험',trip:'수학여행',sum:'여름방학',win:'겨울방학',spr:'봄방학'};
 const mk2ek=(y,mk)=>`${y}|${mk[1]}|${mk[0]==='m'?'중간':'기말'}`;
 function schStuM(b,x){return (b.students||[]).filter(s=>{const k=schKeyM(s.school);return k&&(k===x.k||(x.al||[]).includes(k))})}
 function schExM(x){const out=[];Object.entries(x.cal||{}).forEach(([y,c])=>{const g3=x.kd==='중'&&c.g3&&c.g3[0];['m1','f1','m2','f2'].forEach(mk=>{const r=c[mk];if(r&&r[0])out.push({y,mk,ek:mk2ek(y,mk),from:r[0],to:r[1]||r[0],lab:EKL[mk],...(g3&&mk[1]==='2'?{g3:'not'}:{}),dm:Object.entries(c.dm||{}).filter(([d])=>d>=r[0]&&d<=(r[1]||r[0])).sort()})});
@@ -1377,7 +1411,7 @@ function vStu(b,parts){const q=ST.q.trim();const sb=`<div class="search"><input 
   if(!hits.find(s=>s.id===ST.stu))ST.stu=hits.length===1?hits[0].id:null;
   h+=`<div class="res">${hits.map(s=>`<button data-stu="${s.id}" aria-pressed="${s.id===ST.stu}"><b>${esc(s.name)}</b><small>${esc(s.grade)}${s.away?' · 휴원':''}</small></button>`).join('')}</div>`;
   let r='';
-  if(ST.stu){if(wide)r+=`<div class="ctw" data-sid="${esc(ST.stu)}"></div>`;const has=o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(ST.stu)};const mine=b.sessions.filter(has);
+  if(ST.stu){if(wide)r+=`<div class="ctw" data-sid="${esc(ST.stu)}"></div>`;const has=o=>{const c=C(b,o.cls);return c&&sMem(b,o,c).includes(ST.stu)};const mine=b.sessions.filter(has);
     const st=sps(b).filter(s=>(s.members||[]).includes(ST.stu));
     if(!wide)r+=stuInfo(b,ST.stu,mine,st);
     else if(!mine.length&&!st.length)r+='<div class="empty">배정된 수업이 없어요</div>';
@@ -1394,7 +1428,7 @@ function nkNames(b,txt){if(viewOnlyB(b))return esc(txt);return String(txt).split
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-nks]');if(!t)return;const g=t.closest('.gnote');if(g&&!g.classList.contains('op')&&!ST.nm)return; /* 접혀 있으면 이름 누르기보다 펼치기 먼저 */e.stopPropagation();e.preventDefault();stuSheet(t.dataset.nks)},true);
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('.gnote[data-nkp]');if(!g||ST.nm||e.target.closest('[data-nks]')&&g.classList.contains('op'))return;g.classList.toggle('op');if(typeof pzV==='function'&&pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340)});
 function names(b,ids,hl){return true?`<div class="gnw"><div><div class="gn">${ids.map(id=>{const s=S(b,id);if(!s)return'';const n=esc(s.name);return `<span${id===hl?' style="font-weight:700;text-decoration:underline"':''}>${s.away?`<s>${n}</s>`:n+nMark(s)}</span>`}).join('')}</div></div></div>`:''}
-function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=(c.members||{})[o.t]||[];const act=mem.filter(id=>actS(S(b,id)));const bg=c.color||'#9aa3b5';const xt=exTag(b,o);const xc=xt&&exNearV(b,o.id).kind==='cancel';
+function gChip(b,o,sub){const c=C(b,o.cls);if(!c)return'';const mem=sMem(b,o,c);const act=mem.filter(id=>actS(S(b,id)));const bg=c.color||'#9aa3b5';const xt=exTag(b,o);const xc=xt&&exNearV(b,o.id).kind==='cancel';
   return `<div class="gc${xc?' exc':''}" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-pk="${esc([o.d,o.p,o.t,o.cls,o.id||''].join('|'))}"><div class="h"><b>${esc(c.name)}</b>${sub?`<u>${sub}</u>`:''}<i>${nCnt(b,mem)}</i></div>${xt?`<div class="gx">${xt}</div>`:''}${names(b,mem,null)}</div>`}
 function gSp(b,s,sub){const mem=s.members||[];const act=mem.filter(id=>actS(S(b,id)));const bg=s.color||'#9aa3b5';
   return `<div class="gc sp" style="--c:${esc(bg)};--fc:${txtColor(bg)}" data-spk="${esc(s.id)}"><div class="h"><b>${esc(s.name)}</b><u>${spTime(s)}${sub?' · '+sub:''}</u><i>${nCnt(b,mem)}</i></div>${names(b,mem,null)}</div>`}
@@ -1602,7 +1636,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.10.0</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.15.0</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1677,7 +1711,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.10.0</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.15.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -1756,6 +1790,10 @@ window.addEventListener('wheel',e=>{if(!e.ctrlKey||!wide||!D)return;e.preventDef
 window.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!D||document.querySelector('table.g'))return;const k=e.key;if(k==='='||k==='+'){e.preventDefault();mzStep(1)}else if(k==='-'||k==='_'){e.preventDefault();mzStep(-1)}else if(k==='0'){e.preventDefault();mzStep(0)}});
 document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||!wide||!document.querySelector('table.g'))return;
   if(e.key==='='||e.key==='+'){e.preventDefault();zoomBy(1)}else if(e.key==='-'){e.preventDefault();zoomBy(-1)}else if(e.key==='0'){e.preventDefault();ST.fit=true;ls.set(FK(),'1');fitNow()}else if(e.key==='p'||e.key==='P'){e.preventDefault();window.print()} /* 3.78.2: Ctrl+P = [인쇄] */});
+/* 4.11.0 넓은 화면 단축키: Ctrl+F 찾기 · Ctrl+1~9 탭 이동 */
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||e.altKey||e.shiftKey||!wide||!D)return;const k=e.key;
+  if(k==='f'||k==='F'||k==='ㄹ'||k==='k'||k==='K'||k==='ㅏ'){e.preventDefault();if(!$('ps')){if($('sh'))shClose();psOpen()}}
+  else if(/^[1-9]$/.test(k)){const t=TABS()[+k-1];if(!t||$('ps')||$('sh'))return;e.preventDefault();goTab(t[0])}});
 let rzT=0;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(ST.fit&&wide)fitNow()},150)});
 /* ===== 폰 전체 시간표: 위쪽 바 아래 영역만 지도처럼 확대·이동 (두 손가락 확대, 한 손가락 끌기, 두 번 톡 확대) ===== */
 const PZ={s:1,x:0,y:0,fit:1,W:0,H:0,vw:0,vh:0,g:null,vx:0,vy:0,raf:0,lastTap:0};
@@ -1970,7 +2008,7 @@ function pkBody(el){const b=B();
     return `<div class="pkh" style="--c:${esc((c&&c.color)||'#9aa3b5')}"><i></i><div><b>${esc(n.k||b.noteLabel||'보강')}${c?' · '+esc(c.name):''}</b><span>${esc(T(b,n.t))}T · ${n.d}요일 ${esc(pshort(pp.name))}${n.until?` · ${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}`:''}</span></div><em>${T0.length}명</em></div><div class="pkn">${ids.length?pkNames(b,ids):''}${other.map(w=>`<span class="none">${esc(w)}</span>`).join('')}</div>${ids.length?'<div class="pkhint">이름 위로 손가락을 옮겨 떼면 학생 카드</div>':''}`} /* 3.79.4 보강 카드 꾹 */
   if(el.dataset.spk){const sp=(b.specials||[]).find(x=>x.id===el.dataset.spk);if(!sp)return '';const mem=sp.members||[];const act=mem.filter(id=>actS(S(b,id)));
     return `<div class="pkh" style="--c:${esc(sp.color||'#9aa3b5')}"><i></i><div><b>${esc(sp.name)} <span class="pktag">특강</span></b><span>${esc(T(b,sp.t))}T · ${esc((sp.days||[]).join('·'))} ${spTime(sp)}${spD(sp)}</span></div><em>${nCnt(b,mem)}</em></div><div class="pkn">${pkNames(b,mem)}</div>`}
-  const [d,p0,t,cls,id,t0]=el.dataset.pk.split('|');const p=+p0;const c=C(b,cls);if(!c)return '';const mem=(c.members||{})[t0||t]||[];const act=mem.filter(x=>actS(S(b,x)));
+  const [d,p0,t,cls,id,t0]=el.dataset.pk.split('|');const p=+p0;const c=C(b,cls);if(!c)return '';const o0=(b.sessions||[]).find(q=>q.id===id)||{};const mem=sMem(b,{cls,t,_t0:t0,x:o0.x,a:o0.a},c);const act=mem.filter(x=>actS(S(b,x)));
   const pp=per(b,d,p);const [s0,e0]=pRange(b,d,p);const o=id&&b.sessions.find(x=>x.id===id);const xt=o?exTag(b,o):'';const cnt=nCnt(b,mem);
   const ns=(b.notes||[]).filter(n=>noteLive(n)&&n.cls===cls);
   return `<div class="pkh" style="--c:${esc(c.color||'#9aa3b5')}"><i></i><div><b>${esc(c.name)}</b><span>${esc(T(b,t))}T${t0&&t0!==t?` (원래 ${esc(T(b,t0))}T)`:''} · ${d}요일 ${esc(pshort(pp.name))} · ${fromMin(s0)}–${fromMin(e0)}</span></div><em>${cnt}</em></div>
@@ -2033,7 +2071,7 @@ function tsSerHTML(X){return X.map(([n,done,bh,tot,cut,pts])=>{let svg='';if(pts
     svg=`<svg class="tsg" viewBox="0 0 ${W} ${H}" aria-hidden="true">${cut!=null&&cut>=lo&&cut<=hi?`<line class="cut" x1="${l}" x2="${W-r}" y1="${Y(cut).toFixed(1)}" y2="${Y(cut).toFixed(1)}"/>`:''}<path class="ar" d="${d} L${X1(n1).toFixed(1)} ${H-bt} L${X1(n0).toFixed(1)} ${H-bt} Z"/><path class="ln" d="${d}"/>${pts.map((p,i)=>`<circle class="${cut!=null&&p[1]<cut?'lo':''}" cx="${X1(p[0]).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="${i===pts.length-1?3.4:2.4}"/>`).join('')}<text x="${l}" y="${H-1}">${n0}회</text><text x="${W-r}" y="${H-1}" text-anchor="end">${n1}회</text></svg>`}
   return `<div class="tsx"><div class="tsxh"><b>${esc(n)}</b><span>${done}/${tot}회</span>${bh==null?'':bh>0?`<i class="tsbh ${bh>=3?'b3':''}">${bh}회 밀림</i>`:done?'<i class="tsbh ok">제때</i>':''}${pts.length>=2?`<small>${pts[0][1]} → ${pts[pts.length-1][1]}점</small>`:''}</div>${svg}</div>`}).join('')}
 function tsHTML(b,s){const L=(b.tsm||{})[s.id]||[];const X=(b.tsm||{})['~'+s.id]||[];if(!L.length&&!X.length)return '';if(ST.pv&&!admLike()&&!((D.me||[]).some(m=>m.br===b.id)))return ''; /* 3.89.2 미리 보기: 그 선생님 지점이면 지점 전체 */
-  return `<div class="sis sts"><div class="sit">자체시험${L.length?` <small>최근 ${L.length}회</small>`:''}</div>${tsSerHTML(X)}${L.map(([n,d,sc,mx,cut,dn,sn,d7],i)=>{const low=cut&&sc!=null&&sc<cut;const pv=L[i+1];const dl=L[i].length>7?(sc==null?null:d7):pv&&sc!=null&&pv[2]!=null&&(pv[3]||100)===(mx||100)?Math.round((sc-pv[2])*10)/10:null;/* 3.79.9: 지난 회 대비는 PC가 계산해 보냄(같은 정기시험 묶음끼리) *//* 3.78.0 지난 회 대비 추세 */return `<div class="tsr"><span class="tsn">${esc(n)}<small>${d?mdd(d):''}</small></span>${dl!=null?`<i class="tsd ${dl>0?'up':dl<0?'dn':''}" title="지난 회 대비">${dl>0?'▲'+dl:dl<0?'▼'+Math.abs(dl):'–'}</i>`:''}<b class="${low?'low':''}">${L[i][8]!=null?`<s class="reo">${esc(String(L[i][8]))}</s> → `:''}${sc==null?'–':esc(String(sc))}${L[i][8]!=null?'<i class="reb2">재</i>':''}${mx&&mx!==100?`<small>/${mx}</small>`:''}</b></div>`}).join('')}${L.some(x=>x[4])?'<div class="tsh">빨간 점수 = 기준 점수 아래</div>':''}</div>`}
+  return `<div class="sis sts"><div class="sit">자체시험${L.length?` <small>최근 ${L.length}회</small>`:''}</div>${tsSerHTML(X)}${L.map(([n,d,sc,mx,cut,dn,sn,d7],i)=>{const low=cut&&sc!=null&&sc<cut;const pv=L[i+1];const dl=L[i].length>7?(sc==null?null:d7):pv&&sc!=null&&pv[2]!=null&&(pv[3]||100)===(mx||100)?Math.round((sc-pv[2])*10)/10:null;/* 3.79.9: 지난 회 대비는 PC가 계산해 보냄(같은 정기시험 묶음끼리) *//* 3.78.0 지난 회 대비 추세 */return `<div class="tsr"><span class="tsn">${esc(n)}<small>${d?mdd(d):''}</small></span>${dl!=null&&dl!==0?`<i class="tsd ${dl>0?'up':dl<0?'dn':''}" title="지난 회 대비">${dl>0?'▲'+dl:dl<0?'▼'+Math.abs(dl):'–'}</i>`:''}<b class="${low?'low':''}">${L[i][8]!=null?`<s class="reo">${esc(String(L[i][8]))}</s> → `:''}${sc==null?'–':esc(String(sc))}${L[i][8]!=null?'<i class="reb2">재</i>':''}${mx&&mx!==100?`<small>/${mx}</small>`:''}</b></div>`}).join('')}${L.some(x=>x[4])?'<div class="tsh">빨간 점수 = 기준 점수 아래</div>':''}</div>`}
 function stuExamHTML(b,s){const x=stuExl(b,s);if(!x)return '';const k=x.k;const td=tdStr();const n=Math.round((new Date(x.from+'T00:00:00')-new Date(td+'T00:00:00'))/864e5);
   const g=s.grade||'';const sem=x.lab[0];const g1=/^고1$/.test(g)?[sem==='2'?'공통수학2':'공통수학1']:[];const hs=/^고([23])$/.exec(g);const sjs=hs?((s.subj||{})[`${hs[1]}-${sem}`]||[]):g1;const R=x._sch?Object.fromEntries(Object.entries(x._sch.rng||{}).filter(([rk])=>rk.startsWith(x.ek+'|')).map(([rk,t])=>[`${k}|${rk.split('|').slice(3).join('|')}`,t])):(b.rng||{});
   const lines=[];(sjs.length?sjs:['']).forEach(sj=>{const t=R[`${k}|${g}${sj?'|'+sj:''}`]||(sj?R[`${k}|${g}`]:'');if(t)lines.push((sj?`<i>${esc(sj)}</i> `:'')+esc(t))});if(!lines.length&&!sjs.length){const t=R[`${k}|${g}`];if(t)lines.push(esc(t))}
@@ -2055,7 +2093,7 @@ function stuInfo(b,sid,mine,sp){const s=S(b,sid);if(!s)return '';const grp={};
 /* 꾹 창에서 이름 위로 손가락을 옮겨 떼면 뜨는 학생 카드 — [닫기]를 누를 때까지 그대로 */
 /* 3.80.5 학생 카드에서도 [상담 완료] — 상담 기간이 아니어도(수시 상담) · 담당 학생(선생님) · 지점장·관리자·행정은 지점 학생 · 요청 보낼 수 있을 때만 */
 function stuCnOK(b,s){if(!b||!s||ST.pv||!rqOn()||s.away||isPreS(s))return false;if(admLike()||isMgr(b))return true;const me=ME();if(!me||me.br!==b.id)return false;return (b.classes||[]).some(c=>((c.members||{})[me.t]||[]).includes(s.id))}
-function stuSheet(id){const b=B();if(viewOnlyB(b))return;const s=S(b,id);if(!s)return;const mine=b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(id)});
+function stuSheet(id){const b=B();if(viewOnlyB(b))return;const s=S(b,id);if(!s)return;const mine=b.sessions.filter(o=>{const c=C(b,o.cls);return c&&sMem(b,o,c).includes(id)});
   const cnOK=stuCnOK(b,s);const lr=cnOK?((b.cns||{}).rec||[]).filter(r=>r[0]===id).sort((a,z)=>z[1].localeCompare(a[1]))[0]:null;
   shOpen(`${stuInfo(b,id,mine,sps(b).filter(x=>(x.members||[]).includes(id)))}${cnOK?`<div class="scn"><span>상담 <small>${lr?`최근 ${esc(lr[1].slice(5).replace('-','/'))}${lr[2]?' · '+esc(lr[2]):''}`:'최근 기록 없음'}${holdSet(b).has(id)?' · 보류 중':''}</small></span><button class="csbtn" data-act="cnGo" data-sid="${esc(id)}">상담 완료</button></div>`:''}<div class="sbtn" style="margin-top:12px">${mine.length?`<button data-act="stuCopy" data-sid="${esc(id)}" title="이름 없이 요일·시간·반만 글로">시간표 복사</button>`:''}<button class="pri" data-act="shClose" style="flex:1">닫기</button></div>`,{stay:true,cls:'stsh'});setTimeout(ctFill,30)}
 /* ===== 내 업무: PC 업무 탭에서 나한테 맡긴 일 · [완료]는 요청(kind 'tk')으로 PC에 ===== */
@@ -2334,7 +2372,7 @@ document.addEventListener('change',e=>{if(e.target&&e.target.id==='exWho'){ST.ex
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-exv],#exMyTg,#exOTg,[data-exm]');if(!t)return;if(t.dataset&&t.dataset.exm){ST.exM=t.dataset.exm;ls.set('m_exm',ST.exM);ST.mh='';render();return}if(t.id==='exOTg'){ST.exO=!ST.exO;ls.set('m_exo',ST.exO?'1':'0');ST.mh='';render();return}if(t.id==='exMyTg'){ST.exMy=!ST.exMy;ls.set('m_exmy',ST.exMy?'1':'0')}else ST.exV=t.dataset.exv;ST.mh='';render()});
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('excard')){if(d.open){ST.exOpen.add(d.dataset.exid);ST.exShut.delete(d.dataset.exid)}else{ST.exOpen.delete(d.dataset.exid);ST.exShut.add(d.dataset.exid)}}},true);
 /* 문자용 글: 이름 없이 · 같은 반·같은 시간은 요일 묶어서 */
-function stuTextM(b,id){const G={};const DO=d=>DAYS.indexOf(d);b.sessions.filter(o=>{const c=C(b,o.cls);return c&&((c.members||{})[o.t]||[]).includes(id)}).forEach(o=>{const c=C(b,o.cls);const [st,en]=pRange(b,o.d,o.p);if(st==null)return;const k=`${o.cls}|${o.t}|${st}|${en}`;(G[k]=G[k]||{days:[],st,en,nm:c.name,t:o.t}).days.push(o.d)});
+function stuTextM(b,id){const G={};const DO=d=>DAYS.indexOf(d);b.sessions.filter(o=>{const c=C(b,o.cls);return c&&sMem(b,o,c).includes(id)}).forEach(o=>{const c=C(b,o.cls);const [st,en]=pRange(b,o.d,o.p);if(st==null)return;const k=`${o.cls}|${o.t}|${st}|${en}`;(G[k]=G[k]||{days:[],st,en,nm:c.name,t:o.t}).days.push(o.d)});
   sps(b).filter(x=>(x.members||[]).includes(id)).forEach(x=>{const st=toMin(x.start);if(st==null)return;G['sp|'+x.id]={days:(x.days||[]).slice(),st,en:st+(+x.dur||120),nm:`${x.name} (특강)`,t:x.t}});
   return Object.values(G).map(g=>({...g,days:[...new Set(g.days)].sort((a,z)=>DO(a)-DO(z))})).sort((a,z)=>DO(a.days[0])-DO(z.days[0])||a.st-z.st).map(g=>`${g.days.join('·')} ${fromMin(g.st)}~${fromMin(g.en)} ${g.nm}${g.t?` (${T(b,g.t)}T)`:''}`).join('\n')}
 async function stuCopyM(id){const t=stuTextM(B(),id);if(!t){fzToast('아직 수업이 없어요');return}let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){}if(!ok){try{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand('copy');ta.remove()}catch(e){}}
@@ -2359,7 +2397,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.10.0';const VC={last:0,nv:''};
+const MVER='4.15.0';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
@@ -2396,7 +2434,23 @@ function pvGo(k,br,t,nm){ST.pv=k?{k,br:br||(k==='a'?ST.br:br),t,nm}:null;pvApply
 /* --- 보내기 · 대기 목록 --- */
 const ADP={get(){try{return JSON.parse(ls.get('m_adp','[]'))||[]}catch(e){return []}},set(L){ls.set('m_adp',JSON.stringify(L.slice(-30)))},last:0};
 async function adSign(p,key){const k=await crypto.subtle.importKey('raw',b64(key||D.ak),{name:'HMAC',hash:'SHA-256'},false,['sign']);return u8b64(new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(p))))}
-async function adSend(ops,lb,btn,ext,brId){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return false}const bS=(brId&&D.branches.find(x=>x.id===brId))||B0();const mkey=!isOwn()&&D.mk&&D.mk[bS.id];if((!isOwn()&&!mkey)||!rqOn()){fzToast('보낼 수 없어요 · PC에서 [폰으로 보기 → 보강 등록]이 켜져 있어야 해요',2600);return false}
+/* 4.14.0 예정 시간표에 같은 이름 반이 없는 반에 학생을 넣을 때: 보내기 전에 '예정 시간표에서는 어느 반?'을 물어봄 (op.a.nx = '반|선생님') */
+function nxNeed(b,ops){const nx=b&&b.next;if(!nx||!(nx.classes||[]).length)return [];const nm=x=>String(x||'').replace(/\s+/g,'');const seen={};return (ops||[]).filter(o=>{if(o.op!=='mAdd'||!o.a||o.a.nx!==undefined)return false;const c=C(b,o.a.cls);if(!c||nx.classes.some(x=>nm(x.name)===nm(c.name))||seen[c.id])return false;seen[c.id]=1;return true})}
+/* 4.14.1 뺄 때: 예정 시간표에 같은 이름 반이 없고 그 학생이 예정 시간표 반에 있으면 어느 반에서 뺄지 (op.a.nxd = ['반|선생님']) */
+const nxInM=(nx,sid)=>(nx.classes||[]).flatMap(c=>Object.keys(c.members||{}).filter(t=>(c.members[t]||[]).includes(sid)).map(t=>({c,t})));
+function nxNeedD(b,ops){const nx=b&&b.next;if(!nx||!(nx.classes||[]).length)return [];const nm=x=>String(x||'').replace(/\s+/g,'');return (ops||[]).filter(o=>{if(o.op!=='mDel'||!o.a||o.a.nxd!==undefined)return false;const c=C(b,o.a.cls);return !!c&&!nx.classes.some(x=>nm(x.name)===nm(c.name))&&nxInM(nx,o.a.sid).length>0})}
+function nxSheetD(b,need,P){ST.nxP=P;ST.nxN=need;const nx=b.next;shOpen(`<h3>예정 시간표에서는 어느 반에서 뺄까요?</h3><p class="ssub">${esc(mdA(nx.from))}부터 바뀔 시간표에는 같은 이름의 반이 없어요 · ${esc(P.lb||'')}</p>
+  <div class="asec">${need.map((o,i)=>nxInM(nx,o.a.sid).map(({c,t})=>`<label class="arow nxr"><input type="checkbox" data-nxdc="${i}|${esc(c.id)}|${esc(t)}"> <span>${esc(c.name)} · ${esc(T(b,t))}T</span></label>`).join('')).join('')}</div>
+  <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="nxSend">보내기</button></div>`,{cls:'amsh'})}
+function nxSheet(b,need,P){ST.nxP=P;const nx=b.next;const opts=nx.classes.slice().sort((a,z)=>String(a.name).localeCompare(String(z.name),'ko')).flatMap(c=>[...new Set(Object.keys(c.members||{}).concat((nx.sessions||[]).filter(o=>o.cls===c.id).map(o=>o.t)))].filter(t=>TT(b,t)).map(t=>`<option value="${esc(c.id+'|'+t)}">${esc(c.name)} · ${esc(T(b,t))}T</option>`)).join('');
+  shOpen(`<h3>예정 시간표에는 어느 반에?</h3><p class="ssub">${esc(mdA(nx.from))}부터 바뀔 시간표에는 같은 이름의 반이 없어요 · ${esc(P.lb||'')}</p>
+  <div class="asec">${need.map((o,i)=>{const c=C(b,o.a.cls);return `<div class="arow nxr"><span>${esc(c.name)} →</span><select data-nxs="${i}"><option value="">넣지 않기</option>${opts}</select></div>`}).join('')}</div>
+  <div class="sbtn"><button data-act="shClose">취소</button><button class="pri" data-act="nxSend">보내기</button></div>`,{cls:'amsh'});ST.nxN=need}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-act="nxSend"]');if(!t||!ST.nxP)return;e.preventDefault();e.stopPropagation();const P=ST.nxP,N=ST.nxN||[];ST.nxP=null;const b=(P.brId&&D.branches.find(x=>x.id===P.brId))||B0();
+  N.forEach(o=>{if(o.op==='mDel')o.a.nxd=[]});document.querySelectorAll('#sh [data-nxdc]:checked').forEach(el=>{const [i,cid,tt]=el.dataset.nxdc.split('|');const o=N[+i];if(o&&o.op==='mDel')o.a.nxd.push(cid+'|'+tt)});
+  const pick={};document.querySelectorAll('#sh [data-nxs]').forEach(el=>{const o=N[+el.dataset.nxs];if(o)pick[o.a.cls]=el.value||''});P.ops.forEach(o=>{if(o.op==='mAdd'&&o.a&&pick[o.a.cls]!==undefined)o.a.nx=pick[o.a.cls]});P.ops._nx=1;adSend(P.ops,P.lb,t,P.ext,P.brId)},true);
+async function adSend(ops,lb,btn,ext,brId){if(ST.pv){fzToast('미리 보기 중에는 보낼 수 없어요');return false}const bS=(brId&&D.branches.find(x=>x.id===brId))||B0();
+  if(!ops._nx){const need=nxNeed(bS,ops);if(need.length){nxSheet(bS,need,{ops,lb,ext,brId});return false}const nd=nxNeedD(bS,ops);if(nd.length){nxSheetD(bS,nd,{ops,lb,ext,brId});return false}}const mkey=!isOwn()&&D.mk&&D.mk[bS.id];if((!isOwn()&&!mkey)||!rqOn()){fzToast('보낼 수 없어요 · PC에서 [폰으로 보기 → 보강 등록]이 켜져 있어야 해요',2600);return false}
   const b=bS;const g=btn||null;if(g){g.disabled=true;g.dataset.l0=g.textContent;g.textContent='보내는 중…'}
   try{const n=u8b64(crypto.getRandomValues(new Uint8Array(9)));const p=JSON.stringify({br:b.id,ops,n,at:Date.now(),lb,...(mkey?{by:D.myName||''}:{})});const x=await rqSeal(b,{v:1,kind:'ad',br:b.id,p,sg:await adSign(p,mkey||D.ak)},['p']);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 관리',body:await rqEnc(x)})});
@@ -2417,7 +2471,7 @@ function adPendHTML(){const L=ADP.get();if(!L.length)return '';const nm=id=>(D.b
   return `<details class="adp adps"${ST.adpOpen?' open':''}><summary class="adpi ${w?'wait':b?'bad':'ok'}"><i></i><span>보낸 것 ${R.length}건<small>${[w?`반영 기다리는 중 ${w}`:'',o?`반영됨 ${o}`:'',b?`못 함 ${b}`:''].filter(Boolean).join(' · ')}</small></span><em>›</em></summary>${R.map(row).join('')}</details>`}
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('adps'))ST.adpOpen=e.target.open},true);
 /* --- 관리 탭 --- */
-const AM=[['stu','학생'],['iq','입학 문의'],['cn','정기 상담'],['an','공지'],['st','통계'],['pc','PC·업데이트'],['pv','다른 사람으로 보기']];
+const AM=[['iq','입학 문의'],['stu','학생'],['cn','정기 상담'],['an','공지'],['st','통계'],['pc','PC·업데이트'],['pv','다른 사람으로 보기']];
 const stLab=s=>s.away?'휴원':s.pre?'예정':'재원';
 const clsOf=(b,sid)=>{const out=[];b.classes.forEach(c=>Object.entries(c.members||{}).forEach(([t,ids])=>{if(ids.includes(sid))out.push({c,t})}));return out};
 const clsTs=(b,c)=>[...new Set(Object.keys(c.members||{}).concat(b.sessions.filter(o=>o.cls===c.id).map(o=>o.t)))].filter(t=>TT(b,t));
@@ -2431,7 +2485,7 @@ const pairPicked=id=>[...document.querySelectorAll(`#${id} .pk[aria-pressed="tru
 const pairOpts=b=>clsPairs(b).map(p=>`<option value="${esc(p.c.id+'|'+p.t)}">${esc(p.c.name)} · ${esc(T(b,p.t))}T</option>`).join('');
 const mdA=d=>d?`${+d.slice(5,7)}/${+d.slice(8,10)}`:'';
 const AMG=['stu','iq','cn','an'];
-function vAdm(b){const mg=amMgr();const am=mg&&!AMG.includes(ST.am)?'stu':(ST.am||'stu');
+function vAdm(b){const mg=amMgr();const am=mg&&!AMG.includes(ST.am)?'iq':(ST.am||'iq'); /* 4.14.3 관리 탭은 입학 문의부터 */
   let h=(`<div class="chips amc">${(mg?AM.filter(x=>AMG.includes(x[0])):AM).map(([k,l])=>`<button data-am="${k}" aria-pressed="${k===am}">${l}</button>`).join('')}</div>`)+adPendHTML();
   h+=({stu:amStu,iq:amIq,cn:amCn,an:amAn,st:amSt,pc:amPc,pv:amPv}[am]||amStu)(b);return h+foot()}
 function amStu(b){const q=(ST.aq||'').trim();const L=b.students.filter(s=>!q||s.name.includes(q)).sort((a,z)=>a.name.localeCompare(z.name,'ko'));const out=OX(b).out||[];
