@@ -3847,7 +3847,7 @@ var qrcode = function() {
 /* 4.01.0 펼침 메뉴(details.impm·.thm): 바깥을 누르거나 항목을 고르면 닫힘 */
 document.addEventListener('click',e=>{document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.impm-l button'))d.open=false})},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>d.open=false)});
-const APPVER='4.16.0', APPDATE='2026-11-15';
+const APPVER='4.17.1', APPDATE='2026-11-15';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -3998,7 +3998,8 @@ async function mobRender(info){const el=$('mobBox');if(!el)return;
       <li>스위치를 켜면 끝! 웹 페이지 켜기까지 프로그램이 자동으로 해요.</li></ol></details></div>
   ${m.pin&&(g.on||n.on)&&pinWeak(m.pin)?`<div class="box warn"><span><b>번호가 약해요.</b> 인터넷에 올라가는 시간표 파일은 이 번호로 잠그는데, ${/^\d+$/.test(m.pin)?'숫자만':'8자 미만'}이면 컴퓨터로 밀어붙여 풀 수 있어요. 영문+숫자 섞어 8자 이상으로 바꿔 주세요 (예: ymath2026star). 바꾸면 선생님들께 새 번호를 알려 주세요.</span></div>`:''}`}
 const pinWeak=p=>!p||p.length<8||/^\d+$/.test(p)||/^[a-zA-Z]+$/.test(p);
-const pinOk=()=>{const pin=($('mobPin').value||'').trim();if(pin&&pin.length<4){toast('번호는 4자리 이상으로 정해 주세요');return null}return pin};
+/* 4.16.2 번호 칸(mobPin)은 개인 코드로 바뀌며 없어짐 → 칸이 없으면 저장돼 있던 값을 그대로 씀(예전엔 여기서 오류가 나 연결 키를 바꿀 수 없었음) */
+const pinOk=()=>{const pe=$('mobPin');if(!pe)return (MOBI&&MOBI.pin)||'';const pin=(pe.value||'').trim();if(pin&&pin.length<4){toast('번호는 4자리 이상으로 정해 주세요');return null}return pin};
 async function mobSave(){const pin=pinOk();if(pin===null)return;await bridge.mobileSet({on:false,pin,port:MOBI.port||8787});
   let info=null;if(MOBI.gh&&MOBI.gh.on){toast('번호를 저장했어요 · 새 번호로 다시 올리는 중…');info=await bridge.ghNow()}mobRender(info||undefined);toast(MOBI.gh&&MOBI.gh.on?'번호를 저장하고 새 번호로 올렸어요 · 선생님들께 새 번호를 알려 주세요':'번호를 저장했어요')}
 async function nasSave(o){const pin=pinOk();if(pin===null)return;const n=MOBI.nas||{};
@@ -4006,8 +4007,8 @@ async function nasSave(o){const pin=pinOk();if(pin===null)return;const n=MOBI.na
   if(on&&pin.length<6){toast('인터넷에 올릴 때는 번호를 6자리 이상으로 정해 주세요');return}
   const info=await bridge.nasSet({on,pin,host:$('nasHost').value,...(o.base?{base:o.base}:{})});mobRender(info);
   toast(info.nas.err?'올리지 못했어요 · 아래 내용을 확인해 주세요':on?'학원 서버에 올렸어요':'학원 서버로 올리기를 껐어요')}
-async function ghSave(o){const pin=pinOk();if(pin===null)return;const g=MOBI.gh||{};const on=o.on??g.on??true;const tok=($('ghTok').value||'').trim();
-  if(on&&pin.length<6){toast('인터넷에 올릴 때는 번호를 6자리 이상으로 정해 주세요');return}
+async function ghSave(o){const pin=pinOk();if(pin===null)return;const g=MOBI.gh||{};const on=o.on??g.on??true;const tok=(($('ghTok')||{}).value||'').trim();
+  if(on&&$('mobPin')&&pin.length<6){toast('인터넷에 올릴 때는 번호를 6자리 이상으로 정해 주세요');return}
   if(on&&!tok&&!g.hasTok){toast('연결 키를 넣어 주세요 · 아래 [처음 한 번 준비]를 보세요');return}
   toast('GitHub에 연결하는 중…');const info=await bridge.ghSet({on,pin,repo:$('ghRepo').value,...(tok?{token:tok}:{})});mobRender(info);
   toast(info.gh.err?'올리지 못했어요 · 아래 내용을 확인해 주세요':on?'인터넷에 올렸어요 · 1~2분 뒤 주소가 열려요':'인터넷 올리기를 껐어요')}
@@ -4625,6 +4626,8 @@ function fitGrid(){const sc=$('view').querySelector('.scroll');if(!sc)return;if(
   const below=side.hidden?16:side.getBoundingClientRect().height+30;
   const h=window.innerHeight-sc.getBoundingClientRect().top-below;sc.style.maxHeight=Math.max(220,h)+'px'}
 window.addEventListener('resize',()=>fitGrid());
+/* 4.17.1 위쪽 바 높이가 바뀌면(알림 띠가 생기거나 사라짐·탭 줄바꿈) 시간표 머리 줄 위치(--toph)를 바로 다시 맞춤 — 예전엔 다음에 화면을 다시 그릴 때까지 머리 줄이 떠서 그 위로 칸이 비쳐 보였음 */
+(function(){try{let tm=0;const ro=new ResizeObserver(()=>{clearTimeout(tm);tm=setTimeout(()=>{try{fitGrid()}catch(e){}},60)});const hook=()=>{const m=document.querySelector('.main');const t=m&&m.previousElementSibling;if(t){ro.observe(t);return true}return false};if(!hook())document.addEventListener('DOMContentLoaded',hook)}catch(e){}})();
 function renderIssues(){
   const c={err:0,warn:0,info:0};ISS.forEach(i=>c[i.lv]++);
   $('nErr').textContent=c.err;$('nWarn').textContent=c.warn;$('nInfo').textContent=c.info;
@@ -5260,7 +5263,7 @@ document.addEventListener('click',async e=>{
     case 'rqRotate':rqRotate(el);break;
     case 'keyLater':$('keyBar').hidden=true;fitGrid();break;
     case 'rqKeyGo':{const st=JSON.parse(localStorage.getItem('ymt_acc')||'{}');st.rqBox=true;localStorage.setItem('ymt_acc',JSON.stringify(st));UI.view='settings';render();setTimeout(()=>{const t=$('rqTok');if(t){t.scrollIntoView({block:'center'});t.focus()}},400);break}
-    case 'keyGo':$('modal').hidden=true;UI.view='settings';render();setTimeout(()=>{const t=$('ghTok');if(t){t.scrollIntoView({block:'center'});t.focus()}},300);break;
+    case 'keyGo':$('modal').hidden=true;UI.view=(isOwner()&&!isViewer())?'admin':'settings';render();setTimeout(()=>{const t=$('ghTok');if(t){for(let d=t.closest('details');d;d=d.parentElement&&d.parentElement.closest('details'))d.open=true;t.scrollIntoView({block:'center'});t.focus()}},600);break;
     case 'spNew':spOpen(null);break;
     case 'spSave':spSave();break;
     case 'spCancel':UI.spd=null;$('modal').hidden=true;break;
@@ -6033,7 +6036,7 @@ function renderSyncState(){const el=$('syncBadge');if(!el)return;if(!syOn()){el.
   el.className='syncb'+(SYNC.err?' err':'')+(l&&!mine?' lock':'');
   if(syPend().length)el.className='syncb lock';
   let rqb=false;try{rqb=RQS.busy||(RQS.going&&RQS.going.size)}catch(e){}if(rqb){el.className='syncb busy';el.innerHTML=`<i class="sbspin" aria-hidden="true"></i>보강 반영 중${RQS.going&&RQS.going.size>1?` ${RQS.going.size}건`:''}`;el.title='선생님 보강 승인·거절을 시간표에 넣고 올리는 중이에요';return}
-  el.textContent=SYNC.err?'연동 오류':syPend().length?'⏳ 올리기 대기':isStaff()?'행정 선생님 PC':(!canEditB(b.id)?'보기 전용 지점':l&&!mine?`🔒 ${l.by} 수정 중`:mine?'🔒 내가 수정 중':'연동됨');
+  el.textContent=SYNC.err?'연동 오류':syPend().length?'⏳ 올리기 대기':isStaff()?'행정 선생님 PC':isViewer()?'연동됨':(!canEditB(b.id)?'보기 전용 지점':l&&!mine?`🔒 ${l.by} 수정 중`:mine?'🔒 내가 수정 중':'연동됨');
   admRender();el.title=SYNC.err||(isOwner()?'프로그램 관리자':`${admLocked()?'내 지점 모드':'지점 관리자'} · ${syBName(myBr())}`)+(SYNC.info.name?` · ${SYNC.info.name}`:'');
   if(UI.view==='settings'||UI.view==='admin')syncRender()}
 /* ---- 설정 화면 ---- */
@@ -6129,7 +6132,7 @@ function updBanner(v,st){let el=$('updBar');if(!el){el=document.createElement('d
 /* ---- 연결 키 만료 알림 (원장님 PC) ---- */
 /* 연결 키·보강 등록 키 만료 알림 (관리자 PC) — 14일 전부터 위쪽 띠 */
 async function keyExpCheck(){if(!bridge||!bridge.mobileGet)return;if(syOn()&&!realOwner())return;let i,q=null;try{i=await bridge.mobileGet();if(bridge.rqInfo)q=await bridge.rqInfo()}catch(e){return}const g=i&&i.gh;
-  const keys=[];if(g&&g.on&&g.exp)keys.push({n:'GitHub 연결 키',exp:g.exp,where:'[설정 → 폰으로 보기 → 연결 키]에 넣으면 지점 PC들도 자동으로 바뀌어요',how:'keyHow'});
+  const keys=[];if(g&&g.on&&g.exp)keys.push({n:'GitHub 연결 키',exp:g.exp,where:'[프로그램 관리 → 폰으로 보기 → 연결 키]에 넣으면 지점 PC들도 자동으로 바뀌어요',how:'keyHow'});
   if(q&&q.on&&q.exp)keys.push({n:'보강 등록 키',exp:q.exp,where:'[설정 → 선생님 보강 등록 → 보강 등록 키]에 넣으면 돼요 (Issues 권한만)',how:'rqKeyGo'});
   const el=$('keyBar');const soon=keys.map(k=>Object.assign(k,{days:Math.ceil((k.exp-Date.now())/86400000)})).filter(k=>k.days<=14).sort((a,b)=>a.days-b.days)[0];
   if(!soon){if(el)el.hidden=true;return}
@@ -6139,9 +6142,9 @@ function keyHowDlg(){$('modal').hidden=false;$('modal').innerHTML=`<div class="d
   <li>크롬에서 <b>github.com/settings/personal-access-tokens/new</b> 열기</li>
   <li>Token name 아무거나 · Expiration <b>Custom → 1년 뒤</b> · Repository access <b>Only select repositories → ymath-timetable</b></li>
   <li>Permissions: <b>Contents · Pages → Read and write</b> → [Generate token] → 키 복사</li>
-  <li>여기 [설정 → 폰으로 보기 → 인터넷(GitHub)으로 올리기] 연결 키 칸에 붙여넣고 [저장]</li>
+  <li>여기 [프로그램 관리 → 폰으로 보기 → 인터넷(GitHub)으로 올리기] 연결 키 칸에 붙여넣고 [저장]</li>
   <li>초록 "올렸어요"가 뜨면 GitHub에서 옛 키 Delete · 지점 PC들은 알아서 새 키로 바뀌어요</li></ol>
-  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="keyGo">설정으로 가기</button></div></div>`}
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="closeModal">닫기</button><button class="btn pri" data-act="keyGo">연결 키 칸으로 가기</button></div></div>`}
 
 /* ---- 선생님 보강 등록: 브라우저 '내 시간표' 빈 칸 → 요청 → 지점 관리자(자기 지점)·프로그램 관리자(모든 지점)가 승인하면 빈 칸 메모로 ---- */
 const RQS={list:[],info:null,busy:false,last:0};
@@ -9476,8 +9479,8 @@ const HELP=[
   <li>수업이 있는 칸에 놓으면 <b>[겹쳐 넣기 / 자리 바꾸기]</b>를 골라요. 다른 강사 칸에 놓으면 담당 강사가 바뀌어요.</li>
   <li><b>Ctrl을 누른 채 끌어 놓으면 새 반으로 복사</b>돼요(칸에 "+ 새 반"이 떠요). 같은 색으로 "○○ 보충" 반이 생기고 놓은 칸에 수업이 하나 들어가요. 창에서 <b>빼고 싶은 학생만 체크를 끄면</b> 그 학생은 원래 반에만 남아요 — 예: 중1 A2 목요일 뒷타임을 따로 만들고 중2 수업 듣는 친구는 빼기. 원래 반은 그대로, 나중에 원래 반에 새 학생이 오면 보충 반에도 넣어 주세요.</li>
   <li>오른쪽 <b>보관함</b>: 아직 안 놓은 수업(주당 횟수보다 적을 때)이 대기해요. 카드를 여기로 끌면 시간표에서 빠져요. <b>[+ 새 반]</b>으로 반을 만들어요.</li>
-  <li><b>한 수업만 빼기·넣기</b> (4.13.0): 같은 반이라도 학생마다 듣는 요일을 다르게 할 수 있어요. ① 시간표 칸을 눌러 학생 이름의 <b>×</b>를 누르면 <b>[이 수업만 / ○○T 수업에서 / 반에서 / 요일 고르기]</b>를 골라요 — [이 수업만]은 그 요일 명단·인원에서만 빠지고 다른 요일은 그대로예요. ② [+ 학생 넣기] 창의 <b>[이 수업만 듣기]</b>를 체크하면 반 명단엔 안 넣고 그 요일 수업에만 넣어요(이름 옆에 '이 수업만'). ③ <b>반 관리</b> 명단의 학생 이름, <b>학생 주간 시간표</b> 수강 반의 <b>[요일]</b>을 누르면 듣는 요일을 켜고 끄는 창이 떠요 — 전부 켜면 보통 반 학생, 전부 끄면 그 선생님 명단에서 빠져요. 인원·주당 횟수·학생 주간 시간표·PDF·선생님 폰 명단에 똑같이 반영돼요.</li>
-  <li><b>휴지통</b>에 놓으면 [반 전체 / 이 수업만]을 골라 지워요. 휴지통을 펼쳐 <b>[되살리기]</b>를 누르거나, 휴지통 줄을 <b>끌어서 원하는 칸·보관함에 놓아도</b> 되살아나요(4.11.0). 원래 자리에 그 선생님의 다른 수업이 있으면 보관함으로 들어가고, 담당 선생님이 지워진 수업은 되살릴 수 없다고 알려 줘요.</li>
+  <li><b>한 수업만 빼기·넣기</b> (4.13.0): 같은 반이라도 학생마다 듣는 요일을 다르게 할 수 있어요. ① 시간표 칸을 눌러 학생 이름의 <b>×</b>를 누르면 <b>[이 수업만 / ○○T 수업에서 / 반에서 / 요일 고르기]</b>를 골라요 — [이 수업만]은 그 요일 명단·인원에서만 빠지고 다른 요일은 그대로예요. ② [+ 학생 넣기] 창의 <b>[이 수업만 듣기]</b>를 체크하면 반 명단엔 안 넣고 그 요일 수업에만 넣어요(이름 옆에 '이 수업만'). ③ <b>반 관리</b> 명단의 학생 이름, <b>학생 주간 시간표</b> 수강 반의 <b>[요일]</b>을 누르면 듣는 요일을 켜고 끄는 창이 떠요 — 전부 켜면 보통 반 학생, 전부 끄면 그 선생님 명단에서 빠져요. 인원·주당 횟수·학생 주간 시간표·PDF·선생님 폰 명단에 똑같이 반영돼요.${HF('ses1menu','이름의 ×를 누르면 [이 수업만 / 선생님 수업에서 / 반에서 / 요일 고르기]')}${HF('ses1pick','요일 고르기 — 듣는 수업만 켜 두기')}</li>
+  <li><b>휴지통</b>에 놓으면 [반 전체 / 이 수업만]을 골라 지워요. 휴지통을 펼쳐 <b>[되살리기]</b>를 누르거나, 휴지통 줄을 <b>끌어서 원하는 칸·보관함에 놓아도</b> 되살아나요(4.11.0). 원래 자리에 그 선생님의 다른 수업이 있으면 보관함으로 들어가고, 담당 선생님이 지워진 수업은 되살릴 수 없다고 알려 줘요.${HF('trdrag','휴지통 줄을 끌어서 칸·보관함에 놓으면 되살아나요')}</li>
   <li><b>[자동 배치]</b>: 고른 반을 학생 겹침·선호 시간·연강을 따져 여러 안으로 배치해 보여 줘요(AI 없이 계산). 미리 보고 마음에 드는 안만 적용해요. 미리보기 중엔 지점·시간표를 바꿀 수 없어요 — 위쪽 [적용]이나 [취소]를 먼저 눌러요.</li>
   <li><b>반 색 다시 섞기</b>: <b>[반 관리] → [색 랜덤 재배치]</b>. 붙어 있는 반끼리는 구분되는 색으로.</li></ul>`},
  {id:'stu',t:'반에 학생 넣기 · 옮기기',b:`
@@ -9486,7 +9489,7 @@ const HELP=[
   ${HF('qa','학생 넣기 · 신입 등록 창 — 이름을 치면 비슷한 학생이 떠요')}
   <li>보기 모드에서도(지점장·행정 PC) 카드의 [+ 학생 넣기]와 × 두 번으로 바로 넣고 빼요.</li>
   <li><b>예정 시간표 같이 고치기</b>: 바뀔 예정 시간표가 있을 때 지금 시간표에서 학생을 넣거나 빼면, 예정 시간표의 <b>같은 이름 반</b>에도 똑같이 들어가요.</li>
-  <li><b>예정 시간표에 같은 반이 없을 때</b> (4.14.0): 예정 시간표에서 반 이름이 바뀌었거나 없어진 반에 학생을 넣으면, 넣은 직후 <b>"예정 시간표에는 어느 반에 넣을까요?"</b> 창이 떠요. 학생마다 예정 시간표의 반·선생님을 고르고 [예정 시간표에 넣기], 나중에 하려면 [넣지 않기]. 시간표 칸의 [+ 학생 넣기]·반 관리·학생 주간 시간표·입학 문의(입학 예정·바로 재원)에서 넣을 때 모두 물어보고, 폰 관리 화면에서 넣을 때는 보내기 전에 물어봐요. 반대로 <b>뺄 때</b>도(4.14.1) 그 학생이 예정 시간표의 다른 이름 반에 들어 있으면 <b>"예정 시간표에서는 어느 반에서 뺄까요?"</b>를 물어봐요 — 체크한 반에서만 빠지고, [그대로 두기]면 예정 시간표엔 남아요.</li></ul>`},
+  <li><b>예정 시간표에 같은 반이 없을 때</b> (4.14.0): 예정 시간표에서 반 이름이 바뀌었거나 없어진 반에 학생을 넣으면, 넣은 직후 <b>"예정 시간표에는 어느 반에 넣을까요?"</b> 창이 떠요. 학생마다 예정 시간표의 반·선생님을 고르고 [예정 시간표에 넣기], 나중에 하려면 [넣지 않기]. 시간표 칸의 [+ 학생 넣기]·반 관리·학생 주간 시간표·입학 문의(입학 예정·바로 재원)에서 넣을 때 모두 물어보고, 폰 관리 화면에서 넣을 때는 보내기 전에 물어봐요.${HF('nxask','예정 시간표에 같은 이름 반이 없으면 어느 반에 넣을지 물어봐요')} 반대로 <b>뺄 때</b>도(4.14.1) 그 학생이 예정 시간표의 다른 이름 반에 들어 있으면 <b>"예정 시간표에서는 어느 반에서 뺄까요?"</b>를 물어봐요 — 체크한 반에서만 빠지고, [그대로 두기]면 예정 시간표엔 남아요.</li></ul>`},
  {id:'student',t:'학생 주간 시간표 · 시간 조건 · 문자용 복사',b:`
   ${HF('student','학생 주간 시간표 — 수강 반 · [시간 조건] · [문자용 복사] · [이 학생 PDF]')}
   <ul><li><b>여는 법</b>: [학생 관리]에서 이름을 누르면 학생 정보 창 → 수강 반 옆 <b>[주간 시간표]</b>. Ctrl+K로 학생 이름을 찾아서 열어도 돼요. 왼쪽 위 <b>[← 학생 관리]</b>로 돌아가요. 위쪽 학생 칸에서 다른 학생으로 바로 바꿀 수 있어요. (예전 [학생별] 탭 — 4.01.3에 탭은 뺐어요)</li>
@@ -9510,7 +9513,7 @@ const HELP=[
   <li><b>재입학</b>: 퇴원한 학생과 이름+학교(또는 보호자 번호)가 같은 학생을 넣으면 먼저 <b>'퇴원했던 학생과 같은 학생인가요?'</b>를 물어요. [같은 학생 · 기록 잇기]면 그 학생을 되살려 기록이 이어지고 '재' 표시가 붙어요. 명부 가져오기는 한 창에서 여러 명을 한 명씩 골라요.</li>
   ${HF('revive','재입학 확인 창 — 남은 성적·상담 기록 수가 보여요')}
   <li><b>[학년 올리기]</b>: 새 학년 때 한 번 — 몇 명이 어떻게 바뀌는지 표로 먼저 보여 주고, 실수했으면 [학년 되돌리기](두 번). 올릴 때 학생마다 <b>그해 학년·학교를 적어 둬서</b>, 성적 화면에서 지난 시험을 고르면 그때 학년 기준으로 보여요(예: 작년 중3 2학기 중간은 '수학' 칸 · 중3은 2학기 기말 없음 · 학년 칸에 작게 '당시' 표시 · 4.07.0).</li>
-  <li><b>[고3 졸업]</b> (4.12.0): 수능이 끝나고 고3을 정리할 때 — 지금 학년이 <b>고3</b>인 학생(휴원 포함)을 모두 오늘 날짜로 <b>퇴원</b> 처리하고, <b>학생이 전부 고3인 반은 휴지통</b>으로 보내요. 다른 학년이 섞인 반은 고3만 빠지고 반은 남아요. 누르면 퇴원할 학생·휴지통으로 갈 반·고3만 빠지는 반을 먼저 보여 주고, [졸업 처리]를 두 번 눌러야 실행돼요. 성적·상담 기록은 남고 반은 휴지통에서 되살릴 수 있어요. <b>[학년 올리기]보다 먼저</b> 누르세요 — 학년을 올린 뒤엔 올라온 고3(옛 고2)이 대상이 돼요(창에서 경고해 줘요).</li>
+  <li><b>[고3 졸업]</b> (4.12.0): 수능이 끝나고 고3을 정리할 때 — 지금 학년이 <b>고3</b>인 학생(휴원 포함)을 모두 오늘 날짜로 <b>퇴원</b> 처리하고, <b>학생이 전부 고3인 반은 휴지통</b>으로 보내요. 다른 학년이 섞인 반은 고3만 빠지고 반은 남아요. 누르면 퇴원할 학생·휴지통으로 갈 반·고3만 빠지는 반을 먼저 보여 주고, [졸업 처리]를 두 번 눌러야 실행돼요. 성적·상담 기록은 남고 반은 휴지통에서 되살릴 수 있어요. <b>[학년 올리기]보다 먼저</b> 누르세요 — 학년을 올린 뒤엔 올라온 고3(옛 고2)이 대상이 돼요(창에서 경고해 줘요).${HF('g3','고3 졸업 — 퇴원할 학생과 휴지통으로 갈 반을 먼저 보여 줘요')}</li>
   <li><b>명부 입학일</b>: 재학생명부의 입학일이 첫 수업일로 들어가요(2주 신입·입학 예정 다시 계산).</li></ul>`},
  {id:'inq',t:'입학 문의',b:`
   ${HF('inq','입학 문의 — 줄마다 [입학 예정으로]·[바로 재원]·[입학취소], 아래 메모')}
@@ -9740,6 +9743,7 @@ const HELP=[
   <li><b>[업무]</b> 탭: 내 업무 목록(바로 [완료] → PC 반영 · 폰으로 전달받은 일은 맨 위에 NEW와 [확인했어요]), 지점장·관리자는 맨 위 <b>[＋ 업무 전달하기]</b>(담당 → 업무 → 마감 → 확인 · 자세한 건 '업무' 도움말), 지점장·행정·관리자는 [전체 업무], 맨 아래 <b>[결근 신청 · 서류 제출]</b> — 자세한 건 '결근 신청 · 서류' 도움말.</li>
   <div class="hrow">${HF('m-tka','전체 업무 — 진행 중·끝난 일, 사람별 거르기')}${HF('m-new','신입·입학 예정 — 상담 전이면 빨간 테두리와 [상담 완료]')}</div>
   <li><b>누가 무엇을 보나</b>: 선생님 — 이름 있는 지점, 담당 학생 연락처 · 지점장 — 자기 지점 전부(신입·상담 지점 전체 — 담당이 아닌 신입·학생도 폰에서 [상담 완료], 연락처 전체, [관리] 탭), 다른 지점은 전체 시간표만 · 행정 — 소속 지점 전부, 다른 지점은 전체 시간표만.</li>
+  <li><b>폰 학생 수</b> (4.17.0): 폰 [학생] 탭 맨 위 <b>학생 수</b>를 펼치면 지금 고른 지점의 재원생을 <b>학년별·학교별</b>로 볼 수 있어요. 학년 줄을 누르면 그 학년이 학교별로 몇 명인지, 학교 줄을 누르면 그 학교가 학년별로 몇 명인지 나와요. 휴원·입학 예정은 머리글에 따로 적혀요.</li>
   <li><b>폰 시작 화면</b> (4.15.0): 홈 화면 아이콘으로 앱을 켜면 1.5초 동안 "와이매쓰는 선생님을 응원합니다"가 떴다가 시간표로 넘어가요. 휴대폰이 밝은 테마면 밝은 바탕, 어두운 테마면 남색 바탕으로 떠요.</li>
   <li><b>지점장 폰 [관리] 탭</b>(자기 지점만 · 들어가면 <b>입학 문의</b>부터 떠요): 입학 문의(카드를 누르면 전화·정보·메모), 학생(추가·상태·연락처·반 넣기/빼기), 정기 상담(주기·지정·보류), 공지. 보낸 건 켜져 있는 PC가 받아 1~2분 안에 반영해요.</li>
   ${HF('m-iq','관리 → 입학 문의 카드 — 전화 버튼과 메모')}
@@ -9809,7 +9813,7 @@ const HELP=[
   <li><b>[잠금 풀기]</b>: 모든 지점의 수정 잠금을 풀 수 있어요(지점장은 자기 지점만).</li>
   <li><b>[프로그램 관리자 다른 PC용 코드]</b>: 관리자 PC를 하나 더 두거나 인수인계할 때만. <b>절대 다른 사람에게 주지 마세요.</b></li></ul>`},
  {id:'a-mgr',owner:1,t:'지점장 지정',b:`<ul><li>[프로그램 관리 → 지점장]에서 지점마다 지점장 선생님을 켜요. 그 선생님은 폰에서 자기 지점 [관리] 탭·신입·상담 지점 전체·연락처 전체·전체 업무를 받고, 다른 지점은 전체 시간표만 봐요. 지점장 폰의 요청은 그 지점 키로 서명돼 다른 지점은 바꿀 수 없어요.</li><li>지점장 PC(연결 코드 'branch')는 자기 지점 수정·잠금 강제 풀기, 다른 지점은 시간표만.</li></ul>`},
- {id:'a-viewer',owner:1,t:'원장님 열람 전용 (PC · 폰)',b:`<ul><li><b>열람 전용 PC</b> (4.16.0): [프로그램 관리 → 지점 연동]의 <b>[열람 전용 PC 코드]</b>를 원장님 PC에서 [지점 코드로 연결]에 넣으면, 전 지점의 시간표·학생·연락처·성적·학교 정보·업무·입학 문의·상담·실적 통계를 프로그램 관리자처럼 <b>볼 수만</b> 있어요. 위쪽에 <b>열람 전용</b>이라고 떠요.</li><li>수정 모드·적용·바로 저장·성적·업무 입력·코드 만들기·업데이트 배포는 전부 안 돼요. 화면에서 뭘 눌러 바뀌어도 받아 온 자료로 되돌리고, 프로그램 안쪽에서 올리기·수정 잠금·폰 요청 처리·폰 화면 올리기를 막아 둬서 서버 자료는 하나도 안 바뀌어요. 프로그램 관리 탭도 없어요.</li><li>연결된 PC 목록에 <b>열람 전용(원장님)</b>으로 보이고, 거기서 끊을 수 있어요. 이 코드는 전 지점 자료를 여는 열쇠라 관리자 코드처럼 1:1로만 전해 주세요.</li><li>Y-Note 수업 기록은 열쇠 파일이 관리자 PC에만 있어서, 열람 전용 PC에서 보려면 [Y-Note 열쇠 가져오기]로 열쇠를 옮겨야 해요.</li><li><b>원장님 열람 폰</b>: [프로그램 관리]의 <b>원장님 열람 폰</b> 칸에서 10자리 코드를 만들어 강사용(폰) 로그인에 넣어요. 전 지점 시간표·학생·연락처·업무와 [관리] 탭(입학 문의·정기 상담·공지·통계·다른 사람으로 보기)을 볼 수 있고, 요청·관리·상담·결근처럼 <b>보내는 것은 전부 막혀</b> 있어요. 내신 성적·학교 메모는 원칙대로 폰에 나가지 않아요.</li></ul>`},
+ {id:'a-viewer',owner:1,t:'원장님 열람 전용 (PC · 폰)',b:`<ul><li><b>열람 전용 PC</b> (4.16.0): [프로그램 관리 → 지점 연동]의 <b>[열람 전용 PC 코드]</b>를 원장님 PC에서 [지점 코드로 연결]에 넣으면, 전 지점의 시간표·학생·연락처·성적·학교 정보·업무·입학 문의·상담·실적 통계를 프로그램 관리자처럼 <b>볼 수만</b> 있어요. 위쪽에 <b>열람 전용</b>이라고 떠요.${HF('a-viewer','열람 전용 PC — 전 지점이 보이고 위쪽에 열람 전용 표시')}</li><li>수정 모드·적용·바로 저장·성적·업무 입력·코드 만들기·업데이트 배포는 전부 안 돼요. 화면에서 뭘 눌러 바뀌어도 받아 온 자료로 되돌리고, 프로그램 안쪽에서 올리기·수정 잠금·폰 요청 처리·폰 화면 올리기를 막아 둬서 서버 자료는 하나도 안 바뀌어요. 프로그램 관리 탭도 없어요.</li><li>연결된 PC 목록에 <b>열람 전용(원장님)</b>으로 보이고, 거기서 끊을 수 있어요. 이 코드는 전 지점 자료를 여는 열쇠라 관리자 코드처럼 1:1로만 전해 주세요.</li><li>Y-Note 수업 기록은 열쇠 파일이 관리자 PC에만 있어서, 열람 전용 PC에서 보려면 [Y-Note 열쇠 가져오기]로 열쇠를 옮겨야 해요.</li><li><b>원장님 열람 폰</b>: [프로그램 관리]의 <b>원장님 열람 폰</b> 칸에서 10자리 코드를 만들어 강사용(폰) 로그인에 넣어요. 전 지점 시간표·학생·연락처·업무와 [관리] 탭(입학 문의·정기 상담·공지·통계·다른 사람으로 보기)을 볼 수 있고, 요청·관리·상담·결근처럼 <b>보내는 것은 전부 막혀</b> 있어요. 내신 성적·학교 메모는 원칙대로 폰에 나가지 않아요.</li></ul>`},
  {id:'a-phone',owner:1,t:'내 폰 관리 모드',b:`
   <div class="hrow">${HF('a-mphone','폰 [관리] 탭 — 학생·입학 문의·정기 상담·공지·통계·PC·다른 사람으로 보기')}${HF('a-pv','다른 사람으로 보기 — 그 사람 폰 화면 그대로')}</div>
   <ul><li>[프로그램 관리 → 내 폰 관리 모드]에서 <b>10자리 코드</b>를 만들어 폰에서 로그인하면 [관리] 탭이 생겨요. 학생·반 넣기·정기 상담·입학 문의(전화·메모)·공지·통계.</li>
