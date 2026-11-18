@@ -3847,7 +3847,7 @@ var qrcode = function() {
 /* 4.01.0 펼침 메뉴(details.impm·.thm): 바깥을 누르거나 항목을 고르면 닫힘 */
 document.addEventListener('click',e=>{document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.impm-l button'))d.open=false})},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>d.open=false)});
-const APPVER='4.17.1', APPDATE='2026-11-15';
+const APPVER='4.17.3', APPDATE='2026-11-15';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -6121,13 +6121,21 @@ function updStHTML(){const p=UPD.pub,c=p?vcmpR(APPVER,p):0;
 function updStRender(){const el=$('updSt');if(el)el.outerHTML=updStHTML()}
 async function updChk(){if(UPD.busy)return;const p=updTick();updStRender();await p;toast(UPD.err?'확인했지만 올리지 못했어요 · '+UPD.err:'확인했어요',3500);syDevsLoad()}
 /* 다시 시작해야 하는 PC: 새 엔진을 받았는데 아직 옛 엔진으로 도는 중 → [적용]·바로 저장을 막음 (옛 방식으로 선생님 화면을 덮어쓰지 않게) */
-async function staleCheck(){if(!bridge||!bridge.appStale)return false;let s=false;try{s=!!await bridge.appStale()}catch(e){}
+/* 4.17.3 새 버전을 받고도 3시간 넘게 다시 시작하지 않은 PC는, 안 쓰고 있을 때(수정 모드·입력·창 없음 + 2분간 손 안 댐) 저장하고 저절로 다시 시작 */
+const STALE_AUTO={ms:3*3600e3,idle:120e3,last:Date.now(),t:0};
+['mousemove','mousedown','keydown','wheel','touchstart'].forEach(k=>document.addEventListener(k,()=>{STALE_AUTO.last=Date.now()},{passive:true,capture:true}));
+function staleAt(s){try{if(!s){localStorage.removeItem('ymt_staleAt');return 0}let t=+localStorage.getItem('ymt_staleAt')||0;if(!t){t=Date.now();localStorage.setItem('ymt_staleAt',String(t))}return t}catch(e){return 0}}
+async function staleAuto(){try{if(!bridge||!bridge.appStale||!bridge.relaunch)return;const s=!!await bridge.appStale();const t0=staleAt(s);if(!s||!t0)return;
+  if(Date.now()-t0<STALE_AUTO.ms||Date.now()-STALE_AUTO.last<STALE_AUTO.idle)return;if(typeof updIdle==='function'&&!updIdle())return;
+  clearInterval(STALE_AUTO.t);try{clearTimeout(saveTimer);await saveNow()}catch(e){}try{localStorage.removeItem('ymt_staleAt')}catch(e){}keepState&&keepState();bridge.relaunch()}catch(e){}}
+STALE_AUTO.t=setInterval(staleAuto,30000);
+async function staleCheck(){if(!bridge||!bridge.appStale)return false;let s=false;try{s=!!await bridge.appStale()}catch(e){}staleAt(s);
   if(s&&!UI.stale){UI.stale=true;updBanner('',true)}else if(!s)UI.stale=false;return s}
 function staleDlg(){$('modal').hidden=false;$('modal').innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="stlT" style="width:min(460px,100%)"><h2 id="stlT">다시 시작해야 저장돼요</h2>
   <div class="hint" style="line-height:1.7">새 버전을 받았는데 프로그램이 아직 예전 엔진으로 돌고 있어요. 이대로 저장하면 선생님 화면이 예전 방식으로 올라가 로그인이 안 될 수 있어서 막아 뒀어요.<br>다시 시작해도 <b>고친 내용은 그대로 남아요</b>${UI.edit?' (수정 중인 초안도 다시 열 수 있어요)':''}.</div>
   <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-act="closeModal">나중에</button><button class="btn pri" data-act="updRestart">지금 다시 시작</button></div></div>`}
 function updBanner(v,st){let el=$('updBar');if(!el){el=document.createElement('div');el.id='updBar';el.className='draftbar updbar';document.querySelector('.top').appendChild(el)}
-  el.hidden=false;el.innerHTML=`<b>${v?`새 버전 ${esc(v)}을(를) 받았어요`:'새 버전을 받았어요'}</b><span class="hint">프로그램을 다시 시작해야 적용돼요${st||UI.stale?' · 그 전까지 [적용]과 바로 저장은 막혀요':''}${UI.edit?' · 수정 중인 초안은 그대로 남아요':''}</span><button class="btn pri" data-act="updRestart">지금 다시 시작</button><button class="btn" data-act="updLater">나중에</button>`;fitGrid&&fitGrid()}
+  el.hidden=false;el.innerHTML=`<b>${v?`새 버전 ${esc(v)}을(를) 받았어요`:'새 버전을 받았어요'}</b><span class="hint">프로그램을 다시 시작해야 적용돼요 · 3시간 지나면 안 쓰고 있을 때 저절로 다시 시작해요${st||UI.stale?' · 그 전까지 [적용]과 바로 저장은 막혀요':''}${UI.edit?' · 수정 중인 초안은 그대로 남아요':''}</span><button class="btn pri" data-act="updRestart">지금 다시 시작</button><button class="btn" data-act="updLater">나중에</button>`;fitGrid&&fitGrid()}
 
 /* ---- 연결 키 만료 알림 (원장님 PC) ---- */
 /* 연결 키·보강 등록 키 만료 알림 (관리자 PC) — 14일 전부터 위쪽 띠 */
@@ -7587,7 +7595,9 @@ const SH={schools:{get:()=>SCH(),merge:(d,s)=>schMergeInto(d,s),sha:'schSha',st:
 const SCHS=SH.schools.st;
 async function shPull(name,opt={}){const H=SH[name];if(!H||!bridge||!bridge.sharedPull||typeof syOn!=='function'||!syOn()||H.st.busy)return false;if(!opt.force&&Date.now()-H.st.last<60000)return false;H.st.busy=true;H.st.last=Date.now();let r;
   try{r=await bridge.sharedPull(name,DB[H.sha]||'')}catch(e){r={ok:false,err:e.message}}H.st.busy=false;if(!r||!r.ok){H.st.err=(r&&r.err)||'';return false}H.st.err='';if(r.same||r.none)return true;
-  const ch=H.merge(H.get(),r.data);DB[H.sha]=r.sha;if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o[name]=DB[name];o[H.sha]=r.sha;ORIG=JSON.stringify(o)}catch(e){}}
+  /* 4.17.2 받은 것보다 이 PC에 더 새 항목이 있으면(나스 파일이 옛 사본으로 덮였거나 올리기가 빠졌을 때) 합친 것을 다시 올림 → 다른 PC들도 보게 */
+  let need=false;try{need=H.merge(JSON.parse(JSON.stringify(r.data||{})),JSON.parse(JSON.stringify(H.get())))}catch(e){need=false}
+  const ch=H.merge(H.get(),r.data);DB[H.sha]=r.sha;if(need&&!(typeof isViewer==='function'&&isViewer())){clearTimeout(H.st.heal);H.st.heal=setTimeout(()=>{shPush(name)},1500)}if(typeof ORIG!=='undefined'&&ORIG){try{const o=JSON.parse(ORIG);o[name]=DB[name];o[H.sha]=r.sha;ORIG=JSON.stringify(o)}catch(e){}}
   await schPersist();if(ch&&name==='grades'&&UI.view==='grades'&&typeof grPatch==='function'&&grPatch())return true; /* 3.80.4 다른 PC 점수도 바뀐 칸만 */
   if(ch&&['school','grid','settings','tasks','grades'].includes(UI.view)&&!(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render();return true}
 const schPull=async opt=>{const r=await shPull('schools',opt);try{await schAliasMigrate()}catch(e){}return r};const tkPull=opt=>shPull('tasks',opt);
@@ -9768,7 +9778,7 @@ const HELP=[
   <li>수정 모드를 켜지 않아도 바로 저장되는 일: 학생 관리(추가·상태·연락처·상담), 입학 문의, 재학생명부 가져오기, 반 카드에서 <b>반에 학생 넣기·신입 등록</b>, × 두 번으로 <b>반에서 빼기</b>, 시간 조건, 학교 정보·성적·업무.</li>
   <li>한 지점은 한 PC만 수정 모드로 고칠 수 있어요. 지점장과 행정이 같은 지점을 고치니, 한쪽이 수정 중이면(🔒) 끝날 때까지 기다리거나 [잠금 풀고 고치기]로 풀어요(그 PC의 초안은 나중에 어느 쪽을 남길지 물어봐요). 내가 고치는 중에 잠금이 풀리고 다른 PC가 그 지점을 고쳐 올리면, 내 초안을 덮지 않고 <b>[내 초안 유지] / [상대 것 받기]</b>를 물어봐요(4.05.0).</li>
   <li>없는 것: 프로그램 관리 탭, 행정 선생님 코드 관리 칸.</li></ul>`},
- {id:'update',t:'업데이트',b:`<ul><li>부원장님 PC에서 새 버전을 올리면 연동된 PC들이 2분 안에 자동으로 받아요. 본체가 바뀐 업데이트는 위쪽 <b>[지금 다시 시작]</b>을 눌러요.</li><li>수정 중이거나 창을 열어 둔 채 새 버전을 받으면 <b>"새 버전이 준비됐어요"</b> 띠만 떠요. 수정을 끝내거나 창을 닫으면 저절로 바뀌어요.</li></ul>`},
+ {id:'update',t:'업데이트',b:`<ul><li>부원장님 PC에서 새 버전을 올리면 연동된 PC들이 2분 안에 자동으로 받아요. 본체가 바뀐 업데이트는 위쪽 <b>[지금 다시 시작]</b>을 눌러요. 안 누르고 <b>3시간</b>이 지나면, 수정 중이 아니고 창도 안 열려 있고 2분 동안 마우스·키보드를 안 만질 때 <b>저장하고 저절로 다시 시작</b>해요(4.17.3).</li><li>수정 중이거나 창을 열어 둔 채 새 버전을 받으면 <b>"새 버전이 준비됐어요"</b> 띠만 떠요. 수정을 끝내거나 창을 닫으면 저절로 바뀌어요.</li></ul>`},
  {id:'keys',t:'단축키',b:`<table class="tbl" style="max-width:520px"><tbody>
   <tr><td><b>Ctrl + 휠 / Ctrl ± / Ctrl 0</b></td><td>시간표 크기 (마우스 위치 기준으로 부드럽게)</td></tr><tr><td><b>Ctrl + Z / Ctrl + Y</b></td><td>되돌리기 / 다시하기 (수정 모드)</td></tr>
   <tr><td><b>Delete / Shift + Delete</b></td><td>선택한 카드: 반 전체 / 이 수업만 휴지통</td></tr><tr><td><b>Ctrl + 카드 끌기</b></td><td>새 반으로 복사해서 놓기 (학생 골라서)</td></tr><tr><td><b>Shift + 카드 끌기</b></td><td>찬 칸이면 바로 자리 바꾸기</td></tr><tr><td><b>Esc</b></td><td>창 닫기 · 도움말 닫기 · 선택 해제</td></tr>
