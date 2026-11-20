@@ -1172,7 +1172,7 @@ const stuExl=(b,s)=>{const k=schKeyM(s&&s.school);if(!k||!s)return null;const e=
   const nx=schExM(x).find(q=>q.to>=td&&exForM(s.grade,q));if(!nx)return null;
   return {k:x.k,nm:x.nm,kd:x.kd,lab:nx.lab,mk:nx.mk,ek:nx.ek,from:nx.from,to:nx.to,mf:nx.from,mt:nx.to,al:x.al||[],dm:nx.dm,_sch:x}};
 /* 학생 자기 학교 시험(관리 기간)이 있으면 그걸로 */
-const winsStu=(b,s,W,c)=>{if(!c||!c.exam)return W;const x=stuExl(b,s);if(!x||!x.mf){/* 4.17.4 그 학년엔 없는 시험만 있는 지점 시험 기간(중3 2학기 기말 등)은 빼기 — PC와 같게 */const kd=stuKindM(s);const P=bExam(b)||{};const p=kd&&P[kd];if(p&&p.mks&&p.mks.length&&p.mks.every(mk=>exSkipM(s.grade,mk)))return W.filter(w=>w.k!=='E');return W}const td=tdStr();const base=W.filter(w=>w.k!=='E');if(td>=x.mf&&td<=x.mt)base.push({k:'E',from:x.mf,to:x.mt,lab:`${x.nm} ${x.lab}`});return c.start?base.filter(w=>w.to>=c.start+'-01'):base};
+const winsStu=(b,s,W,c)=>{if(!c||!c.exam)return W;const x=stuExl(b,s);if(!x||!x.mf){/* 4.17.4 그 학년엔 없는 시험만 있는 지점 시험 기간(중3 2학기 기말 등)은 빼기 — PC와 같게 */const kd=stuKindM(s);const P=bExam(b)||{};const p=kd&&P[kd];if(p&&p.mks&&p.mks.length&&p.mks.every(mk=>exSkipM(s.grade,mk)))return W.filter(w=>w.k!=='E');/* 4.18.1 지점 시험 기간을 만든 PC가 옛 판이라 mks가 없어도: 학교 탭에 그 학교 올해 시험 날짜가 있는데 그 학년이 칠 시험이 지점 기간 안에 없으면 빼기 */if(!x){const k=schKeyM(s.school);const sx=k&&(b.schl||[]).find(q=>q.k===k||(q.al||[]).includes(k));if(sx&&typeof schExM==='function'){const L=schExM(sx);const y=tdStr().slice(0,4);if(L.some(q=>q.y===y)){const E=W.filter(w=>w.k==='E');if(E.length&&!E.some(w=>L.some(q=>exForM(s.grade,q)&&q.from<=w.to&&q.to>=w.from)))return W.filter(w=>w.k!=='E')}}}return W}const td=tdStr();const base=W.filter(w=>w.k!=='E');if(td>=x.mf&&td<=x.mt)base.push({k:'E',from:x.mf,to:x.mt,lab:`${x.nm} ${x.lab}`});return c.start?base.filter(w=>w.to>=c.start+'-01'):base};
 /* 정기 상담 완료 되돌리기(10분): 아직 PC가 안 받았으면 요청을 닫고, 받았으면 되돌리기 요청(cnx)을 보냄 — 둘 다 보내서 엇갈려도 안전 */
 const CNM={get(){try{return (JSON.parse(ls.get('m_cnm','[]'))||[]).filter(x=>Date.now()-x.at<2*3600e3)}catch(e){return []}},set(L){ls.set('m_cnm',JSON.stringify(L.slice(-20)))},add(x){const L=CNM.get();L.push(x);CNM.set(L)}};
 function cnUndoHTML(b){const L=CNM.get().filter(x=>x.br===b.id&&!x.undo&&Date.now()-x.at<10*60000);if(!L.length)return '';
@@ -1661,7 +1661,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.17.5</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.18.1</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1736,7 +1736,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.17.5</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.18.1</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -2423,7 +2423,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.17.5';const VC={last:0,nv:''};
+const MVER='4.18.1';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
