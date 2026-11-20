@@ -1661,7 +1661,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.18.1</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.19.0</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1736,7 +1736,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.18.1</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.19.0</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -2423,7 +2423,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.18.1';const VC={last:0,nv:''};
+const MVER='4.19.0';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
@@ -2577,14 +2577,17 @@ function amIq(b){const Q=OX(b).inq||[];const L=Q.filter(q=>q.st==='open').sort((
 
 function cnByT(b){const c=b.cns;if(!c)return [];const wins=cnWinsM(c,bExam(b));const winsK=c.kper&&c.kper!==c.per?cnWinsM(Object.assign({},c,{per:c.kper}),bExam(b)):wins;if(!wins.length&&!winsK.length)return [];const hold=new Set(c.hold||[]);const recs=c.rec||[];
   return b.teachers.map(t=>{const ids=new Set(b.classes.flatMap(cl=>(cl.members||{})[t.id]||[]));let a=0,d=0;ids.forEach(id=>{const s=S(b,id);const W=s?winsStu(b,s,winsKind(s,s.key?winsK:wins),c):wins;if(!s||s.away||isPreS(s)||hold.has(id)||!W.length)return;a++;if(W.every(w=>recs.some(r=>r[0]===id&&r[1]>=w.from&&r[1]<=w.to)))d++});return {t,a,d}}).filter(x=>x.a)}
+/* 4.19.0 학년·반·주요 학생 단위 명단(폰 쪽 인원 표시용 · 실제 적용은 PC 규칙 cnGrpStu) */
+const cgStu=(b,g)=>{const ok=x=>!x.away&&!x.pre;if(String(g).startsWith('c:')){const c=b.classes.find(c=>c.id===g.slice(2));const ids=new Set(Object.values((c&&c.members)||{}).flat());return b.students.filter(x=>ok(x)&&ids.has(x.id))}return b.students.filter(x=>ok(x)&&(g==='★'?x.key:x.grade===g))};
+const cgGL=(b,g)=>{if(String(g).startsWith('c:')){const c=b.classes.find(c=>c.id===g.slice(2));return c?c.name+' 반':'반'}return g==='★'?'주요 학생':g};
 function amCn(b){const o=OX(b).cns||{};const ex=OX(b).exam;const R=cnByT(b);const asg=((b.cns||{}).asg)||[];const hold=Object.entries(o.hold||{});
   const per={0:'없음',1:'매달',2:'두 달마다'}[o.per||0];
   return `<div class="acard"><div class="acardh"><b>상담 주기</b><button class="ambtn sm" data-act="amCnSet">바꾸기</button></div>
     <div class="akv"><span>기본</span><b>${per}</b>${o.kper?`<span>★ 주요</span><b>${{1:'매달',2:'두 달마다'}[o.kper]}</b>`:''}<span>시험 기간</span><b>${o.exam?(ex?mdA(ex.from)+'~'+mdA(ex.to):'켜짐 · 날짜 없음'):'안 함'}</b><span>시작</span><b>${o.start?esc(o.start.replace('-','년 '))+'월':'—'}</b></div></div>
   ${R.length?`<div class="sec">이번 기간 <small>${esc(cnWinsM(b.cns,bExam(b)).map(w=>w.lab).join(' · '))} · 선생님별 완료</small></div><div class="acard"><table class="atb"><tbody>${R.map(x=>`<tr><td>${esc(x.t.name)}T</td><td><span class="abar"><i style="width:${Math.round(x.d/x.a*100)}%"></i></span></td><td class="r"><b>${x.d}</b>/${x.a}</td></tr>`).join('')}</tbody></table></div>`:''}
   ${foldSec('amAsg',`지정 상담 <small>${asg.length?asg.length+'건 대기':'없음'} · 학생을 눌러서 보내요</small>`,asg.map(a=>{const s=S(b,a.sid);return `<div class="amr"><div><b>${esc(s?s.name:'?')}</b><small>${esc(a.t?T(b,a.t)+'T께':'담당 선생님께')} · ${esc(a.note||'상담 요청')}</small></div><button class="ambtn sm" data-asgx="${esc(a.id)}" data-nm="${esc(s?s.name:'')}">취소</button></div>`}).join(''))}
-  <div class="sec">학년·주요 학생 단위 <small>한꺼번에 보류·보류 풀기·상담 지정</small></div>
-  <div class="acard"><div class="arow"><select id="cgG">${(()=>{const go=g=>{const m=/^(초|중|고)(\d)/.exec(g||'');return m?({초:0,중:10,고:20}[m[1]]+ +m[2]):99};const G=[...new Set(b.students.filter(s=>!s.away&&!s.pre&&s.grade).map(s=>s.grade))].sort((a,z)=>go(a)-go(z)||a.localeCompare(z));const nk=b.students.filter(s=>!s.away&&!s.pre&&s.key).length;return (nk?`<option value="★">★ 주요 학생 · ${nk}명</option>`:'')+G.map(g=>`<option value="${esc(g)}">${esc(g)} · ${b.students.filter(s=>!s.away&&!s.pre&&s.grade===g).length}명</option>`).join('')})()}</select></div>
+  <div class="sec">학년·반·주요 학생 단위 <small>한꺼번에 보류·보류 풀기·상담 지정</small></div>
+  <div class="acard"><div class="arow"><select id="cgG">${(()=>{const go=g=>{const m=/^(초|중|고)(\d)/.exec(g||'');return m?({초:0,중:10,고:20}[m[1]]+ +m[2]):99};const G=[...new Set(b.students.filter(s=>!s.away&&!s.pre&&s.grade).map(s=>s.grade))].sort((a,z)=>go(a)-go(z)||a.localeCompare(z));const nk=b.students.filter(s=>!s.away&&!s.pre&&s.key).length;return (nk?`<option value="★">★ 주요 학생 · ${nk}명</option>`:'')+(G.length?`<optgroup label="학년">`+G.map(g=>`<option value="${esc(g)}">${esc(g)} · ${b.students.filter(s=>!s.away&&!s.pre&&s.grade===g).length}명</option>`).join('')+'</optgroup>':'')+(()=>{/* 4.19.0 반 단위 */const CL=b.classes.map(c=>({c,n:cgStu(b,'c:'+c.id).length})).filter(x=>x.c.name&&x.n).sort((a,z)=>a.c.name.localeCompare(z.c.name,'ko'));return CL.length?`<optgroup label="반">${CL.map(x=>`<option value="c:${esc(x.c.id)}">${esc(x.c.name)} · ${x.n}명</option>`).join('')}</optgroup>`:''})()})()}</select></div>
     <div class="seg ast" style="display:flex"><button data-cgm="hold" aria-pressed="true">보류</button><button data-cgm="unhold" aria-pressed="false">보류 풀기</button><button data-cgm="asg" aria-pressed="false">상담 지정</button></div>
     <div class="arow" id="cgTw" hidden><select id="cgT"><option value="">학생마다 담당 선생님 모두</option>${b.teachers.map(t=>`<option value="${t.id}">${esc(t.name)}T</option>`).join('')}</select></div>
     <input id="cgN" maxlength="120" placeholder="보류 사유 (안 적어도 돼요)" style="margin-top:8px">
@@ -2677,7 +2680,7 @@ function amClick(e){let t=e.target.closest&&e.target.closest('button,select,a,in
   if(ds.act==='pcPub'){pcPub(t);return true}
   if(ds.pcrs){if(!amArm(t,'한 번 더 누르면 다시 시작'))return true;pcRestart(ds.pcrs,ds.nm,t);return true}
   if(ds.cgm){t.parentElement.querySelectorAll('[data-cgm]').forEach(x=>x.setAttribute('aria-pressed',String(x===t)));const m=ds.cgm;$('cgTw').hidden=m!=='asg';const n=$('cgN');n.disabled=m==='unhold';n.placeholder=m==='asg'?'요청 내용 (예: 수능 끝나고 진로 상담)':m==='hold'?'보류 사유 (안 적어도 돼요)':'';return true}
-  if(ds.act==='amCg'){const g=$('cgG').value;if(!g){fzToast('학년을 골라 주세요');return true}const m=((document.querySelector('[data-cgm][aria-pressed="true"]')||{}).dataset||{}).cgm||'hold';const note=($('cgN').value||'').trim();const n=b.students.filter(x=>!x.away&&!x.pre&&(g==='★'?x.key:x.grade===g)).length;const GL=g==='★'?'주요 학생':g;
+  if(ds.act==='amCg'){const g=$('cgG').value;if(!g){fzToast('학년이나 반을 골라 주세요');return true}const m=((document.querySelector('[data-cgm][aria-pressed="true"]')||{}).dataset||{}).cgm||'hold';const note=($('cgN').value||'').trim();const n=cgStu(b,g).length;const GL=cgGL(b,g);
     if(!amArm(t,`${GL} ${n}명에 적용 · 한 번 더`))return true;
     if(m==='asg'){const tt=$('cgT').value;adSend([{op:'cnAsgG',a:{grade:g,t:tt,note}}],`${GL} 전체 상담 지정${tt?' → '+T(b,tt)+'T':''}`,t)}else adSend([{op:'cnHoldG',a:{grade:g,on:m==='hold',why:m==='hold'?note:''}}],`${GL} 전체 ${m==='hold'?'보류':'보류 풀기'}`,t);return true}
   if(ds.act==='amCnSet'){amCnSheet();return true}
