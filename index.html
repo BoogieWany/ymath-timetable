@@ -1065,7 +1065,7 @@ function viewDiff(a,z){const out={};const key=o=>[o.d,o.p,o.t,o.cls].join('|');
   (z.branches||[]).forEach(nb=>{const ob=(a.branches||[]).find(x=>x.id===nb.id);if(!ob){out[nb.id]={pk:new Set(),ex:new Set(),nk:new Set(),kind:'new'};return}
     const os=new Set((ob.sessions||[]).map(key)),ns=(nb.sessions||[]).map(key);const pk=new Set(ns.filter(k=>!os.has(k)));const gone=[...os].filter(k=>!ns.includes(k)).length;
     const ek=x=>[x.date,x.sid,x.kind,x.t,x.p].join('|');const oe=new Set((ob.ex||[]).map(ek));const ne=(nb.ex||[]).filter(x=>!oe.has(ek(x)));const exGone=(ob.ex||[]).filter(x=>!(nb.ex||[]).some(y=>ek(y)===ek(x))).length;
-    const nk=n=>[n.d,n.p,n.t,n.k,n.cls,n.names,n.until].join('|');const on=new Set((ob.notes||[]).map(nk));const nn=(nb.notes||[]).filter(n=>!on.has(nk(n)));
+    const nk=n=>[n.d,n.p,n.t,n.k,n.cls,n.ttl||'',n.names,n.until].join('|');const on=new Set((ob.notes||[]).map(nk));const nn=(nb.notes||[]).filter(n=>!on.has(nk(n)));
     const oa=new Set((ob.ann||[]).map(x=>x.id));const na=(nb.ann||[]).filter(x=>!oa.has(x.id));
     const m=(c,id)=>JSON.stringify((c.members||{}));const oc={};(ob.classes||[]).forEach(c=>oc[c.id]=m(c));const chCls=new Set((nb.classes||[]).filter(c=>oc[c.id]!==undefined&&oc[c.id]!==m(c)).map(c=>c.id));
     (nb.sessions||[]).forEach(o=>{if(chCls.has(o.cls))pk.add(key(o))});
@@ -1471,7 +1471,7 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   rqNdOverlay(b);
   const mine=!!(gT&&gT.id===myT&&rqOn()&&!b._nx);const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 등록</small>`:'';
   const nk=n=>esc(n.k||b.noteLabel||'보강')+(n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:'');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);const fold=!pre&&n.names;const per0=n.until?(n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)):'';const sub=[per0,c?esc(c.name):''].filter(Boolean).join(' · ');
-  return `<div class="gnote${c?' lnk':''}${extra||''}${fold?' fold':''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}${pre?'':` data-nk="${n.d}|${n.p}|${n.t}"`}${fold?` data-nkp="${esc(nkKey(n))}"`:''}>${fold?`<i>${esc(n.k||b.noteLabel||'보강')} <u class="gncnt">${nkToks(n.names).length}명</u></i><div class="gnw"><div>${sub?`<small class="gnsub">${sub}</small>`:''}<span>${nkNames(b,n.names)}</span></div></div>`:`<i>${pre||''}${nk(n)}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${nkNames(b,n.names)}</span>`:''}`}</div>`}; /* 3.79.4: 보강 카드도 수업 카드처럼 — 이름은 접어 두고 누르면 펼침(이름 모두 보기면 펼침) · 꾹 누르면 크게 */
+  return `<div class="gnote${c?' lnk':''}${extra||''}${fold?' fold':''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}${pre?'':` data-nk="${n.d}|${n.p}|${n.t}"`}${fold?` data-nkp="${esc(nkKey(n))}"`:''}>${fold?`<i>${esc(n.k||b.noteLabel||'보강')}${n.ttl?` · <b>${esc(n.ttl)}</b>`:''} <u class="gncnt">${nkToks(n.names).length}명</u></i><div class="gnw"><div>${sub?`<small class="gnsub">${sub}</small>`:''}<span>${nkNames(b,n.names)}</span></div></div>`:`<i>${pre||''}${nk(n)}${n.ttl?` · <b>${esc(n.ttl)}</b>`:''}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${nkNames(b,n.names)}</span>`:''}`}</div>`}; /* 3.79.4: 보강 카드도 수업 카드처럼 — 이름은 접어 두고 누르면 펼침(이름 모두 보기면 펼침) · 꾹 누르면 크게 */
   const L=ST.gl==='l';
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${glS}${L?'':gzHTML()}<span class="sp"></span>${L?'':'<button class="btn sm" data-act="print">인쇄</button>'}</div>`
     :`<div class="gt">${brSeg}${tRow}<span class="pr">${glS}${L?'':gzHTML()+rqH2}</span></div>`;
@@ -1579,13 +1579,14 @@ function plusWeeks(s,w){const [y,m,dd]=s.split('-').map(Number);return ymd(new D
 const mdd=s=>`${+s.slice(5,7)}/${+s.slice(8,10)}`;
 function rangeTxt(d,tm,n){const f=firstDate(d,tm),u=plusWeeks(f,n-1);return n===1?`${mdd(f)} 한 번`:`${mdd(f)} ~ ${mdd(u)} 매주 ${n}회`}
 function rqSheet(d,p){const b=B(),me=ME();const t=TT(b,me.t);const pp=per(b,d,p);
-  const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>(n.k||'보강')+(n.cls&&C(b,n.cls)?' '+C(b,n.cls).name:'')+(n.names?' '+n.names:'')).join(' / ');
+  const ex=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t).map(n=>(n.k||'보강')+(n.ttl?' '+n.ttl:'')+(n.cls&&C(b,n.cls)?' '+C(b,n.cls).name:'')+(n.names?' '+n.names:'')).join(' / ');
   const mine=b.classes.filter(c=>(c.members||{})[me.t]!==undefined);const others=b.classes.filter(c=>(c.members||{})[me.t]===undefined);const opt=c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`;
   const myN=(b.notes||[]).filter(n=>n.d===d&&n.p===p&&n.t===me.t&&noteLive(n));
-  const ndH=myN.length?`<div class="ndl">${myN.map(n=>{const q=rqNdOf(b,n);const c=n.cls&&C(b,n.cls);return `<div class="ndr"><div><b>${esc(n.k||'보강')}${c?' · '+esc(c.name):''}</b>${n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:''}<span>${esc(n.names||'(명단 없음)')}</span>${q?`<em>삭제 요청 중 · ${q.all?'통째':'빼기: '+esc(q.names)}</em>`:''}</div>${q?`<button data-act="rqNdCancel" data-rn="${q.num}">요청 취소</button>`:`<button class="dan" data-act="rqNdOpen" data-nk="${esc(nkKey(n))}">삭제 요청</button>`}</div>`}).join('')}</div>`:'';
+  const ndH=myN.length?`<div class="ndl">${myN.map(n=>{const q=rqNdOf(b,n);const c=n.cls&&C(b,n.cls);return `<div class="ndr"><div><b>${esc(n.k||'보강')}${n.ttl?' · '+esc(n.ttl):''}${c?' · '+esc(c.name):''}</b>${n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:''}<span>${esc(n.names||'(명단 없음)')}</span>${q?`<em>삭제 요청 중 · ${q.all?'통째':'빼기: '+esc(q.names)}</em>`:''}</div>${q?`<button data-act="rqNdCancel" data-rn="${q.num}">요청 취소</button>`:`<button class="dan" data-act="rqNdOpen" data-nk="${esc(nkKey(n))}">삭제 요청</button>`}</div>`}).join('')}</div>`:'';
   shOpen(`<h3>보강 등록</h3><p class="ssub">${d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(t?t.name:'')}T</p>${myN.length?`<label class="slab">이 칸의 보강</label>${ndH}<label class="slab">더 등록하기</label>`:ex?`<p class="sex">지금 적힌 메모: ${esc(ex)}</p>`:''}
     <label class="slab">보강 횟수</label><div class="rqk rqn" role="group" aria-label="보강 횟수">${[1,2,3,4,5,6,7,8].map(x=>`<button data-rqn2="${x}" aria-pressed="${x===1}">${x}회</button>`).join('')}</div>
     <p class="sex" id="rqRange" data-d="${d}" data-tm="${esc(pp.time)}">${rangeTxt(d,pp.time,1)} · 지나면 저절로 지워져요</p>
+    <label class="slab" for="rqTtl">제목 <small>(선택 · 학년 보강처럼 명단이 많으면 제목만)</small></label><input id="rqTtl" maxlength="30" placeholder="예: 고1 기말 대비" autocomplete="off" aria-label="보강 제목">
     <div id="rqClsRow"><label class="slab" for="rqCls">연결할 수업 <small>(선택)</small></label><select id="rqCls"><option value="">(연결 안 함)</option>${mine.length?`<optgroup label="내 수업">${mine.map(opt).join('')}</optgroup>`:''}${others.length?`<optgroup label="다른 수업">${others.map(opt).join('')}</optgroup>`:''}</select></div>
     <input id="rqIn" placeholder="학생 이름 (쉼표나 띄어쓰기로 여러 명)" autocomplete="off" autocapitalize="off" enterkeyhint="send" aria-label="학생 이름"><div id="rqSug" class="rqsug"></div>
     <p class="snote" id="rqMsg">등록하면 내 시간표에 바로 보여요 · 부원장님이 확인하면 학원 시간표에도 들어가요</p>
@@ -1600,18 +1601,18 @@ document.addEventListener('compositionend',e=>{if(e.target.id==='rqIn')rqSug()})
 document.addEventListener('keydown',e=>{if(e.target.id==='rqIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();const g=$('rqGo');if(g)g.click()}});
 async function rqSend(d,p){const b=B(),me=ME();const i=$('rqIn'),g=$('rqGo'),msg=$('rqMsg');if(!i||!me)return;
   const k='보강',cls=($('rqCls')||{}).value||'';const cnt=rqCntSel();const pp=per(b,d,+p);const from=firstDate(d,pp.time);
-  const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length&&!cls){msg.textContent='학생 이름을 넣거나 연결할 수업을 골라 주세요';msg.classList.add('err');i.focus();return}
+  const ttl=String(($('rqTtl')||{}).value||'').replace(/\s+/g,' ').trim().slice(0,30);const names=[...new Set(i.value.split(/[,\s]+/).map(x=>x.trim()).filter(Boolean))];if(!names.length&&!cls&&!ttl){msg.textContent='제목이나 학생 이름을 넣거나, 연결할 수업을 골라 주세요';msg.classList.add('err');i.focus();return}
   g.disabled=true;g.textContent='보내는 중…';
-  try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),k,cls,cnt,from,until:plusWeeks(from,cnt-1),names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
+  try{const x={v:1,br:b.id,d,p:+p,t:me.t,tn:T(b,me.t),k,cls,...(ttl?{ttl}:{}),cnt,from,until:plusWeeks(from,cnt-1),names:names.join(', '),at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 요청',body})});
     if(r.status!==201)throw new Error(r.status===401||r.status===403?'보강 등록 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':r.status===410?'보강 등록이 꺼져 있어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
     const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';shClose();render();fzToast('보강을 등록했어요 · 내 시간표에 바로 보여요',2600)}
   catch(err){g.disabled=false;g.textContent='다시 보내기';msg.textContent=err.message&&/[가-힣]/.test(err.message)?err.message:'인터넷 연결을 확인하고 다시 보내 주세요';msg.classList.add('err')}}
 /* 3.83.5 보강 삭제 요청: 내 시간표의 승인된 보강 → 통째 또는 고른 학생만 빼 달라고 요청 → 부원장·지점장 PC에서 승인하면 지워짐 */
 /* 3.83.6 막 승인된 삭제: 새 시간표 파일이 오기 전에도 바로 숨김 (파일이 승인 뒤에 만들어졌으면 이미 반영돼 있어 건너뜀) */
-function rqNdOverlay(b){if(!b||!RQ.ok.length)return;const at=+new Date(D&&D.at||0);RQ.ok.filter(x=>x.kind==='nd'&&x.br===b.id&&(!x.ca||x.ca>at)).forEach(x=>{const n=(b.notes||[]).find(n=>n.d===x.d&&n.p===+x.p&&n.t===x.t&&(n.k||b.noteLabel||'보강')===(x.k||'보강')&&(n.cls||'')===(x.cls||'')&&(n.until||'')===(x.until||''));if(!n)return;
-  if(x.all){b.notes=b.notes.filter(y=>y!==n);return}const rm=String(x.names||'').split(/,\s*/).filter(Boolean);n.names=nkToks(n.names).filter(v=>!rm.includes(v)).join(', ');if(!n.names&&!n.cls)b.notes=b.notes.filter(y=>y!==n)})}
-function rqNdOf(b,n){return RQ.list.find(x=>x.kind==='nd'&&x.br===b.id&&x.d===n.d&&+x.p===n.p&&x.t===n.t&&(x.k||'보강')===(n.k||b.noteLabel||'보강')&&(x.cls||'')===(n.cls||'')&&(x.until||'')===(n.until||''))}
+function rqNdOverlay(b){if(!b||!RQ.ok.length)return;const at=+new Date(D&&D.at||0);RQ.ok.filter(x=>x.kind==='nd'&&x.br===b.id&&(!x.ca||x.ca>at)).forEach(x=>{const n=(b.notes||[]).find(n=>n.d===x.d&&n.p===+x.p&&n.t===x.t&&(n.k||b.noteLabel||'보강')===(x.k||'보강')&&(n.cls||'')===(x.cls||'')&&(n.ttl||'')===(x.ttl||'')&&(n.until||'')===(x.until||''));if(!n)return;
+  if(x.all){b.notes=b.notes.filter(y=>y!==n);return}const rm=String(x.names||'').split(/,\s*/).filter(Boolean);n.names=nkToks(n.names).filter(v=>!rm.includes(v)).join(', ');if(!n.names&&!n.cls&&!n.ttl)b.notes=b.notes.filter(y=>y!==n)})}
+function rqNdOf(b,n){return RQ.list.find(x=>x.kind==='nd'&&x.br===b.id&&x.d===n.d&&+x.p===n.p&&x.t===n.t&&(x.k||'보강')===(n.k||b.noteLabel||'보강')&&(x.cls||'')===(n.cls||'')&&(x.ttl||'')===(n.ttl||'')&&(x.until||'')===(n.until||''))}
 function rqNdSheet(key){const b=B();const n=(b.notes||[]).find(x=>nkKey(x)===key);if(!n)return;const pp=per(b,n.d,n.p);const c=n.cls&&C(b,n.cls);const nm=nkToks(n.names);
   shOpen(`<h3>보강 삭제 요청</h3><p class="ssub">${n.d}요일 ${esc(pshort(pp.name))} <span class="mono">${esc(pp.time)}</span> · ${esc(n.k||'보강')}${c?' · '+esc(c.name):''}${n.until?` · ${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}`:''}</p>
     ${nm.length?`<label class="slab">뺄 학생 고르기 <small>(안 고르면 보강 통째)</small></label><div class="rqk ndpk" role="group">${nm.map(x=>`<button data-ndpk="${esc(x)}" aria-pressed="false">${esc(x)}</button>`).join('')}</div>`:''}
@@ -1621,7 +1622,7 @@ function rqNdPick(t){t.setAttribute('aria-pressed',String(t.getAttribute('aria-p
 async function rqNdSend(key){const b=B(),me=ME();const n=(b.notes||[]).find(x=>nkKey(x)===key);const g=$('rqGo'),msg=$('rqMsg');if(!n||!me)return;
   const pick=[...document.querySelectorAll('[data-ndpk][aria-pressed="true"]')].map(x=>x.dataset.ndpk);const all=!pick.length||pick.length===nkToks(n.names).length;
   g.disabled=true;g.textContent='보내는 중…';
-  try{const x={v:1,kind:'nd',br:b.id,d:n.d,p:+n.p,t:n.t,tn:T(b,me.t),k:n.k||b.noteLabel||'보강',cls:n.cls||'',until:n.until||'',from:n.from||'',nn:n.names||'',all:all?1:0,names:all?'':pick.join(', '),at:Date.now()};const body=await rqEnc(x);
+  try{const x={v:1,kind:'nd',br:b.id,d:n.d,p:+n.p,t:n.t,tn:T(b,me.t),k:n.k||b.noteLabel||'보강',cls:n.cls||'',...(n.ttl?{ttl:n.ttl}:{}),until:n.until||'',from:n.from||'',nn:n.names||'',all:all?1:0,names:all?'':pick.join(', '),at:Date.now()};const body=await rqEnc(x);
     const r=await fetch(`${GHA}/repos/${D.rq.o}/${D.rq.r}/issues`,{method:'POST',headers:Object.assign(rqH(),{'Content-Type':'application/json'}),body:JSON.stringify({title:'[ymt] 요청',body})});
     if(r.status!==201)throw new Error(r.status===401||r.status===403?'보강 등록 키가 만료됐거나 권한이 없어요 · 부원장님께 알려 주세요':r.status===410?'보강 등록이 꺼져 있어요 · 부원장님께 알려 주세요':'보내지 못했어요 ('+r.status+')');
     const j=await r.json();RQ.list.push(Object.assign(x,{num:j.number}));RQ.sig='';shClose();render();fzToast(all?'보강 삭제를 요청했어요 · 확인되면 지워져요':`${pick.length}명 빼기를 요청했어요 · 확인되면 빠져요`,2800)}
@@ -1661,7 +1662,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.19.1</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.19.2</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1736,7 +1737,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.19.1</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.19.2</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -2031,7 +2032,7 @@ function memoClick(e){const t=e.target.closest&&e.target.closest('[data-memo],[d
 const PK={tm:0,on:false,x:0,y:0,swallow:0};
 function pkBody(el){const b=B();
   if(el.dataset.nkp){const n=(b.notes||[]).find(x=>nkKey(x)===el.dataset.nkp);if(!n)return '';const c=n.cls&&C(b,n.cls);const T0=nkToks(n.names);const ids=[],other=[];T0.forEach(w=>{const L=(b.students||[]).filter(s=>s.name===w);if(L.length===1)ids.push(L[0].id);else other.push(w)});const pp=per(b,n.d,n.p);
-    return `<div class="pkh" style="--c:${esc((c&&c.color)||'#9aa3b5')}"><i></i><div><b>${esc(n.k||b.noteLabel||'보강')}${c?' · '+esc(c.name):''}</b><span>${esc(T(b,n.t))}T · ${n.d}요일 ${esc(pshort(pp.name))}${n.until?` · ${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}`:''}</span></div><em>${T0.length}명</em></div><div class="pkn">${ids.length?pkNames(b,ids):''}${other.map(w=>`<span class="none">${esc(w)}</span>`).join('')}</div>${ids.length?'<div class="pkhint">이름 위로 손가락을 옮겨 떼면 학생 카드</div>':''}`} /* 3.79.4 보강 카드 꾹 */
+    return `<div class="pkh" style="--c:${esc((c&&c.color)||'#9aa3b5')}"><i></i><div><b>${esc(n.k||b.noteLabel||'보강')}${n.ttl?' · '+esc(n.ttl):''}${c?' · '+esc(c.name):''}</b><span>${esc(T(b,n.t))}T · ${n.d}요일 ${esc(pshort(pp.name))}${n.until?` · ${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}`:''}</span></div><em>${T0.length}명</em></div><div class="pkn">${ids.length?pkNames(b,ids):''}${other.map(w=>`<span class="none">${esc(w)}</span>`).join('')}</div>${ids.length?'<div class="pkhint">이름 위로 손가락을 옮겨 떼면 학생 카드</div>':''}`} /* 3.79.4 보강 카드 꾹 */
   if(el.dataset.spk){const sp=(b.specials||[]).find(x=>x.id===el.dataset.spk);if(!sp)return '';const mem=sp.members||[];const act=mem.filter(id=>actS(S(b,id)));
     return `<div class="pkh" style="--c:${esc(sp.color||'#9aa3b5')}"><i></i><div><b>${esc(sp.name)} <span class="pktag">특강</span></b><span>${esc(T(b,sp.t))}T · ${esc((sp.days||[]).join('·'))} ${spTime(sp)}${spD(sp)}</span></div><em>${nCnt(b,mem)}</em></div><div class="pkn">${pkNames(b,mem)}</div>`}
   const [d,p0,t,cls,id,t0]=el.dataset.pk.split('|');const p=+p0;const c=C(b,cls);if(!c)return '';const o0=(b.sessions||[]).find(q=>q.id===id)||{};const mem=sMem(b,{cls,t,_t0:t0,x:o0.x,a:o0.a},c);const act=mem.filter(x=>actS(S(b,x)));
@@ -2424,7 +2425,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.19.1';const VC={last:0,nv:''};
+const MVER='4.19.2';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
