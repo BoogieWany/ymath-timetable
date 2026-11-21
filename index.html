@@ -433,6 +433,7 @@ body.land .note{padding:10px}
 .gnote i{font-style:normal;font-size:.8em;font-weight:700;color:var(--muted)}
 /* 3.79.5: 접는 보강 카드는 겉에 '보강 N명'만 — 기간·반은 펼쳐야 보여서 칸이 넓어지지 않게 · 긴 글은 줄바꿈 */.gnote{min-width:0;overflow-wrap:anywhere}.gnote.fold i{white-space:nowrap}.gnote .gnsub{display:block;font-size:.78em;color:var(--muted);font-weight:500;margin:.1em 0 .15em;white-space:normal}.gnote span{white-space:normal}
 /* 3.79.8: 접힌 보강 카드의 숨은 부분(기간·반·이름)은 칸 너비에 안 셈 — 펼칠 때만 필요한 만큼 넓어짐 */table.g:not(.allnm) .gnote.fold:not(.op) .gnw{contain:inline-size}.gnote .gnsub{overflow-wrap:normal;word-break:keep-all}
+/* 4.19.3 보강 제목은 따로 한 줄 · 칸이 넓어지지 않게 */.gnote .gnttl{display:block;max-width:7.5em;margin-top:.05em}.gnote .gnttl b{font-weight:700;color:var(--fg)}
 .gnote span{word-break:keep-all}.gnote .nks{appearance:none;border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 30%,transparent);text-underline-offset:2px;-webkit-tap-highlight-color:transparent;border-radius:3px}.gnote .nks:active{background:color-mix(in srgb,currentColor 12%,transparent)}
 .exb{display:inline-block;font-size:.78em;font-weight:700;padding:.1em .55em;border-radius:999px;color:#fff;white-space:nowrap;vertical-align:.08em}.exb.cancel{background:#b4572a}.exb.sub{background:#2c5aa0}.exb.move{background:#7a4fb0}
 .gc .gx{margin-top:.2em}.gc .gx .exb{max-width:100%;overflow:hidden;text-overflow:ellipsis}
@@ -1470,8 +1471,8 @@ function vGrid(b){const groups={week:[['월','수','금','일'],['화','목','�
   const brSeg=D.branches.length>1?`<span class="seg brs" role="group" aria-label="지점">${D.branches.map(x=>`<button data-br="${x.id}" aria-pressed="${x.id===b.id}">${esc(x.name)}</button>`).join('')}</span>`:'';
   rqNdOverlay(b);
   const mine=!!(gT&&gT.id===myT&&rqOn()&&!b._nx);const rqH2=mine?`<small class="tgh rqh">빈 칸을 누르면 보강 등록</small>`:'';
-  const nk=n=>esc(n.k||b.noteLabel||'보강')+(n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:'');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);const fold=!pre&&n.names;const per0=n.until?(n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)):'';const sub=[per0,c?esc(c.name):''].filter(Boolean).join(' · ');
-  return `<div class="gnote${c?' lnk':''}${extra||''}${fold?' fold':''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}${pre?'':` data-nk="${n.d}|${n.p}|${n.t}"`}${fold?` data-nkp="${esc(nkKey(n))}"`:''}>${fold?`<i>${esc(n.k||b.noteLabel||'보강')}${n.ttl?` · <b>${esc(n.ttl)}</b>`:''} <u class="gncnt">${nkToks(n.names).length}명</u></i><div class="gnw"><div>${sub?`<small class="gnsub">${sub}</small>`:''}<span>${nkNames(b,n.names)}</span></div></div>`:`<i>${pre||''}${nk(n)}${n.ttl?` · <b>${esc(n.ttl)}</b>`:''}${c?` · <b>${esc(c.name)}</b>`:''}</i>${n.names?`<span>${nkNames(b,n.names)}</span>`:''}`}</div>`}; /* 3.79.4: 보강 카드도 수업 카드처럼 — 이름은 접어 두고 누르면 펼침(이름 모두 보기면 펼침) · 꾹 누르면 크게 */
+  const nk=n=>esc(n.k||b.noteLabel||'보강')+(n.until?` <small>${n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)}</small>`:'');const ncl=n=>n.cls&&C(b,n.cls);const gn=(n,pre,extra)=>{const c=ncl(n);const fold=!pre&&n.names;const per0=n.until?(n.from===n.until?mdd(n.from):mdd(n.from)+'~'+mdd(n.until)):'';const sub=[per0,c?esc(c.name):''].filter(Boolean).join(' · ')+(n.ttl?`<span class="gnttl"><b>${esc(n.ttl)}</b></span>`:'');
+  return `<div class="gnote${c?' lnk':''}${extra||''}${fold?' fold':''}"${c?` style="--nc:${esc(c.color||'#9aa3b5')}"`:''}${pre&&n.t===myT?` data-rqn="${n.num}"`:''}${pre?'':` data-nk="${n.d}|${n.p}|${n.t}"`}${fold?` data-nkp="${esc(nkKey(n))}"`:''}>${fold?`<i>${esc(n.k||b.noteLabel||'보강')} <u class="gncnt">${nkToks(n.names).length}명</u></i><div class="gnw"><div>${sub?`<small class="gnsub">${sub}</small>`:''}<span>${nkNames(b,n.names)}</span></div></div>`:`<i>${pre||''}${esc(n.k||b.noteLabel||'보강')}${c?` · <b>${esc(c.name)}</b>`:''}</i>${per0?`<small class="gnsub">${per0}</small>`:''}${n.ttl?`<small class="gnsub gnttl"><b>${esc(n.ttl)}</b></small>`:''}${n.names?`<span>${nkNames(b,n.names)}</span>`:''}`}</div>`}; /* 3.79.4: 보강 카드도 수업 카드처럼 — 이름은 접어 두고 누르면 펼침(이름 모두 보기면 펼침) · 꾹 누르면 크게 */
   const L=ST.gl==='l';
   let h=wide?`<div class="gt">${brSeg?brSeg+`<h2 style="font-weight:500;color:var(--muted)">${esc(b.version)}</h2>`:`<h2>${esc(b.name)} · ${esc(b.version)}</h2>`}${tRow}${glS}${L?'':gzHTML()}<span class="sp"></span>${L?'':'<button class="btn sm" data-act="print">인쇄</button>'}</div>`
     :`<div class="gt">${brSeg}${tRow}<span class="pr">${glS}${L?'':gzHTML()+rqH2}</span></div>`;
@@ -1662,7 +1663,7 @@ function stBody(){const b=D&&B();const {a}=thGet();const me=ME();const mt=me&&b&
    ${!wide&&!standalone()?`<div class="str"><span>홈 화면에 추가 안내<small>앱처럼 바로 여는 방법</small></span><button class="stb" data-st="inst">다시 보기</button></div>`:''}</div>
   <div class="stg"><h4>계정</h4>
    <div class="str"><span>${D&&D.v2?esc(D.myName||(mt&&mt.name)||''):mt?esc(mt.name):'이름 없음'}<small>${D&&D.v2?(isOwn()?'관리자':isAdm()?'행정 선생님':'선생님')+' 코드로 로그인':'이 폰에서 고른 이름'}</small></span>${D&&!D.v2?`<button class="stb" data-st="reme">${mt?'바꾸기':'정하기'}</button>`:''}<button class="stb out" data-st="logout">로그아웃</button></div></div>
-  <div class="stv">Y-MATH 시간표 · v4.19.2</div>`;return h}
+  <div class="stv">Y-MATH 시간표 · v4.19.3</div>`;return h}
 function stOpen(){shOpen(`<div id="stb">${stBody()}</div><div class="sbtn"><button data-act="shClose" class="pri">닫기</button></div>`,{cls:'stsh'})}
 const thOpen=stOpen;
 function stRe(){const w=$('stb');if(w)w.innerHTML=stBody()}
@@ -1737,7 +1738,7 @@ function cheerLine(b){const {ctx,pools,myT,adm}=cheerCtx(b);const list=[];pools.
   const seed=`${tdStr()}|${ctx}|${b.id}|${myT||(adm?D.myName:'')}`;let h=2166136261;for(let i=0;i<seed.length;i++){h^=seed.charCodeAt(i);h=Math.imul(h,16777619)}
   const line=list[(h>>>0)%list.length];const nm=myT?T(b,myT):adm?(D.myName||''):'';return nm&&!/선생님/.test(line)?`${esc(nm)} 선생님, ${esc(line)}`:esc(line)}
 const footBody=b=>{const me=ME();const mt=me&&b&&me.br===b.id&&TT(b,me.t);
-  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.19.2</div></div>`};
+  return `<div class="foot">${b&&!b._nx?`<div class="cheer">${cheerLine(b)}</div>`:''}${isOwn()?`${esc(D.myName||'')} <small class="admt own">관리자</small> · `:isAdm()?`${esc(D.myName||'')} <small class="admt">행정</small> · `:D&&D.v2?`내 이름: ${esc(D.myName||(mt&&mt.name)||'')} · `:mt?`내 이름: ${esc(mt.name)} <button class="lnk" data-act="reMe">바꾸기</button> · `:'<button class="lnk" data-act="reMe">내 이름 정하기</button> · '}<button class="lnk" data-act="stOpen">설정</button><div class="vv">Y-MATH 시간표 · v4.19.3</div></div>`};
 const foot=nd=>{const b=D&&B();if(nd)return '<div class="gpad" aria-hidden="true"></div>';return `${!b?'':dockHTML(b,false)}${footBody(b)}`};
 document.addEventListener('click',async e=>{if(DESK){const tl=e.target.closest&&e.target.closest('a.tel');if(tl){e.preventDefault();const n=tl.querySelector('b');const v=n?n.textContent:'';try{await navigator.clipboard.writeText(v)}catch(err){}fzToast('번호를 복사했어요 · '+v,1800);return}}if(memoClick(e))return;if(amClick(e))return;if(rqClick(e))return;const th=e.target.closest&&e.target.closest('th[data-dcol],th[data-tcol]');if(th&&pzV()&&pzV().contains(th)){pzZoomTh(th);return}const gc=e.target.closest('.gc');if(gc&&!ST.nm){gc.classList.toggle('op');if(pzV())setTimeout(()=>{pzMeasure();pzDock();pzApply()},340);return}
   const t=e.target.closest('button');if(!t)return;
@@ -2425,7 +2426,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D)load()});
 /* 새 버전(화면 파일) 불러오기 — 관리자 폰 [PC·업데이트]의 버튼으로만 (선생님 폰은 예전처럼 저절로): 올라가 있는 화면이 더 새 버전이면 바로 다시 열기, 창이 열려 있으면 아래 [지금 바꾸기] 띠
    주소 뒤에 ?v=버전을 붙여 다시 열어서 폰·GitHub에 남은 옛 화면을 건너뜀 */
-const MVER='4.19.2';const VC={last:0,nv:''};
+const MVER='4.19.3';const VC={last:0,nv:''};
 const vGt=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)}return false};
 function verGo(v){try{sessionStorage.setItem('m_vgo',v)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())}
 async function verChk(manual,resume){if(!manual&&Date.now()-VC.last<5*60000)return;VC.last=Date.now();if(manual)fzToast('새 버전 확인 중…',1200);
