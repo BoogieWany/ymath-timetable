@@ -55,7 +55,7 @@ const LVTMP=path.join(require('os').tmpdir(),'ymt-lv');const lvTmpClean=()=>{try
 /* 4.16.0 열람 전용 PC(원장님용 · role 'viewer'): 전 지점 자료를 받아 보기만 — 올리기·잠금·요청 처리·Y-Note 내보내기·폰 화면 올리기를 여기서 통째로 막음 */
 const RO_MSG='열람 전용 PC라 저장할 수 없어요';
 function isRO(){try{const c=mob&&mob.sync;return !!(c&&c.on&&c.role==='viewer')}catch(e){return false}}
-const RO_BLOCK={syncPush:()=>({ok:false,ro:1,err:RO_MSG,shas:{},conflicts:[]}),sharedPush:()=>({ok:false,ro:1,err:RO_MSG}),syncLock:()=>({ok:false,ro:1,err:RO_MSG}),syncDelete:()=>({ok:false,ro:1,err:RO_MSG}),saveDraft:()=>false,rqComment:()=>({ok:false,err:RO_MSG}),rqClose:()=>({ok:false,err:RO_MSG}),ynSetup:()=>({ok:false,ro:1,err:RO_MSG})};
+const RO_BLOCK={syncPush:()=>({ok:false,ro:1,err:RO_MSG,shas:{},conflicts:[]}),sharedPush:()=>({ok:false,ro:1,err:RO_MSG}),syncLock:()=>({ok:false,ro:1,err:RO_MSG}),syncDelete:()=>({ok:false,ro:1,err:RO_MSG}),saveDraft:()=>false,rqComment:()=>({ok:false,err:RO_MSG}),rqClose:()=>({ok:false,err:RO_MSG}),ynSetup:()=>({ok:false,ro:1,err:RO_MSG}),ywExport:()=>({ok:false,ro:1,err:RO_MSG})};
 {const h0=ipcMain.handle.bind(ipcMain);ipcMain.handle=(ch,fn)=>h0(ch,(e,...a)=>(RO_BLOCK[ch]&&isRO())?RO_BLOCK[ch]():fn(e,...a))}
 ipcMain.handle('lvPdf',async(e,o)=>{try{const buf=Buffer.from(String((o&&o.b64)||''),'base64');if(buf.length<5||buf.slice(0,4).toString('latin1')!=='%PDF')return {ok:false,err:'PDF 파일이 아니에요'};if(buf.length>8*1024*1024)return {ok:false,err:'파일이 너무 커요'};
   const nm=(String((o&&o.name)||'결근서류.pdf').replace(/[\\/:*?"<>|]+/g,'_').slice(0,80).replace(/\.pdf$/i,'')||'결근서류')+'.pdf';
@@ -87,7 +87,8 @@ function safeWrite(f,txt){const tmp=f+'.tmp';const fd=fs.openSync(tmp,'w');try{f
   for(let i=0;i<5;i++){try{fs.renameSync(tmp,f);return}catch(err){if(!/EPERM|EBUSY|EACCES/.test(err.code||'')||i===4){try{fs.copyFileSync(tmp,f);fs.unlinkSync(tmp);logErr('save-rename',err);return}catch(e2){throw err}}const t=Date.now()+60*(i+1);while(Date.now()<t){}}}}
 ipcMain.handle('save',(e,txt,o)=>{if(LOADBAD)return false;backup();if(!(o&&o.quiet))setTimeout(()=>{try{nasLater()}catch(err){}},0);safeWrite(FILE,txt);return true});
 ipcMain.handle('pdf',async(e,o)=>{
-  const buf=await win.webContents.printToPDF({landscape:!!o.landscape,pageSize:o.pageSize||'A4',printBackground:true,margins:{marginType:'custom',top:0.25,bottom:0.25,left:0.25,right:0.25}});
+  /* 4.20.0 PDF 바깥 여백이 창 바탕색(남색)으로 찍히던 것: 찍는 동안만 흰 바탕 */
+  let buf;try{win.setBackgroundColor('#ffffff');buf=await win.webContents.printToPDF({landscape:!!o.landscape,pageSize:o.pageSize||'A4',printBackground:true,margins:{marginType:'custom',top:0.25,bottom:0.25,left:0.25,right:0.25}})}finally{win.setBackgroundColor('#17243F')}
   const r=await dialog.showSaveDialog(win,{title:'PDF 저장',defaultPath:path.join(OUT,(o.name||'시간표')+'.pdf'),filters:[{name:'PDF',extensions:['pdf']}]});
   if(r.canceled||!r.filePath)return {saved:false};
   fs.writeFileSync(r.filePath,buf);shell.openPath(r.filePath);return {saved:true,path:r.filePath};
@@ -248,7 +249,10 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   for(let i=u.length-1;i>0;i--){const j=crypto.randomInt(i+1);[u[i],u[j]]=[u[j],u[i]]} // 순서로 누군지 짐작 못 하게
   const o=Object.assign({},v);delete o.at;
   const h=crypto.createHash('sha256').update(JSON.stringify(o)+'\0'+JSON.stringify(extra||{})+'\0'+sig.sort().join(',')).digest('hex').slice(0,32);
-  return {app:'ymath-view',enc:2,kdf:'pbkdf2-sha256',it:LG_IT,salt:salt.toString('base64'),h,com,br,u}}
+  /* 4.19.4 지점별 적용 시각(평문 · 시각만) — 받는 쪽이 '이 PC 자료가 올라가 있는 것보다 오래됐는지' 보고 덮어쓰지 않게 */const sa={};(db.branches||[]).forEach(b=>{if(kb[b.id])sa[b.id]=(b._sync&&b._sync.at)||0});
+  return {app:'ymath-view',enc:2,kdf:'pbkdf2-sha256',it:LG_IT,salt:salt.toString('base64'),h,com,br,u,sa}}
+/* 4.19.4 올라가 있는 view.json(j)에 이 PC(vj)보다 새로 적용된 지점이 하나라도 있으면 true → 안 올림 (켜자마자 아직 못 받은 PC·연동이 끊긴 PC가 옛 시간표로 덮던 것) */
+const viewOlder=(vj,j)=>{if(!j||!j.sa||!vj||!vj.sa)return false;return Object.keys(j.sa).some(id=>id in vj.sa&&(+j.sa[id]||0)>(+vj.sa[id]||0))};
 /* 학교 정보(db.schools)에서 지점의 중등·고등 시험 기간 — 렌더러 examPeriods와 같은 규칙 */
 const exTd=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);const exPlus=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 const EX_ALIAS0={'부산중앙고':'중앙고'}; /* 화면 school.js SCH_ALIAS0와 같게 */
@@ -262,7 +266,7 @@ function exSchool(db,k){const o=((db.schools||{}).list||{})[k];if(!o)return [];c
 const exPadOf=(b,kd)=>Object.assign({a:14,z:7},((b&&b.exPad)||{})[kd]||{});const exPadP=(b,kd,p)=>{if(!p||!p.from)return p;const q=exPadOf(b,kd);return Object.assign({},p,{mf:exPlus(p.from,-q.a),mt:exPlus(p.to,q.z)})};
 function exPeriods(db,b){EXDB=db;const td=exTd();const out={};if(b.examAuto===false){out.중=b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null;out.고=b.examH&&b.examH.from?{from:b.examH.from,to:b.examH.to}:out.중;out.중=exPadP(b,'중',out.중);out.고=exPadP(b,'고',out.고);return out}
   ['중','고'].forEach(kd=>{const SS=(b.students||[]).filter(s=>s.status!=='퇴원'&&s.status!=='휴원'&&s.status!=='예정'&&exStuKind(s)===kd);const ks=new Set(SS.map(s=>exNorm(s.school)).filter(Boolean));const ps=[];const z=exPadOf(b,kd).z;ks.forEach(k=>exSchool(db,k).forEach(x=>{if(x.to>=exPlus(td,-z)&&SS.some(s=>exNorm(s.school)===k&&exForG(s.grade,x)))ps.push(x)}));ps.sort((a,z)=>a.from.localeCompare(z.from));
-    const C=[];ps.forEach(p=>{const c=C[C.length-1];if(c&&p.from<=exPlus(c.to,7)){if(p.to>c.to)c.to=p.to}else C.push({from:p.from,to:p.to})});const c=C.find(c=>exPlus(c.to,z)>=td)||null;out[kd]=exPadP(b,kd,c?{from:c.from,to:c.to}:(b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null))});return out}
+    const C=[];ps.forEach(p=>{const c=C[C.length-1];if(c&&p.from<=exPlus(c.to,7)){if(p.to>c.to)c.to=p.to;if(p.mk&&!c.mks.includes(p.mk))c.mks.push(p.mk)}else C.push({from:p.from,to:p.to,mks:p.mk?[p.mk]:[]})});const c=C.find(c=>exPlus(c.to,z)>=td)||null;out[kd]=exPadP(b,kd,c?{from:c.from,to:c.to,mks:c.mks /* 4.17.4 폰도 '그 학년엔 없는 시험' 빼게 */}:(b.exam&&b.exam.from?{from:b.exam.from,to:b.exam.to}:null))});return out}
 /* 3.76.0 폰 '학교' 탭: 이 지점 학생들이 다니는 학교(중·고)의 학사일정·과목별 시험일·시험 범위·부교재·등급컷·기출 수거 — 메모와 지점별 학생 수는 안 보냄 */
 function schPack(db,b){EXDB=db;const L=((db.schools||{}).list)||{};const td=exTd();const y=+td.slice(0,4);const yrs=new Set([String(y),String(y+1)].concat(+td.slice(5,7)<=2?[String(y-1)]:[]));
   const rt=r=>{if(!r||r.del||(!r.a&&!r.z&&!r.free))return '';const un=p=>(p||[]).filter(Boolean).pop()||'';let t=r.free&&!(r.a&&r.a.length)?r.free:(un(r.a)&&un(r.z)?(un(r.a)===un(r.z)?un(r.a):`${un(r.a)} ~ ${un(r.z)}`):(un(r.a)||un(r.z)||''));if(r.memo)t+=` · ${r.memo}`;if(r.free&&(r.a&&r.a.length))t+=` (${r.free})`;return t};
@@ -286,7 +290,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
   return {app:'ymath-view',at,branches:(db.branches||[]).map(b=>{const v=(b.versions||[]).find(x=>x.id===b.current)||(b.versions||[])[0]||{classes:[],sessions:[]};
     return {id:b.id,name:b.name,version:v.name||'',days:b.days,teachers:(b.teachers||[]).map(t=>({id:t.id,name:t.name,off:t.off||[]})),mgr:(b.mgr||[]).slice(),...(b.ttm&&Object.keys(b.ttm).length?{ttm:b.ttm}:{}),...(b.lvk&&b.lvk.pub?{lvk:b.lvk.pub}:{}),
       students:(b.students||[]).filter(st=>st.status!=='퇴원').map(st=>({id:st.id,name:st.name,grade:st.grade||'',school:st.school||'',away:st.status==='휴원',...(st.from?{from:st.from}:{}),...(st.status==='예정'?{pre:1}:{}),...(st.cs?{cs:st.cs,csBy:st.csBy||''}:{}),...(st.key?{key:1}:{}),...(st.subj&&Object.keys(st.subj).length?{subj:st.subj}:{})})),
-      noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
+      noteLabel:b.noteLabel||'보강',notes:(b.notes||[]).filter(n=>!n.until||n.until>=new Date(Date.now()+9*3600e3).toISOString().slice(0,10)).map(n=>({d:n.d,p:n.p,t:n.t,k:n.k||b.noteLabel||'보강',cls:n.cls||'',names:n.names||'',...(n.ttl?{ttl:String(n.ttl)}:{}),...(n.until?{cnt:n.cnt,from:n.from,until:n.until}:{})})),
       specials:(b.specials||[]).map(s=>({id:s.id,name:s.name,color:s.color,t:s.t,days:s.days||[],start:s.start,dur:s.dur,from:s.from||'',to:s.to||'',members:s.members||[]})),
       classes:(v.classes||[]).map(c=>({id:c.id,name:c.name,color:c.color,members:c.members||{}})),
       sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p,...(o.x&&o.x.length?{x:o.x}:{}),...(o.a&&o.a.length?{a:o.a}:{})})),
@@ -346,7 +350,7 @@ function wr(f,data){const t=f+'.tmp';fs.writeFileSync(t,data);try{fs.renameSync(
 async function publishNas(){if(isRO())return;const d=nasDir();if(!d)return;NAS.err='';if(appStale()){NAS.err=STALE_MSG;return}
   try{if(!fs.existsSync(mob.nasBase))throw new Error('서버 폴더가 안 보여요 ('+mob.nasBase+') · Z드라이브 연결을 확인해 주세요');
     fs.mkdirSync(path.join(d,'fonts'),{recursive:true});const v=publicView();if(!v)throw new Error('시간표 파일을 읽지 못했어요');
-    wr(path.join(d,'view.json'),JSON.stringify(await encV2(v)));
+    {const vj=await encV2(v);let old=null;try{old=JSON.parse(fs.readFileSync(path.join(d,'view.json'),'utf8'))}catch(e){}if(viewOlder(vj,old)){NAS.older=true;throw new Error('이 PC 시간표가 올라가 있는 것보다 오래돼서 안 올렸어요 · 동기화로 새 시간표를 받으면 다시 올려요')}NAS.older=false;wr(path.join(d,'view.json'),JSON.stringify(vj))}
     wr(path.join(d,'index.html'),fs.readFileSync(path.join(__dirname,'mobile.html')));
     try{fs.copyFileSync(path.join(__dirname,'icon.png'),path.join(d,'icon.png'))}catch(e){}
     try{wr(path.join(d,'manifest.webmanifest'),MANIFEST)}catch(e){}
@@ -417,8 +421,9 @@ async function publishGh(){if(!mob.ghOn||isRO())return;if(appStale()){GH.err=STA
     for(const f of ['IBMPlexSansKR-Regular.woff2','IBMPlexSansKR-SemiBold.woff2','IBMPlexSansKR-Bold.woff2','IBMPlexMono-Medium.woff2'])stat('fonts/'+f,fs.readFileSync(path.join(__dirname,'fonts',f)));
     // 시간표: 올라가 있는 파일의 내용 해시가 같으면(다른 PC가 올렸어도) 건너뜀 → 커밋·Pages 빌드 없음
     const vj=await encV2(v,rqv?{rq:rqv}:{});const vu=`${R}/contents/view.json`;const cur=await gh('GET',vu+`?t=${Date.now()}`);
-    let same=false;if(cur.status===200&&cur.j&&cur.j.content){try{const j=JSON.parse(Buffer.from(String(cur.j.content).replace(/\n/g,''),'base64').toString('utf8'));same=j.enc===2&&!!j.h&&j.h===vj.h&&j.salt===vj.salt}catch(e){}}
-    GH.skipped=same&&!files.length;if(!same)files.push({path:'view.json',buf:Buffer.from(JSON.stringify(vj))});
+    let same=false,older=false;if(cur.status===200&&cur.j&&cur.j.content){try{const j=JSON.parse(Buffer.from(String(cur.j.content).replace(/\n/g,''),'base64').toString('utf8'));same=j.enc===2&&!!j.h&&j.h===vj.h&&j.salt===vj.salt;older=!same&&viewOlder(vj,j)}catch(e){}}
+    GH.older=older;if(older)try{logErr('publishGh',new Error('view.json 안 올림: 이 PC 시간표가 더 오래됨'))}catch(e){}
+    GH.skipped=(same||older)&&!files.length;if(!same&&!older)files.push({path:'view.json',buf:Buffer.from(JSON.stringify(vj))});
     /* 가지를 못 읽으면(새 빈 저장소 등) 예전처럼 파일마다 올림 */
     if(files.length){const msg=(same?'화면 ':'시간표 ')+st;if(ref.status===200)await ghCommit(files,msg);else for(const f of files)await ghPut(f.path,f.buf,msg,f.path==='view.json'&&cur.status===200?cur:null);GH.lastPut=Date.now()}
     await ghPages();if(!GH.url)GH.url=`https://${mob.ghOwner.toLowerCase()}.github.io/${mob.ghRepo}/`;GH.last=Date.now();
@@ -930,6 +935,12 @@ ipcMain.handle('ynSetup',async(e,o)=>{const d=ynDir();if(!d)return {ok:false,err
     const sp=path.join(d,'시간표.json');let so=null;try{so=JSON.parse(await nsT(fs.promises.readFile(sp,'utf8'),5000))}catch(err){}
     if(!so||so.v!==1||JSON.stringify(so.teachers)!==JSON.stringify(T)){const tmp=sp+'.tmp';await nsT(fs.promises.writeFile(tmp,JSON.stringify({v:1,at:Date.now(),teachers:T}),'utf8'),5000);await nsRen(tmp,sp)}}catch(err){try{logErr('ynTT',err)}catch(e2){}}}
   return {ok:true}}catch(err){return {ok:false,err:String(err.message||err)}}});
+/* 4.18.0 Y-Work 연동용 내보내기: …\Y-MATH시간표\Y-Work연동\시간표_내보내기.json (관리자 PC · 평문 · 바뀐 때만 · 임시로 쓰고 이름 바꿈) */
+const ywDir=()=>process.env.YMT_YWDIR||(nsRoot()?path.join(nsRoot(),'Y-Work연동'):'');
+ipcMain.handle('ywExport',async(e,j)=>{const d=ywDir();if(!d)return {ok:false,err:'나스 동기화가 꺼져 있어요'};try{const o=JSON.parse(String(j||''));if(!o||o.kind!=='ymt-timetable-export'||!Array.isArray(o.branches))return {ok:false,err:'꼴이 달라요'};
+  await nsT(fs.promises.mkdir(d,{recursive:true}),5000);const sp=path.join(d,'시간표_내보내기.json');
+  let so=null;try{so=JSON.parse(await nsT(fs.promises.readFile(sp,'utf8'),5000))}catch(err){}if(so&&JSON.stringify(so.branches)===JSON.stringify(o.branches)&&so.app===o.app)return {ok:true,same:1};
+  o.at=Date.now();o.atText=new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});const tmp=sp+'.tmp';await nsT(fs.promises.writeFile(tmp,JSON.stringify(o,null,1),'utf8'),5000);await nsRen(tmp,sp);return {ok:true}}catch(err){try{logErr('ywExport',err)}catch(e2){}return {ok:false,err:String(err.message||err)}}});
 const YNC={};/* 파일별 풀어 둔 것 (크기·시각 같으면 다시 안 풂) */
 function ynDec(priv,line){try{const o=JSON.parse(line);if(o.e!==1)return null;const key=crypto.privateDecrypt({key:priv,padding:crypto.constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},Buffer.from(o.k,'base64'));const dc=crypto.createDecipheriv('aes-256-gcm',key,Buffer.from(o.iv,'base64'));dc.setAuthTag(Buffer.from(o.tag,'base64'));const r=JSON.parse(Buffer.concat([dc.update(Buffer.from(o.ct,'base64')),dc.final()]).toString('utf8'));return r&&typeof r==='object'?r:null}catch(e){return null}}
 ipcMain.handle('ynLogs',async(e,o)=>{const d=ynDir();if(!d)return {ok:false,err:'나스 동기화가 꺼져 있어요'};let k;try{k=JSON.parse(fs.readFileSync(YNK,'utf8'))}catch(err){return {ok:false,err:'열쇠가 아직 없어요'}}
