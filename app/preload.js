@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('api',{
   save:(t,o)=>ipcRenderer.invoke('save',t,o),
   pdf:o=>ipcRenderer.invoke('pdf',o),
   blogPng:o=>ipcRenderer.invoke('blogPng',o),
-  ynSetup:o=>ipcRenderer.invoke('ynSetup',o),lvPdf:o=>ipcRenderer.invoke('lvPdf',o),loadBadInfo:()=>ipcRenderer.invoke('loadBadInfo'),loadBadFix:o=>ipcRenderer.invoke('loadBadFix',o),bakOpen:()=>ipcRenderer.invoke('bakOpen'),pushBusy:v=>ipcRenderer.send('pushBusy',v),ynLogs:o=>ipcRenderer.invoke('ynLogs',o),fetchImg:u=>ipcRenderer.invoke('fetchImg',u),ynKeyBackup:()=>ipcRenderer.invoke('ynKeyBackup'),ynKeyRestore:()=>ipcRenderer.invoke('ynKeyRestore'),
+  ynSetup:o=>ipcRenderer.invoke('ynSetup',o),ywExport:j=>ipcRenderer.invoke('ywExport',j),lvPdf:o=>ipcRenderer.invoke('lvPdf',o),loadBadInfo:()=>ipcRenderer.invoke('loadBadInfo'),loadBadFix:o=>ipcRenderer.invoke('loadBadFix',o),bakOpen:()=>ipcRenderer.invoke('bakOpen'),pushBusy:v=>ipcRenderer.send('pushBusy',v),ynLogs:o=>ipcRenderer.invoke('ynLogs',o),fetchImg:u=>ipcRenderer.invoke('fetchImg',u),ynKeyBackup:()=>ipcRenderer.invoke('ynKeyBackup'),ynKeyRestore:()=>ipcRenderer.invoke('ynKeyRestore'),
   exportFile:o=>ipcRenderer.invoke('exportFile',o),
   openFolder:w=>ipcRenderer.invoke('openFolder',w),
   zoom:d=>ipcRenderer.invoke('zoom',d),
