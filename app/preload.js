@@ -51,7 +51,7 @@ contextBridge.exposeInMainWorld('api',{
   ghLater:()=>ipcRenderer.invoke('ghLater'),
   rqInfo:()=>ipcRenderer.invoke('rqInfo'),
   rqSet:o=>ipcRenderer.invoke('rqSet',o),
-  rqList:()=>ipcRenderer.invoke('rqList'),
+  rqList:()=>ipcRenderer.invoke('rqList'),obInfo:()=>ipcRenderer.invoke('obInfo'),obSet:o=>ipcRenderer.invoke('obSet',o),obPull:o=>ipcRenderer.invoke('obPull',o),obAck:ids=>ipcRenderer.invoke('obAck',ids),obKeys:o=>ipcRenderer.invoke('obKeys',o),
   rqClose:(n,ok)=>ipcRenderer.invoke('rqClose',n,ok),
   rqComment:(n,o)=>ipcRenderer.invoke('rqComment',n,o),
   rqCm:n=>ipcRenderer.invoke('rqCm',n),
