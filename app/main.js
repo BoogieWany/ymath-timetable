@@ -55,7 +55,7 @@ const LVTMP=path.join(require('os').tmpdir(),'ymt-lv');const lvTmpClean=()=>{try
 /* 4.16.0 열람 전용 PC(원장님용 · role 'viewer'): 전 지점 자료를 받아 보기만 — 올리기·잠금·요청 처리·Y-Note 내보내기·폰 화면 올리기를 여기서 통째로 막음 */
 const RO_MSG='열람 전용 PC라 저장할 수 없어요';
 function isRO(){try{const c=mob&&mob.sync;return !!(c&&c.on&&c.role==='viewer')}catch(e){return false}}
-const RO_BLOCK={syncPush:()=>({ok:false,ro:1,err:RO_MSG,shas:{},conflicts:[]}),sharedPush:()=>({ok:false,ro:1,err:RO_MSG}),syncLock:()=>({ok:false,ro:1,err:RO_MSG}),syncDelete:()=>({ok:false,ro:1,err:RO_MSG}),saveDraft:()=>false,rqComment:()=>({ok:false,err:RO_MSG}),rqClose:()=>({ok:false,err:RO_MSG}),ynSetup:()=>({ok:false,ro:1,err:RO_MSG}),ywExport:()=>({ok:false,ro:1,err:RO_MSG})};
+const RO_BLOCK={obAck:()=>({ok:false}),obSet:()=>({err:RO_MSG}),obKeys:()=>({ok:false,err:RO_MSG}),obPull:()=>({ok:true,off:true,list:[]}),syncPush:()=>({ok:false,ro:1,err:RO_MSG,shas:{},conflicts:[]}),sharedPush:()=>({ok:false,ro:1,err:RO_MSG}),syncLock:()=>({ok:false,ro:1,err:RO_MSG}),syncDelete:()=>({ok:false,ro:1,err:RO_MSG}),saveDraft:()=>false,rqComment:()=>({ok:false,err:RO_MSG}),rqClose:()=>({ok:false,err:RO_MSG}),ynSetup:()=>({ok:false,ro:1,err:RO_MSG}),ywExport:()=>({ok:false,ro:1,err:RO_MSG})};
 {const h0=ipcMain.handle.bind(ipcMain);ipcMain.handle=(ch,fn)=>h0(ch,(e,...a)=>(RO_BLOCK[ch]&&isRO())?RO_BLOCK[ch]():fn(e,...a))}
 ipcMain.handle('lvPdf',async(e,o)=>{try{const buf=Buffer.from(String((o&&o.b64)||''),'base64');if(buf.length<5||buf.slice(0,4).toString('latin1')!=='%PDF')return {ok:false,err:'PDF 파일이 아니에요'};if(buf.length>8*1024*1024)return {ok:false,err:'파일이 너무 커요'};
   const nm=(String((o&&o.name)||'결근서류.pdf').replace(/[\\/:*?"<>|]+/g,'_').slice(0,80).replace(/\.pdf$/i,'')||'결근서류')+'.pdf';
@@ -204,7 +204,7 @@ async function encV2(v,extra){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf
   const tsOf=(b,ids)=>{const A=tsAll(b);const o={};ids.forEach(id=>{if(A[id])o[id]=A[id];if(A['~'+id])o['~'+id]=A['~'+id]});return o};
   /* 4.06.0 M3: 입학 취소한 문의는 취소 후 30일만 · 보호자·학생 번호는 빼고 */
   const cxOk=q=>{if(!q.cancelAt)return false;const t=Date.parse(q.cancelAt+'T00:00:00');return t&&Date.now()-t<=30*864e5};
-  const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||(q.st==='cancel'&&cxOk(q))).map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.st==='cancel'?'':(q.ph||''),pa:q.st==='cancel'?[]:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
+  const inqPack=b=>(b.inq||[]).filter(q=>q.st==='open'||(q.st==='cancel'&&cxOk(q))).map(q=>({id:q.id,name:q.name,school:q.school||'',grade:q.grade||'',ph:q.st==='cancel'?'':(q.ph||''),pa:q.st==='cancel'?[]:(q.pa||[]).map(x=>({l:x.l||'',n:x.n||'',...(x.nm?{nm:x.nm}:{})})),want:q.want||'',reg:q.reg||'',src:q.src||'',...(q.from?{from:q.from}:{}),...(q.onl&&!q.onl.seen&&q.st==='open'?{nw:1}:{}),st:q.st,cancelAt:q.cancelAt||'',notes:(q.notes||[]).map(n=>({id:n.id,at:n.at||'',by:n.by||'',tx:n.tx||''}))}));
   const mgPack=b=>{const c=b.cns||{};return {inq:inqPack(b),
     out:(b.students||[]).filter(st=>st.status==='퇴원').map(st=>({id:st.id,name:st.name,school:st.school||'',grade:st.grade||'',out:st.out||''})),
     cns:{per:c.per||0,kper:c.kper||0,exam:!!c.exam,start:c.start||'',hold:Object.fromEntries(Object.entries(c.hold||{}).map(([k,v])=>[k,{why:(v&&v.why)||'',at:(v&&v.at)||''}]))},
@@ -296,7 +296,7 @@ function publicView(){let db;try{db=JSON.parse(fs.readFileSync(FILE,'utf8'))}cat
       sessions:(v.sessions||[]).map(o=>({id:o.id,cls:o.cls,t:o.t,d:o.d,p:o.p,...(o.x&&o.x.length?{x:o.x}:{}),...(o.a&&o.a.length?{a:o.a}:{})})),
       ct:ctPack(b,v),
       // 정기 상담: 주기 설정 · 최근 기록(200일) · 보류 · 지정 상담(대기) — 강사용이 '상담할 학생'을 스스로 계산
-      ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper)?{cns:{per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'']),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||''}))}}:{}),
+      ...(b.cns&&(b.cns.per||b.cns.exam||b.cns.kper||b.cns.m4224||(b.cns.asg||[]).length)?{cns:{ /* 4.22.6 정기 꺼도 지정 상담 쓰는 지점은 보냄([상담] 탭 유지) */per:b.cns.per||0,kper:b.cns.kper||0,exam:!!b.cns.exam,start:b.cns.start||'',rec:(b.cns.recs||[]).filter(r=>r.at>=new Date(Date.now()-200*864e5).toISOString().slice(0,10)).map(r=>[r.sid,r.at,r.by||'',r.ts||0]),hold:Object.keys(b.cns.hold||{}),asg:(b.cns.asg||[]).filter(x=>!x.done).map(x=>({id:x.id,sid:x.sid,t:x.t||'',note:x.note||'',by:x.by||'',at:x.at||'',ts:x.ts||(()=>{const m=/^g([0-9a-z]{8})/.exec(x.id||'');const v=m?parseInt(m[1],36):0;return v>1.6e12&&v<2.2e12?v:0})()})),hasg:(b.cns.asg||[]).filter(x=>x.held&&x.done&&x.done>=new Date(Date.now()-60*864e5).toISOString().slice(0,10)).map(x=>({id:x.id,sid:x.sid,t:x.t||'',d:x.done,by:x.doneBy||'',why:x.why||''}))}}:{}), /* 4.23.0 hasg: 보류로 끝낸 지정(되살리기용) */
       ...(()=>{const e=exPack(db,b);return {...(e.exam?{exam:e.exam}:{}),exams:e.exams,...(e.exl?{exl:e.exl,rng:e.rng}:{})}})(),
       ...(()=>{const s=schPack(db,b);return s.length?{schl:s}:{}})(),
       tk:(()=>{const W=new Set((b.teachers||[]).map(t=>String(t.name||'').replace(/\s+/g,'').replace(/T$/,'')));return Object.values(((db.tasks||{}).list)||{}).filter(t=>t&&!t.del&&!t.done&&String(t.who||'').split(',').some(n=>W.has(n.replace(/\s+/g,'').replace(/T$/,'')))).map(t=>({id:t.id,k:t.kind||'기타',g:t.grade||'',s:t.school||'',t:t.title||'',j:t.subj||'',w:String(t.who||'').replace(/\s+/g,'').replace(/T$/,''),n:t.n||0,a:t.ans?1:0,...(t.pub?{p:1}:{}),d:t.due||'',m:t.memo||'',...(t.fr?{f:t.fr,fa:t.frAt||'',ms:t.msg||'',ak:Object.keys(t.ack||{}).map(n=>String(n).replace(/\s+/g,'').replace(/T$/,'')).join(',')}:{}),...tkEaP(t)}))})(),
@@ -682,9 +682,10 @@ async function rqRefresh(force){const c=syCfg();if(!c.on||!syKey()||!mob.ghOwner
     const o=syDec(Buffer.from(await r.arrayBuffer()));const rq=rqCfg();const before=JSON.stringify([rq.on,rq.k,rqTok(),mob.pin]);
     if((o.at||0)>(rq.at||0)||(c.role!=='owner'&&!rq.at)){rq.on=!!o.on;rq.k=o.k||'';rq.ko=Array.isArray(o.ko)?o.ko.slice(0,5):[];rq.at=o.at||0;if(o.t)rqSetTok(o.t);else{delete rq.tokEnc;delete rq.tokPlain}}
     if(o.pin&&(o.pinAt||0)>(mob.pinAt||0)){mob.pin=o.pin;mob.pinAt=o.pinAt}
-    if(JSON.stringify([rq.on,rq.k,rqTok(),mob.pin])!==before)sySave()}catch(e){}}
+    let obCh=false;if(o.ob&&(o.ob.at||0)>((mob.ob||{}).at||0)){mob.ob={url:String(o.ob.url||''),any:String(o.ob.any||''),at:o.ob.at||0};if(o.ob.key)obSetKey(String(o.ob.key));else{delete mob.ob.keyEnc;delete mob.ob.keyPlain}obCh=true} /* 4.24.0 온라인 상담 수신함 */
+    if(obCh||JSON.stringify([rq.on,rq.k,rqTok(),mob.pin])!==before)sySave()}catch(e){}}
 async function rqPublish(){const c=syCfg();if(!c.on||c.role!=='owner'||!syKey()||!ghToken())return;const r=rqCfg();
-  try{if(!mob.ghOwner)await ghConnect();await ghPut('sync/req.json',syEnc({on:!!r.on,t:rqTok(),k:r.k||'',ko:(r.ko||[]).slice(0,5),at:r.at||0,pin:mob.pin||'',pinAt:mob.pinAt||0}),'공유 설정')}catch(e){}}
+  try{if(!mob.ghOwner)await ghConnect();await ghPut('sync/req.json',syEnc({on:!!r.on,t:rqTok(),k:r.k||'',ko:(r.ko||[]).slice(0,5),at:r.at||0,pin:mob.pin||'',pinAt:mob.pinAt||0,...(mob.ob&&mob.ob.at?{ob:{url:mob.ob.url||'',key:obKey(),any:mob.ob.any||'',at:mob.ob.at}}:{})}),'공유 설정')}catch(e){}}
 async function rqApi(method,url,body){const r=await fetch(API()+url,{method,headers:{'Authorization':'Bearer '+rqTok(),'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'ymath-timetable',...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
   try{const ex=r.headers.get('github-authentication-token-expiration');if(ex){const t=Date.parse(ex.replace(' UTC','Z').replace(' ','T'));if(t&&rqCfg().exp!==t){rqCfg().exp=t;sySave()}}}catch(e){}
   let j=null;try{j=await r.json()}catch(e){}return {status:r.status,j}}
@@ -718,6 +719,35 @@ ipcMain.handle('rqList',async()=>{await rqRefresh();if(!rqOn()||!mob.ghOwner||!m
       for(const i of r.j||[]){if(i.pull_request||!/^\[ymt\]/.test(i.title||''))continue;try{const x=rqDec(i.body||'');if(x&&x.sx)await sxOpen(x,db0);if(x&&(x.kind==='ad'||x.kind==='pc'))adVerify(x);if(x&&x.br&&(x.d||((x.kind==='cs'||x.kind==='cn')&&x.sid)||((x.kind==='ad'||x.kind==='pc')&&(x.ops||x.adBad))||((x.kind==='cnx'||x.kind==='csx')&&x.sid&&x.num0)||(x.kind==='tk'&&x.id)||(x.kind==='lv'&&x.t&&x.from)))out.push(Object.assign(x,{num:i.number,at:Date.parse(i.created_at)||0}))}catch(err){out.push({num:i.number,bad:true,at:Date.parse(i.created_at)||0})}}
       if((r.j||[]).length<100)break}
     RQ.err='';return {ok:true,list:out}}catch(err){RQ.err=err.message;return {ok:false,err:err.message,list:[]}}});
+/* ================= 4.24.0 온라인 상담 신청 수신함 (Cloudflare Worker) =================
+   학부모가 신청 페이지에서 보낸 내용은 브라우저에서 지점 공개키(b.lvk.pub)로 잠겨 수신함에 암호문으로만 쌓임.
+   주소·꺼내는 열쇠는 프로그램 관리자 PC가 정하고 sync/req.json(관리자 키 암호화)으로 지점 PC와 나눔. 푸는 건 그 지점 개인키가 있는 PC만. */
+function obKey(){const o=mob.ob||{};try{if(o.keyEnc&&safeStorage.isEncryptionAvailable())return safeStorage.decryptString(Buffer.from(o.keyEnc,'base64'));return o.keyPlain||''}catch(e){return ''}}
+function obSetKey(k){const o=mob.ob=mob.ob||{};if(safeStorage.isEncryptionAvailable()){o.keyEnc=safeStorage.encryptString(k).toString('base64');delete o.keyPlain}else{o.keyPlain=k;delete o.keyEnc}}
+const obUrl=()=>String(process.env.YMT_OB_URL||(mob.ob||{}).url||'').replace(/\/+$/,'');
+const obReady=()=>!!(obUrl()&&obKey());
+const OB={err:''};
+function obInfo(){const c=syCfg();return {url:obUrl(),hasKey:!!obKey(),ready:obReady(),any:(mob.ob||{}).any||'',owner:!c.on||c.role==='owner',err:OB.err}}
+async function obApi(method,p,body){const r=await fetch(obUrl()+p,{method,headers:{'Authorization':'Bearer '+obKey(),'User-Agent':'ymath-timetable',...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});let j=null;try{j=await r.json()}catch(e){}return {status:r.status,j}}
+const obErr=r=>r.status===401?'수신함 열쇠가 맞지 않아요':r.status===404?'수신함 주소를 찾지 못했어요':`수신함 오류 ${r.status}`;
+ipcMain.handle('obInfo',async()=>{await rqRefresh();return obInfo()});
+ipcMain.handle('obSet',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')return Object.assign(obInfo(),{err:'프로그램 관리자 PC에서만 바꿀 수 있어요'});await rqRefresh(true);const b=mob.ob=mob.ob||{};
+  if(o.url!==undefined){const u=String(o.url||'').trim().replace(/\/+$/,'');if(u&&!/^https:\/\/[\w.-]+(\/[\w./-]*)?$/.test(u)&&!process.env.YMT_ROOT)return Object.assign(obInfo(),{err:'주소는 https:// 로 시작해야 해요'});b.url=u}
+  if(o.key)obSetKey(String(o.key).trim());if(o.any!==undefined)b.any=String(o.any||'');if(o.off){b.url='';delete b.keyEnc;delete b.keyPlain}b.at=Date.now();OB.err='';
+  if(obReady()&&!o.off){try{const r=await obApi('GET','/list');if(r.status!==200||!r.j||!r.j.ok)OB.err=obErr(r)}catch(err){OB.err='수신함에 연결하지 못했어요 · 주소와 인터넷을 확인해 주세요'}}
+  sySave();rqPublish();return obInfo()});
+/* 꺼내기: 이 PC가 풀 수 있는(그 지점 개인키가 있는) 것만 풀어서 돌려줌 · 못 푸는 건 그대로 둠(다른 지점 PC 몫) */
+ipcMain.handle('obPull',async(e,o)=>{await rqRefresh();if(!obReady())return {ok:true,off:true,list:[]};let db0;try{db0=JSON.parse(fs.readFileSync(FILE,'utf8'))}catch(err){db0={branches:[]}}
+  try{const r=await obApi('GET','/list'+(o&&o.all?'?all=1':''));if(r.status!==200||!r.j||!r.j.ok){OB.err=obErr(r);return {ok:false,err:OB.err,list:[]}}OB.err='';const out=[];
+    for(const it of r.j.items||[]){const x={br:it.br,sx:it.sx};await sxOpenAll(x,db0);if(x.o)out.push({id:String(it.id),br:it.br,at:it.at||0,tk:it.tk||0,o:x.o})}
+    return {ok:true,list:out,n:(r.j.items||[]).length}}catch(err){OB.err='수신함에 연결하지 못했어요';return {ok:false,err:OB.err,list:[]}}});
+ipcMain.handle('obAck',async(e,ids)=>{if(!obReady()||!Array.isArray(ids)||!ids.length)return {ok:false};try{const r=await obApi('POST','/ack',{ids:ids.map(String).slice(0,200)});return {ok:r.status===200}}catch(err){return {ok:false}}});
+ipcMain.handle('obKeys',async(e,o)=>{const c=syCfg();if(c.on&&c.role!=='owner')return {ok:false,err:'프로그램 관리자 PC에서만'};if(!obReady())return {ok:false,err:'수신함 연결이 없어요'};
+  try{const r=await obApi('PUT','/keys',{any:o.any||'',keep:o.keep||'',br:(o.br||[]).slice(0,12)});if(r.status!==200||!r.j||!r.j.ok)return {ok:false,err:obErr(r)};return {ok:true,n:r.j.n}}catch(err){return {ok:false,err:'수신함에 연결하지 못했어요'}}});
+async function sxOpenAll(x,db){try{const b=(db.branches||[]).find(i=>i.id===x.br);const pr=b&&b.lvk&&b.lvk.prv;if(!pr||!x.sx||!x.sx.epk)return;const S=crypto.webcrypto.subtle;
+  const k=await S.importKey('jwk',{kty:'EC',crv:'P-256',x:pr.x,y:pr.y,d:pr.d},{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);const ep=await S.importKey('jwk',{kty:'EC',crv:'P-256',x:x.sx.epk.x,y:x.sx.epk.y},{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const ak=await S.deriveKey({name:'ECDH',public:ep},k,{name:'AES-GCM',length:256},false,['decrypt']);const pt=await S.decrypt({name:'AES-GCM',iv:Buffer.from(x.sx.iv,'base64')},ak,Buffer.from(x.sx.ct,'base64'));
+  const o=JSON.parse(Buffer.from(pt).toString('utf8'));if(o&&typeof o==='object')x.o=o}catch(err){}}
 /* 3.86.0 결근 서류: 요청 댓글(나눠 올린 암호문 조각)을 읽어 옴 · 푸는 건 화면(지점 개인키)에서 */
 ipcMain.handle('rqCm',async(e,num)=>{if(!rqOn())return {ok:false,err:'꺼져 있어요'};try{const out=[];for(let pg=1;pg<=5;pg++){const r=await rqApi('GET',`/repos/${mob.ghOwner}/${mob.ghRepo}/issues/${+num}/comments?per_page=100&page=${pg}`);if(r.status!==200)return {ok:false,err:rqErr(r)};(r.j||[]).forEach(c=>out.push(String(c.body||'')));if((r.j||[]).length<100)break}return {ok:true,list:out}}catch(err){return {ok:false,err:err.message}}});
 /* PC 상태 확인(관리자 폰): 그 요청에 이 PC 상태를 암호화한 댓글로 남김 */
