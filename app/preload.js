@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld('api',{
   saveDraft:t=>ipcRenderer.invoke('saveDraft',t),
   loadDraft:()=>ipcRenderer.invoke('loadDraft'),
   clearDraft:()=>ipcRenderer.invoke('clearDraft'),
-  backupNamed:(t,l)=>ipcRenderer.invoke('backupNamed',t,l),
+  backupNamed:(t,l)=>ipcRenderer.invoke('backupNamed',t,l),bkList:()=>ipcRenderer.invoke('bkList'),bkRead:n=>ipcRenderer.invoke('bkRead',n),
   saveSync:(t,d)=>ipcRenderer.sendSync('saveSync',t,d),
   setTheme:m=>ipcRenderer.invoke('setTheme',m),
   onUpdated:f=>ipcRenderer.on('updated',()=>f()),
