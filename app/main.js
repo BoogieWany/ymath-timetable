@@ -118,6 +118,9 @@ const DRAFT=path.join(DATA,'draft.json');
 ipcMain.handle('saveDraft',(e,txt)=>{safeWrite(DRAFT,txt);return true});
 ipcMain.handle('loadDraft',()=>fs.existsSync(DRAFT)?stripHist(fs.readFileSync(DRAFT,'utf8'),DRAFT):null);
 ipcMain.handle('clearDraft',()=>{if(fs.existsSync(DRAFT))fs.unlinkSync(DRAFT);return true});
+/* 4.25.2 백업에서 시간표 되살리기 — 자동 백업 목록 · 한 파일의 지점별 시간표(읽기만) */
+ipcMain.handle('bkList',()=>{try{return fs.readdirSync(BAK).filter(n=>/^timetable_.*\.json$/.test(n)).map(n=>{const st=fs.statSync(path.join(BAK,n));return {n,t:st.mtimeMs,s:st.size}}).sort((a,b)=>b.t-a.t).slice(0,150)}catch(e){return []}});
+ipcMain.handle('bkRead',(e,n)=>{n=String(n||'');if(!/^timetable_[^\\/:]*\.json$/.test(n)||n.includes('..'))return {ok:false,err:'파일 이름이 이상해요'};try{const d=JSON.parse(fs.readFileSync(path.join(BAK,n),'utf8'));if(!Array.isArray(d.branches))return {ok:false,err:'시간표 백업 파일이 아니에요'};return {ok:true,branches:d.branches.map(b=>({id:b.id,name:b.name,sync:b._sync||null,current:b.current,versions:b.versions||[]}))}}catch(err){return {ok:false,err:'읽지 못했어요: '+err.message}}});
 ipcMain.handle('backupNamed',(e,txt,label)=>{fs.writeFileSync(path.join(BAK,`timetable_${label||'백업'}_${stamp()}.json`),txt,'utf8');return true});
 // 창 닫기·새로고침 직전 마지막 저장 (동기)
 ipcMain.on('saveSync',(e,txt,isDraft)=>{try{const f=isDraft?DRAFT:FILE;if(!isDraft&&LOADBAD){e.returnValue=false;return}if(!isDraft){backup();setTimeout(()=>{try{nasLater()}catch(err){}},0)}safeWrite(f,txt);e.returnValue=true}catch(err){e.returnValue=false}});
