@@ -3922,7 +3922,7 @@ var qrcode = function() {
 /* 4.01.0 펼침 메뉴(details.impm·.thm): 바깥을 누르거나 항목을 고르면 닫힘 */
 document.addEventListener('click',e=>{document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>{if(!d.contains(e.target)||e.target.closest('.impm-l button'))d.open=false})},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.impm[open],details.thm[open]').forEach(d=>d.open=false)});
-const APPVER='4.25.1', APPDATE='2026-11-26';
+const APPVER='4.25.2', APPDATE='2026-11-26';
 const DAYS=['월','화','수','목','금','토','일'];
 // 파스텔 추천 색 52가지 (밝은 24 + 조금 진한 24 + 무채색 4)
 const PALETTE=['#F1C9C5','#F1D4C5','#F1DFC5','#F1EAC5','#EEF1C5','#E3F1C5','#D8F1C5','#CDF1C5','#C5F1C9','#C5F1D4','#C5F1DF','#C5F1EA','#C5EEF1','#C5E3F1','#C5D8F1','#C5CDF1','#C9C5F1','#D4C5F1','#DFC5F1','#EAC5F1','#F1C5EE','#F1C5E3','#F1C5D8','#F1C5CD','#E3A6A0','#E3B7A0','#E3C7A0','#E3D8A0','#DEE3A0','#CDE3A0','#BCE3A0','#ABE3A0','#A0E3A6','#A0E3B7','#A0E3C7','#A0E3D8','#A0DEE3','#A0CDE3','#A0BCE3','#A0ABE3','#A6A0E3','#B7A0E3','#C7A0E3','#D8A0E3','#E3A0DE','#E3A0CD','#E3A0BC','#E3A0AB','#E5E1D8','#D8DEE6','#E8D9CF','#D9E4D7'];
@@ -4650,6 +4650,7 @@ function renderVPanel(){
   p.innerHTML=`<div class="vrow"><b>시간표 보관함</b><span class="hint">학기·기간마다 시간표를 따로 보관해요. 복사해서 새 기간 시간표를 만들고 고치면 이전 것은 그대로 남아요.</span></div>`+
   b.versions.map(v=>{const live=v.id===b.current,sc=b.sched&&b.sched.ver===v.id,open=v.id===V().id;return `<div class="vrow${sc?' vsched':''}"><input data-vname="${v.id}" value="${esc(v.name)}" aria-label="시간표 이름"><span class="vtag${live?' live':sc?' sc':''}">${live?'지금 시간표':sc?`예정 · ${ntMd(b.sched.from)}부터${b.sched.pub?' · 공개':' · 비공개'}`:'보관'}</span><span class="hint">반 ${v.classes.length} · 수업 ${v.sessions.length}</span>${open?'<b class="hint">(이 PC에서 보는 중)</b>':`<button class="btn" data-vopen="${v.id}">열기</button>`}${live?'':`<button class="btn" data-vsched="${v.id}">${sc?'예정 바꾸기':'예정으로 정하기'}</button><button class="btn" data-vdiff="${v.id}">바뀌는 점</button><button class="btn" data-vlive="${v.id}" title="바로 지금 시간표로 (수정 모드)">지금 시간표로</button>`}<button class="btn" data-vcopy="${v.id}">복사해서 새 시간표</button><button class="btn danger" data-vdel="${v.id}" ${b.versions.length<2||live?'disabled':''}>삭제</button></div>`}).join('')+
   `<div class="vrow"><button class="btn" data-act="siOpen">시트 엑셀로 새 시간표 만들기</button><span class="hint">구글 시트에서 받은 시간표 .xlsx를 읽어 이 지점의 새 시간표로</span></div>`+
+  (bridge&&bridge.bkList?`<div class="vrow"><button class="btn" data-act="bkrOpen">백업에서 되살리기</button><span class="hint">자동 백업(30분마다)에서 이 지점 시간표를 골라 새 시간표로 넣어요 · 지금 시간표는 그대로</span></div>`:'')+
   `<div class="vrow" style="margin-top:8px"><b>적용 기록</b><span class="hint">[적용]할 때마다 적용하기 전 시간표가 남아요 · ${HIST.length}개</span><button class="btn" data-act="histOpen" ${HIST.length?'':'disabled'}>적용 기록 열기</button></div>`;
   histRender();
 }
@@ -10016,6 +10017,48 @@ try{document.head.insertAdjacentHTML('beforeend','<style id="vpcss">'+VP_CSS+`.p
 .vptb{display:flex;align-items:center;gap:8px;margin-bottom:12px}.vpprev{flex:1;overflow:auto;min-height:0;min-width:0;display:flex;justify-content:center}.vpsheet{width:770px;background:#fff;border-radius:6px;box-shadow:0 4px 18px rgba(20,30,60,.12);padding:12px;align-self:flex-start}
 </style>`)}catch(e){}
 
+/* 4.25.2 [보관함] 백업에서 되살리기 — 자동 백업 파일(30분마다 · 수정전 · 내수정_버림)에서 이 지점 시간표 하나를 골라 '새 시간표'로 넣음
+   지금 시간표·다른 시간표는 건드리지 않음(복사본 · 반·수업 id 새로) · 수정 모드에서 넣고 확인 뒤 [적용]하면 다른 PC로 감
+   다른 PC가 옛 자료로 덮어써서 시간표가 사라졌을 때 쓰는 길 */
+const BKR={};
+function bkrLabel(n){const m=/^timetable_(?:(.+?)_)?(\d{4})-(\d\d)-(\d\d)_(\d\d)(\d\d)\.json$/.exec(n);if(!m)return {t:n.replace(/^timetable_|\.json$/g,''),k:''};
+  const k=m[1]||'';return {t:`${+m[3]}/${+m[4]} ${m[5]}:${m[6]}`,k:k==='수정전'?'적용 전':k==='내수정_버림'?'버린 내 수정':k?k.replace(/_/g,' '):'',d:`${m[2]}-${m[3]}-${m[4]}`}}
+async function bkrOpen(){if(!bridge||!bridge.bkList){toast('PC 프로그램에서만 돼요');return}if(typeof isViewer==='function'&&isViewer()){toast(RO_MSG);return}
+  const L=(await bridge.bkList()).filter(x=>!/깨진/.test(x.n));BKR.L=L;BKR.sel=null;BKR.data=null;BKR.err='';$('modal').hidden=false;bkrRender()}
+function bkrRender(){const b=B();const cur=new Map(b.versions.map(v=>[v.id,v]));const L=BKR.L||[];
+  const days=[];L.forEach(x=>{const l=bkrLabel(x.n);const d=l.d||'기타';let g=days.find(y=>y.d===d);if(!g){g={d,L:[]};days.push(g)}g.L.push({x,l})});
+  const left=days.map(g=>`<div class="bkrday">${g.d==='기타'?'기타':`${+g.d.slice(5,7)}/${+g.d.slice(8,10)}`}</div>${g.L.map(({x,l})=>`<button class="bkrf" data-bkrf="${esc(x.n)}" aria-pressed="${BKR.sel===x.n}"><span>${esc(l.t.split(' ')[1]||l.t)}</span>${l.k?`<em>${esc(l.k)}</em>`:''}</button>`).join('')}`).join('')||'<div class="hint" style="padding:12px">백업 파일이 아직 없어요</div>';
+  let right='<div class="bkrempty">왼쪽에서 백업 시각을 고르세요<br><small>그 시각에 이 PC에 있던 시간표가 보여요</small></div>';
+  if(BKR.err)right=`<div class="bkrempty">${esc(BKR.err)}</div>`;
+  else if(BKR.data){const bb=BKR.data.branches.find(x=>x.id===b.id);
+    if(!bb)right=`<div class="bkrempty">이 백업에는 ${esc(b.name)} 자료가 없어요</div>`;
+    else{const sy=bb.sync&&bb.sync.at?`${esc(bb.sync.by||'')} · ${(d=>`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`)(new Date(bb.sync.at))}`:'';
+      right=`<div class="bkrhd"><b>${esc(bkrLabel(BKR.sel).t)} 백업 · ${esc(b.name)}</b>${sy?`<span class="hint">그때 마지막으로 올린 사람 ${sy}</span>`:''}</div>`+
+      bb.versions.filter(v=>(v.classes||[]).length||(v.sessions||[]).length).map(v=>{const n=cur.get(v.id);const dc=n?(v.classes||[]).length-n.classes.length:null;const ds=n?(v.sessions||[]).length-n.sessions.length:null;
+        const cmp=!n?'<span class="bkrtag new">지금은 없는 시간표</span>':dc||ds?`<span class="bkrtag ${dc>0||ds>0?'more':''}">지금: 반 ${n.classes.length} · 수업 ${n.sessions.length}</span>`:'<span class="bkrtag same">지금과 같아요</span>';
+        return `<div class="bkrv"><div class="bkrvn"><b>${esc(v.name)}</b>${v.id===bb.current?'<span class="hint">그때 지금 시간표</span>':''}<span class="hint">반 ${(v.classes||[]).length} · 수업 ${(v.sessions||[]).length}</span>${cmp}</div><button class="btn${n&&(dc>0||ds>0)||!n?' pri':''}" data-bkrput="${esc(v.id)}">새 시간표로 넣기</button></div>`}).join('')||'<div class="bkrempty">이 백업엔 이 지점 시간표가 비어 있어요</div>'}}
+  $('modal').innerHTML=`<div class="dlg bkrdlg" role="dialog" aria-modal="true" aria-labelledby="bkrT"><div class="bkrtop"><h2 id="bkrT">백업에서 되살리기</h2><span class="hint">${esc(b.name)} · 고른 시간표를 '새 시간표'로 보관함에 넣어요. 지금 시간표는 그대로예요.</span><button class="vpclose" data-act="closeModal" aria-label="닫기">✕</button></div>
+   <div class="bkrbd"><div class="bkrL">${left}</div><div class="bkrR">${right}</div></div>
+   <div class="bkrft hint">넣은 뒤 보관함에서 열어 확인하고, 그대로 쓰려면 [지금 시간표로] → [적용]하세요. ${UI.edit?'':'<b>지금은 보기 모드라 넣으려면 위쪽 보기·수정 스위치를 먼저 켜야 해요.</b>'}</div></div>`}
+function bkrPut(vid){const b=B();const bb=BKR.data&&BKR.data.branches.find(x=>x.id===b.id);const src=bb&&bb.versions.find(v=>v.id===vid);if(!src)return;const lab=bkrLabel(BKR.sel).t;let nid='';
+  const nm=`${src.name} (되살림 ${lab})`;
+  commit(()=>{const nv=JSON.parse(JSON.stringify(src));nv.id=uid('v');nid=nv.id;nv.name=nm;nv.trash=[];const cmap={};(nv.classes||[]).forEach(c=>{const n=uid('c');cmap[c.id]=n;c.id=n});nv.classes=nv.classes||[];nv.sessions=(nv.sessions||[]).filter(o=>cmap[o.cls]).map(o=>Object.assign(o,{id:uid('x'),cls:cmap[o.cls]}));B().versions.push(nv);UI.vv=UI.vv||{};UI.vv[B().id]=nv.id},
+    `'${nm}'을(를) 보관함에 넣고 열었어요 · 확인하고 [적용]하면 다른 PC에도 가요`);
+  if(nid&&B().versions.some(v=>v.id===nid)){$('modal').hidden=true;$('modal').innerHTML='';UI.picked=null;UI.sel=null;UI.cls=null;render()}}
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-act="bkrOpen"],[data-bkrf],[data-bkrput]');if(!t)return;e.stopPropagation();const d=t.dataset;
+  if(d.act==='bkrOpen'){bkrOpen();return}
+  if(d.bkrf){BKR.sel=d.bkrf;BKR.data=null;BKR.err='';bkrRender();const r=await bridge.bkRead(d.bkrf);if(BKR.sel!==d.bkrf)return;if(r&&r.ok)BKR.data=r;else BKR.err=(r&&r.err)||'읽지 못했어요';bkrRender();return}
+  if(d.bkrput){bkrPut(d.bkrput);return}},true);
+try{document.head.insertAdjacentHTML('beforeend',`<style id="bkrcss">.bkrdlg{width:min(980px,100%);height:min(680px,90vh);padding:0;gap:0;overflow:hidden}
+.bkrtop{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line2)}.bkrtop h2{font-size:17px;white-space:nowrap}.bkrtop .hint{font-size:12.5px}
+.bkrbd{flex:1;display:grid;grid-template-columns:200px 1fr;min-height:0}.bkrL{border-right:1px solid var(--line2);overflow:auto;padding:8px 10px}.bkrR{overflow:auto;padding:14px 18px;background:var(--bg)}
+.bkrday{font-size:11.5px;color:var(--muted);font-weight:600;margin:10px 4px 4px}.bkrday:first-child{margin-top:2px}
+.bkrf{display:flex;align-items:center;gap:6px;width:100%;border:0;background:none;border-radius:8px;padding:6px 8px;font:inherit;font-size:13px;color:var(--fg);cursor:pointer;text-align:left;transition:background .15s}.bkrf:hover{background:var(--line2)}.bkrf[aria-pressed="true"]{background:color-mix(in srgb,var(--info) 13%,transparent);font-weight:600}.bkrf em{font-style:normal;font-size:11px;color:var(--muted);margin-left:auto}
+.bkrhd{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}.bkrv{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px}.bkrvn{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}.bkrvn b{font-size:14px}
+.bkrtag{font-size:11.5px;border-radius:6px;padding:1px 7px;background:var(--line2);color:var(--muted)}.bkrtag.more{background:color-mix(in srgb,#e08a3c 16%,transparent);color:#a65a17;font-weight:600}.bkrtag.new{background:color-mix(in srgb,var(--info) 13%,transparent);color:var(--info);font-weight:600}
+.bkrempty{color:var(--muted);text-align:center;padding:60px 10px;font-size:13.5px;line-height:1.7}.bkrft{padding:10px 22px;border-top:1px solid var(--line2);font-size:12px}
+</style>`)}catch(e){}
+
 /* 4.24.0 온라인 상담 신청 → 입학 문의 자동 등록
    신청 페이지(학부모 폰) → 지점 공개키로 잠금 → Cloudflare 수신함(암호문) → 이 PC가 몇 분마다 꺼내 풀어서 b.inq에 넣음(src '온라인 상담')
    꺼내는 PC: 그 지점을 고칠 수 있고 지점 개인키가 있는 PC(지점장·행정·관리자) · 수신함 연결(주소·열쇠)은 프로그램 관리자 PC만
@@ -10358,12 +10401,14 @@ const HELP=[
   <ul><li>수업 카드를 누르면 명단 창 아래 <b>[당일 변경]</b>. <b>수정 모드가 아니어도</b> 바로 저장되고 선생님 화면에 몇 분 안에(최대 7분) 보여요.</li>
   <li>날짜(그 요일 다음 5번 중)를 고르고 <b>휴강</b> / <b>대강</b>(대신 들어갈 선생님) / <b>시간 이동</b> + 메모(선택). 원래 시간표는 그대로고 그날이 지나면 저절로 원래대로.</li>
   <li>잘못 넣었으면 같은 창 위쪽 목록에서 <b>[취소]</b>.</li></ul>`},
- {id:'ver',t:'보관함 · 예정 시간표 · 적용 기록',b:`
+ {id:'ver',t:'보관함 · 예정 시간표 · 적용 기록 · 백업에서 되살리기',b:`
   ${HF('ver','보관함 — 시간표안 여러 개, 예정으로 정하기, 적용 기록')}
   <ul><li><b>[보관함]</b>: 같은 지점에 여러 시간표안(예: 10월안, 겨울안)을 두고 바꿔 봐요.</li>
   <li><b>예정 시간표</b>: [복사해서 새 시간표] → 고친 뒤 <b>[예정으로 정하기]</b>로 시작 날짜를 고르면 그날부터 지금 시간표로 바뀌어요(PC가 꺼져 있어도). <b>미리 보여 주기(공개)</b>를 켜면 선생님 폰에 "○/○부터 시간표가 바뀌어요 [미리 보기]". <b>[바뀌는 점]</b>으로 달라지는 반·학생을 비교해요.</li>
   <li><b>적용 기록</b>: [적용]할 때마다 그 전 시간표가 남아요. [보기]로 지난 시간표를 보고, [되돌리기](두 번)로 초안으로 불러와요. 기록은 <b>최근 30개는 모두</b>, 그 전 것은 <b>하루에 마지막 1개씩 90일</b> 동안 남고 더 오래된 건 저절로 정리돼요(4.11.0).</li>
-  <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요.</li></ul>`},
+  <li>저장은 자동이고 30분마다 data\\backup에 백업이 쌓여요.</li>
+  <li><b>[백업에서 되살리기]</b>(4.25.2): 다른 PC가 옛 자료로 올려서 시간표가 덮였을 때 써요. 왼쪽에서 <b>백업 시각</b>을 고르면 그때 이 PC에 있던 이 지점 시간표가 <b>반·수업 수</b>, 그때 마지막으로 올린 사람과 함께 보이고, <b>지금보다 많으면 주황</b>으로 표시돼요. <b>[새 시간표로 넣기]</b>를 누르면 '<i>이름 (되살림 시각)</i>'으로 보관함에 복사돼 열려요 — 지금 시간표는 그대로. 확인하고 [지금 시간표로] 또는 필요한 반만 옮긴 뒤 <b>[적용]</b>하세요. 수정 모드에서만 넣을 수 있어요.</li>
+  ${HF('bkrdlg','백업에서 되살리기 — 백업 시각 고르기, 그때의 시간표와 지금 비교 (데모 자료)')}</ul>`},
  {id:'online',t:'온라인 상담 신청 (QR·링크)',b:`<ul>
   <li>홍보물의 QR·링크로 학부모가 폰에서 <b>상담 신청</b>을 남기면, 몇 분 안에 학생 관리의 <b>입학 문의</b>에 저절로 들어와요. 등록 경로는 <b>온라인 상담</b>(뒤에 유입 경로), 연락처는 <b>보호자</b> 번호, 첫 메모에 <b>연락 방법(전화/문자) · 편한 시간대 · 궁금한 점</b>이 적혀요.</li>
   <li>새로 들어온 신청은 입학 문의 제목 옆 <b>새 온라인 신청 n</b> 배지와 줄 표시(금색)로 보여요. 연락했으면 <b>[확인]</b>을 누르거나 메모를 남기면 표시가 꺼져요. 지점장·관리자 폰 [관리] 탭과 입학 문의에도 숫자가 떠요(선생님 폰에는 안 가요).</li>
